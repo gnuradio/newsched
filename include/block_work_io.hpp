@@ -5,14 +5,16 @@
 #ifndef INCLUDED_BLOCK_WORK_IO_HPP
 #define INCLUDED_BLOCK_WORK_IO_HPP
 
+#include "tag.hpp"
 #include <vector>
 
-class block_work_io
-{
-    std::vector<int>& n_items;
-    std::vector<const void *>& items;
-
+namespace gr {
+struct block_work_io {
+  std::vector<int> &n_items;
+  std::vector<const void *> &items;
+  std::vector<tag_t> &tags;
 };
 
+} // namespace gr
 
 #endif

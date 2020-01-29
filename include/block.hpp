@@ -21,12 +21,11 @@ class block {
 
 protected:
   std::string d_name;
-  block(const std::string &name, gr::io_signature &input_signature,
-        gr::io_signature &output_signature);
+  block(const std::string &name, io_signature &input_signature,
+        io_signature &output_signature);
 
   gr::io_signature d_input_signature, d_input_signature_capability;
   gr::io_signature d_output_signature, d_output_signature_capability;
-
 
   std::string d_name;
 
