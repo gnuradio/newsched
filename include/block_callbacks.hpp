@@ -43,7 +43,7 @@ public:
     callback_map[callback.id()] = callback.callback_function();
   }
 //   void remove(block_callback &callback);
-}
+};
 
 } // namespace gr
 #endif
