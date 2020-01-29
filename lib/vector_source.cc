@@ -50,8 +50,16 @@ void vector_source<T>::set_data(const std::vector<T> &data,
 }
 
 template <class T>
-work_return_code_t vector_source<T>::work(block_work_io &work_input,
-                                          block_work_io &work_output) {
+work_return_code_t
+vector_source<T>::work(std::vector<block_work_input> &work_input,
+                       std::vector<block_work_output> &work_output) {
+
+  size_t noutput_ports = work_output.size(); // is 1 for this block
+  noutput_items = work_output[0].n_items;
+  void *output_items = work_output[0].items;
+  std::vector<tag_t> output_tags = work_output[0].tags;
+  uint64_t n_written = work_output[0].n_items_written;
+
   T *optr = (T *)output_items[0];
 
   if (d_repeat) {
@@ -67,8 +75,11 @@ work_return_code_t vector_source<T>::work(block_work_io &work_input,
         memcpy((void *)optr, (const void *)&d_data[0], size * sizeof(T));
         optr += size;
         for (unsigned t = 0; t < d_tags.size(); t++) {
-          this->add_item_tag(0, this->nitems_written(0) + i + d_tags[t].offset,
-                             d_tags[t].key, d_tags[t].value, d_tags[t].srcid);
+            
+        //   this->add_item_tag(0, this->nitems_written(0) + i + d_tags[t].offset,
+        //                      d_tags[t].key, d_tags[t].value, d_tags[t].srcid);
+        output_tags.push_back(tag_t(n_written + i + d_tags[t].offset, d_tags[t].key, d_tags[t].value, d_tags[t].srcid));
+
         }
       }
     } else {
@@ -81,7 +92,10 @@ work_return_code_t vector_source<T>::work(block_work_io &work_input,
     }
 
     d_offset = offset;
-    return noutput_items;
+
+    work_output[0].n_produced = noutput_items;
+    return work_return_code_t::WORK_OK;
+
   } else {
     if (d_offset >= d_data.size())
       return -1; // Done!
@@ -97,7 +111,9 @@ work_return_code_t vector_source<T>::work(block_work_io &work_input,
                            d_tags[t].srcid);
     }
     d_offset += n;
-    return n / d_vlen;
+
+    work_output[0].n_produced = n / d_vlen;
+    return work_return_code_t::WORK_OK;
   }
 }
 

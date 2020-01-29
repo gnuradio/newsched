@@ -37,13 +37,16 @@ protected:
   io_signature d_output_signature;
 
   // These are overridden by the derived class
-  const io_signature_capability d_input_signature_capability;
-  const io_signature_capability d_output_signature_capability;
+  static const io_signature_capability d_input_signature_capability;
+  static const io_signature_capability d_output_signature_capability;
 
   std::string d_name;
 
-  virtual work_return_code_t work(std::vector<block_work_io> &work_input,
-                                  std::vector<block_work_io> &work_output);
+  virtual work_return_code_t work(std::vector<block_work_input> &work_input,
+                                  std::vector<block_work_output> &work_output)
+  {
+    
+  }
 
   virtual int validate();  // ??
   virtual bool start();
