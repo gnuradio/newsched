@@ -24,8 +24,12 @@ protected:
   block(const std::string &name, io_signature &input_signature,
         io_signature &output_signature);
 
-  gr::io_signature d_input_signature, d_input_signature_capability;
-  gr::io_signature d_output_signature, d_output_signature_capability;
+  io_signature d_input_signature;
+  io_signature d_output_signature;
+
+  // These are overridden by the derived class
+  static const io_signature_capability d_input_signature_capability;
+  static const io_signature_capability d_input_signature_capability;
 
   std::string d_name;
 
@@ -47,8 +51,11 @@ protected:
 public:
   ~block() {}
 
-  static gr::io_signature& input_signature_capability();
-  static gr::io_signature& output_signature_capability();
+  static io_signature_capability& input_signature_capability();
+  static io_signature_capability& output_signature_capability();
+
+  io_signature& input_signature();
+  io_signature& output_signature();
 };
 
 } // namespace gr
