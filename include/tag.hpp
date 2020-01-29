@@ -18,7 +18,7 @@ enum class tag_propagation_policy_t {
   TPP_ONE_TO_ONE = 2, /*!< Propagate tags from n. input to n. output. Requires
                          same number of in- and outputs */
   TPP_CUSTOM = 3 /*!< Like TPP_DONT, but signals the block it should implement
-                    application-specific forwbehaviour. */arding 
+                    application-specific forwarding behaviour. */ 
 };
 
 class tag_t {

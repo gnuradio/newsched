@@ -128,5 +128,8 @@ tags
 # Coc configuration directory
 .vim
 
+# Visual Studio Code
+**/.vscode
+
 # End of https://www.gitignore.io/api/emacs,vim,cmake,c++
 build
