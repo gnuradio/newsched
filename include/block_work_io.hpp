@@ -15,6 +15,7 @@ struct block_work_io {
   std::vector<tag_t> &tags;
 };
 
+
 } // namespace gr
 
 #endif
