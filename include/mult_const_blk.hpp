@@ -1,5 +1,0 @@
-#ifndef INCLUDED_MULT_CONST_HPP
-#define INCLUDED_MULT_CONST_HPP
-
-
-#endif
