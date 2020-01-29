@@ -8,10 +8,12 @@
 #include "tag.hpp"
 #include <vector>
 
-namespace gr {
+
+// Might also be a class if methods are needed
 struct block_work_io {
-  std::vector<int> &n_items;
-  std::vector<const void *> &items;
+  int n_items;
+  uint64_t n_items_total;  // Name TBD. Replacement for _read and _written because I/O
+  const void *items;
   std::vector<tag_t> &tags;
 };
 

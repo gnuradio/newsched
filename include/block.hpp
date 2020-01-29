@@ -39,8 +39,8 @@ protected:
 
   std::string d_name;
 
-  virtual work_return_code_t work(block_work_io &work_input,
-                                  block_work_io &work_output);
+  virtual work_return_code_t work(std::vector<block_work_io> &work_input,
+                                  std::vector<block_work_io> &work_output);
 
   virtual int validate();  // ??
   virtual bool start();
@@ -48,9 +48,6 @@ protected:
 
   void set_relative_rate(double relative_rate);
   void set_relative_rate(unsigned int numerator, unsigned int denominator);
-
-  uint64_t nitems_read(unsigned int which_input);
-  uint64_t nitems_written(unsigned int which_output);
 
   //   tag_propagation_policy_t tag_propagation_policy();
   //   void set_tag_propagation_policy(tag_propagation_policy_t p);
