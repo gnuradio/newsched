@@ -23,8 +23,7 @@ private:
     int d_max_streams;
 
 public:
-    io_signature_capability(int min_streams, int max_streams);
-
+    io_signature_capability(const int min_streams, const int max_streams);
     ~io_signature_capability() {}
 };
 

@@ -17,10 +17,8 @@ private:
     static const int MIN_OUTPUT_STREAMS = 1;
     static const int MAX_OUTPUT_STREAMS = -1;
 
-    static const io_signature_capability d_input_signature_capability =
-        io_signature_capability(MAX_INPUT_STREAMS, MAX_INPUT_STREAMS);
-    static const io_signature_capability d_output_signature_capability =
-        io_signature_capability(MIN_OUTPUT_STREAMS, MAX_OUTPUT_STREAMS);
+    static const io_signature_capability d_input_signature_capability(MAX_INPUT_STREAMS, MAX_INPUT_STREAMS);
+    static const io_signature_capability d_output_signature_capability(MIN_OUTPUT_STREAMS, MAX_OUTPUT_STREAMS);
     /* ------------------------   */
 
     std::vector<T> d_data;
