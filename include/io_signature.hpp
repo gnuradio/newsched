@@ -8,6 +8,7 @@
 #ifndef INCLUDED_IO_SIGNATURE_H
 #define INCLUDED_IO_SIGNATURE_H
 
+#include <vector>
 namespace gr {
 class io_signature
 {
@@ -17,7 +18,7 @@ private:
     int d_max_streams;
     std::vector<int> d_sizeof_stream_item;
 
-    // type info
+    // TODO: type info
 
 
     io_signature(int min_streams,
@@ -26,7 +27,7 @@ private:
 
 
 
-}
+};
 }
 
 #endif

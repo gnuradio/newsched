@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "io_signature.hpp"
+#include "block_work_io.hpp"
+
 namespace gr {
 
 enum class work_return_code_t {
@@ -27,8 +30,8 @@ protected:
 
   std::string d_name;
 
-  virtual work_return_code_t work(block_work_input_t::sptr work_input,
-                                  block_work_output_t::sptr work_output);
+  virtual work_return_code_t work(block_work_io& work_input,
+                                  block_work_io& work_output);
 
   virtual bool start();
   virtual bool stop();
@@ -39,11 +42,14 @@ protected:
   uint64_t nitems_read(unsigned int which_input);
   uint64_t nitems_written(unsigned int which_output);
 
-  tag_propagation_policy_t tag_propagation_policy();
-  void set_tag_propagation_policy(tag_propagation_policy_t p);
+//   tag_propagation_policy_t tag_propagation_policy();
+//   void set_tag_propagation_policy(tag_propagation_policy_t p);
 
 public:
   ~block() {}
+
+  static gr::io_signature& input_signature_capability();
+  static gr::io_signature& output_signature_capability();
 };
 
 } // namespace gr
