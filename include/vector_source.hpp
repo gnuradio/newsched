@@ -1,0 +1,5 @@
+#ifndef INCLUDED_VECTOR_SOURCE_HPP
+#define INCLUDED_VECTOR_SOURCE_HPP
+
+
+#endif

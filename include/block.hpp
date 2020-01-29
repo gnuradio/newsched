@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2020
 
+#ifndef INCLUDED_BLOCK_HPP
+#define INCLUDED_BLOCK_HPP
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -74,3 +77,6 @@ public:
 };
 
 } // namespace gr
+
+
+#endif

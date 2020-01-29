@@ -1,0 +1,5 @@
+#ifndef INCLUDED_VECTOR_SINK_HPP
+#define INCLUDED_VECTOR_SINK_HPP
+
+
+#endif

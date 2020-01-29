@@ -26,6 +26,7 @@ public:
   uint64_t offset;
   std::string key;
   // .... value  -- do without pmts for now
+  std::string value;
 }
 } // namespace gr
 
