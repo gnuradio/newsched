@@ -8,29 +8,24 @@
 #ifndef INCLUDED_IO_SIGNATURE_H
 #define INCLUDED_IO_SIGNATURE_H
 
-#include <vector>
 #include <iostream>
-#include <typeinfo>
 #include <typeindex>
+#include <typeinfo>
+#include <vector>
 
 namespace gr {
+// If we use the capability publishing, it is too complicated to keep track
+// of sizes and types - this may go away altogether
 class io_signature_capability
 {
-
 private:
     int d_min_streams;
     int d_max_streams;
-    std::vector<int> d_sizeof_stream_item;
-    std::vector<std::type_index&> d_type_index;
 
 public:
-    io_signature_capability(int min_streams,
-                 int max_streams,
-                 const std::vector<int>& sizeof_stream_items,
-                 std::vector<std::type_index&>& type_index);
+    io_signature_capability(int min_streams, int max_streams);
 
-    ~io_signature_capability(){}
-
+    ~io_signature_capability() {}
 };
 
 
@@ -46,9 +41,8 @@ public:
                  const std::vector<int>& sizeof_stream_items,
                  std::vector<std::type_index&>& type_index);
 
-    ~io_signature(){}
-
+    ~io_signature() {}
 };
-}
+} // namespace gr
 
 #endif
