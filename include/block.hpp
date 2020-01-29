@@ -13,9 +13,18 @@
 namespace gr {
 
 enum class work_return_code_t {
+    // ?
     WORK_CALLED_PRODUCE = -2,
+
+    // Block has finished all processing. Scheduler should not call it again
     WORK_DONE = -1,
+
+    // There was not enough space in one of the output buffers.
+    // Scheduler should call the block again once there is more space
+    // available.
     WORK_INSUFFICIENT_OUTPUT = 0,
+
+    // ?
     WORK_OK
 };
 
