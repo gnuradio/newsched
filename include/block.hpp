@@ -42,8 +42,8 @@ protected:
 
   std::string d_name;
 
-  virtual work_return_code_t work(block_work_io &work_input,
-                                  block_work_io &work_output);
+  virtual work_return_code_t work(std::vector<block_work_io> &work_input,
+                                  std::vector<block_work_io> &work_output);
 
   virtual int validate();  // ??
   virtual bool start();
@@ -71,6 +71,4 @@ public:
 };
 
 } // namespace gr
-
-
 #endif
