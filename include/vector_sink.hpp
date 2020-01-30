@@ -14,7 +14,6 @@
 #include "sync_block.hpp"
 #include <cstdint>
 #include <mutex>
-
 namespace gr {
 namespace blocks {
 

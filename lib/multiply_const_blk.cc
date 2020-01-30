@@ -13,8 +13,8 @@ namespace blocks {
 template <>
 multiply_const<float>::multiply_const(float k, size_t vlen)
     : sync_block("multiply_const_ff",
-                 io_signature(1, sizeof(float) * vlen, typeid(float)),
-                 io_signature(1, sizeof(float) * vlen, typeid(float))),
+                 io_signature(std::vector<size_t>(sizeof(float) * vlen)),
+                 io_signature(std::vector<size_t>(sizeof(float) * vlen))),
       d_k(k),
       d_vlen(vlen)
 {
@@ -40,8 +40,8 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 template <>
 multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
     : sync_block("multiply_const_cc",
-                 io_signature(1, sizeof(T) * vlen, typeid(T)),
-                 io_signature(1, sizeof(T) * vlen, typeid(T))),
+                 io_signature(std::vector<size_t>(sizeof(gr_complex) * vlen)),
+                 io_signature(std::vector<size_t>(sizeof(gr_complex) * vlen))),
       d_k(k),
       d_vlen(vlen)
 {
@@ -68,8 +68,8 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 template <class T>
 multiply_const<T>::multiply_const(T k, size_t vlen)
     : sync_block("multiply_const",
-                 io_signature(1, sizeof(T) * vlen, typeid(T)),
-                 io_signature(1, sizeof(T) * vlen, typeid(T))),
+                 io_signature(std::vector<size_t>(sizeof(T) * vlen)),
+                 io_signature(std::vector<size_t>(sizeof(T) * vlen))),
       d_k(k),
       d_vlen(vlen)
 {
@@ -99,7 +99,8 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
     while (size-- > 0)
         *optr++ = *iptr++ * d_k;
 
-    work_output[0].n_produced = noutput_items;
+    work_output[0].n_produced = work_output[0].n_items;
+    work_input[0].n_consumed = work_input[0].n_items;
     return work_return_code_t::WORK_OK;
 }
 

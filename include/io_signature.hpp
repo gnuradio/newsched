@@ -36,9 +36,18 @@ private:
     std::vector<std::type_index> d_type_info;
 
 public:
-    io_signature(int n_streams,
-                 const std::vector<int>& sizeof_stream_items,
-                 std::vector<std::type_index&>& type_index);
+    // io_signature(int n_streams,
+    //              const std::vector<int>& sizeof_stream_items,  // size == n_streams
+    //              std::vector<std::type_index>& type_index);    // size == n_streams --> get rid of n_streams
+
+    // TODO: make the io_signature just take in the type information and vector lens??
+    // io_signature(std::vector<std::type_index>& type_index)
+    // {
+    io_signature();
+    io_signature(const std::vector<size_t>& sizeof_stream_items);  // size == n_streams
+
+
+    // }
 
     ~io_signature() {}
 };

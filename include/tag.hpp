@@ -34,7 +34,7 @@ public:
   // .... value  -- do without pmts for now
   std::string value;
   std::string srcid;
-}
+};
 } // namespace gr
 
 #endif

@@ -7,6 +7,8 @@
 #include "tag.hpp"
 #include <vector>
 
+namespace gr
+{
 
 // Might also be a class if methods are needed
 struct block_work_input {
