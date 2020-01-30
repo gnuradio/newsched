@@ -8,14 +8,6 @@ namespace blocks {
 template <class T>
 class multiply_const : virtual public sync_block
 {
-private:
-    /*   Get rid of this probably  */
-    // Publish what used to be in the input signature -- does this go into the
-    // This is all very ugly right now - punt for now on publishing this information
-    static const io_signature_capability d_input_signature_capability(1, 1);
-    static const io_signature_capability d_output_signature_capability(1, 1);
-    /* ------------------------   */
-
     T d_k;
     const size_t d_vlen;
 

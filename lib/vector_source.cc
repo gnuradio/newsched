@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+using namespace std;
+
 namespace gr {
 namespace blocks {
 
@@ -21,8 +23,8 @@ vector_source<T>::vector_source(const std::vector<T>& data,
                                 unsigned int vlen,
                                 const std::vector<tag_t>& tags)
     : sync_block("vector_source",
-                 io_signature::make(0, 0, 0),
-                 io_signature::make(1, 1, sizeof(T) * vlen)),
+                 io_signature(vector<size_t>()),
+                 io_signature(vector<size_t>(sizeof(T) * vlen))),
       d_data(data),
       d_repeat(repeat),
       d_offset(0),
@@ -59,24 +61,25 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
 {
 
     size_t noutput_ports = work_output.size(); // is 1 for this block
-    noutput_items = work_output[0].n_items;
+    int noutput_items = work_output[0].n_items;
     void* output_items = work_output[0].items;
     std::vector<tag_t> output_tags = work_output[0].tags;
     uint64_t n_written = work_output[0].n_items_written;
 
-    T* optr = (T*)output_items[0];
+    T* optr = (T*)output_items;
 
     if (d_repeat) {
         unsigned int size = d_data.size();
         unsigned int offset = d_offset;
         if (size == 0)
-            return -1;
+            return work_return_code_t::WORK_DONE;
 
         if (d_settags) {
             int n_outputitems_per_vector = d_data.size() / d_vlen;
             for (int i = 0; i < noutput_items; i += n_outputitems_per_vector) {
                 // FIXME do proper vector copy
-                memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
+                // memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
+                std::copy( d_data.begin(), d_data.begin()+size, optr );
                 optr += size;
                 for (unsigned t = 0; t < d_tags.size(); t++) {
 
@@ -106,7 +109,7 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
 
     } else {
         if (d_offset >= d_data.size())
-            return -1; // Done!
+            return work_return_code_t::WORK_DONE; // Done!
 
         unsigned n = std::min((unsigned)d_data.size() - d_offset,
                               (unsigned)noutput_items * d_vlen);
@@ -115,8 +118,11 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
         }
         for (unsigned t = 0; t < d_tags.size(); t++) {
             if ((d_tags[t].offset >= d_offset) && (d_tags[t].offset < d_offset + n))
-                this->add_item_tag(
-                    0, d_tags[t].offset, d_tags[t].key, d_tags[t].value, d_tags[t].srcid);
+            {
+                // this->add_item_tag(
+                //     0, d_tags[t].offset, d_tags[t].key, d_tags[t].value, d_tags[t].srcid);
+                work_output[0].tags.push_back(d_tags[t]);
+            }
         }
         d_offset += n;
 

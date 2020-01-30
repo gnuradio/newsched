@@ -12,14 +12,15 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
 namespace gr {
 namespace blocks {
 
 template <class T>
 vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
     : sync_block("vector_sink",
-                 io_signature::make(1, sizeof(T) * vlen, typeid(T)),
-                 io_signature::make(0, 0, 0)),
+                 io_signature(vector<size_t>(sizeof(T) * vlen)),
+                 io_signature(vector<size_t>())),
       d_vlen(vlen)
 {
     std::scoped_lock guard(d_data_mutex);
@@ -27,19 +28,14 @@ vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
 }
 
 template <class T>
-vector_sink<T>::~vector_sink()
-{
-}
-
-template <class T>
-std::vector<T> vector_sink<T>::data() const
+const std::vector<T> vector_sink<T>::data()
 {
     std::scoped_lock guard(d_data_mutex);
     return d_data;
 }
 
 template <class T>
-std::vector<tag_t> vector_sink<T>::tags() const
+const std::vector<tag_t> vector_sink<T>::tags()
 {
     std::scoped_lock guard(d_data_mutex);
     return d_tags;
@@ -66,10 +62,11 @@ work_return_code_t vector_sink<T>::work(std::vector<block_work_input>& work_inpu
     std::scoped_lock guard(d_data_mutex);
     for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
         d_data.push_back(iptr[i]);
-    std::vector<tag_t> tags;
-    this->get_tags_in_range(
-        tags, 0, this->nitems_read(0), this->nitems_read(0) + noutput_items);
-    d_tags.insert(d_tags.end(), tags.begin(), tags.end());
+    // std::vector<tag_t> tags;
+    // this->get_tags_in_range(
+    //     tags, 0, this->nitems_read(0), this->nitems_read(0) + noutput_items);
+    // d_tags.insert(d_tags.end(), tags.begin(), tags.end());
+    d_tags.insert(d_tags.end(), work_input[0].tags.begin(), work_input[0].tags.end());
 
     work_output[0].n_produced = 0;
     work_input[0].n_consumed = noutput_items;
