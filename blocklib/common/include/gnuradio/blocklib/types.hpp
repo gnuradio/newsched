@@ -11,7 +11,7 @@
 #include <stddef.h> // size_t
 #include <vector>
 
-#include "gr_complex.hpp"
+#include <gnuradio/blocklib/gr_complex.hpp>
 
 #include <stdint.h>
 #include <typeindex>

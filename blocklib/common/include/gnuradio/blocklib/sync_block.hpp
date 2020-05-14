@@ -1,7 +1,7 @@
 #ifndef INCLUDED_SYNC_BLOCK_HPP
 #define INCLUDED_SYNC_BLOCK_HPP
 
-#include <gnuradio/block.hpp>
+#include <gnuradio/blocklib/block.hpp>
 #include <algorithm>
 #include <limits>
 
@@ -12,7 +12,9 @@ public:
     sync_block(const std::string& name,
                const io_signature& input_signature,
                const io_signature& output_signature);
-    // ~sync_block();
+
+    
+    ~sync_block() {};
     work_return_code_t do_work(std::vector<block_work_input>& work_input,
                                std::vector<block_work_output>& work_output)
     {
