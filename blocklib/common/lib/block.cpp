@@ -1,5 +1,5 @@
 
-#include <gnuradio/block.hpp>
+#include <gnuradio/blocklib/block.hpp>
 
 namespace gr {
 block::~block() {}
@@ -11,4 +11,5 @@ block::block(const std::string& name,
       d_output_signature(output_signature)
 {
 }
+
 } // namespace gr

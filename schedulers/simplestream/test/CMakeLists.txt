@@ -12,7 +12,8 @@ ${PROJECT_SOURCE_DIR}/runtime/include
 )
 
 target_link_libraries(test_simplestream 
-    gnuradio-runtime
+    gnuradio-blocklib-common
     gnuradio-blocklib-blocks
+    gnuradio-runtime
     gnuradio-scheduler-simplestream
 )
