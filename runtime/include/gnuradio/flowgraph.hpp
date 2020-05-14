@@ -12,8 +12,8 @@
 #define INCLUDED_GR_RUNTIME_FLOWGRAPH_H
 
 #include "api.h"
-#include "block.hpp"
-#include "io_signature.hpp"
+#include <gnuradio/blocklib/block.hpp>
+#include <gnuradio/blocklib/io_signature.hpp>
 #include <iostream>
 
 namespace gr {

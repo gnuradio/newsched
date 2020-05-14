@@ -54,7 +54,8 @@ find_package(Volk REQUIRED)
 
 #enable_testing()
 #add_subdirectory(pybind11)
+add_subdirectory(blocklib)
 add_subdirectory(runtime)
 add_subdirectory(schedulers)
-add_subdirectory(blocklib)
+
 

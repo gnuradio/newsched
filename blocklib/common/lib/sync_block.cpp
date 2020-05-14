@@ -1,4 +1,4 @@
-#include <gnuradio/sync_block.hpp>
+#include <gnuradio/blocklib/sync_block.hpp>
 
 namespace gr
 {

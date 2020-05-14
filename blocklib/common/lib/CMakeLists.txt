@@ -1,23 +1,18 @@
-add_library(gnuradio-runtime SHARED
-  flowgraph.cpp   
-  scheduler.cpp
+add_library(gnuradio-blocklib-common SHARED
+  block.cpp
+  sync_block.cpp
   )
-set_target_properties(gnuradio-runtime PROPERTIES
+set_target_properties(gnuradio-blocklib-common PROPERTIES
             CXX_STANDARD 14
             )
 
-target_include_directories(gnuradio-runtime
+target_include_directories(gnuradio-blocklib-common
   PUBLIC
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-  ${CMAKE_SOURCE_DIR}/blocklib/common/include
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
-target_link_libraries(gnuradio-runtime 
-Volk::volk
-gnuradio-blocklib-blocks)
 
 message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})
 #pybind11_add_module(newschedpy pybind.cpp)

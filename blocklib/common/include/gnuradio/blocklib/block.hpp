@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "block_work_io.hpp"
-#include "io_signature.hpp"
-#include "types.hpp"
-#include <gnuradio/block_callbacks.hpp>
+#include <gnuradio/blocklib/block_work_io.hpp>
+#include <gnuradio/blocklib/io_signature.hpp>
+#include <gnuradio/blocklib/types.hpp>
+#include <gnuradio/blocklib/block_callbacks.hpp>
 #include <memory>
 
 namespace gr {
