@@ -58,4 +58,6 @@ add_subdirectory(blocklib)
 add_subdirectory(runtime)
 add_subdirectory(schedulers)
 
+add_subdirectory(docs)
+
 
