@@ -1,4 +1,4 @@
 install(FILES
-    scheduler_simplestream.hpp
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/schedulers/simplestream
+    scheduler_simplepacket.hpp
+    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/schedulers/simplepacket
 )
