@@ -2,6 +2,10 @@
 
 namespace gr {
 namespace components {
+/**
+ * @brief Interface definition for a component in a block library
+ * 
+ */
 class IBlockLibComponent {
 public:
   IBlockLibComponent(){};

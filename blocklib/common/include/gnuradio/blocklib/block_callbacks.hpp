@@ -13,6 +13,10 @@ namespace gr {
 // use string for now, pmt replacement later
 typedef std::function<void(std::string)> block_callback_function_t;
 
+/**
+ * @brief Asynchronous message format for a block
+ * 
+ */
 class block_callback {
 private:
   std::string d_callback_id;
@@ -30,6 +34,10 @@ public:
   block_callback_function_t callback_function() { return d_callback_function; }
 };
 
+/**
+ * @brief Container for all the asynchronous message functions for a block
+ * 
+ */
 class block_callbacks {
 
 private:
