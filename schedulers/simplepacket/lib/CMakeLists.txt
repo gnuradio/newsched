@@ -2,7 +2,7 @@ add_library(gnuradio-scheduler-simplepacket SHARED
   scheduler_simplepacket.cpp   
   )
 set_target_properties(gnuradio-runtime PROPERTIES
-            CXX_STANDARD 14
+            CXX_STANDARD 17
             )
 
 message(STATUS ${PROJECT_SOURCE_DIR})
