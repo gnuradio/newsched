@@ -3,7 +3,7 @@ add_library(gnuradio-blocklib-common SHARED
   sync_block.cpp
   )
 set_target_properties(gnuradio-blocklib-common PROPERTIES
-            CXX_STANDARD 14
+            CXX_STANDARD 17
             )
 
 target_include_directories(gnuradio-blocklib-common

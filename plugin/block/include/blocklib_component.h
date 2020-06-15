@@ -1,18 +1,34 @@
-// Define interface for a blocklib: a module of blocks
+// Define interface for a block module: a module of blocks
+
+#include <string>
+#include <vector>
 
 namespace gr {
-namespace components {
+namespace plugins {
+
+
+class block_info {
+  public:
+  std::string name;
+  std::vector<std::string> parameters;
+  
+};
+
 /**
  * @brief Interface definition for a component in a block library
  * 
  */
-class IBlockLibComponent {
+class plugin_block_module {
 public:
-  IBlockLibComponent(){};
-  virtual ~IBlockLibComponent(){};
+  plugin_block_module(){};
+  virtual ~plugin_block_module(){};
 
-    void register_component(ComponentManager &CM);
-    void get_expected_runtime_version();
+    // void register_plugin(ComponentManager &CM);
+    std::vector<uint64_t> get_supported_runtime_versions();
+    std::vector<block_info> list_blocks();
+    std::string name();
+    std::vector<std::string> categories();
+    
 
 private:
 };
