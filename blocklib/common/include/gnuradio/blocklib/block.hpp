@@ -11,17 +11,18 @@
 #include <string>
 #include <vector>
 
+#include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/types.hpp>
-#include <gnuradio/blocklib/block_callbacks.hpp>
+#include <any>
 #include <memory>
 
 namespace gr {
 
 /**
  * @brief Enum for return codes from calls to block::work
- * 
+ *
  */
 enum class work_return_code_t {
     WORK_INSUFFICIENT_OUTPUT_ITEMS = -4,
@@ -33,7 +34,7 @@ enum class work_return_code_t {
 
 /**
  * @brief The abstract base class for all signal processing blocks in the GR Block Library
- * 
+ *
  * Blocks are the bare abstraction of an entity that has a
  * name and a set of inputs and outputs  These
  * are never instantiated directly; rather, this is the abstract
@@ -41,6 +42,79 @@ enum class work_return_code_t {
  * processing functions.
  *
  */
+
+enum class range_type_t { MIN_MAX, LIST };
+
+enum class param_type_t {
+    FLOAT_PARAM,
+    DOUBLE_PARAM,
+    INT_PARAM,
+    UINT_PARAM,
+    ENUM_PARAM,
+    STRING_PARAM
+}
+
+template <class T>
+class parameter_range
+{
+    range_type_t range_type;
+    T min_value;
+    T max_value;
+    std::vector<T> acceptable_values;
+};
+
+
+
+template <class T>
+class block_parameter
+{
+public:
+    block_parameter(uint32_t id,
+                    std::string& name,
+                    std::string& short_name,
+                    std::string& type
+                    T default_value)
+        : _id(id), _name(name), _short_name(short_name), _type(type), _value(default_value)
+    {
+    }
+
+    std::string to_string();
+    T value() { return _value;};
+    void set_value(T val){// range checking
+        _value = val;
+    }
+    std::any to_any()
+    {
+        return std::make_any<T>(value());
+    }
+
+protected:
+    T _value;
+    uint32_t _id;
+    std::string _name;
+    std::string _short_name;
+    std::string _type; // should be some sort of typeinfo, but worst case enum or string
+    parameter_range<T> range; // need std::any to make this work
+    
+};
+
+class parameter_config
+{
+private:
+    std::vector<std::any> params;
+
+public:
+    size_t num_parameters() { return params.size(); }
+    void add_parameter(std::any b) { params.push_back(b); }
+    std::any get_parameter(uint32_t id){
+
+    }; // by name or index
+    std::any get_parameter(std::string name){
+
+    }; // by name or index
+    void clear() { params.clear(); }
+};
+
 class block : public std::enable_shared_from_this<block>
 {
 public:
@@ -75,17 +149,18 @@ protected:
 
     std::vector<block_callback> d_block_callbacks;
 
+    parameter_config parameters;
 
 public:
     /**
      * @brief Construct a new block object
-     * 
+     *
      * @param name The non-unique name of this block representing the block type
-     * @param input_signature  
-     * @param output_signature 
+     * @param input_signature
+     * @param output_signature
      */
     block(const std::string& name,
-          const io_signature& input_signature,  // TODO: Replace io_signature with port?
+          const io_signature& input_signature, // TODO: Replace io_signature with port?
           const io_signature& output_signature);
 
     ~block();
@@ -121,27 +196,27 @@ public:
 
     /**
      * @brief Abstract method to call signal processing work from a derived block
-     * 
+     *
      * @param work_input Vector of block_work_input structs
      * @param work_output Vector of block_work_output structs
-     * @return work_return_code_t 
+     * @return work_return_code_t
      */
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) = 0;
-    
+
     /**
      * @brief Wrapper for work to perform special checks and take care of special
      * cases for certain types of blocks, e.g. sync_block, decim_block
-     * 
+     *
      * @param work_input Vector of block_work_input structs
      * @param work_output Vector of block_work_output structs
-     * @return work_return_code_t 
+     * @return work_return_code_t
      */
     virtual work_return_code_t do_work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output)
-                                    {
-                                        return work(work_input, work_output);
-                                    };
+                                       std::vector<block_work_output>& work_output)
+    {
+        return work(work_input, work_output);
+    };
 };
 
 typedef block::sptr block_sptr;

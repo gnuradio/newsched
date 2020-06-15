@@ -3,7 +3,7 @@ add_library(gnuradio-runtime SHARED
   scheduler.cpp
   )
 set_target_properties(gnuradio-runtime PROPERTIES
-            CXX_STANDARD 14
+            CXX_STANDARD 17
             )
 
 target_include_directories(gnuradio-runtime

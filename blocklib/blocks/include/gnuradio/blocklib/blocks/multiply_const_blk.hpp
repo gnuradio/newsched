@@ -19,8 +19,8 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output);
 
-    const T k();
-    void set_k(T k);
+    // const T k();
+    // void set_k(T k);
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;
