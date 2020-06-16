@@ -61,8 +61,8 @@ protected:
     std::string d_alias;
     io_signature d_input_signature;
     io_signature d_output_signature;
-    std::vector<port> d_input_ports;
-    std::vector<port> d_output_ports;
+    std::vector<port_base> d_input_ports;
+    std::vector<port_base> d_output_ports;
     vcolor d_color;
 
     // These are overridden by the derived class
@@ -83,12 +83,12 @@ protected:
 
     parameter_config parameters;
 
-    void add_param(block_param p)
+    void add_param(param_base p)
     {
         parameters.add(p);
     }
 
-    void add_port(port p)
+    void add_port(port_base p)
     {
         if (p.port_direction() == port_direction_t::INPUT)
         {
@@ -134,8 +134,8 @@ public:
     io_signature& input_signature() { return d_input_signature; };
     io_signature& output_signature() { return d_output_signature; };
 
-    std::vector<port>& input_ports() { return d_input_ports;}
-    std::vector<port>& output_ports() { return d_output_ports;}
+    std::vector<port_base>& input_ports() { return d_input_ports;}
+    std::vector<port_base>& output_ports() { return d_output_ports;}
 
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }
@@ -176,7 +176,7 @@ public:
      * @param params 
      */
 
-    virtual void on_parameter_change(std::vector<block_param> params)
+    virtual void on_parameter_change(std::vector<param_change_base> params)
     {
         throw std::runtime_error("parameter changes not defined for this block");
     }

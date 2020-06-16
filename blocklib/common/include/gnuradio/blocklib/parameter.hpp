@@ -10,8 +10,10 @@ namespace gr {
 enum class range_type_t { MIN_MAX, ACCEPTABLE, BLACKLIST };
 enum class param_flags_t {
     NO_FLAGS = 0,
-    MANDATORY = 1 << 0, // used to indicate that this parameter must be set (if params are removed from constructor)
-    CONST = 1 << 1, // set at initialization, but cannot be set once a flowgraph is running
+    MANDATORY = 1 << 0, // used to indicate that this parameter must be set (if params are
+                        // removed from constructor)
+    CONST =
+        1 << 1, // set at initialization, but cannot be set once a flowgraph is running
 };
 
 class value_check
@@ -49,10 +51,10 @@ class blacklist_set : value_check
 };
 
 
-class block_param
+class param_base
 {
 public:
-    block_param(const uint32_t id,
+    param_base(const uint32_t id,
                 const std::string name,
                 const param_type_t& type,
                 const std::vector<size_t> dims)
@@ -65,6 +67,7 @@ public:
     const uint32_t id() { return _id; }
     const std::string name() { return _name; }
     const std::any any_value() { return _any_value; }
+
 protected:
     const uint32_t _id;
     const std::string _name;
@@ -75,24 +78,23 @@ protected:
 };
 
 template <class T>
-class typed_param : public block_param
+class param : public param_base
 {
 public:
-    typed_param(const uint32_t id,
+    param(const uint32_t id,
                 const std::string name,
                 const T default_value,
                 const std::vector<size_t> dims = std::vector<size_t>{ 1 })
-        : block_param(id,
+        : param_base(id,
                       name,
                       parameter_functions::get_param_type_from_typeinfo(
                           std::type_index(typeid(T))),
                       dims),
-                      _default_value(default_value)
+          _default_value(default_value)
     {
     }
 
-    typed_param(block_param& b)
-    : block_param(b)
+    param(param_base& b) : param_base(b)
     {
         _value = std::any_cast<T>(b.any_value());
     }
@@ -104,7 +106,7 @@ public:
         _param_set = true;
         _value = val;
     }
-    T value() {return _value; };
+    T value() { return _value; };
 
 protected:
     T _default_value;
@@ -112,26 +114,64 @@ protected:
     value_check _range;
 };
 
+class param_change_base
+{
+protected:
+    uint32_t _id;
+    std::any _any_value;
+    uint64_t _at_sample;
+
+public:
+    param_change_base(uint32_t id, std::any any_value, uint64_t at_sample)
+        : _id(id), _any_value(any_value), _at_sample(at_sample)
+    {
+    }
+    uint32_t id() { return _id; }
+    std::any any_value() { return _any_value; }
+    uint64_t at_sample() { return _at_sample; }
+};
+
+template <class T>
+class param_change : public param_change_base
+{
+protected:
+    T _new_value;
+
+public:
+    param_change(uint32_t id, T new_value, uint64_t at_sample)
+        : param_change_base(id, std::make_any<T>(new_value), at_sample),
+        _new_value(new_value)
+    {
+    }
+    param_change(param_change_base& b) : param_change_base(b.id(), b.any_value(), b.at_sample())
+    {
+        _new_value = std::any_cast<T>(b.any_value());
+
+    }
+
+    uint32_t new_value() { return _new_value; }
+};
+
 class parameter_config
 {
 private:
-    std::vector<block_param> params;
+    std::vector<param_base> params;
 
 public:
     size_t num() { return params.size(); }
-    void add(block_param b) { params.push_back(b); }
-    block_param get(const uint32_t id){
-        auto pred = [id](block_param & item) {
-            return item.id() == id;
-        };
-        std::vector<block_param>::iterator it = std::find_if(std::begin(params), std::end(params), pred);
+    void add(param_base b) { params.push_back(b); }
+    param_base get(const uint32_t id)
+    {
+        auto pred = [id](param_base& item) { return item.id() == id; };
+        std::vector<param_base>::iterator it =
+            std::find_if(std::begin(params), std::end(params), pred);
         return *it;
-    } 
-    block_param get(const std::string name){
-        auto pred = [name](block_param & item) {
-            return item.name() == name;
-        };
-        std::vector<block_param>::iterator it = std::find_if(std::begin(params), std::end(params), pred);
+    }
+    param_base get(const std::string name)
+    {
+        auto pred = [name](param_base& item) { return item.name() == name; };
+        std::vector<param_base>::iterator it =
+            std::find_if(std::begin(params), std::end(params), pred);
         return *it;
     }
     void clear() { params.clear(); }

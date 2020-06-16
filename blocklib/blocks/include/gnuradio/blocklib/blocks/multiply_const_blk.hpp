@@ -5,6 +5,9 @@
 
 namespace gr {
 namespace blocks {
+
+enum multiply_const_blk_params : uint32_t { k, vlen };
+
 template <class T>
 class multiply_const : public sync_block
 {
@@ -22,7 +25,7 @@ public:
     // const T k();
     // void set_k(T k);
 
-    virtual void on_parameter_change(std::vector<block_param> params) override;
+    virtual void on_parameter_change(std::vector<param_change_base> params) override;
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;
