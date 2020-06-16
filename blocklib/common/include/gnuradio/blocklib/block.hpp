@@ -15,7 +15,6 @@
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/types.hpp>
-#include <any>
 #include <memory>
 
 namespace gr {
@@ -43,77 +42,7 @@ enum class work_return_code_t {
  *
  */
 
-enum class range_type_t { MIN_MAX, LIST };
 
-enum class param_type_t {
-    FLOAT_PARAM,
-    DOUBLE_PARAM,
-    INT_PARAM,
-    UINT_PARAM,
-    ENUM_PARAM,
-    STRING_PARAM
-}
-
-template <class T>
-class parameter_range
-{
-    range_type_t range_type;
-    T min_value;
-    T max_value;
-    std::vector<T> acceptable_values;
-};
-
-
-
-template <class T>
-class block_parameter
-{
-public:
-    block_parameter(uint32_t id,
-                    std::string& name,
-                    std::string& short_name,
-                    std::string& type
-                    T default_value)
-        : _id(id), _name(name), _short_name(short_name), _type(type), _value(default_value)
-    {
-    }
-
-    std::string to_string();
-    T value() { return _value;};
-    void set_value(T val){// range checking
-        _value = val;
-    }
-    std::any to_any()
-    {
-        return std::make_any<T>(value());
-    }
-
-protected:
-    T _value;
-    uint32_t _id;
-    std::string _name;
-    std::string _short_name;
-    std::string _type; // should be some sort of typeinfo, but worst case enum or string
-    parameter_range<T> range; // need std::any to make this work
-    
-};
-
-class parameter_config
-{
-private:
-    std::vector<std::any> params;
-
-public:
-    size_t num_parameters() { return params.size(); }
-    void add_parameter(std::any b) { params.push_back(b); }
-    std::any get_parameter(uint32_t id){
-
-    }; // by name or index
-    std::any get_parameter(std::string name){
-
-    }; // by name or index
-    void clear() { params.clear(); }
-};
 
 class block : public std::enable_shared_from_this<block>
 {
@@ -130,6 +59,9 @@ protected:
     std::string d_alias;
     io_signature d_input_signature;
     io_signature d_output_signature;
+    std::vector<port> input_ports;
+    std::vector<port> output_ports;
+
 
     vcolor d_color;
 
