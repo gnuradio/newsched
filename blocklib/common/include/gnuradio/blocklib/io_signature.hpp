@@ -9,10 +9,10 @@
 #define INCLUDED_IO_SIGNATURE_H
 
 #include <iostream>
+#include <memory>
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
-#include <memory>
 
 namespace gr {
 // If we use the capability publishing, it is too complicated to keep track
@@ -24,7 +24,6 @@ private:
     int d_max_streams;
 
 public:
-
     io_signature_capability(const int min_streams, const int max_streams);
     ~io_signature_capability() {}
 };
@@ -40,28 +39,28 @@ private:
 public:
     static constexpr int IO_INFINITE = -1;
 
-    int n_streams() {return d_n_streams;}
-    int max_streams() { return d_n_streams;}
+    int n_streams() { return d_n_streams; }
+    int max_streams() { return d_n_streams; }
     // io_signature(int n_streams,
     //              const std::vector<int>& sizeof_stream_items,  // size == n_streams
-    //              std::vector<std::type_index>& type_index);    // size == n_streams --> get rid of n_streams
+    //              std::vector<std::type_index>& type_index);    // size == n_streams -->
+    //              get rid of n_streams
 
     // TODO: make the io_signature just take in the type information and vector lens??
     // io_signature(std::vector<std::type_index>& type_index)
     // {
     typedef std::shared_ptr<io_signature> sptr;
     io_signature() = default;
-    io_signature(const std::vector<size_t>& sizeof_stream_items) 
+    io_signature(const std::vector<size_t>& sizeof_stream_items)
     {
         d_n_streams = sizeof_stream_items.size();
         d_sizeof_stream_item = sizeof_stream_items;
-    };  // size == n_streams
+    }; // size == n_streams
 
 
     // }
 
     virtual ~io_signature() {}
-
 
 
     int sizeof_stream_item(int _index) const
@@ -73,10 +72,7 @@ public:
         return d_sizeof_stream_item[std::min(index, d_sizeof_stream_item.size() - 1)];
     }
 
-    std::vector<size_t> sizeof_stream_items() const
-    {
-        return d_sizeof_stream_item;
-    }
+    std::vector<size_t> sizeof_stream_items() const { return d_sizeof_stream_item; }
 };
 
 typedef io_signature::sptr io_signature_sptr;

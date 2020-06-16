@@ -13,10 +13,7 @@ namespace gr {
 class sync_block : public block
 {
 public:
-    sync_block(const std::string& name,
-               const io_signature& input_signature,
-               const io_signature& output_signature);
-
+    sync_block(const std::string& name);
     
     ~sync_block() {};
     /**
