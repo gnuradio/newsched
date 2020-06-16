@@ -18,6 +18,8 @@
 namespace gr {
 namespace blocks {
 
+
+
 template <class T>
 class vector_sink : virtual public sync_block
 {
@@ -28,6 +30,8 @@ private:
     unsigned int d_vlen;
 
 public:
+    enum params : uint32_t { num_params };
+    
     vector_sink(unsigned int vlen = 1, const int reserve_items = 1024);
     // ~vector_sink() {};
 

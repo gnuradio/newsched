@@ -1,5 +1,5 @@
 add_library(gnuradio-runtime SHARED
-  flowgraph.cpp   
+  flat_graph.cpp   
   scheduler.cpp
   )
 set_target_properties(gnuradio-runtime PROPERTIES
