@@ -166,6 +166,20 @@ public:
     {
         return work(work_input, work_output);
     };
+
+    /**
+     * @brief handler called when a parameter is changed:
+     *   1. From a message port (automatically created message ports for callbacks)
+     *   2. From a callback function (e.g. set_k())
+     *   3. RPC call
+     * 
+     * @param params 
+     */
+
+    virtual void on_parameter_change(std::vector<block_param> params)
+    {
+        throw std::runtime_error("parameter changes not defined for this block");
+    }
 };
 
 typedef block::sptr block_sptr;

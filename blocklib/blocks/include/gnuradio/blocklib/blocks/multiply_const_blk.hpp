@@ -21,6 +21,8 @@ public:
 
     // const T k();
     // void set_k(T k);
+
+    virtual void on_parameter_change(std::vector<block_param> params) override;
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;
