@@ -13,7 +13,7 @@ enum class port_direction_t {
     BIDIRECTONAL //?? can it be done
 };
 
-class port
+class port_base
 {
 protected:
     std::string _name;
@@ -24,11 +24,11 @@ protected:
     // std::type_index _type_info;
     std::vector<size_t> _dims; // allow for matrices to be sent naturally across ports
     // empty dims refers to a scalar, dims=[n] same as vlen=n
-    int _multiplicity;      // port can be replicated as in grc
+    int _multiplicity; // port can be replicated as in grc
     size_t _data_size;
 
 public:
-    port(const std::string& name,
+    port_base(const std::string& name,
          const port_direction_t direction,
          const param_type_t data_type = param_type_t::CFLOAT,
          //  const std::type_index T
@@ -52,15 +52,15 @@ public:
 };
 
 template <class T>
-class typed_port : public port
+class port : public port_base
 {
 public:
-    typed_port(const std::string& name,
+    port(const std::string& name,
                const port_direction_t direction,
                const port_type_t port_type = port_type_t::STREAM,
                const std::vector<size_t>& dims = std::vector<size_t>(),
                const int multiplicity = 1)
-        : port(name,
+        : port_base(name,
                direction,
                parameter_functions::get_param_type_from_typeinfo(
                    std::type_index(typeid(T))),
