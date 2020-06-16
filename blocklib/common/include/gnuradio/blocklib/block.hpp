@@ -16,6 +16,7 @@
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/types.hpp>
 #include <gnuradio/blocklib/port.hpp>
+#include <gnuradio/blocklib/parameter.hpp>
 #include <memory>
 
 namespace gr {
@@ -80,7 +81,12 @@ protected:
 
     std::vector<block_callback> d_block_callbacks;
 
-    // parameter_config parameters;
+    parameter_config parameters;
+
+    void add_param(block_param p)
+    {
+        parameters.add(p);
+    }
 
     void add_port(port p)
     {
@@ -100,8 +106,6 @@ public:
      * @brief Construct a new block object
      *
      * @param name The non-unique name of this block representing the block type
-     * @param input_signature
-     * @param output_signature
      */
     block(const std::string& name);
 
