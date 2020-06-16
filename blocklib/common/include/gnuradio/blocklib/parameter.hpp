@@ -10,7 +10,8 @@ namespace gr {
 enum class range_type_t { MIN_MAX, ACCEPTABLE, BLACKLIST };
 enum class param_flags_t {
     NO_FLAGS = 0,
-    MANDATORY = 1, // used to indicate that this parameter must be set
+    MANDATORY = 1 << 0, // used to indicate that this parameter must be set (if params are removed from constructor)
+    CONST = 1 << 1, // set at initialization, but cannot be set once a flowgraph is running
 };
 
 class value_check
@@ -63,12 +64,14 @@ public:
     // std::any to_any() { return std::make_any<T>(value()); }
     const uint32_t id() { return _id; }
     const std::string name() { return _name; }
-
+    const std::any any_value() { return _any_value; }
 protected:
     const uint32_t _id;
     const std::string _name;
     param_type_t _type; // should be some sort of typeinfo, but worst case enum or string
     std::vector<size_t> _dims;
+    bool _param_set = false;
+    std::any _any_value;
 };
 
 template <class T>
@@ -83,14 +86,28 @@ public:
                       name,
                       parameter_functions::get_param_type_from_typeinfo(
                           std::type_index(typeid(T))),
-                      dims)
+                      dims),
+                      _default_value(default_value)
     {
     }
 
-    void set_value(T val);
-    T value();
+    typed_param(block_param& b)
+    : block_param(b)
+    {
+        _value = std::any_cast<T>(b.any_value());
+    }
+
+    void set_value(T val)
+    {
+        // do range checking
+
+        _param_set = true;
+        _value = val;
+    }
+    T value() {return _value; };
 
 protected:
+    T _default_value;
     T _value;
     value_check _range;
 };
