@@ -17,4 +17,4 @@ target_include_directories(gnuradio-blocklib-blocks
   # TODO - learn how to include against runtime with INSTALL_INTERFACE
 
   target_link_libraries(gnuradio-blocklib-blocks PUBLIC
-    Volk::volk)
+  gnuradio-blocklib-common Volk::volk)
