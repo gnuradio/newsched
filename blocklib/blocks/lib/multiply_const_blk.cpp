@@ -10,14 +10,24 @@
 namespace gr {
 namespace blocks {
 
+enum multiply_const_blk_params : uint32_t { k, vlen };
+
 template <>
 multiply_const<float>::multiply_const(float k, size_t vlen)
-    : sync_block("multiply_const_ff"),
-      d_k(k),
-      d_vlen(vlen)
+    : sync_block("multiply_const_ff"), d_k(k), d_vlen(vlen)
 {
-    add_port(typed_port<float>("input", port_direction_t::INPUT, port_type_t::STREAM, std::vector<size_t>{vlen}));
-    add_port(typed_port<float>("output", port_direction_t::OUTPUT, port_type_t::STREAM, std::vector<size_t>{vlen}));
+    add_port(typed_port<float>("input",
+                               port_direction_t::INPUT,
+                               port_type_t::STREAM,
+                               std::vector<size_t>{ vlen }));
+    add_port(typed_port<float>("output",
+                               port_direction_t::OUTPUT,
+                               port_type_t::STREAM,
+                               std::vector<size_t>{ vlen }));
+
+    add_param(typed_param<float>(multiply_const_blk_params::k,
+                "k",
+                1.0));
 
     std::cout << "mult constructor" << std::endl;
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
@@ -42,9 +52,7 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 
 template <>
 multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
-    : sync_block("multiply_const_cc"),
-      d_k(k),
-      d_vlen(vlen)
+    : sync_block("multiply_const_cc"), d_k(k), d_vlen(vlen)
 {
     add_port(typed_port<gr_complex>("input", port_direction_t::INPUT));
     add_port(typed_port<gr_complex>("output", port_direction_t::OUTPUT));
@@ -71,9 +79,7 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 
 template <class T>
 multiply_const<T>::multiply_const(T k, size_t vlen)
-    : sync_block("multiply_const"),
-      d_k(k),
-      d_vlen(vlen)
+    : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
 {
     add_port(typed_port<T>("input", port_direction_t::INPUT));
     add_port(typed_port<T>("output", port_direction_t::OUTPUT));
