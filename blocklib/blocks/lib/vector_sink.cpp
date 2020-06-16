@@ -21,6 +21,14 @@ vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
     : sync_block("vector_sink"),
       d_vlen(vlen)
 {
+    add_port(port<T>::make("input",
+                               port_direction_t::INPUT,
+                               port_type_t::STREAM,
+                               std::vector<size_t>{ vlen }));
+
+    // add_param(param<unsigned int>(vector_sink_params::k, "k", 1.0));
+
+    
     std::scoped_lock guard(d_data_mutex);
     d_data.reserve(d_vlen * reserve_items);
 }

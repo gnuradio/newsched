@@ -15,7 +15,7 @@ class sync_block : public block
 public:
     sync_block(const std::string& name);
     
-    ~sync_block() {};
+    // ~sync_block() {};
     /**
      * @brief Performs checks on inputs and outputs before and after the call
      * to the derived block's work function

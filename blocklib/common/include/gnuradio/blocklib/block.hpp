@@ -11,11 +11,10 @@
 #include <string>
 #include <vector>
 
+#include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
-#include <gnuradio/blocklib/types.hpp>
-#include <gnuradio/blocklib/port.hpp>
 #include <gnuradio/blocklib/parameter.hpp>
 #include <memory>
 
@@ -45,8 +44,7 @@ enum class work_return_code_t {
  */
 
 
-
-class block : public std::enable_shared_from_this<block>
+class block : public gr::node, public std::enable_shared_from_this<block>
 {
 public:
     enum vcolor { WHITE, GREY, BLACK };
@@ -57,12 +55,7 @@ private:
     unsigned int d_output_multiple;
 
 protected:
-    std::string d_name;
-    std::string d_alias;
-    io_signature d_input_signature;
-    io_signature d_output_signature;
-    std::vector<port_base> d_input_ports;
-    std::vector<port_base> d_output_ports;
+
     vcolor d_color;
 
     // These are overridden by the derived class
@@ -73,8 +66,8 @@ protected:
     virtual bool start() { return true; };
     virtual bool stop() { return true; };
 
-    void set_relative_rate(double relative_rate);
-    void set_relative_rate(unsigned int numerator, unsigned int denominator);
+    void set_relative_rate(double relative_rate) {};
+    void set_relative_rate(unsigned int numerator, unsigned int denominator) {};
 
     //   tag_propagation_policy_t tag_propagation_policy();
     //   void set_tag_propagation_policy(tag_propagation_policy_t p);
@@ -83,23 +76,9 @@ protected:
 
     parameter_config parameters;
 
-    void add_param(param_base p)
-    {
-        parameters.add(p);
-    }
+    void add_param(param_base p) { parameters.add(p); }
 
-    void add_port(port_base p)
-    {
-        if (p.port_direction() == port_direction_t::INPUT)
-        {
-            d_input_ports.push_back(p);
-        }
-        else if (p.port_direction() == port_direction_t::OUTPUT)
-        {
-            d_output_ports.push_back(p);
-        }
-    }
-    void remove_port(const std::string &name);
+
 
 public:
     /**
@@ -109,7 +88,7 @@ public:
      */
     block(const std::string& name);
 
-    ~block();
+    virtual ~block() {};
     typedef std::shared_ptr<block> sptr;
     sptr base() { return shared_from_this(); }
 
@@ -131,15 +110,6 @@ public:
         return d_output_signature_capability;
     }
 
-    io_signature& input_signature() { return d_input_signature; };
-    io_signature& output_signature() { return d_output_signature; };
-
-    std::vector<port_base>& input_ports() { return d_input_ports;}
-    std::vector<port_base>& output_ports() { return d_output_ports;}
-
-    std::string& name() { return d_name; };
-    std::string& alias() { return d_alias; }
-    void set_alias(std::string alias) { d_alias = alias; }
     vcolor color() const { return d_color; }
     void set_color(vcolor color) { d_color = color; }
 
@@ -172,8 +142,8 @@ public:
      *   1. From a message port (automatically created message ports for callbacks)
      *   2. From a callback function (e.g. set_k())
      *   3. RPC call
-     * 
-     * @param params 
+     *
+     * @param params
      */
 
     virtual void on_parameter_change(std::vector<param_change_base> params)

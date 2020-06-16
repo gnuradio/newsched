@@ -6,8 +6,6 @@
 namespace gr {
 namespace blocks {
 
-enum multiply_const_blk_params : uint32_t { k, vlen };
-
 template <class T>
 class multiply_const : public sync_block
 {
@@ -16,6 +14,8 @@ class multiply_const : public sync_block
 
 
 public:
+    enum params : uint32_t { k, vlen, num_params };
+
     multiply_const(T k, size_t vlen = 1);
     // ~multiply_const() {};
 
