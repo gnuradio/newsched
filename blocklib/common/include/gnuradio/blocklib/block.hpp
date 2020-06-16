@@ -15,6 +15,7 @@
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/types.hpp>
+#include <gnuradio/blocklib/port.hpp>
 #include <memory>
 
 namespace gr {
@@ -59,10 +60,8 @@ protected:
     std::string d_alias;
     io_signature d_input_signature;
     io_signature d_output_signature;
-    std::vector<port> input_ports;
-    std::vector<port> output_ports;
-
-
+    std::vector<port> d_input_ports;
+    std::vector<port> d_output_ports;
     vcolor d_color;
 
     // These are overridden by the derived class
@@ -81,7 +80,20 @@ protected:
 
     std::vector<block_callback> d_block_callbacks;
 
-    parameter_config parameters;
+    // parameter_config parameters;
+
+    void add_port(port p)
+    {
+        if (p.port_direction() == port_direction_t::INPUT)
+        {
+            d_input_ports.push_back(p);
+        }
+        else if (p.port_direction() == port_direction_t::OUTPUT)
+        {
+            d_output_ports.push_back(p);
+        }
+    }
+    void remove_port(const std::string &name);
 
 public:
     /**
@@ -91,9 +103,7 @@ public:
      * @param input_signature
      * @param output_signature
      */
-    block(const std::string& name,
-          const io_signature& input_signature, // TODO: Replace io_signature with port?
-          const io_signature& output_signature);
+    block(const std::string& name);
 
     ~block();
     typedef std::shared_ptr<block> sptr;
@@ -119,6 +129,9 @@ public:
 
     io_signature& input_signature() { return d_input_signature; };
     io_signature& output_signature() { return d_output_signature; };
+
+    std::vector<port>& input_ports() { return d_input_ports;}
+    std::vector<port>& output_ports() { return d_output_ports;}
 
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }

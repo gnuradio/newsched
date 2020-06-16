@@ -18,9 +18,7 @@ namespace blocks {
 
 template <class T>
 vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
-    : sync_block("vector_sink",
-                 io_signature(vector<size_t>{sizeof(T) * vlen}),
-                 io_signature(vector<size_t>{})),
+    : sync_block("vector_sink"),
       d_vlen(vlen)
 {
     std::scoped_lock guard(d_data_mutex);
