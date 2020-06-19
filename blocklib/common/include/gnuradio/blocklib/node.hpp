@@ -30,6 +30,7 @@ protected:
 
     void add_port(port_sptr p)
     {
+        d_all_ports.push_back(p);
         if (p->direction() == port_direction_t::INPUT) {
             if (p->type() == port_type_t::STREAM)
                 p->set_index(input_stream_ports().size());
@@ -42,10 +43,10 @@ protected:
                 d_input_signature = io_signature(sizeof_input_stream_ports());
             }
         } else if (p->direction() == port_direction_t::OUTPUT) {
-            d_output_ports.push_back(p);
-
             if (p->type() == port_type_t::STREAM)
                 p->set_index(output_stream_ports().size());
+
+            d_output_ports.push_back(p);
 
             if (p->type() == port_type_t::STREAM) {
                 d_output_signature = io_signature(sizeof_output_stream_ports());
