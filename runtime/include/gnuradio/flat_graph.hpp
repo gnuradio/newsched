@@ -25,7 +25,7 @@ public:
 
     block_sptr block()
     {
-        return dynamic_cast<block_sptr&>(*(node()));
+        return std::dynamic_pointer_cast<gr::block>(this->node());
     }
 
 };
@@ -68,7 +68,7 @@ public:
 
 protected:
     block_vector_t d_blocks;
-    edge_vector_t d_edges;
+    // edge_vector_t d_edges;
 
     
     port_vector_t calc_used_ports(block_sptr block, bool check_inputs);
