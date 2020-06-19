@@ -200,7 +200,7 @@ public:
         node_vector_t tmp;
 
         // Collect all blocks in the edge list
-        for (edge_viter_t p = d_edges.begin(); p != d_edges.end(); p++) {
+        for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
             tmp.push_back(p->src().node());
             tmp.push_back(p->dst().node());
         }
@@ -208,9 +208,6 @@ public:
         return unique_vector<node_sptr>(tmp);
     }
 
-protected:
-    node_vector_t d_nodes;
-    edge_vector_t d_edges;
 };
 
 typedef std::shared_ptr<graph> graph_sptr;
