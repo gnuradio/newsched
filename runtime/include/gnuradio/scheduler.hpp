@@ -7,9 +7,9 @@ class scheduler : public std::enable_shared_from_this<scheduler>
 {
 
 public:
-    scheduler() {};
+    scheduler(){};
     virtual ~scheduler();
-    std::shared_ptr<scheduler> base() {return shared_from_this();}
+    std::shared_ptr<scheduler> base() { return shared_from_this(); }
     virtual void initialize(flat_graph_sptr fg) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;

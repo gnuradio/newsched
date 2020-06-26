@@ -10,10 +10,10 @@ set_target_properties(gnuradio-blocklib-common PROPERTIES
 
 target_include_directories(gnuradio-blocklib-common
   PUBLIC
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})
