@@ -14,6 +14,7 @@ target_include_directories(gnuradio-blocklib-common
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
+  # ${PROJECT_SOURCE_DIR}/runtime/include 
   )
 
 message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})
