@@ -6,6 +6,7 @@
 
 #include "multiply_const_blk.hpp"
 #include <volk/volk.h>
+#include <gnuradio/scheduler.hpp>
 
 namespace gr {
 namespace blocks {
@@ -141,6 +142,23 @@ void multiply_const<T>::on_parameter_change(std::vector<param_change_base> param
         } else if (p.id() == multiply_const<T>::params::id_vlen) {
             // cannot be changed
         }
+    }
+}
+
+template <class T>
+void multiply_const<T>::set_k(T k)
+{
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+        // p_scheduler->request_parameter_change(alias(),)
+        p_scheduler->request_parameter_change(
+            alias(), param_change<T>(params::id_k, k, 0), nullptr);
+
+    }
+    // else go ahead and update parameter value
+    else {
+        on_parameter_change(
+            std::vector<param_change_base>{ param_change<T>(params::id_k, k, 0) });
     }
 }
 
