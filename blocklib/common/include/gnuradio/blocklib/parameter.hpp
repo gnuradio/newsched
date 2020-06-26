@@ -131,6 +131,21 @@ public:
     uint64_t at_sample() { return _at_sample; }
 };
 
+class param_query_base
+{
+protected:
+    uint32_t _id;
+    uint64_t _at_sample;
+
+public:
+    param_query_base(uint32_t id, uint64_t at_sample)
+        : _id(id), _at_sample(at_sample)
+    {
+    }
+    uint32_t id() { return _id; }
+    uint64_t at_sample() { return _at_sample; }
+};
+
 template <class T>
 class param_change : public param_change_base
 {
@@ -149,7 +164,25 @@ public:
 
     }
 
-    uint32_t new_value() { return _new_value; }
+    T new_value() { return _new_value; }
+};
+
+template <class T>
+class param_query : public param_query_base
+{
+protected:
+    T _new_value;
+
+public:
+    param_query(uint32_t id, uint64_t at_sample)
+        : param_change_base(id, at_sample)
+    {
+    }
+    param_query(param_change_base& b) : param_change_base(b.id(), b.at_sample())
+    {
+
+    }
+
 };
 
 class parameter_config

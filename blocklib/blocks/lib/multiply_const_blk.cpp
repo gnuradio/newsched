@@ -23,9 +23,9 @@ multiply_const<float>::multiply_const(float k, size_t vlen)
                                port_type_t::STREAM,
                                std::vector<size_t>{ vlen }));
 
-    add_param(param<float>(multiply_const<float>::params::k, "k", 1.0));
+    add_param(param<float>(multiply_const<float>::params::id_k, "k", 1.0));
 
-    add_param(param<size_t>(multiply_const<float>::params::vlen, "vlen", 1));
+    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
 
     std::cout << "mult constructor" << std::endl;
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
@@ -61,9 +61,9 @@ multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
                                     port_type_t::STREAM,
                                     std::vector<size_t>{ vlen }));
 
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::k, "k", 1.0));
+    add_param(param<gr_complex>(multiply_const<gr_complex>::params::id_k, "k", 1.0));
 
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::vlen, "vlen", 1));
+    add_param(param<gr_complex>(multiply_const<gr_complex>::params::id_vlen, "vlen", 1));
 
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
@@ -98,9 +98,9 @@ multiply_const<T>::multiply_const(T k, size_t vlen)
                            port_type_t::STREAM,
                            std::vector<size_t>{ vlen }));
 
-    add_param(param<T>(multiply_const<T>::params::k, "k", 1.0));
+    add_param(param<T>(multiply_const<T>::params::id_k, "k", 1.0));
 
-    add_param(param<T>(multiply_const<T>::params::vlen, "vlen", 1));
+    add_param(param<T>(multiply_const<T>::params::id_vlen, "vlen", 1));
 }
 
 template <class T>
@@ -136,9 +136,9 @@ template <class T>
 void multiply_const<T>::on_parameter_change(std::vector<param_change_base> params)
 {
     for (auto& p : params) {
-        if (p.id() == multiply_const<T>::params::k) {
-            d_k = static_cast<param_change<float>>(p).new_value();
-        } else if (p.id() == multiply_const<T>::params::vlen) {
+        if (p.id() == multiply_const<T>::params::id_k) {
+            d_k = static_cast<param_change<T>>(p).new_value();
+        } else if (p.id() == multiply_const<T>::params::id_vlen) {
             // cannot be changed
         }
     }

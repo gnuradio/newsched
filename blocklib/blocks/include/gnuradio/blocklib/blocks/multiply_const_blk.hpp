@@ -14,7 +14,7 @@ class multiply_const : public sync_block
 
 
 public:
-    enum params : uint32_t { k, vlen, num_params };
+    enum params : uint32_t { id_k, id_vlen, num_params };
 
     multiply_const(T k, size_t vlen = 1);
     // ~multiply_const() {};
@@ -26,6 +26,44 @@ public:
     // void set_k(T k);
 
     virtual void on_parameter_change(std::vector<param_change_base> params) override;
+    // virtual std::any on_parameter_query(uint32_t id) override;
+
+    // These methods should be automatically generated
+    // setters/getters
+    T k()
+    {
+
+        // // call back to the scheduler if ptr is not null
+        // if (p_scheduler)
+        // {
+        //     //p_scheduler->request_parameter_value(alias(),)
+
+        // }
+        // // else go ahead and return parameter value
+        // else
+        // {
+        //     return d_k; 
+        // }
+
+        return d_k;
+        
+    }
+
+    void set_k(T k)
+    {
+        // // call back to the scheduler if ptr is not null
+        // if (p_scheduler)
+        // {
+        //     // p_scheduler->request_parameter_change(alias(),)
+        // }
+        // // else go ahead and update parameter value
+        // else
+        // {
+        //     on_parameter_change(std::vector<param_change_base>{param_change<T>(params::id_k, k, 0) });
+        // }
+
+        d_k = k;
+    }
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  */
+#pragma once
 
 #ifndef INCLUDED_BLOCK_HPP
 #define INCLUDED_BLOCK_HPP
@@ -18,7 +19,10 @@
 #include <gnuradio/blocklib/parameter.hpp>
 #include <memory>
 
+
 namespace gr {
+
+// class scheduler;
 
 /**
  * @brief Enum for return codes from calls to block::work
@@ -63,8 +67,7 @@ protected:
     static const io_signature_capability d_output_signature_capability;
 
     virtual int validate() { return 0; }; // ??
-    virtual bool start() { return true; };
-    virtual bool stop() { return true; };
+
 
     void set_relative_rate(double relative_rate) {};
     void set_relative_rate(unsigned int numerator, unsigned int denominator) {};
@@ -78,7 +81,7 @@ protected:
 
     void add_param(param_base p) { parameters.add(p); }
 
-
+    // std::shared_ptr<scheduler> p_scheduler = nullptr;
 
 public:
     /**
@@ -87,6 +90,9 @@ public:
      * @param name The non-unique name of this block representing the block type
      */
     block(const std::string& name);
+
+    virtual bool start() { return true; };
+    virtual bool stop() { return true; };
 
     virtual ~block() {};
     typedef std::shared_ptr<block> sptr;
@@ -110,6 +116,7 @@ public:
         return d_output_signature_capability;
     }
 
+    // TODO: move to a general dict-based property container
     vcolor color() const { return d_color; }
     void set_color(vcolor color) { d_color = color; }
 
@@ -149,6 +156,11 @@ public:
     virtual void on_parameter_change(std::vector<param_change_base> params)
     {
         throw std::runtime_error("parameter changes not defined for this block");
+    }
+
+    virtual std::any on_parameter_query(uint32_t id)
+    {
+        throw std::runtime_error("parameter queries not defined for this block");
     }
 };
 

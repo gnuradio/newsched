@@ -28,7 +28,7 @@ namespace gr {
 
 // edge::~edge() {}
 
-flat_graph::flat_graph() {}
+// flat_graph::flat_graph() {}
 
 flat_graph::~flat_graph() {}
 
@@ -128,18 +128,18 @@ void flat_graph::check_type_match(const block_endpoint& src, const block_endpoin
     }
 }
 
-block_vector_t flat_graph::calc_used_blocks()
-{
-    block_vector_t tmp;
+// block_vector_t flat_graph::calc_used_blocks()
+// {
+//     block_vector_t tmp;
 
-    // Collect all blocks in the edge list
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
-        tmp.push_back(static_cast<block_endpoint>(p->src()).block());
-        tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
-    }
+//     // Collect all blocks in the edge list
+//     for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
+//         tmp.push_back(static_cast<block_endpoint>(p->src()).block());
+//         tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
+//     }
 
-    return unique_vector<block_sptr>(tmp);
-}
+//     return unique_vector<block_sptr>(tmp);
+// }
 
 port_vector_t flat_graph::calc_used_ports(block_sptr block, bool check_inputs)
 {
