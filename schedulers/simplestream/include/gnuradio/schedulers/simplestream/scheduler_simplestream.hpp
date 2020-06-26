@@ -39,6 +39,7 @@ public:
         }
 
         for (auto& b : fg->calc_used_blocks()) {
+            b->set_scheduler(base());
             d_blocks.push_back(b);
 
             port_vector_t input_ports = b->input_stream_ports();
@@ -93,9 +94,26 @@ private:
     static void thread_body(scheduler_simplestream* top)
     {
         while (!top->d_thread_stopped) {
+
+
             // do stuff with the blocks
             bool did_work = false;
             for (auto const& b : top->d_blocks) {
+                // handle parameter changes - queues need to be made thread safe
+                while (!top->param_change_queue().empty())
+                {
+                    auto item = top->param_change_queue().front();
+                    if (std::get<0>(item) == b->alias())
+                    {
+                        std::cout << std::endl << "adsfasdfasdfa" << std::endl;
+                    }
+                    
+                }
+                // handle parameter queries
+
+                // handle general callbacks
+
+
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);
 

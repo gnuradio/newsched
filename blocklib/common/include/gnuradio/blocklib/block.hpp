@@ -22,7 +22,7 @@
 
 namespace gr {
 
-// class scheduler;
+class scheduler;
 
 /**
  * @brief Enum for return codes from calls to block::work
@@ -81,7 +81,7 @@ protected:
 
     void add_param(param_base p) { parameters.add(p); }
 
-    // std::shared_ptr<scheduler> p_scheduler = nullptr;
+    std::shared_ptr<scheduler> p_scheduler = nullptr;
 
 public:
     /**
@@ -162,6 +162,12 @@ public:
     {
         throw std::runtime_error("parameter queries not defined for this block");
     }
+
+    void set_scheduler(std::shared_ptr<scheduler> sched)
+    {
+        p_scheduler = sched;
+    }
+
 };
 
 typedef block::sptr block_sptr;

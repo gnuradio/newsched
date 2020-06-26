@@ -13,6 +13,7 @@ target_include_directories(gnuradio-blocklib-blocks
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/blocklib/blocks
   ${PROJECT_SOURCE_DIR}/blocklib/common/include
+  ${PROJECT_SOURCE_DIR}/runtime/include
   )
 
   # TODO - learn how to include against runtime with INSTALL_INTERFACE
