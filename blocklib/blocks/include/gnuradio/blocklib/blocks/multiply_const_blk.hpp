@@ -34,7 +34,6 @@ public:
 
     void set_k(T k);
     T k();
-
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;

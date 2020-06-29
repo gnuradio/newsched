@@ -55,9 +55,9 @@ class param_base
 {
 public:
     param_base(const uint32_t id,
-                const std::string name,
-                const param_type_t& type,
-                const std::vector<size_t> dims)
+               const std::string name,
+               const param_type_t& type,
+               const std::vector<size_t> dims)
         : _id(id), _name(name), _type(type), _dims(dims)
     {
     }
@@ -82,22 +82,19 @@ class param : public param_base
 {
 public:
     param(const uint32_t id,
-                const std::string name,
-                const T default_value,
-                const std::vector<size_t> dims = std::vector<size_t>{ 1 })
+          const std::string name,
+          const T default_value,
+          const std::vector<size_t> dims = std::vector<size_t>{ 1 })
         : param_base(id,
-                      name,
-                      parameter_functions::get_param_type_from_typeinfo(
-                          std::type_index(typeid(T))),
-                      dims),
+                     name,
+                     parameter_functions::get_param_type_from_typeinfo(
+                         std::type_index(typeid(T))),
+                     dims),
           _default_value(default_value)
     {
     }
 
-    param(param_base& b) : param_base(b)
-    {
-        _value = std::any_cast<T>(b.any_value());
-    }
+    param(param_base& b) : param_base(b) { _value = std::any_cast<T>(b.any_value()); }
 
     void set_value(T val)
     {
@@ -138,10 +135,7 @@ protected:
     uint64_t _at_sample;
 
 public:
-    param_query_base(uint32_t id, uint64_t at_sample)
-        : _id(id), _at_sample(at_sample)
-    {
-    }
+    param_query_base(uint32_t id, uint64_t at_sample) : _id(id), _at_sample(at_sample) {}
     uint32_t id() { return _id; }
     uint64_t at_sample() { return _at_sample; }
 };
@@ -155,13 +149,13 @@ protected:
 public:
     param_change(uint32_t id, T new_value, uint64_t at_sample)
         : param_change_base(id, std::make_any<T>(new_value), at_sample),
-        _new_value(new_value)
+          _new_value(new_value)
     {
     }
-    param_change(param_change_base& b) : param_change_base(b.id(), b.any_value(), b.at_sample())
+    param_change(param_change_base& b)
+        : param_change_base(b.id(), b.any_value(), b.at_sample())
     {
         _new_value = std::any_cast<T>(b.any_value());
-
     }
 
     T new_value() { return _new_value; }
@@ -174,15 +168,8 @@ protected:
     T _new_value;
 
 public:
-    param_query(uint32_t id, uint64_t at_sample)
-        : param_change_base(id, at_sample)
-    {
-    }
-    param_query(param_change_base& b) : param_change_base(b.id(), b.at_sample())
-    {
-
-    }
-
+    param_query(uint32_t id, uint64_t at_sample) : param_change_base(id, at_sample) {}
+    param_query(param_change_base& b) : param_change_base(b.id(), b.at_sample()) {}
 };
 
 class parameter_config

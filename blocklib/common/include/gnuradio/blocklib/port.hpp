@@ -7,7 +7,7 @@
 
 namespace gr {
 
-class node;  // forward declaration for storing parent pointer
+class node; // forward declaration for storing parent pointer
 
 enum class port_type_t { STREAM, PACKET, MESSAGE };
 
@@ -38,15 +38,15 @@ protected:
 public:
     typedef std::shared_ptr<port_base> sptr;
     port_base(const std::string& name,
-        //  std::shared_ptr<node> parent,
-         const port_direction_t direction,
-         const param_type_t data_type = param_type_t::CFLOAT,
-         //  const std::type_index T
-         const port_type_t port_type = port_type_t::STREAM,
-         const std::vector<size_t>& dims = std::vector<size_t>{1},
-         const int multiplicity = 1)
+              //  std::shared_ptr<node> parent,
+              const port_direction_t direction,
+              const param_type_t data_type = param_type_t::CFLOAT,
+              //  const std::type_index T
+              const port_type_t port_type = port_type_t::STREAM,
+              const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+              const int multiplicity = 1)
         : _name(name),
-        //   _parent(parent),
+          //   _parent(parent),
           _direction(direction),
           _data_type(data_type),
           _port_type(port_type),
@@ -77,29 +77,31 @@ template <class T>
 class port : public port_base
 {
 public:
-    static std::shared_ptr<port<T>> make(const std::string& name,
-            //    std::shared_ptr<node> parent,
-               const port_direction_t direction,
-               const port_type_t port_type = port_type_t::STREAM,
-               const std::vector<size_t>& dims = std::vector<size_t>(),
-               const int multiplicity = 1)
-               {
-                   return std::shared_ptr<port<T>>(new port<T>(name, direction, port_type, dims, multiplicity) );
-               }
+    static std::shared_ptr<port<T>>
+    make(const std::string& name,
+         //    std::shared_ptr<node> parent,
+         const port_direction_t direction,
+         const port_type_t port_type = port_type_t::STREAM,
+         const std::vector<size_t>& dims = std::vector<size_t>(),
+         const int multiplicity = 1)
+    {
+        return std::shared_ptr<port<T>>(
+            new port<T>(name, direction, port_type, dims, multiplicity));
+    }
     port(const std::string& name,
-            //    std::shared_ptr<node> parent,
-               const port_direction_t direction,
-               const port_type_t port_type = port_type_t::STREAM,
-               const std::vector<size_t>& dims = std::vector<size_t>(),
-               const int multiplicity = 1)
+         //    std::shared_ptr<node> parent,
+         const port_direction_t direction,
+         const port_type_t port_type = port_type_t::STREAM,
+         const std::vector<size_t>& dims = std::vector<size_t>(),
+         const int multiplicity = 1)
         : port_base(name,
-            //    parent,
-               direction,
-               parameter_functions::get_param_type_from_typeinfo(
-                   std::type_index(typeid(T))),
-               port_type,
-               dims,
-               multiplicity)
+                    //    parent,
+                    direction,
+                    parameter_functions::get_param_type_from_typeinfo(
+                        std::type_index(typeid(T))),
+                    port_type,
+                    dims,
+                    multiplicity)
     {
     }
 };

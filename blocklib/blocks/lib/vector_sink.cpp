@@ -18,17 +18,16 @@ namespace blocks {
 
 template <class T>
 vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
-    : sync_block("vector_sink"),
-      d_vlen(vlen)
+    : sync_block("vector_sink"), d_vlen(vlen)
 {
     add_port(port<T>::make("input",
-                               port_direction_t::INPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
+                           port_direction_t::INPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
 
     // add_param(param<unsigned int>(vector_sink_params::k, "k", 1.0));
 
-    
+
     std::scoped_lock guard(d_data_mutex);
     d_data.reserve(d_vlen * reserve_items);
 }
@@ -58,7 +57,7 @@ void vector_sink<T>::reset()
 
 template <class T>
 work_return_code_t vector_sink<T>::work(std::vector<block_work_input>& work_input,
-                                          std::vector<block_work_output>& work_output)
+                                        std::vector<block_work_output>& work_output)
 {
     T* iptr = (T*)work_input[0].items;
     int noutput_items = work_input[0].n_items;

@@ -9,10 +9,10 @@
 
 // #include <gnuradio/api.h>
 #include <stddef.h> // size_t
-#include <vector>
-#include <complex>
 #include <stdint.h>
+#include <complex>
 #include <typeindex>
+#include <vector>
 
 typedef std::vector<int> gr_vector_int;
 typedef std::vector<unsigned int> gr_vector_uint;

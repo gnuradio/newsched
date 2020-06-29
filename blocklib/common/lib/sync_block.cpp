@@ -1,9 +1,5 @@
 #include <gnuradio/blocklib/sync_block.hpp>
 
-namespace gr
-{
-    sync_block::sync_block(const std::string& name)
-        : block(name)
-    {
-    }
-}
+namespace gr {
+sync_block::sync_block(const std::string& name) : block(name) {}
+} // namespace gr
