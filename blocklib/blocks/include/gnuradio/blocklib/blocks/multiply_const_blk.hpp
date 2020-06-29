@@ -12,6 +12,7 @@ class multiply_const : public sync_block
     T d_k;
     const size_t d_vlen;
 
+    void ports_and_params(size_t);
 
 public:
     enum params : uint32_t { id_k, id_vlen, num_params };
