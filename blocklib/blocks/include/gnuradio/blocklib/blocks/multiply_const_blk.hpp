@@ -26,8 +26,8 @@ public:
     // const T k();
     // void set_k(T k);
 
-    virtual void on_parameter_change(std::vector<param_change_base> params) override;
-    // virtual std::any on_parameter_query(uint32_t id) override;
+    virtual void on_parameter_change(param_action_base param) override;
+    virtual void on_parameter_query(param_action_base& param) override;
 
     // These methods should be automatically generated
     // setters/getters

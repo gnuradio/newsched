@@ -104,16 +104,14 @@ private:
                 // handle parameter changes - queues need to be made thread safe
                 while (!top->param_change_queue.empty()) {
                     auto item = top->param_change_queue.front();
-                    if (std::get<0>(item) == b->alias()) {
+                    if (item.block_id == b->alias()) {
                         b->on_parameter_change(
-                            std::vector<param_change_base>{ std::get<1>(item) });
+                            item.param_action);
 
-                        // assume parallel queues (FIXME) -- get this into a struct
-                        if (top->param_change_cb_queue.front() != nullptr)
-                            top->param_change_cb_queue.front()(std::get<1>(item));
+                        if (item.cb_fcn != nullptr)
+                            item.cb_fcn(item.param_action);
 
                         top->param_change_queue.pop();
-                        top->param_change_cb_queue.pop();
                     } else {
                         // no parameter changes for this block
                         go_on_ahead = true;
