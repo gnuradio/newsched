@@ -152,17 +152,17 @@ public:
      * @param params
      */
 
-    virtual void on_parameter_change(std::vector<param_change_base> params)
+    virtual void on_parameter_change(param_action_base param)
     {
         throw std::runtime_error("parameter changes not defined for this block");
     }
 
-    virtual void parameter_change_complete(param_change_base param)
+    virtual void parameter_change_complete(param_action_base param)
     {
-        std::cout << "param_change_complete" << std::endl;
+        std::cout << "param_action_complete" << std::endl;
     }
 
-    virtual std::any on_parameter_query(uint32_t id)
+    virtual void on_parameter_query(param_action_base& param)
     {
         throw std::runtime_error("parameter queries not defined for this block");
     }

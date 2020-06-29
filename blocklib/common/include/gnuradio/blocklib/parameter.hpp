@@ -4,6 +4,7 @@
 #include <any>
 #include <string>
 #include <vector>
+#include <queue>
 
 namespace gr {
 
@@ -111,7 +112,7 @@ protected:
     value_check _range;
 };
 
-class param_change_base
+class param_action_base
 {
 protected:
     uint32_t _id;
@@ -119,41 +120,31 @@ protected:
     uint64_t _at_sample;
 
 public:
-    param_change_base(uint32_t id, std::any any_value, uint64_t at_sample)
+    param_action_base(uint32_t id, std::any any_value, uint64_t at_sample)
         : _id(id), _any_value(any_value), _at_sample(at_sample)
     {
     }
     uint32_t id() { return _id; }
     std::any any_value() { return _any_value; }
+    void set_any_value(std::any val) { _any_value = val; }
     uint64_t at_sample() { return _at_sample; }
-};
-
-class param_query_base
-{
-protected:
-    uint32_t _id;
-    uint64_t _at_sample;
-
-public:
-    param_query_base(uint32_t id, uint64_t at_sample) : _id(id), _at_sample(at_sample) {}
-    uint32_t id() { return _id; }
-    uint64_t at_sample() { return _at_sample; }
+    void set_at_sample(uint64_t val) { _at_sample = val; }
 };
 
 template <class T>
-class param_change : public param_change_base
+class param_action : public param_action_base
 {
 protected:
     T _new_value;
 
 public:
-    param_change(uint32_t id, T new_value, uint64_t at_sample)
-        : param_change_base(id, std::make_any<T>(new_value), at_sample),
+    param_action(uint32_t id, T new_value, uint64_t at_sample)
+        : param_action_base(id, std::make_any<T>(new_value), at_sample),
           _new_value(new_value)
     {
     }
-    param_change(param_change_base& b)
-        : param_change_base(b.id(), b.any_value(), b.at_sample())
+    param_action(param_action_base& b)
+        : param_action_base(b.id(), b.any_value(), b.at_sample())
     {
         _new_value = std::any_cast<T>(b.any_value());
     }
@@ -161,16 +152,14 @@ public:
     T new_value() { return _new_value; }
 };
 
-template <class T>
-class param_query : public param_query_base
-{
-protected:
-    T _new_value;
-
-public:
-    param_query(uint32_t id, uint64_t at_sample) : param_change_base(id, at_sample) {}
-    param_query(param_change_base& b) : param_change_base(b.id(), b.at_sample()) {}
+typedef std::function<void(param_action_base)> param_action_complete_fcn;
+struct param_action_base_with_callback {
+    std::string block_id;
+    param_action_base param_action;
+    param_action_complete_fcn cb_fcn;
 };
+
+typedef std::queue<param_action_base_with_callback> param_action_queue;
 
 class parameter_config
 {

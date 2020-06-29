@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
     std::shared_ptr<blocks::vector_sink_f> snk(new blocks::vector_sink_f());
     // blocks::vector_sink_f snk();
 
-    // mult->on_parameter_change(std::vector<param_change_base>{
-    // param_change<float>(blocks::multiply_const_ff::params::id_k, 12.0, 0) });
+    // mult->on_parameter_change(std::vector<param_action_base>{
+    // param_action<float>(blocks::multiply_const_ff::params::id_k, 12.0, 0) });
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src->base(), 0, mult->base(), 0);
@@ -42,6 +42,8 @@ int main(int argc, char* argv[])
 
     float k = 1.0;
     while (true) {
+        std::cout << "query k is " << mult->k() << std::endl;
+
         mult->set_k(k);
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(200))
             break;
