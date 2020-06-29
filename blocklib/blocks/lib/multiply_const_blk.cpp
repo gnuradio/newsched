@@ -151,7 +151,8 @@ void multiply_const<T>::set_k(T k)
     if (p_scheduler) {
         p_scheduler->request_parameter_change(
             alias(), param_change<T>(params::id_k, k, 0), [&](auto a) {
-                std::cout << "k was changed to " << static_cast<param_change<T>>(a).new_value() << std::endl;
+                std::cout << "k was changed to "
+                          << static_cast<param_change<T>>(a).new_value() << std::endl;
             });
 
     }

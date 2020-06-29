@@ -31,11 +31,12 @@ vector_source<T>::vector_source(const std::vector<T>& data,
 {
 
     add_port(port<T>::make("output",
-                               port_direction_t::OUTPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
+                           port_direction_t::OUTPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
 
-    add_param(param<std::vector<T>>(vector_source::params::data, "data", std::vector<T>()));
+    add_param(
+        param<std::vector<T>>(vector_source::params::data, "data", std::vector<T>()));
     add_param(param<bool>(vector_source::params::repeat, "repeat", false));
 
     if (tags.empty()) {
@@ -86,7 +87,7 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
             for (int i = 0; i < noutput_items; i += n_outputitems_per_vector) {
                 // FIXME do proper vector copy
                 // memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
-                std::copy( d_data.begin(), d_data.begin()+size, optr );
+                std::copy(d_data.begin(), d_data.begin() + size, optr);
                 optr += size;
                 for (unsigned t = 0; t < d_tags.size(); t++) {
 
@@ -124,10 +125,10 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
             optr[i] = d_data[d_offset + i];
         }
         for (unsigned t = 0; t < d_tags.size(); t++) {
-            if ((d_tags[t].offset >= d_offset) && (d_tags[t].offset < d_offset + n))
-            {
+            if ((d_tags[t].offset >= d_offset) && (d_tags[t].offset < d_offset + n)) {
                 // this->add_item_tag(
-                //     0, d_tags[t].offset, d_tags[t].key, d_tags[t].value, d_tags[t].srcid);
+                //     0, d_tags[t].offset, d_tags[t].key, d_tags[t].value,
+                //     d_tags[t].srcid);
                 work_output[0].tags.push_back(d_tags[t]);
             }
         }

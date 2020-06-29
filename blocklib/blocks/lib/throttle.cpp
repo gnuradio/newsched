@@ -23,15 +23,11 @@ namespace blocks {
 
 
 throttle::throttle(size_t itemsize, double samples_per_second, bool ignore_tags)
-    : sync_block("throttle"),
-      d_itemsize(itemsize),
-      d_ignore_tags(ignore_tags)
+    : sync_block("throttle"), d_itemsize(itemsize), d_ignore_tags(ignore_tags)
 {
     // TODO: make the throttle "don't care" type (size only)
-    add_port(port<float>::make("input",
-                               port_direction_t::INPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ 1 }));
+    add_port(port<float>::make(
+        "input", port_direction_t::INPUT, port_type_t::STREAM, std::vector<size_t>{ 1 }));
     add_port(port<float>::make("output",
                                port_direction_t::OUTPUT,
                                port_type_t::STREAM,
@@ -61,7 +57,7 @@ void throttle::set_sample_rate(double rate)
 double throttle::sample_rate() const { return d_sample_rate; }
 
 work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+                                  std::vector<block_work_output>& work_output)
 {
     // check for updated rx_rate tag
     if (!d_ignore_tags) {
@@ -101,7 +97,6 @@ work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
     work_output[0].n_produced = work_output[0].n_items;
     return work_return_code_t::WORK_OK;
 }
-
 
 
 } /* namespace blocks */
