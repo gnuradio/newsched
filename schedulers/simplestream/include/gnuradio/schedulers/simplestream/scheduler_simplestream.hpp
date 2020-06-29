@@ -102,22 +102,27 @@ private:
             // TODO - line up at_sample numbers with work functions
             for (auto const& b : top->d_blocks) {
                 // handle parameter changes - queues need to be made thread safe
-                while (!top->param_change_queue.empty())
-                {
+                while (!top->param_change_queue.empty()) {
                     auto item = top->param_change_queue.front();
-                    if (std::get<0>(item) == b->alias())
-                    {
-                        b->on_parameter_change(std::vector<param_change_base>{std::get<1>(item)});
+                    if (std::get<0>(item) == b->alias()) {
+                        b->on_parameter_change(
+                            std::vector<param_change_base>{ std::get<1>(item) });
+
+                        // assume parallel queues (FIXME) -- get this into a struct
+                        if (top->param_change_cb_queue.front() != nullptr)
+                            top->param_change_cb_queue.front()(std::get<1>(item));
+
                         top->param_change_queue.pop();
-                    }
-                    else
-                    {
+                        top->param_change_cb_queue.pop();
+                    } else {
+                        // no parameter changes for this block
                         go_on_ahead = true;
                         break;
                     }
                 }
 
-                if (go_on_ahead) continue;
+                // if (go_on_ahead)
+                    // continue;
 
                 // handle parameter queries
 

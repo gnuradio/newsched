@@ -30,26 +30,11 @@ public:
 
     // These methods should be automatically generated
     // setters/getters
-    T k()
-    {
 
-        // call back to the scheduler if ptr is not null
-        if (p_scheduler)
-        {
-            //p_scheduler->request_parameter_value(alias(),)
-
-        }
-        // else go ahead and return parameter value
-        else
-        {
-            return d_k; 
-        }
-
-        return d_k;
-        
-    }
 
     void set_k(T k);
+    T k();
+
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;

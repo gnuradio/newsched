@@ -158,6 +158,11 @@ public:
         throw std::runtime_error("parameter changes not defined for this block");
     }
 
+    virtual void parameter_change_complete(param_change_base param)
+    {
+        std::cout << "param_change_complete" << std::endl;
+    }
+
     virtual std::any on_parameter_query(uint32_t id)
     {
         throw std::runtime_error("parameter queries not defined for this block");
