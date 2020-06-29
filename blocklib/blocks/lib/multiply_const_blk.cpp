@@ -23,9 +23,9 @@ void multiply_const<T>::ports_and_params(size_t vlen)
                            port_type_t::STREAM,
                            std::vector<size_t>{ vlen }));
 
-    add_param(param<T>(multiply_const<float>::params::id_k, "k", 1.0));
+    add_param(param<T>(multiply_const<T>::params::id_k, "k", 1.0));
 
-    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
+    add_param(param<size_t>(multiply_const<T>::params::id_vlen, "vlen", 1));
 }
 
 template <>
