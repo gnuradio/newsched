@@ -13,12 +13,11 @@ namespace schedulers {
 class scheduler_simplestream : public scheduler
 {
 public:
-    static const int s_fixed_buf_size = 32768;
+    static const int s_fixed_buf_size = 100;
     static const int s_min_items_to_process = 1;
     static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
 
-    scheduler_simplestream()
-        : scheduler() {}
+    scheduler_simplestream() : scheduler() {}
     ~scheduler_simplestream(){
 
     };
@@ -40,6 +39,7 @@ public:
         }
 
         for (auto& b : fg->calc_used_blocks()) {
+            b->set_scheduler(base());
             d_blocks.push_back(b);
 
             port_vector_t input_ports = b->input_stream_ports();
@@ -60,7 +60,13 @@ public:
         }
     }
 
-    void start() { d_thread = std::thread(thread_body, this); }
+    void start()
+    {
+        for (auto& b : d_blocks) {
+            b->start();
+        }
+        d_thread = std::thread(thread_body, this);
+    }
 
     void stop() { d_thread_stopped = true; }
 
@@ -88,9 +94,39 @@ private:
     static void thread_body(scheduler_simplestream* top)
     {
         while (!top->d_thread_stopped) {
+
+
             // do stuff with the blocks
             bool did_work = false;
+            bool go_on_ahead = false;
+            // TODO - line up at_sample numbers with work functions
             for (auto const& b : top->d_blocks) {
+                // handle parameter changes - queues need to be made thread safe
+                while (!top->param_change_queue.empty()) {
+                    auto item = top->param_change_queue.front();
+                    if (item.block_id == b->alias()) {
+                        b->on_parameter_change(
+                            item.param_action);
+
+                        if (item.cb_fcn != nullptr)
+                            item.cb_fcn(item.param_action);
+
+                        top->param_change_queue.pop();
+                    } else {
+                        // no parameter changes for this block
+                        go_on_ahead = true;
+                        break;
+                    }
+                }
+
+                // if (go_on_ahead)
+                // continue;
+
+                // handle parameter queries
+
+                // handle general callbacks
+
+
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);
 
@@ -119,6 +155,7 @@ private:
                     }
 
                     int max_output_buffer = p_buf->capacity() - p_buf->size();
+                    max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
                     work_output.push_back(block_work_output(
                         max_output_buffer, 0, p_buf->write_ptr(), tags));

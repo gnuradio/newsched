@@ -12,9 +12,10 @@ class multiply_const : public sync_block
     T d_k;
     const size_t d_vlen;
 
+    void ports_and_params(size_t);
 
 public:
-    enum params : uint32_t { k, vlen, num_params };
+    enum params : uint32_t { id_k, id_vlen, num_params };
 
     multiply_const(T k, size_t vlen = 1);
     // ~multiply_const() {};
@@ -25,7 +26,15 @@ public:
     // const T k();
     // void set_k(T k);
 
-    virtual void on_parameter_change(std::vector<param_change_base> params) override;
+    virtual void on_parameter_change(param_action_base param) override;
+    virtual void on_parameter_query(param_action_base& param) override;
+
+    // These methods should be automatically generated
+    // setters/getters
+
+
+    void set_k(T k);
+    T k();
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;

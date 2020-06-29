@@ -19,11 +19,10 @@ namespace gr {
 namespace blocks {
 
 
-
 template <class T>
 class vector_sink : virtual public sync_block
 {
-private: 
+private:
     std::vector<T> d_data;
     std::vector<tag_t> d_tags;
     mutable std::mutex d_data_mutex; // protects internal data access.
@@ -31,7 +30,7 @@ private:
 
 public:
     enum params : uint32_t { num_params };
-    
+
     vector_sink(unsigned int vlen = 1, const int reserve_items = 1024);
     // ~vector_sink() {};
 
@@ -41,7 +40,7 @@ public:
     const std::vector<tag_t> tags();
 
     work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output);
+                            std::vector<block_work_output>& work_output);
 };
 
 typedef vector_sink<std::uint8_t> vector_sink_b;

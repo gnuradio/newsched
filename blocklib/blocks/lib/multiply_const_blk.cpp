@@ -5,29 +5,34 @@
  */
 
 #include "multiply_const_blk.hpp"
+#include <gnuradio/scheduler.hpp>
 #include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
 
+template <class T>
+void multiply_const<T>::ports_and_params(size_t vlen)
+{
+    add_port(port<T>::make("input",
+                           port_direction_t::INPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
+    add_port(port<T>::make("output",
+                           port_direction_t::OUTPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
+
+    add_param(param<T>(multiply_const<float>::params::id_k, "k", 1.0));
+
+    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
+}
+
 template <>
 multiply_const<float>::multiply_const(float k, size_t vlen)
     : sync_block("multiply_const_ff"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<float>::make("input",
-                               port_direction_t::INPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
-    add_port(port<float>::make("output",
-                               port_direction_t::OUTPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
-
-    add_param(param<float>(multiply_const<float>::params::k, "k", 1.0));
-
-    add_param(param<size_t>(multiply_const<float>::params::vlen, "vlen", 1));
-
-    std::cout << "mult constructor" << std::endl;
+    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -52,19 +57,7 @@ template <>
 multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
     : sync_block("multiply_const_cc"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<gr_complex>::make("input",
-                                    port_direction_t::INPUT,
-                                    port_type_t::STREAM,
-                                    std::vector<size_t>{ vlen }));
-    add_port(port<gr_complex>::make("output",
-                                    port_direction_t::OUTPUT,
-                                    port_type_t::STREAM,
-                                    std::vector<size_t>{ vlen }));
-
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::k, "k", 1.0));
-
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::vlen, "vlen", 1));
-
+    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -89,18 +82,7 @@ template <class T>
 multiply_const<T>::multiply_const(T k, size_t vlen)
     : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<T>::make("input",
-                           port_direction_t::INPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-    add_port(port<T>::make("output",
-                           port_direction_t::OUTPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-
-    add_param(param<T>(multiply_const<T>::params::k, "k", 1.0));
-
-    add_param(param<T>(multiply_const<T>::params::vlen, "vlen", 1));
+    ports_and_params(vlen);
 }
 
 template <class T>
@@ -133,15 +115,63 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
 }
 
 template <class T>
-void multiply_const<T>::on_parameter_change(std::vector<param_change_base> params)
+void multiply_const<T>::on_parameter_change(param_action_base param)
 {
-    for (auto& p : params) {
-        if (p.id() == multiply_const<T>::params::k) {
-            d_k = static_cast<param_change<float>>(p).new_value();
-        } else if (p.id() == multiply_const<T>::params::vlen) {
-            // cannot be changed
-        }
+    if (param.id() == multiply_const<T>::params::id_k) {
+        d_k = static_cast<param_action<T>>(param).new_value();
+    } else if (param.id() == multiply_const<T>::params::id_vlen) {
+        // cannot be changed
     }
+}
+
+template <class T>
+void multiply_const<T>::on_parameter_query(param_action_base& param)
+{
+    if (param.id() == multiply_const<T>::params::id_k) {
+        param.set_any_value(std::make_any<T>(d_k));
+    } else if (param.id() == multiply_const<T>::params::id_vlen) {
+        param.set_any_value(std::make_any<T>(d_vlen));
+    }
+}
+
+template <class T>
+void multiply_const<T>::set_k(T k)
+{
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+        p_scheduler->request_parameter_change(
+            alias(), param_action<T>(params::id_k, k, 0), [&](auto a) {
+                std::cout << "k was changed to "
+                          << static_cast<param_action<T>>(a).new_value() << std::endl;
+            });
+
+    }
+    // else go ahead and update parameter value
+    else {
+        on_parameter_change(param_action<T>(params::id_k, k, 0));
+    }
+}
+
+template <class T>
+T multiply_const<T>::k()
+{
+
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+
+        p_scheduler->request_parameter_query(
+            alias(), param_action<T>(params::id_k, 0, 0), [&](auto a) {
+                std::cout << "k was queried "
+                          << static_cast<param_action<T>>(a).new_value() << std::endl;
+            });
+
+    }
+    // else go ahead and return parameter value
+    else {
+        return d_k;
+    }
+
+    return d_k;
 }
 
 template class multiply_const<std::int16_t>;

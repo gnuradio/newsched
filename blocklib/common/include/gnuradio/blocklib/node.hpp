@@ -53,8 +53,8 @@ protected:
             }
         }
     }
-    void remove_port(const std::string& name) {};  /// since ports are only added in constructor, is this necessary
-
+    void remove_port(const std::string& name){}; /// since ports are only added in
+                                                 /// constructor, is this necessary
 
 
 public:
