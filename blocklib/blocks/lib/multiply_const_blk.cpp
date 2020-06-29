@@ -5,8 +5,8 @@
  */
 
 #include "multiply_const_blk.hpp"
-#include <volk/volk.h>
 #include <gnuradio/scheduler.hpp>
+#include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
@@ -149,9 +149,10 @@ void multiply_const<T>::set_k(T k)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
-        // p_scheduler->request_parameter_change(alias(),)
         p_scheduler->request_parameter_change(
-            alias(), param_change<T>(params::id_k, k, 0), nullptr);
+            alias(), param_change<T>(params::id_k, k, 0), [&](auto a) {
+                std::cout << "k was changed to " << static_cast<param_change<T>>(a).new_value() << std::endl;
+            });
 
     }
     // else go ahead and update parameter value
@@ -159,6 +160,23 @@ void multiply_const<T>::set_k(T k)
         on_parameter_change(
             std::vector<param_change_base>{ param_change<T>(params::id_k, k, 0) });
     }
+}
+
+template <class T>
+T multiply_const<T>::k()
+{
+
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+        // p_scheduler->request_parameter_value(alias(),)
+
+    }
+    // else go ahead and return parameter value
+    else {
+        return d_k;
+    }
+
+    return d_k;
 }
 
 template class multiply_const<std::int16_t>;
