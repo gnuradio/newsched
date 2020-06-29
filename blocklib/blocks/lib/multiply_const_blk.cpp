@@ -11,23 +11,28 @@
 namespace gr {
 namespace blocks {
 
+template <class T>
+void multiply_const<T>::ports_and_params(size_t vlen)
+{
+    add_port(port<T>::make("input",
+                           port_direction_t::INPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
+    add_port(port<T>::make("output",
+                           port_direction_t::OUTPUT,
+                           port_type_t::STREAM,
+                           std::vector<size_t>{ vlen }));
+
+    add_param(param<T>(multiply_const<float>::params::id_k, "k", 1.0));
+
+    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
+}
+
 template <>
 multiply_const<float>::multiply_const(float k, size_t vlen)
     : sync_block("multiply_const_ff"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<float>::make("input",
-                               port_direction_t::INPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
-    add_port(port<float>::make("output",
-                               port_direction_t::OUTPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ vlen }));
-
-    add_param(param<float>(multiply_const<float>::params::id_k, "k", 1.0));
-
-    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
-
+    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -52,19 +57,7 @@ template <>
 multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
     : sync_block("multiply_const_cc"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<gr_complex>::make("input",
-                                    port_direction_t::INPUT,
-                                    port_type_t::STREAM,
-                                    std::vector<size_t>{ vlen }));
-    add_port(port<gr_complex>::make("output",
-                                    port_direction_t::OUTPUT,
-                                    port_type_t::STREAM,
-                                    std::vector<size_t>{ vlen }));
-
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::id_k, "k", 1.0));
-
-    add_param(param<gr_complex>(multiply_const<gr_complex>::params::id_vlen, "vlen", 1));
-
+    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -89,18 +82,7 @@ template <class T>
 multiply_const<T>::multiply_const(T k, size_t vlen)
     : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
 {
-    add_port(port<T>::make("input",
-                           port_direction_t::INPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-    add_port(port<T>::make("output",
-                           port_direction_t::OUTPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-
-    add_param(param<T>(multiply_const<T>::params::id_k, "k", 1.0));
-
-    add_param(param<T>(multiply_const<T>::params::id_vlen, "vlen", 1));
+    ports_and_params(vlen);
 }
 
 template <class T>
