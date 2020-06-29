@@ -28,7 +28,6 @@ multiply_const<float>::multiply_const(float k, size_t vlen)
 
     add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
 
-    std::cout << "mult constructor" << std::endl;
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 }
