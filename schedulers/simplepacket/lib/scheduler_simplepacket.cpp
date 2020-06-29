@@ -1,11 +1,9 @@
 #include "scheduler_simplepacket.hpp"
 
-namespace gr
-{
+namespace gr {
 
-namespace schedulers
-{
+namespace schedulers {
 
 
 }
-}
+} // namespace gr

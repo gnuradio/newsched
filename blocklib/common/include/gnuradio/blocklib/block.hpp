@@ -12,10 +12,10 @@
 #include <string>
 #include <vector>
 
-#include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
+#include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/parameter.hpp>
 #include <memory>
 
@@ -59,7 +59,6 @@ private:
     unsigned int d_output_multiple;
 
 protected:
-
     vcolor d_color;
 
     // These are overridden by the derived class
@@ -69,8 +68,8 @@ protected:
     virtual int validate() { return 0; }; // ??
 
 
-    void set_relative_rate(double relative_rate) {};
-    void set_relative_rate(unsigned int numerator, unsigned int denominator) {};
+    void set_relative_rate(double relative_rate){};
+    void set_relative_rate(unsigned int numerator, unsigned int denominator){};
 
     //   tag_propagation_policy_t tag_propagation_policy();
     //   void set_tag_propagation_policy(tag_propagation_policy_t p);
@@ -94,7 +93,7 @@ public:
     virtual bool start() { return true; };
     virtual bool stop() { return true; };
 
-    virtual ~block() {};
+    virtual ~block(){};
     typedef std::shared_ptr<block> sptr;
     sptr base() { return shared_from_this(); }
 
@@ -168,11 +167,7 @@ public:
         throw std::runtime_error("parameter queries not defined for this block");
     }
 
-    void set_scheduler(std::shared_ptr<scheduler> sched)
-    {
-        p_scheduler = sched;
-    }
-
+    void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
 };
 
 typedef block::sptr block_sptr;

@@ -32,8 +32,8 @@ private:
     B _b;
 
 public:
-    endpoint() {};
-    virtual ~endpoint() {};
+    endpoint(){};
+    virtual ~endpoint(){};
     endpoint(A a, B b) : std::pair<A, B>(a, b) {}
 };
 
@@ -44,7 +44,7 @@ private:
     port_sptr d_port;
 
 public:
-    node_endpoint() : endpoint() {};
+    node_endpoint() : endpoint(){};
     node_endpoint(node_sptr node, port_sptr port)
         : endpoint<node_sptr, port_sptr>(node, port), d_node(node), d_port(port)
     {
@@ -57,7 +57,7 @@ public:
         d_port = n.port();
     }
 
-    ~node_endpoint() {};
+    ~node_endpoint(){};
     node_sptr node() const { return d_node; }
     port_sptr port() const { return d_port; }
     std::string identifier() const { return d_node->alias() + ":" + d_port->alias(); };
@@ -89,15 +89,12 @@ protected:
 
 public:
     edge(){};
-    edge(const node_endpoint& src, const node_endpoint& dst) : _src(src), _dst(dst)
-    {
-
-    }
+    edge(const node_endpoint& src, const node_endpoint& dst) : _src(src), _dst(dst) {}
     edge(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port)
         : _src(node_endpoint(src_blk, src_port)), _dst(node_endpoint(dst_blk, dst_port))
     {
     }
-    virtual ~edge() {};
+    virtual ~edge(){};
     node_endpoint src() { return _src; }
     node_endpoint dst() { return _dst; }
 
@@ -143,8 +140,7 @@ public:
         _nodes = calc_used_nodes();
 
         // update the block alias
-        for (auto &b : _nodes)
-        {
+        for (auto& b : _nodes) {
             std::map<std::string, int> name_count;
             // look in the map, see how many of that name exist
             // make the alias name + count;
@@ -156,7 +152,7 @@ public:
                 cnt = name_count[b->name()];
             }
             b->set_alias(b->name() + std::to_string(cnt));
-            name_count[b->name()] = cnt+1;
+            name_count[b->name()] = cnt + 1;
         }
     }
     void connect(node_sptr src_node,
@@ -164,11 +160,13 @@ public:
                  node_sptr dst_node,
                  unsigned int dst_port_index)
     {
-        port_sptr src_port = src_node->get_port(src_port_index, port_type_t::STREAM, port_direction_t::OUTPUT);
+        port_sptr src_port = src_node->get_port(
+            src_port_index, port_type_t::STREAM, port_direction_t::OUTPUT);
         if (src_port == nullptr)
             throw std::invalid_argument("Source Port not found");
 
-        port_sptr dst_port = dst_node->get_port(dst_port_index, port_type_t::STREAM, port_direction_t::INPUT);
+        port_sptr dst_port = dst_node->get_port(
+            dst_port_index, port_type_t::STREAM, port_direction_t::INPUT);
         if (dst_port == nullptr)
             throw std::invalid_argument("Destination port not found");
 
@@ -177,22 +175,23 @@ public:
     void connect(node_sptr src_node,
                  std::string& src_port_name,
                  node_sptr dst_node,
-                 std::string& dst_port_name) {};
-    void disconnect(const node_endpoint& src, const node_endpoint& dst) {};
-    virtual void validate() {};
-    virtual void clear() {};
+                 std::string& dst_port_name){};
+    void disconnect(const node_endpoint& src, const node_endpoint& dst){};
+    virtual void validate(){};
+    virtual void clear(){};
 
     // /**
-    //  * @brief Return a flattened graph (all subgraphs reduced to their constituent blocks
+    //  * @brief Return a flattened graph (all subgraphs reduced to their constituent
+    //  blocks
     //  * and edges)
     //  *
     //  * @return graph
     //  */
     // flat_graph_sptr flatten()
     // {
-    //     // For now we assume the graph is already flattened and we just downcast everything
+    //     // For now we assume the graph is already flattened and we just downcast
+    //     everything
 
-        
 
     // }
     node_vector_t calc_used_nodes()
@@ -207,7 +206,6 @@ public:
 
         return unique_vector<node_sptr>(tmp);
     }
-
 };
 
 typedef std::shared_ptr<graph> graph_sptr;
