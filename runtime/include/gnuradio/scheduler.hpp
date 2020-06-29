@@ -7,11 +7,11 @@
 namespace gr {
 class scheduler : public std::enable_shared_from_this<scheduler>
 {
-
-private:
-    std::queue<std::tuple<std::string, param_change_base>> _param_change_queue;
+    
 
 public:
+    std::queue<std::tuple<std::string, param_change_base>> param_change_queue;
+    
     scheduler(){};
     virtual ~scheduler();
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
@@ -31,10 +31,10 @@ public:
                                           param_change_base param_change,
                                           std::function<void(param_change_base)> fn)
     {
-        _param_change_queue.emplace(
+        param_change_queue.emplace(
             std::tuple<std::string, param_change_base>(block_alias, param_change));
 
-        std::cout << param_change_queue().size();
+        std::cout << param_change_queue.size();
     }
 
     virtual void request_callback(const std::string& block_alias,
@@ -43,10 +43,10 @@ public:
     {
     }
 
-    std::queue<std::tuple<std::string, param_change_base>> param_change_queue()
-    {
-        return _param_change_queue;
-    }
+    // std::queue<std::tuple<std::string, param_change_base>> param_change_queue()
+    // {
+    //     return _param_change_queue;
+    // }
 };
 
 typedef std::shared_ptr<scheduler> scheduler_sptr;

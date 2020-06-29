@@ -98,17 +98,27 @@ private:
 
             // do stuff with the blocks
             bool did_work = false;
+            bool go_on_ahead = false;
+            // TODO - line up at_sample numbers with work functions
             for (auto const& b : top->d_blocks) {
                 // handle parameter changes - queues need to be made thread safe
-                while (!top->param_change_queue().empty())
+                while (!top->param_change_queue.empty())
                 {
-                    auto item = top->param_change_queue().front();
+                    auto item = top->param_change_queue.front();
                     if (std::get<0>(item) == b->alias())
                     {
-                        std::cout << std::endl << "adsfasdfasdfa" << std::endl;
+                        b->on_parameter_change(std::vector<param_change_base>{std::get<1>(item)});
+                        top->param_change_queue.pop();
                     }
-                    
+                    else
+                    {
+                        go_on_ahead = true;
+                        break;
+                    }
                 }
+
+                if (go_on_ahead) continue;
+
                 // handle parameter queries
 
                 // handle general callbacks
