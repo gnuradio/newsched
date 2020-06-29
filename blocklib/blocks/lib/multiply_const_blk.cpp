@@ -115,14 +115,22 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
 }
 
 template <class T>
-void multiply_const<T>::on_parameter_change(std::vector<param_change_base> params)
+void multiply_const<T>::on_parameter_change(param_action_base param)
 {
-    for (auto& p : params) {
-        if (p.id() == multiply_const<T>::params::id_k) {
-            d_k = static_cast<param_change<T>>(p).new_value();
-        } else if (p.id() == multiply_const<T>::params::id_vlen) {
-            // cannot be changed
-        }
+    if (param.id() == multiply_const<T>::params::id_k) {
+        d_k = static_cast<param_action<T>>(param).new_value();
+    } else if (param.id() == multiply_const<T>::params::id_vlen) {
+        // cannot be changed
+    }
+}
+
+template <class T>
+void multiply_const<T>::on_parameter_query(param_action_base& param)
+{
+    if (param.id() == multiply_const<T>::params::id_k) {
+        param.set_any_value(std::make_any<T>(d_k));
+    } else if (param.id() == multiply_const<T>::params::id_vlen) {
+        param.set_any_value(std::make_any<T>(d_vlen));
     }
 }
 
@@ -132,16 +140,15 @@ void multiply_const<T>::set_k(T k)
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
         p_scheduler->request_parameter_change(
-            alias(), param_change<T>(params::id_k, k, 0), [&](auto a) {
+            alias(), param_action<T>(params::id_k, k, 0), [&](auto a) {
                 std::cout << "k was changed to "
-                          << static_cast<param_change<T>>(a).new_value() << std::endl;
+                          << static_cast<param_action<T>>(a).new_value() << std::endl;
             });
 
     }
     // else go ahead and update parameter value
     else {
-        on_parameter_change(
-            std::vector<param_change_base>{ param_change<T>(params::id_k, k, 0) });
+        on_parameter_change(param_action<T>(params::id_k, k, 0));
     }
 }
 
@@ -151,7 +158,12 @@ T multiply_const<T>::k()
 
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
-        // p_scheduler->request_parameter_value(alias(),)
+
+        p_scheduler->request_parameter_query(
+            alias(), param_action<T>(params::id_k, 0, 0), [&](auto a) {
+                std::cout << "k was queried "
+                          << static_cast<param_action<T>>(a).new_value() << std::endl;
+            });
 
     }
     // else go ahead and return parameter value

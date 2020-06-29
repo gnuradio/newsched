@@ -10,7 +10,7 @@ class callback_base
     //     uint64_t _at_sample;
 
     // public:
-    //     param_change_base(uint32_t id, std::any any_value, uint64_t at_sample)
+    //     param_action_base(uint32_t id, std::any any_value, uint64_t at_sample)
     //         : _id(id), _any_value(any_value), _at_sample(at_sample)
     //     {
     //     }
