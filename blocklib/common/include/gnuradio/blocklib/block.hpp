@@ -19,7 +19,7 @@
 #include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/parameter.hpp>
 #include <gnuradio/blocklib/callback.hpp>
-
+#include <gnuradio/blocklib/gpdict.hpp>
 
 
 namespace gr {
@@ -52,9 +52,6 @@ enum class work_return_code_t {
 
 class block : public gr::node, public std::enable_shared_from_this<block>
 {
-public:
-    enum vcolor { WHITE, GREY, BLACK };
-    enum io { INPUT, OUTPUT };
 
 private:
     bool d_output_multiple_set = false;
@@ -63,7 +60,6 @@ private:
     std::map<std::string,block_callback_fcn> _callback_function_map;  // callback_function_map["mult0"]["do_something"](x,y,z)
 
 protected:
-    vcolor d_color;
 
     // These are overridden by the derived class
     static const io_signature_capability d_input_signature_capability;
@@ -101,6 +97,8 @@ public:
      */
     block(const std::string& name);
 
+    gpdict attributes;
+
     virtual bool start() { return true; };
     virtual bool stop() { return true; };
 
@@ -126,9 +124,6 @@ public:
         return d_output_signature_capability;
     }
 
-    // TODO: move to a general dict-based property container
-    vcolor color() const { return d_color; }
-    void set_color(vcolor color) { d_color = color; }
 
     /**
      * @brief Abstract method to call signal processing work from a derived block

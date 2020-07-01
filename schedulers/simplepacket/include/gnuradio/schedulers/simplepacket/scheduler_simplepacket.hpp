@@ -12,6 +12,7 @@ namespace schedulers {
 
 class scheduler_simplestream : scheduler
 {
+
 public:
     static const int s_fixed_buf_size = 32768;
     static const int s_min_items_to_process = 1;
