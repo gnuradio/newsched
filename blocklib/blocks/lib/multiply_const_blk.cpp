@@ -164,20 +164,29 @@ T multiply_const<T>::k()
 
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
+        bool gotit = false;
+        T newval;
+        auto lam = [&](auto a) {
+                newval = static_cast<param_action<T>>(a).new_value();
+                gotit = true;
+            };
 
         p_scheduler->request_parameter_query(
-            alias(), param_action<T>(params::id_k, 0, 0), [&](auto a) {
-                std::cout << "k was queried "
-                          << static_cast<param_action<T>>(a).new_value() << std::endl;
-            });
+            alias(), param_action<T>(params::id_k, 0, 0), lam);
 
+        while(!gotit)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        return newval;
     }
     // else go ahead and return parameter value
     else {
         return d_k;
     }
 
-    return d_k;
+    
 }
 
 template <class T>

@@ -123,7 +123,23 @@ private:
                 // continue;
 
                 // handle parameter queries
+                while (!top->param_query_queue.empty()) {
+                    auto item = top->param_query_queue.front();
+                    if (item.block_id == b->alias()) {
+                        b->on_parameter_query(
+                            item.param_action);
 
+                        if (item.cb_fcn != nullptr)
+                            item.cb_fcn(item.param_action);
+
+                        top->param_query_queue.pop();
+                    } else {
+                        // no parameter changes for this block
+                        go_on_ahead = true;
+                        break;
+                    }
+                }
+                
                 // handle general callbacks
                 while (!top->callback_queue.empty()) {
                     auto item = top->callback_queue.front();
