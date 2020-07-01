@@ -1,18 +1,20 @@
 #pragma once
 
-#include <gnuradio/blocklib/callback.hpp>
-#include <gnuradio/flat_graph.hpp>
 #include <functional>
 #include <memory>
 #include <queue>
+
+#include <gnuradio/blocklib/callback.hpp>
+#include <gnuradio/flat_graph.hpp>
+
 namespace gr {
 class scheduler : public std::enable_shared_from_this<scheduler>
 {
 
-
 public:
     param_action_queue param_change_queue;
     param_action_queue param_query_queue;
+    block_callback_queue callback_queue;
 
     scheduler(){};
     virtual ~scheduler();
@@ -26,22 +28,24 @@ public:
                                          param_action_base param_action,
                                          param_action_complete_fcn cb_when_complete)
     {
-        param_query_queue.emplace(param_action_base_with_callback{block_alias, param_action, cb_when_complete});
-
+        param_query_queue.emplace(param_action_base_with_callback{
+            block_alias, param_action, cb_when_complete });
     }
 
     virtual void request_parameter_change(const std::string& block_alias,
                                           param_action_base param_action,
                                           param_action_complete_fcn cb_when_complete)
     {
-        param_change_queue.emplace(param_action_base_with_callback{block_alias, param_action, cb_when_complete});
-
+        param_change_queue.emplace(param_action_base_with_callback{
+            block_alias, param_action, cb_when_complete });
     }
 
     virtual void request_callback(const std::string& block_alias,
-                                  callback_base callback,
-                                  std::function<void(callback_base)> fn)
+                                  const callback_args& args,
+                                  block_callback_complete_fcn cb_when_complete)
     {
+        callback_queue.emplace(callback_args_with_callback{
+            block_alias, args, cb_when_complete } );
     }
 
     // std::queue<std::tuple<std::string, param_action_base>> param_action_queue()

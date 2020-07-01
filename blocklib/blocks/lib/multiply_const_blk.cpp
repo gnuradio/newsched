@@ -7,6 +7,8 @@
 #include "multiply_const_blk.hpp"
 #include <gnuradio/scheduler.hpp>
 #include <volk/volk.h>
+#include <chrono>
+#include <thread>
 
 namespace gr {
 namespace blocks {
@@ -23,9 +25,13 @@ void multiply_const<T>::ports_and_params(size_t vlen)
                            port_type_t::STREAM,
                            std::vector<size_t>{ vlen }));
 
-    add_param(param<T>(multiply_const<float>::params::id_k, "k", 1.0));
+    add_param(param<T>(multiply_const<T>::params::id_k, "k", 1.0));
 
-    add_param(param<size_t>(multiply_const<float>::params::id_vlen, "vlen", 1));
+    add_param(param<size_t>(multiply_const<T>::params::id_vlen, "vlen", 1));
+
+    register_callback("do_a_bunch_of_things", [this](auto args) {
+        return this->handle_do_a_bunch_of_things(args);
+    });
 }
 
 template <>
@@ -172,6 +178,42 @@ T multiply_const<T>::k()
     }
 
     return d_k;
+}
+
+template <class T>
+double multiply_const<T>::do_a_bunch_of_things(const int x, const double y, const std::vector<gr_complex>& z)
+{
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+        bool cb_complete = false;
+        int val;
+        p_scheduler->request_callback(
+            alias(),
+            callback_args{
+                "do_a_bunch_of_things",
+                std::vector<std::any>{ std::make_any<int>(x),
+                                       std::make_any<double>(y),
+                                       std::make_any<std::vector<gr_complex>>(z) },
+                std::any(),
+                0 },
+            [&cb_complete, &val](auto cb_args) {
+                cb_complete = true;
+                val = std::any_cast<double>(cb_args.return_val);
+            });
+
+        // block
+        while (!cb_complete) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        std::cout << "callback returned " << val << std::endl;
+
+        return val;
+    }
+    // else go ahead and return parameter value
+    else {
+        return 0;
+    }
 }
 
 template class multiply_const<std::int16_t>;
