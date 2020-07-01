@@ -125,7 +125,23 @@ private:
                 // handle parameter queries
 
                 // handle general callbacks
+                while (!top->callback_queue.empty()) {
+                    auto item = top->callback_queue.front();
+                    if (item.block_id == b->alias()) {
+                        auto cbs = item.cb_struct;
+                        auto ret = b->callbacks()[cbs.callback_name](cbs.args);
 
+                        cbs.return_val = ret;
+                        if (item.cb_fcn != nullptr)
+                            item.cb_fcn(cbs);
+
+                        top->callback_queue.pop();
+                    } else {
+                        // no parameter changes for this block
+                        go_on_ahead = true;
+                        break;
+                    }
+                }
 
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);

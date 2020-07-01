@@ -45,6 +45,9 @@ int main(int argc, char* argv[])
         std::cout << "query k is " << mult->k() << std::endl;
 
         mult->set_k(k);
+
+        mult->do_a_bunch_of_things(1,2.0,std::vector<gr_complex>{gr_complex(4.0,5.0)});
+
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(200))
             break;
 
