@@ -25,6 +25,9 @@ public:
 
 class flat_graph : public graph
 {
+    static constexpr const char* BLOCK_COLOR_KEY = "color";
+    enum vcolor { WHITE, GREY, BLACK };
+    enum io { INPUT, OUTPUT };
 
 public:
     void clear();
