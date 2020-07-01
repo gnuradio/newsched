@@ -11,13 +11,15 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-
+#include <memory>
+		
 #include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/parameter.hpp>
-#include <memory>
+#include <gnuradio/blocklib/callback.hpp>
+
 
 
 namespace gr {
@@ -58,6 +60,8 @@ private:
     bool d_output_multiple_set = false;
     unsigned int d_output_multiple;
 
+    std::map<std::string,block_callback_fcn> _callback_function_map;  // callback_function_map["mult0"]["do_something"](x,y,z)
+
 protected:
     vcolor d_color;
 
@@ -81,6 +85,13 @@ protected:
     void add_param(param_base p) { parameters.add(p); }
 
     std::shared_ptr<scheduler> p_scheduler = nullptr;
+
+    // TODO: register the types
+    void register_callback(const std::string& cb_name, block_callback_fcn fcn)
+    {
+        _callback_function_map[cb_name] = fcn;
+    }
+
 
 public:
     /**
@@ -166,6 +177,9 @@ public:
     {
         throw std::runtime_error("parameter queries not defined for this block");
     }
+
+    std::map<std::string,block_callback_fcn> callbacks() {return _callback_function_map;}
+
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
 };
