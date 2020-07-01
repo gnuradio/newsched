@@ -9,6 +9,9 @@ namespace blocks {
 template <class T>
 class multiply_const : public sync_block
 {
+
+private:
+
     T d_k;
     const size_t d_vlen;
 
@@ -23,18 +26,26 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output);
 
-    // const T k();
-    // void set_k(T k);
 
     virtual void on_parameter_change(param_action_base param) override;
     virtual void on_parameter_query(param_action_base& param) override;
+    std::any handle_do_a_bunch_of_things(std::vector<std::any> args)
+    {
+        auto xi = std::any_cast<int>(args[0]);
+        auto yi = std::any_cast<double>(args[1]);
+        auto zi = std::any_cast<std::vector<gr_complex>>(args[2]);
+
+        return std::make_any<double>(xi*yi);
+    }
 
     // These methods should be automatically generated
-    // setters/getters
-
-
+    // setters/getters/callback wrappers
+    double do_a_bunch_of_things(const int x, const double y, const std::vector<gr_complex>& z);
     void set_k(T k);
     T k();
+
+
+
 };
 
 typedef multiply_const<std::int16_t> multiply_const_ss;

@@ -1,9 +1,10 @@
 #ifndef INCLUDED_SYNC_BLOCK_HPP
 #define INCLUDED_SYNC_BLOCK_HPP
 
-#include <gnuradio/blocklib/block.hpp>
 #include <algorithm>
 #include <limits>
+#include <gnuradio/blocklib/block.hpp>
+
 
 namespace gr {
 /**
