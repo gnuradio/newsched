@@ -97,6 +97,9 @@ public:
      */
     block(const std::string& name);
 
+    // just maintain metadata in scheduler mapped to the blocks
+    
+
     gpdict attributes;
 
     virtual bool start() { return true; };
