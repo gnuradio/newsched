@@ -73,6 +73,9 @@ public:
 
 typedef port_base::sptr port_sptr;
 
+
+// TODO: how to handle "don't care "
+// Could be problematic due to total permutations of types implemented [TBD]
 template <class T>
 class port : public port_base
 {

@@ -36,6 +36,9 @@ int main(int argc, char* argv[])
     fg->set_scheduler(sched->base());
 
     fg->validate();
+
+    // what happens when k is set here???  
+
     fg->start();
 
     auto start = std::chrono::steady_clock::now();
