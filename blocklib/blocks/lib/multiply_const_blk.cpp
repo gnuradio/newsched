@@ -95,6 +95,7 @@ template <class T>
 work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_input,
                                            std::vector<block_work_output>& work_output)
 {
+    // Pre-generate these from modtool, for example
     T* iptr = (T*)work_input[0].items;
     T* optr = (T*)work_output[0].items;
 
@@ -164,6 +165,7 @@ T multiply_const<T>::k()
 
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
+        // not thread safe - fix with condition variable
         bool gotit = false;
         T newval;
         auto lam = [&](auto a) {
@@ -174,6 +176,7 @@ T multiply_const<T>::k()
         p_scheduler->request_parameter_query(
             alias(), param_action<T>(params::id_k, 0, 0), lam);
 
+        // replace with condition variable
         while(!gotit)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
