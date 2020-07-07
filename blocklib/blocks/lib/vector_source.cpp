@@ -23,26 +23,17 @@ vector_source<T>::vector_source(const std::vector<T>& data,
                                 unsigned int vlen,
                                 const std::vector<tag_t>& tags)
     : sync_block("vector_source"),
-      d_data(data),
-      d_repeat(repeat),
-      d_offset(0),
-      d_vlen(vlen),
-      d_tags(tags)
+      _data(data),
+      _repeat(repeat),
+      _offset(0),
+      _vlen(vlen),
+      _tags(tags)
 {
 
-    add_port(port<T>::make("output",
-                           port_direction_t::OUTPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-
-    add_param(
-        param<std::vector<T>>::make(vector_source::params::id_data, "data", data, &d_data, std::vector<size_t>(vlen)));
-    add_param(param<bool>::make(vector_source::params::id_repeat, "repeat", repeat, &d_repeat));
-
     if (tags.empty()) {
-        d_settags = 0;
+        _settags = 0;
     } else {
-        d_settags = 1;
+        _settags = 1;
         this->set_output_multiple(data.size() / vlen);
     }
     if ((data.size() % vlen) != 0)
@@ -53,13 +44,13 @@ template <class T>
 void vector_source<T>::set_data(const std::vector<T>& data,
                                 const std::vector<tag_t>& tags)
 {
-    d_data = data;
-    d_tags = tags;
+    _data = data;
+    _tags = tags;
     rewind();
     if (tags.empty()) {
-        d_settags = false;
+        _settags = false;
     } else {
-        d_settags = true;
+        _settags = true;
     }
 }
 
@@ -76,65 +67,58 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
 
     T* optr = (T*)output_items;
 
-    if (d_repeat) {
-        unsigned int size = d_data.size();
-        unsigned int offset = d_offset;
+    if (_repeat) {
+        unsigned int size = _data.size();
+        unsigned int offset = _offset;
         if (size == 0)
             return work_return_code_t::WORK_DONE;
 
-        if (d_settags) {
-            int n_outputitems_per_vector = d_data.size() / d_vlen;
+        if (_settags) {
+            int n_outputitems_per_vector = _data.size() / _vlen;
             for (int i = 0; i < noutput_items; i += n_outputitems_per_vector) {
-                // FIXME do proper vector copy
-                // memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
-                std::copy(d_data.begin(), d_data.begin() + size, optr);
+                std::copy(_data.begin(), _data.begin() + size, optr);
                 optr += size;
-                for (unsigned t = 0; t < d_tags.size(); t++) {
-
-                    //   this->add_item_tag(0, this->nitems_written(0) + i +
-                    //   d_tags[t].offset,
-                    //                      d_tags[t].key, d_tags[t].value,
-                    //                      d_tags[t].srcid);
-                    output_tags.push_back(tag_t(n_written + i + d_tags[t].offset,
-                                                d_tags[t].key,
-                                                d_tags[t].value,
-                                                d_tags[t].srcid));
+                for (unsigned t = 0; t < _tags.size(); t++) {
+                    output_tags.push_back(tag_t(n_written + i + _tags[t].offset,
+                                                _tags[t].key,
+                                                _tags[t].value,
+                                                _tags[t].srcid));
                 }
             }
         } else {
-            for (int i = 0; i < static_cast<int>(noutput_items * d_vlen); i++) {
-                optr[i] = d_data[offset++];
+            for (int i = 0; i < static_cast<int>(noutput_items * _vlen); i++) {
+                optr[i] = _data[offset++];
                 if (offset >= size) {
                     offset = 0;
                 }
             }
         }
 
-        d_offset = offset;
+        _offset = offset;
 
         work_output[0].n_produced = noutput_items;
         return work_return_code_t::WORK_OK;
 
     } else {
-        if (d_offset >= d_data.size())
+        if (_offset >= _data.size())
             return work_return_code_t::WORK_DONE; // Done!
 
-        unsigned n = std::min((unsigned)d_data.size() - d_offset,
-                              (unsigned)noutput_items * d_vlen);
+        unsigned n =
+            std::min(_data.size() - _offset, noutput_items * _vlen);
         for (unsigned i = 0; i < n; i++) {
-            optr[i] = d_data[d_offset + i];
+            optr[i] = _data[_offset + i];
         }
-        for (unsigned t = 0; t < d_tags.size(); t++) {
-            if ((d_tags[t].offset >= d_offset) && (d_tags[t].offset < d_offset + n)) {
+        for (unsigned t = 0; t < _tags.size(); t++) {
+            if ((_tags[t].offset >= _offset) && (_tags[t].offset < _offset + n)) {
                 // this->add_item_tag(
-                //     0, d_tags[t].offset, d_tags[t].key, d_tags[t].value,
-                //     d_tags[t].srcid);
-                work_output[0].tags.push_back(d_tags[t]);
+                //     0, _tags[t].offset, _tags[t].key, _tags[t].value,
+                //     _tags[t].srcid);
+                work_output[0].tags.push_back(_tags[t]);
             }
         }
-        d_offset += n;
+        _offset += n;
 
-        work_output[0].n_produced = n / d_vlen;
+        work_output[0].n_produced = n / _vlen;
         return work_return_code_t::WORK_OK;
     }
 }
