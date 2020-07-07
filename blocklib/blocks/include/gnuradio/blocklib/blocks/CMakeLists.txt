@@ -1,4 +1,5 @@
 install(FILES
+  dummy.hpp
   multiply_const_blk.hpp
   throttle.hpp
   vector_source.hpp
