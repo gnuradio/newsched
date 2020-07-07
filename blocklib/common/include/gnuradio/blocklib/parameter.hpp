@@ -110,6 +110,7 @@ public:
           _default_value(default_value),
           _value_ptr(value_ptr)
     {
+        set_value(default_value);
     }
 
     param(param_base& b) : param_base(b) { _value = std::any_cast<T>(b.any_value()); }
@@ -165,10 +166,22 @@ protected:
 public:
     typedef std::shared_ptr<param_action<T>> sptr;
 
+    static sptr make(uint32_t id)
+    {
+        return std::make_shared<param_action<T>>(param_action<T>(id));
+    }
+
     static sptr make(uint32_t id, T new_value, uint64_t at_sample)
     {
         return std::make_shared<param_action<T>>(param_action<T>(id, new_value, at_sample));
     }
+
+    // Constructor where the current value is "don't care"
+    param_action(uint32_t id)
+        : param_action_base(id, std::any(), 0)
+    {
+    }
+
     param_action(uint32_t id, T new_value, uint64_t at_sample)
         : param_action_base(id, std::make_any<T>(new_value), at_sample),
           _new_value(new_value)

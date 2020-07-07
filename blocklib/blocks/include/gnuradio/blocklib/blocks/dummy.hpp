@@ -18,12 +18,28 @@ public:
 
         ptr->add_param(param<T>::make(dummy<T>::params::id_a, "a", a, &(ptr->_a)));
         ptr->add_param(param<T>::make(dummy<T>::params::id_b, "b", b, &(ptr->_b)));
-        ptr->add_param(param<size_t>::make(dummy<T>::params::id_vlen, "vlen", vlen, &(ptr->_vlen)));
+        ptr->add_param(
+            param<size_t>::make(dummy<T>::params::id_vlen, "vlen", vlen, &(ptr->_vlen)));
+
+        ptr->add_port(port<T>::make("input",
+                                    port_direction_t::INPUT,
+                                    port_type_t::STREAM,
+                                    std::vector<size_t>{ vlen }));
+        ptr->add_port(port<T>::make("out_a",
+                                    port_direction_t::OUTPUT,
+                                    port_type_t::STREAM,
+                                    std::vector<size_t>{ vlen }));
+
+        ptr->add_port(port<T>::make("out_b",
+                                    port_direction_t::OUTPUT,
+                                    port_type_t::STREAM,
+                                    std::vector<size_t>{ vlen }));
 
         return ptr;
     }
+
     dummy() : sync_block("dummy") {}
-    
+
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output)
     {
@@ -38,6 +54,8 @@ public:
             optr2[i] = _b * iptr[i];
         }
 
+        work_output[0].n_produced = size;
+        work_output[1].n_produced = size;
         return work_return_code_t::WORK_OK;
     }
 
@@ -45,7 +63,6 @@ private:
     T _a, _b;
     size_t _vlen;
 };
-
 
 
 } // namespace blocks
