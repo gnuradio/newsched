@@ -12,47 +12,49 @@
 #include <algorithm>
 #include <iostream>
 
+// FIXME - would like to avoid dependence on scheduler
+// conditionally include this
+#include <gnuradio/scheduler.hpp>
+
 using namespace std;
 namespace gr {
 namespace blocks {
 
 template <class T>
-vector_sink<T>::vector_sink(unsigned int vlen, const int reserve_items)
-    : sync_block("vector_sink"), d_vlen(vlen)
+vector_sink<T>::vector_sink(const size_t vlen, const size_t reserve_items)
+    : sync_block("vector_sink"), _vlen(vlen)
 {
-    add_port(port<T>::make("input",
-                           port_direction_t::INPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-
-    // add_param(param<unsigned int>(vector_sink_params::k, "k", 1.0));
-
-
-    std::scoped_lock guard(d_data_mutex);
-    d_data.reserve(d_vlen * reserve_items);
-}
-
-template <class T>
-const std::vector<T> vector_sink<T>::data()
-{
-    std::scoped_lock guard(d_data_mutex);
-    return d_data;
-}
-
-template <class T>
-const std::vector<tag_t> vector_sink<T>::tags()
-{
-    std::scoped_lock guard(d_data_mutex);
-    return d_tags;
+    _data.reserve(_vlen * reserve_items);
 }
 
 
 template <class T>
 void vector_sink<T>::reset()
 {
-    std::scoped_lock guard(d_data_mutex);
-    d_tags.clear();
-    d_data.clear();
+    // call back to the scheduler if ptr is not null
+    if (p_scheduler) {
+        std::condition_variable cv;
+        std::mutex m;
+        p_scheduler->request_callback(
+            alias(),
+            callback_args{
+                "reset",
+                std::vector<std::any>{ },
+                std::any(),
+                0 },
+            [&](auto cb_args) {
+                std::unique_lock<std::mutex> lk(m);
+                cv.notify_one();
+            });
+
+        // block
+        std::unique_lock<std::mutex> lk(m);
+        cv.wait(lk);
+    }
+    // else go ahead and return parameter value
+    else {
+        handle_reset(std::vector<std::any>{});
+    }
 }
 
 template <class T>
@@ -62,16 +64,10 @@ work_return_code_t vector_sink<T>::work(std::vector<block_work_input>& work_inpu
     T* iptr = (T*)work_input[0].items;
     int noutput_items = work_input[0].n_items;
 
-    // can't touch this (as long as work() is working, the accessors shall not
-    // read the data
-    std::scoped_lock guard(d_data_mutex);
-    for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
-        d_data.push_back(iptr[i]);
-    // std::vector<tag_t> tags;
-    // this->get_tags_in_range(
-    //     tags, 0, this->nitems_read(0), this->nitems_read(0) + noutput_items);
-    // d_tags.insert(d_tags.end(), tags.begin(), tags.end());
-    d_tags.insert(d_tags.end(), work_input[0].tags.begin(), work_input[0].tags.end());
+    for (unsigned int i = 0; i < noutput_items * _vlen; i++)
+        _data.push_back(iptr[i]);
+
+    _tags.insert(_tags.end(), work_input[0].tags.begin(), work_input[0].tags.end());
 
     work_input[0].n_consumed = noutput_items;
     return work_return_code_t::WORK_OK;

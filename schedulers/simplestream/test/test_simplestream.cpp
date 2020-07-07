@@ -13,12 +13,11 @@ using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    std::shared_ptr<blocks::multiply_const_ff> mult(
-        new blocks::multiply_const_ff(100.0)); // create a block that multiplies by 17
+    auto mult = blocks::multiply_const_ff::make(100.0); // create a block that multiplies by 17
     std::shared_ptr<blocks::vector_source_f> src(new blocks::vector_source_f(
         std::vector<float>({ 1.0, 2.0, 3.0, 4.0, 5.0 }), true));
     std::shared_ptr<blocks::throttle> throttle(new blocks::throttle(sizeof(float), 100));
-    std::shared_ptr<blocks::vector_sink_f> snk(new blocks::vector_sink_f());
+    auto snk = blocks::vector_sink_f::make();
     // blocks::vector_sink_f snk();
 
     // mult->on_parameter_change(std::vector<param_action_base>{
