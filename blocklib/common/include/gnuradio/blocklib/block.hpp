@@ -12,7 +12,8 @@
 #include <string>
 #include <vector>
 #include <memory>
-		
+#include <condition_variable>
+
 #include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
@@ -20,7 +21,6 @@
 #include <gnuradio/blocklib/parameter.hpp>
 #include <gnuradio/blocklib/callback.hpp>
 #include <gnuradio/blocklib/gpdict.hpp>
-
 
 namespace gr {
 
@@ -177,6 +177,11 @@ public:
 
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    template <class T>
+    T request_parameter_query(int param_id);
+    template <class T>
+    void request_parameter_change(int param_id, T new_value);
 };
 
 typedef block::sptr block_sptr;
