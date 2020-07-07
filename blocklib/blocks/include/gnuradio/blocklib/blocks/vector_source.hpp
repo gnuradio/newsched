@@ -22,7 +22,7 @@ private:
     std::vector<tag_t> d_tags;
 
 public:
-    enum params : uint32_t { data, repeat, vlen, num_params };
+    enum params : uint32_t { id_data, id_repeat, id_vlen, num_params };
     vector_source(const std::vector<T>& data,
                   bool repeat = false,
                   unsigned int vlen = 1,

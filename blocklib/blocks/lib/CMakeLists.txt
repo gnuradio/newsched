@@ -1,4 +1,5 @@
 add_library(gnuradio-blocklib-blocks SHARED
+  dummy.cpp
   multiply_const_blk.cpp
   throttle.cpp
   vector_sink.cpp

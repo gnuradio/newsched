@@ -78,7 +78,7 @@ protected:
 
     parameter_config parameters;
 
-    void add_param(param_base p) { parameters.add(p); }
+    void add_param(param_sptr p) { parameters.add(p); }
 
     std::shared_ptr<scheduler> p_scheduler = nullptr;
 
@@ -100,7 +100,7 @@ public:
     // just maintain metadata in scheduler mapped to the blocks
     
 
-    gpdict attributes;
+    gpdict attributes; // this is a hack for storing metadata.  Needs to go.
 
     virtual bool start() { return true; };
     virtual bool stop() { return true; };
@@ -161,14 +161,16 @@ public:
      * @param params
      */
 
-    virtual void on_parameter_change(param_action_base param)
+    virtual void on_parameter_change(param_action_sptr action)
     {
-        throw std::runtime_error("parameter changes not defined for this block");
+        auto param = parameters.get(action->id());
+        param->set_value(action->any_value());
     }
 
-    virtual void on_parameter_query(param_action_base& param)
+    virtual void on_parameter_query(param_action_sptr action)
     {
-        throw std::runtime_error("parameter queries not defined for this block");
+        auto param = parameters.get(action->id());
+        action->set_any_value(param->any_value());
     }
 
     std::map<std::string,block_callback_fcn> callbacks() {return _callback_function_map;}
