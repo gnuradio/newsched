@@ -13,10 +13,11 @@ using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    auto mult = blocks::multiply_const_ff::make(100.0); // create a block that multiplies by 17
-    std::shared_ptr<blocks::vector_source_f> src(new blocks::vector_source_f(
-        std::vector<float>({ 1.0, 2.0, 3.0, 4.0, 5.0 }), true));
-    std::shared_ptr<blocks::throttle> throttle(new blocks::throttle(sizeof(float), 100));
+    auto mult =
+        blocks::multiply_const_ff::make(100.0); // create a block that multiplies by 17
+    auto src = blocks::vector_source_f::make(
+        std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
+    auto throttle = blocks::throttle::make(sizeof(float), 100);
     auto snk = blocks::vector_sink_f::make();
     // blocks::vector_sink_f snk();
 
@@ -36,7 +37,7 @@ int main(int argc, char* argv[])
 
     fg->validate();
 
-    // what happens when k is set here???  
+    // what happens when k is set here???
 
     fg->start();
 
@@ -48,7 +49,8 @@ int main(int argc, char* argv[])
 
         mult->set_k(k);
 
-        mult->do_a_bunch_of_things(1,2.0,std::vector<gr_complex>{gr_complex(4.0,5.0)});
+        mult->do_a_bunch_of_things(
+            1, 2.0, std::vector<gr_complex>{ gr_complex(4.0, 5.0) });
 
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(200))
             break;

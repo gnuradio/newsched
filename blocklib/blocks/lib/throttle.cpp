@@ -25,18 +25,12 @@ namespace blocks {
 throttle::throttle(size_t itemsize, double samples_per_second, bool ignore_tags)
     : sync_block("throttle"), d_itemsize(itemsize), d_ignore_tags(ignore_tags)
 {
-    // TODO: make the throttle "don't care" type (size only)
-    add_port(port<float>::make(
-        "input", port_direction_t::INPUT, port_type_t::STREAM, std::vector<size_t>{ 1 }));
-    add_port(port<float>::make("output",
-                               port_direction_t::OUTPUT,
-                               port_type_t::STREAM,
-                               std::vector<size_t>{ 1 }));
+
 
     set_sample_rate(samples_per_second);
 }
 
-throttle::~throttle() {}
+// throttle::~throttle() {}
 
 bool throttle::start()
 {
