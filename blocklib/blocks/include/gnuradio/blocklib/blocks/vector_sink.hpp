@@ -26,7 +26,7 @@ private:
     std::vector<T> d_data;
     std::vector<tag_t> d_tags;
     mutable std::mutex d_data_mutex; // protects internal data access.
-    unsigned int d_vlen;
+    size_t d_vlen;
 
 public:
     enum params : uint32_t { num_params };

@@ -58,8 +58,9 @@ public:
     param_base(const uint32_t id,
                const std::string name,
                const param_type_t& type,
-               const std::vector<size_t> dims)
-        : _id(id), _name(name), _type(type), _dims(dims)
+               const std::vector<size_t> dims,
+               std::any any_value)
+        : _id(id), _name(name), _type(type), _dims(dims), _any_value(any_value)
     {
     }
 
@@ -68,6 +69,24 @@ public:
     const uint32_t id() { return _id; }
     const std::string name() { return _name; }
     const std::any any_value() { return _any_value; }
+    const param_type_t type() { return _type; }
+
+
+    // // Ok, here goes ... all the possible parameter value types
+    // virtual void set_value(float val) = 0;
+    // virtual void set_value(double val) = 0;
+    // virtual void set_value(gr_complex val) = 0;
+    // virtual void set_value(int8_t val) = 0;
+    // virtual void set_value(int16_t val) = 0;
+    // virtual void set_value(int32_t val) = 0;
+    // virtual void set_value(int64_t val) = 0;
+    // virtual void set_value(uint8_t val) = 0;
+    // virtual void set_value(uint16_t val) = 0;
+    // virtual void set_value(uint32_t val) = 0;
+    // virtual void set_value(uint64_t val) = 0;
+
+    virtual void set_value(const std::any& val) = 0;
+
 
 protected:
     const uint32_t _id;
@@ -82,16 +101,28 @@ template <class T>
 class param : public param_base
 {
 public:
+    typedef std::shared_ptr<param> sptr;
+    static sptr make(const uint32_t id,
+          const std::string name,
+          const T default_value,
+          T* value_ptr,
+          const std::vector<size_t> dims = std::vector<size_t>{ 1 })
+          {
+              return std::make_shared<param<T>>(param<T>(id, name, default_value, value_ptr, dims));
+          }
     param(const uint32_t id,
           const std::string name,
           const T default_value,
+          T* value_ptr,
           const std::vector<size_t> dims = std::vector<size_t>{ 1 })
         : param_base(id,
                      name,
                      parameter_functions::get_param_type_from_typeinfo(
                          std::type_index(typeid(T))),
-                     dims),
-          _default_value(default_value)
+                     dims,
+                     std::make_any<T>(default_value)),
+          _default_value(default_value),
+          _value_ptr(value_ptr)
     {
     }
 
@@ -99,14 +130,19 @@ public:
 
     void set_value(T val)
     {
-        // do range checking
-
+        // TODO: do range checking
         _param_set = true;
-        _value = val;
+        *_value_ptr = val;
     }
-    T value() { return _value; };
+    void set_value(const std::any& val)
+    {
+        _any_value = val;
+        set_value( std::any_cast<T>(val) );
+    }
+    T value() { return *_value_ptr; };
 
 protected:
+    T* _value_ptr;
     T _default_value;
     T _value;
     value_check _range;
@@ -124,12 +160,15 @@ public:
         : _id(id), _any_value(any_value), _at_sample(at_sample)
     {
     }
-    uint32_t id() { return _id; }
+    uint32_t id() const { return _id; }
     std::any any_value() { return _any_value; }
     void set_any_value(std::any val) { _any_value = val; }
     uint64_t at_sample() { return _at_sample; }
     void set_at_sample(uint64_t val) { _at_sample = val; }
+
 };
+
+typedef std::shared_ptr<param_action_base> param_action_sptr;
 
 template <class T>
 class param_action : public param_action_base
@@ -138,6 +177,12 @@ protected:
     T _new_value;
 
 public:
+    typedef std::shared_ptr<param_action<T>> sptr;
+
+    static sptr make(uint32_t id, T new_value, uint64_t at_sample)
+    {
+        return std::make_shared<param_action<T>>(param_action<T>(id, new_value, at_sample));
+    }
     param_action(uint32_t id, T new_value, uint64_t at_sample)
         : param_action_base(id, std::make_any<T>(new_value), at_sample),
           _new_value(new_value)
@@ -149,38 +194,48 @@ public:
         _new_value = std::any_cast<T>(b.any_value());
     }
 
-    T new_value() { return _new_value; }
+    T new_value() { return std::any_cast<T>( _any_value); }
 };
 
-typedef std::function<void(param_action_base)> param_action_complete_fcn;
+typedef std::function<void(param_action_sptr)> param_action_complete_fcn;
 struct param_action_base_with_callback {
     std::string block_id;
-    param_action_base param_action;
+    param_action_sptr param_action;
     param_action_complete_fcn cb_fcn;
 };
 
 typedef std::queue<param_action_base_with_callback> param_action_queue;
 
+typedef std::shared_ptr<param_base> param_sptr;
+
 class parameter_config
 {
 private:
-    std::vector<param_base> params;
+    std::vector<param_sptr> params;
 
 public:
     size_t num() { return params.size(); }
-    void add(param_base b) { params.push_back(b); }
-    param_base get(const uint32_t id)
+    void add(param_sptr b) { params.push_back(b); }
+    param_sptr get(const uint32_t id)
     {
-        auto pred = [id](param_base& item) { return item.id() == id; };
-        std::vector<param_base>::iterator it =
+        auto pred = [id](param_sptr item) { return item->id() == id; };
+        std::vector<param_sptr>::iterator it =
             std::find_if(std::begin(params), std::end(params), pred);
+
+        if (it == std::end(params))
+            throw std::runtime_error("parameter not defined for this block"); // TODO logging
+
         return *it;
     }
-    param_base get(const std::string name)
+    param_sptr get(const std::string name)
     {
-        auto pred = [name](param_base& item) { return item.name() == name; };
-        std::vector<param_base>::iterator it =
+        auto pred = [name](param_sptr item) { return item->name() == name; };
+        std::vector<param_sptr>::iterator it =
             std::find_if(std::begin(params), std::end(params), pred);
+
+        if (it == std::end(params))
+            throw std::runtime_error("parameter not defined for this block"); // TODO logging
+
         return *it;
     }
     void clear() { params.clear(); }
