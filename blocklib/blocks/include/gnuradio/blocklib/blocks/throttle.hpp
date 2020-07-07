@@ -33,19 +33,26 @@ namespace blocks {
  */
 class throttle : virtual public sync_block
 {
-private:
-    std::chrono::time_point<std::chrono::steady_clock> d_start;
-    const size_t d_itemsize;
-    uint64_t d_total_samples;
-    double d_sample_rate;
-    std::chrono::duration<double> d_sample_period;
-    const bool d_ignore_tags;
-
 public:
     typedef std::shared_ptr<throttle> sptr;
 
+    static sptr make(size_t itemsize, double samples_per_sec, bool ignore_tags = true)
+    {
+        auto ptr = std::make_shared<throttle>(throttle(itemsize, samples_per_sec, ignore_tags));
+
+        // TODO: make the throttle "don't care" type (size only)
+        ptr->add_port(port<uint8_t>::make(
+            "input", port_direction_t::INPUT, port_type_t::STREAM, std::vector<size_t>{ 1 }));
+        ptr->add_port(port<uint8_t>::make("output",
+                                port_direction_t::OUTPUT,
+                                port_type_t::STREAM,
+                                std::vector<size_t>{ 1 }));
+
+        return ptr;
+    }
+
     throttle(size_t itemsize, double samples_per_sec, bool ignore_tags = true);
-    ~throttle();
+    // ~throttle();
 
     bool start();
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
@@ -56,6 +63,15 @@ public:
 
     //! Get the sample rate in samples per second.
     double sample_rate() const;
+
+private:
+    std::chrono::time_point<std::chrono::steady_clock> d_start;
+    const size_t d_itemsize;
+    uint64_t d_total_samples;
+    double d_sample_rate;
+    std::chrono::duration<double> d_sample_period;
+    const bool d_ignore_tags;
+
 };
 
 } /* namespace blocks */
