@@ -59,17 +59,21 @@ public:
         return fg;
     }
 
-    edge find_edge(port_sptr port)
+    std::vector<edge> find_edge(port_sptr port)
     {
+        std::vector<edge> ret;
         for (auto& e : edges()) {
             if (e.src().port() == port)
-                return e;
+                ret.push_back(e);
 
             if (e.dst().port() == port)
-                return e;
+                ret.push_back(e);
         }
 
-        throw std::invalid_argument("edge not found");
+        if (ret.empty())
+            throw std::invalid_argument("edge not found");
+
+        return ret;
     }
 
 protected:

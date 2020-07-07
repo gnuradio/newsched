@@ -2,6 +2,7 @@
 
 add_executable(test_simplestream test_simplestream.cpp)
 add_executable(test_multiple_output test_multiple_output.cpp)
+add_executable(test_one_to_many test_one_to_many.cpp)
 
 target_include_directories(gnuradio-scheduler-simplestream
 PUBLIC
@@ -20,6 +21,13 @@ target_link_libraries(test_simplestream
 )
 
 target_link_libraries(test_multiple_output 
+    gnuradio-blocklib-common
+    gnuradio-blocklib-blocks
+    gnuradio-runtime
+    gnuradio-scheduler-simplestream
+)
+
+target_link_libraries(test_one_to_many 
     gnuradio-blocklib-common
     gnuradio-blocklib-blocks
     gnuradio-runtime
