@@ -14,7 +14,7 @@ template <class T>
 void block::request_parameter_change(int param_id, T new_value)
 {
     // call back to the scheduler if ptr is not null
-    if (p_scheduler) {
+    if (p_scheduler && d_running) {
         std::condition_variable cv;
         std::mutex m;
         auto lam = [&](param_action_sptr a) {
@@ -38,7 +38,7 @@ template <class T>
 T block::request_parameter_query(int param_id)
 {
     // call back to the scheduler if ptr is not null
-    if (p_scheduler) {
+    if (p_scheduler && d_running) {
         std::condition_variable cv;
         std::mutex m;
         T newval;

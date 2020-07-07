@@ -8,19 +8,19 @@
 #ifndef INCLUDED_BLOCK_HPP
 #define INCLUDED_BLOCK_HPP
 
+#include <condition_variable>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include <condition_variable>
 
 #include <gnuradio/blocklib/block_callbacks.hpp>
 #include <gnuradio/blocklib/block_work_io.hpp>
+#include <gnuradio/blocklib/callback.hpp>
+#include <gnuradio/blocklib/gpdict.hpp>
 #include <gnuradio/blocklib/io_signature.hpp>
 #include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/blocklib/parameter.hpp>
-#include <gnuradio/blocklib/callback.hpp>
-#include <gnuradio/blocklib/gpdict.hpp>
 
 namespace gr {
 
@@ -55,12 +55,13 @@ class block : public gr::node, public std::enable_shared_from_this<block>
 
 private:
     bool d_output_multiple_set = false;
+    bool d_running = false;
     unsigned int d_output_multiple;
 
-    std::map<std::string,block_callback_fcn> _callback_function_map;  // callback_function_map["mult0"]["do_something"](x,y,z)
+    std::map<std::string, block_callback_fcn>
+        _callback_function_map; // callback_function_map["mult0"]["do_something"](x,y,z)
 
 protected:
-
     // These are overridden by the derived class
     static const io_signature_capability d_input_signature_capability;
     static const io_signature_capability d_output_signature_capability;
@@ -98,12 +99,26 @@ public:
     block(const std::string& name);
 
     // just maintain metadata in scheduler mapped to the blocks
-    
+
 
     gpdict attributes; // this is a hack for storing metadata.  Needs to go.
 
-    virtual bool start() { return true; };
-    virtual bool stop() { return true; };
+    virtual bool start()
+    {
+        d_running = true;
+        return true;
+    }
+    virtual bool stop()
+    {
+        d_running = false;
+        return true;
+    }
+
+    virtual bool done()
+    {
+        d_running = false;
+        return true;
+    }
 
     virtual ~block(){};
     typedef std::shared_ptr<block> sptr;
@@ -173,7 +188,10 @@ public:
         action->set_any_value(param->any_value());
     }
 
-    std::map<std::string,block_callback_fcn> callbacks() {return _callback_function_map;}
+    std::map<std::string, block_callback_fcn> callbacks()
+    {
+        return _callback_function_map;
+    }
 
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }

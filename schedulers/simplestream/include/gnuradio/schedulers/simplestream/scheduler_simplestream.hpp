@@ -25,8 +25,6 @@ public:
     void initialize(flat_graph_sptr fg)
     {
         d_fg = fg;
-        // Create a fixed size buffer for each of the edges
-        // TODO - this should be a replaceable buffer class
 
         // if (fg->is_flat())  // flatten
 
@@ -49,13 +47,17 @@ public:
             unsigned int num_output_ports = output_ports.size();
 
             for (auto p : input_ports) {
-                edge ed = d_fg->find_edge(p);
-                d_block_buffers[p] = d_edge_buffers[ed.identifier()];
+                d_block_buffers[p] = std::vector<simplebuffer::sptr>{};
+                edge_vector_t ed = d_fg->find_edge(p);
+                for (auto e : ed)
+                    d_block_buffers[p].push_back(d_edge_buffers[e.identifier()]);
             }
 
             for (auto p : output_ports) {
-                edge ed = d_fg->find_edge(p);
-                d_block_buffers[p] = d_edge_buffers[ed.identifier()];
+                d_block_buffers[p] = std::vector<simplebuffer::sptr>{};
+                edge_vector_t ed = d_fg->find_edge(p);
+                for (auto e : ed)
+                    d_block_buffers[p].push_back(d_edge_buffers[e.identifier()]);
             }
         }
     }
@@ -68,9 +70,18 @@ public:
         d_thread = std::thread(thread_body, this);
     }
 
-    void stop() { d_thread_stopped = true; }
+    void stop() { d_thread_stopped = true; 
+        d_thread.join();
+        for (auto& b : d_blocks) {
+            b->stop();
+        }
+    }
 
-    void wait() { d_thread.join(); }
+    void wait() { d_thread.join();
+        for (auto& b : d_blocks) {
+            b->done();
+        }    
+     }
 
     void run()
     {
@@ -85,9 +96,8 @@ private:
     std::map<std::string, simplebuffer::sptr> d_edge_buffers;
     // std::map<block_sptr, std::map<block::io, std::map<int, simplebuffer::sptr>>>
     //     d_block_buffers; // store the block buffers
-    // std::map<port_sptr, std::vector<simplebuffer::sptr>>  // TODO: multiple edges from
-    // one output port
-    std::map<port_sptr, simplebuffer::sptr> d_block_buffers; // store the block buffers
+    std::map<port_sptr, std::vector<simplebuffer::sptr>> d_block_buffers;
+    // std::map<port_sptr, simplebuffer::sptr> d_block_buffers; // store the block buffers
     std::thread d_thread;
     bool d_thread_stopped = false;
 
@@ -105,8 +115,7 @@ private:
                 while (!top->param_change_queue.empty()) {
                     auto item = top->param_change_queue.front();
                     if (item.block_id == b->alias()) {
-                        b->on_parameter_change(
-                            item.param_action);
+                        b->on_parameter_change(item.param_action);
 
                         if (item.cb_fcn != nullptr)
                             item.cb_fcn(item.param_action);
@@ -126,8 +135,7 @@ private:
                 while (!top->param_query_queue.empty()) {
                     auto item = top->param_query_queue.front();
                     if (item.block_id == b->alias()) {
-                        b->on_parameter_query(
-                            item.param_action);
+                        b->on_parameter_query(item.param_action);
 
                         if (item.cb_fcn != nullptr)
                             item.cb_fcn(item.param_action);
@@ -139,7 +147,7 @@ private:
                         break;
                     }
                 }
-                
+
                 // handle general callbacks
                 while (!top->callback_queue.empty()) {
                     auto item = top->callback_queue.front();
@@ -165,7 +173,7 @@ private:
                 // for each input port of the block
                 bool ready = true;
                 for (auto p : b->input_stream_ports()) {
-                    simplebuffer::sptr p_buf = top->d_block_buffers[p];
+                    simplebuffer::sptr p_buf = top->d_block_buffers[p][0];
 
                     if (p_buf->size() < s_min_items_to_process) {
                         ready = false;
@@ -179,16 +187,28 @@ private:
 
                 // for each output port of the block
                 for (auto p : b->output_stream_ports()) {
-                    simplebuffer::sptr p_buf = top->d_block_buffers[p];
 
-                    if (p_buf->size() >= s_max_buf_items) {
-                        ready = false;
-                        break;
+                    // When a block has multiple output buffers, it adds the restriction
+                    // that the work call can only produce the minimum available across
+                    // the buffers.
+
+                    int max_output_buffer = std::numeric_limits<int>::max();
+                    for (auto p_buf : top->d_block_buffers[p]) {
+                        if (p_buf->size() >= s_max_buf_items) {
+                            ready = false;
+                            break;
+                        }
+
+                        int tmp_buf_size = p_buf->capacity() - p_buf->size();
+                        if (tmp_buf_size < max_output_buffer)
+                            max_output_buffer = tmp_buf_size;
                     }
 
-                    int max_output_buffer = p_buf->capacity() - p_buf->size();
                     max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
+                    auto p_buf =
+                        top->d_block_buffers[p]
+                                            [0]; // use the first buffer for the writing
                     work_output.push_back(block_work_output(
                         max_output_buffer, 0, p_buf->write_ptr(), tags));
                 }
@@ -198,7 +218,9 @@ private:
                     if (ret == work_return_code_t::WORK_OK) {
                         int i = 0;
                         for (auto p : b->input_stream_ports()) {
-                            simplebuffer::sptr p_buf = top->d_block_buffers[p];
+                            simplebuffer::sptr p_buf =
+                                top->d_block_buffers[p]
+                                                    [0]; // only one buffer per input port
 
                             p_buf->post_read(work_input[i].n_consumed);
                             i++;
@@ -206,9 +228,17 @@ private:
 
                         i = 0;
                         for (auto p : b->output_stream_ports()) {
-                            simplebuffer::sptr p_buf = top->d_block_buffers[p];
-
-                            p_buf->post_write(work_output[i].n_produced);
+                            int j = 0;
+                            for (auto p_buf : top->d_block_buffers[p]) {
+                                if (j > 0) {
+                                    p_buf->copy_items(top->d_block_buffers[p][0],
+                                                      work_output[i].n_produced);
+                                }
+                                j++;
+                            }
+                            for (auto p_buf : top->d_block_buffers[p]) {
+                                p_buf->post_write(work_output[i].n_produced);
+                            }
                             i++;
                         }
                         // update the buffers according to the items produced
@@ -224,7 +254,7 @@ private:
             }
         }
 
-        std::cout << "exiting" << std::endl;
+
     }
 };
 } // namespace schedulers

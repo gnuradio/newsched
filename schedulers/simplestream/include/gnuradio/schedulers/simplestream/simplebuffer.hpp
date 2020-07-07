@@ -75,4 +75,9 @@ public:
             _write_index -= _buf_size;
         }
     }
+
+    void copy_items(sptr from, int nitems)
+    {
+        memcpy(write_ptr(), from->write_ptr(), nitems*_item_size);
+    }
 };
