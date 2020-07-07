@@ -13,7 +13,7 @@ class multiply_const : public sync_block
 private:
 
     T d_k;
-    const size_t d_vlen;
+    size_t d_vlen;
 
     void ports_and_params(size_t);
 
@@ -27,8 +27,8 @@ public:
                                     std::vector<block_work_output>& work_output);
 
 
-    virtual void on_parameter_change(param_action_base param) override;
-    virtual void on_parameter_query(param_action_base& param) override;
+    // virtual void on_parameter_change(param_action_sptr action) override;
+    // virtual void on_parameter_query(param_action_sptr action) override;
     std::any handle_do_a_bunch_of_things(std::vector<std::any> args)
     {
         auto xi = std::any_cast<int>(args[0]);

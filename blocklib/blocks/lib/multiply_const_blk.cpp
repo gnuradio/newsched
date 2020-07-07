@@ -6,9 +6,11 @@
 
 #include "multiply_const_blk.hpp"
 #include <gnuradio/scheduler.hpp>
+#include <condition_variable>
 #include <volk/volk.h>
 #include <chrono>
 #include <thread>
+#include <mutex>
 
 namespace gr {
 namespace blocks {
@@ -25,9 +27,11 @@ void multiply_const<T>::ports_and_params(size_t vlen)
                            port_type_t::STREAM,
                            std::vector<size_t>{ vlen }));
 
-    add_param(param<T>(multiply_const<T>::params::id_k, "k", 1.0));
+    add_param(param<T>::make(
+        multiply_const<T>::params::id_k, "k", 1.0, &d_k));
 
-    add_param(param<size_t>(multiply_const<T>::params::id_vlen, "vlen", 1));
+    add_param(param<size_t>::make(
+        multiply_const<T>::params::id_vlen, "vlen", vlen, &d_vlen));
 
     register_callback("do_a_bunch_of_things", [this](auto args) {
         return this->handle_do_a_bunch_of_things(args);
@@ -121,25 +125,25 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
     return work_return_code_t::WORK_OK;
 }
 
-template <class T>
-void multiply_const<T>::on_parameter_change(param_action_base param)
-{
-    if (param.id() == multiply_const<T>::params::id_k) {
-        d_k = static_cast<param_action<T>>(param).new_value();
-    } else if (param.id() == multiply_const<T>::params::id_vlen) {
-        // cannot be changed
-    }
-}
+// template <class T>
+// void multiply_const<T>::on_parameter_change(param_action_sptr param)
+// {
+//     if (param->id() == multiply_const<T>::params::id_k) {
+//         d_k = static_cast<param_action<T>>(param).new_value();
+//     } else if (param->id() == multiply_const<T>::params::id_vlen) {
+//         // cannot be changed
+//     }
+// }
 
-template <class T>
-void multiply_const<T>::on_parameter_query(param_action_base& param)
-{
-    if (param.id() == multiply_const<T>::params::id_k) {
-        param.set_any_value(std::make_any<T>(d_k));
-    } else if (param.id() == multiply_const<T>::params::id_vlen) {
-        param.set_any_value(std::make_any<T>(d_vlen));
-    }
-}
+// template <class T>
+// void multiply_const<T>::on_parameter_query(param_action_base& param)
+// {
+//     if (param.id() == multiply_const<T>::params::id_k) {
+//         param.set_any_value(std::make_any<T>(d_k));
+//     } else if (param.id() == multiply_const<T>::params::id_vlen) {
+//         param.set_any_value(std::make_any<T>(d_vlen));
+//     }
+// }
 
 template <class T>
 void multiply_const<T>::set_k(T k)
@@ -147,53 +151,61 @@ void multiply_const<T>::set_k(T k)
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
         p_scheduler->request_parameter_change(
-            alias(), param_action<T>(params::id_k, k, 0), [&](auto a) {
+            alias(), param_action<T>::make(params::id_k, k, 0), [&](param_action_sptr a) {
                 std::cout << "k was changed to "
-                          << static_cast<param_action<T>>(a).new_value() << std::endl;
+                          << std::static_pointer_cast<param_action<T>>(a)->new_value()
+                          << std::endl;
             });
 
     }
     // else go ahead and update parameter value
     else {
-        on_parameter_change(param_action<T>(params::id_k, k, 0));
+        on_parameter_change(param_action<T>::make(params::id_k, k, 0));
     }
 }
 
 template <class T>
 T multiply_const<T>::k()
 {
-
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {
         // not thread safe - fix with condition variable
-        bool gotit = false;
+        // std::condition_variable cv;
+        // std::mutex m;
+        bool ready = false;
         T newval;
-        auto lam = [&](auto a) {
-                newval = static_cast<param_action<T>>(a).new_value();
-                gotit = true;
-            };
+        auto lam = [&](param_action_sptr a) {
+            // std::unique_lock<std::mutex> lk(m);
+            // cv.wait(lk);
+            newval = std::static_pointer_cast<param_action<T>>(a)->new_value();
+            // lk.unlock();
+            // cv.notify_one();
+            ready = true;
+        };
+
+        // std::unique_lock<std::mutex> lk(m);
+        // cv.wait(lk);
 
         p_scheduler->request_parameter_query(
-            alias(), param_action<T>(params::id_k, 0, 0), lam);
+            alias(), param_action<T>::make(params::id_k, 0, 0), lam);
 
         // replace with condition variable
-        while(!gotit)
-        {
+        while (!ready) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
-        return newval;
+            return newval;
     }
     // else go ahead and return parameter value
     else {
         return d_k;
     }
-
-    
 }
 
 template <class T>
-double multiply_const<T>::do_a_bunch_of_things(const int x, const double y, const std::vector<gr_complex>& z)
+double multiply_const<T>::do_a_bunch_of_things(const int x,
+                                               const double y,
+                                               const std::vector<gr_complex>& z)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler) {

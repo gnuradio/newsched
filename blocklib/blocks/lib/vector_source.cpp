@@ -36,8 +36,8 @@ vector_source<T>::vector_source(const std::vector<T>& data,
                            std::vector<size_t>{ vlen }));
 
     add_param(
-        param<std::vector<T>>(vector_source::params::data, "data", std::vector<T>()));
-    add_param(param<bool>(vector_source::params::repeat, "repeat", false));
+        param<std::vector<T>>::make(vector_source::params::id_data, "data", data, &d_data, std::vector<size_t>(vlen)));
+    add_param(param<bool>::make(vector_source::params::id_repeat, "repeat", repeat, &d_repeat));
 
     if (tags.empty()) {
         d_settags = 0;

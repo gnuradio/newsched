@@ -25,7 +25,7 @@ public:
     virtual void wait() = 0;
 
     virtual void request_parameter_query(const std::string& block_alias,
-                                         param_action_base param_action,
+                                         param_action_sptr param_action,
                                          param_action_complete_fcn cb_when_complete)
     {
         param_query_queue.emplace(param_action_base_with_callback{
@@ -33,7 +33,7 @@ public:
     }
 
     virtual void request_parameter_change(const std::string& block_alias,
-                                          param_action_base param_action,
+                                          param_action_sptr param_action,
                                           param_action_complete_fcn cb_when_complete)
     {
         param_change_queue.emplace(param_action_base_with_callback{
