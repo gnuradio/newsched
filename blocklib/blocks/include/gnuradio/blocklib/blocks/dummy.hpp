@@ -56,9 +56,14 @@ public:
 
         work_output[0].n_produced = size;
         work_output[1].n_produced = size;
+        work_input[0].n_consumed = size;
         return work_return_code_t::WORK_OK;
     }
 
+    void set_a(T a) {return request_parameter_change<T>(params::id_a, a);}
+    void set_b(T b) {return request_parameter_change<T>(params::id_b, b);}
+    T a() {return request_parameter_query<T>(params::id_a);}
+    T b() {return request_parameter_query<T>(params::id_b);}
 private:
     T _a, _b;
     size_t _vlen;
