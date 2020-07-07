@@ -71,20 +71,6 @@ public:
     const std::any any_value() { return _any_value; }
     const param_type_t type() { return _type; }
 
-
-    // // Ok, here goes ... all the possible parameter value types
-    // virtual void set_value(float val) = 0;
-    // virtual void set_value(double val) = 0;
-    // virtual void set_value(gr_complex val) = 0;
-    // virtual void set_value(int8_t val) = 0;
-    // virtual void set_value(int16_t val) = 0;
-    // virtual void set_value(int32_t val) = 0;
-    // virtual void set_value(int64_t val) = 0;
-    // virtual void set_value(uint8_t val) = 0;
-    // virtual void set_value(uint16_t val) = 0;
-    // virtual void set_value(uint32_t val) = 0;
-    // virtual void set_value(uint64_t val) = 0;
-
     virtual void set_value(const std::any& val) = 0;
 
 
@@ -142,7 +128,7 @@ public:
     T value() { return *_value_ptr; };
 
 protected:
-    T* _value_ptr;
+    T* _value_ptr; // TODO: use smart pointer
     T _default_value;
     T _value;
     value_check _range;
