@@ -5,44 +5,22 @@
  */
 
 #include "multiply_const_blk.hpp"
-#include <gnuradio/scheduler.hpp>
-#include <condition_variable>
 #include <volk/volk.h>
 #include <chrono>
 #include <mutex>
 #include <thread>
 
+// FIXME - would like to avoid dependence on scheduler
+// conditionally include this
+#include <gnuradio/scheduler.hpp>
+
 namespace gr {
 namespace blocks {
 
-template <class T>
-void multiply_const<T>::ports_and_params(size_t vlen)
-{
-    add_port(port<T>::make("input",
-                           port_direction_t::INPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-    add_port(port<T>::make("output",
-                           port_direction_t::OUTPUT,
-                           port_type_t::STREAM,
-                           std::vector<size_t>{ vlen }));
-
-    add_param(param<T>::make(multiply_const<T>::params::id_k, "k", 1.0, &d_k));
-
-    // TODO: vlen should be const and unchangeable as a parameter
-    add_param(
-        param<size_t>::make(multiply_const<T>::params::id_vlen, "vlen", vlen, &d_vlen));
-
-    register_callback("do_a_bunch_of_things", [this](auto args) {
-        return this->handle_do_a_bunch_of_things(args);
-    });
-}
-
 template <>
-multiply_const<float>::multiply_const(float k, size_t vlen)
-    : sync_block("multiply_const_ff"), d_k(k), d_vlen(vlen)
+multiply_const<float>::multiply_const()
+    : sync_block("multiply_const_ff")
 {
-    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -64,10 +42,9 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 }
 
 template <>
-multiply_const<gr_complex>::multiply_const(gr_complex k, size_t vlen)
-    : sync_block("multiply_const_cc"), d_k(k), d_vlen(vlen)
+multiply_const<gr_complex>::multiply_const()
+    : sync_block("multiply_const_cc")
 {
-    ports_and_params(vlen);
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
 }
@@ -89,10 +66,10 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 
 
 template <class T>
-multiply_const<T>::multiply_const(T k, size_t vlen)
-    : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
+multiply_const<T>::multiply_const()
+    : sync_block("multiply_const")
 {
-    ports_and_params(vlen);
+
 }
 
 template <class T>
@@ -123,58 +100,6 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
     work_output[0].n_produced = work_output[0].n_items;
     work_input[0].n_consumed = work_input[0].n_items;
     return work_return_code_t::WORK_OK;
-}
-
-template <class T>
-void multiply_const<T>::set_k(T k)
-{
-    // call back to the scheduler if ptr is not null
-    if (p_scheduler) {
-        std::condition_variable cv;
-        std::mutex m;
-        auto lam = [&](param_action_sptr a) {
-            std::unique_lock<std::mutex> lk(m);
-            cv.notify_one();
-        };
-        p_scheduler->request_parameter_change(
-            alias(), param_action<T>::make(params::id_k, k, 0), lam);
-
-        // block until confirmation that parameter has been set
-        std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk);
-
-    }
-    // else go ahead and update parameter value
-    else {
-        on_parameter_change(param_action<T>::make(params::id_k, k, 0));
-    }
-}
-
-template <class T>
-T multiply_const<T>::k()
-{
-    // call back to the scheduler if ptr is not null
-    if (p_scheduler) {
-        std::condition_variable cv;
-        std::mutex m;
-        T newval;
-        auto lam = [&](param_action_sptr a) {
-            std::unique_lock<std::mutex> lk(m);
-            newval = std::static_pointer_cast<param_action<T>>(a)->new_value();
-            cv.notify_one();
-        };
-
-        p_scheduler->request_parameter_query(
-            alias(), param_action<T>::make(params::id_k, 0, 0), lam);
-
-        std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk);
-        return newval;
-    }
-    // else go ahead and return parameter value
-    else {
-        return d_k;
-    }
 }
 
 // A notional generic callback used as an example.  Should not actually be part of the
