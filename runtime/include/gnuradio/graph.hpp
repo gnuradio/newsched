@@ -139,9 +139,9 @@ public:
         _edges.push_back(edge(src, dst));
         _nodes = calc_used_nodes();
 
+        std::map<std::string, int> name_count;
         // update the block alias
         for (auto& b : _nodes) {
-            std::map<std::string, int> name_count;
             // look in the map, see how many of that name exist
             // make the alias name + count;
             // increment the map
