@@ -2,9 +2,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <vector>
 
-class simplebuffer
+#include <gnuradio/buffer.hpp>
+
+class simplebuffer : public buffer
 {
 private:
     std::vector<uint8_t> _buffer;
@@ -13,6 +16,9 @@ private:
     unsigned int _num_items;
     unsigned int _item_size;
     unsigned int _buf_size;
+
+    std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and
+                           // used scoped lock outside on the caller
 
 public:
     typedef std::shared_ptr<simplebuffer> sptr;
@@ -45,15 +51,44 @@ public:
 
     void* read_ptr() { return (void*)&_buffer[_read_index]; }
     void* write_ptr() { return (void*)&_buffer[_write_index]; }
-    void post_read(int num_items)
+
+    virtual buffer_info_t read_info()
+    {
+        // Need to lock the buffer to freeze the current state
+        _buf_mutex.lock();
+        buffer_info_t ret;
+
+        ret.ptr = read_ptr();
+        ret.n_items = size();
+        ret.item_size = _item_size;
+
+        return ret;
+    }
+
+    virtual buffer_info_t write_info()
+    {
+        _buf_mutex.lock();
+        buffer_info_t ret;
+
+        ret.ptr = write_ptr();
+        ret.n_items = capacity() - size();
+        ret.item_size = _item_size;
+
+        return ret;
+    }
+
+    virtual void cancel() { _buf_mutex.unlock(); }
+
+    virtual void post_read(int num_items)
     {
         // advance the read pointer
         _read_index += num_items * _item_size;
         if (_read_index >= _buf_size) {
             _read_index -= _buf_size;
         }
+        _buf_mutex.unlock();
     }
-    void post_write(int num_items)
+    virtual void post_write(int num_items)
     {
         unsigned int bytes_written = num_items * _item_size;
         int wi1 = _write_index;
@@ -74,10 +109,12 @@ public:
         if (_write_index >= _buf_size) {
             _write_index -= _buf_size;
         }
+
+        _buf_mutex.unlock();
     }
 
-    void copy_items(sptr from, int nitems)
+    virtual void copy_items(std::shared_ptr<buffer> from, int nitems)
     {
-        memcpy(write_ptr(), from->write_ptr(), nitems*_item_size);
+        memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
     }
 };
