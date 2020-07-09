@@ -1,7 +1,7 @@
 //#include <gnuradio/scheduler.hpp>
 #include <gnuradio/scheduler.hpp>
 // #include <boost/circular_buffer.hpp>
-#include "simplebuffer.hpp"
+#include <gnuradio/simplebuffer.hpp>
 #include <thread> // std::thread
 namespace gr {
 
@@ -70,18 +70,22 @@ public:
         d_thread = std::thread(thread_body, this);
     }
 
-    void stop() { d_thread_stopped = true; 
+    void stop()
+    {
+        d_thread_stopped = true;
         d_thread.join();
         for (auto& b : d_blocks) {
             b->stop();
         }
     }
 
-    void wait() { d_thread.join();
+    void wait()
+    {
+        d_thread.join();
         for (auto& b : d_blocks) {
             b->done();
-        }    
-     }
+        }
+    }
 
     void run()
     {
@@ -170,19 +174,31 @@ private:
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);
 
+                std::vector<buffer_sptr> bufs;
                 // for each input port of the block
                 bool ready = true;
                 for (auto p : b->input_stream_ports()) {
-                    simplebuffer::sptr p_buf = top->d_block_buffers[p][0];
+                    auto p_buf = top->d_block_buffers[p][0];
 
-                    if (p_buf->size() < s_min_items_to_process) {
+                    auto read_info = p_buf->read_info();
+                    bufs.push_back(p_buf);
+
+                    if (read_info.n_items < s_min_items_to_process) {
                         ready = false;
                         break;
                     }
 
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
                     work_input.push_back(
-                        block_work_input(p_buf->size(), 0, p_buf->read_ptr(), tags));
+                        block_work_input(read_info.n_items, 0, read_info.ptr, tags));
+                }
+
+                if (!ready) {
+                    // clean up the buffers that we now won't be using
+                    for (auto buf : bufs) {
+                        buf->cancel();
+                    }
+                    continue;
                 }
 
                 // for each output port of the block
@@ -193,24 +209,39 @@ private:
                     // the buffers.
 
                     int max_output_buffer = std::numeric_limits<int>::max();
+
+                    void* write_ptr = nullptr;
                     for (auto p_buf : top->d_block_buffers[p]) {
-                        if (p_buf->size() >= s_max_buf_items) {
+                        auto write_info = p_buf->write_info();
+                        bufs.push_back(p_buf);
+
+                        if (write_info.n_items < s_max_buf_items) {
                             ready = false;
                             break;
                         }
 
-                        int tmp_buf_size = p_buf->capacity() - p_buf->size();
+                        int tmp_buf_size = write_info.n_items;
                         if (tmp_buf_size < max_output_buffer)
                             max_output_buffer = tmp_buf_size;
+
+                        // store the first buffer
+                        if (!write_ptr)
+                            write_ptr = write_info.ptr;
                     }
 
                     max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
-                    auto p_buf =
-                        top->d_block_buffers[p]
-                                            [0]; // use the first buffer for the writing
-                    work_output.push_back(block_work_output(
-                        max_output_buffer, 0, p_buf->write_ptr(), tags));
+
+                    work_output.push_back(
+                        block_work_output(max_output_buffer, 0, write_ptr, tags));
+                }
+
+                if (!ready) {
+                    // clean up the buffers that we now won't be using
+                    for (auto buf : bufs) {
+                        buf->cancel();
+                    }
+                    continue;
                 }
 
                 if (ready) {
@@ -218,7 +249,7 @@ private:
                     if (ret == work_return_code_t::WORK_OK) {
                         int i = 0;
                         for (auto p : b->input_stream_ports()) {
-                            simplebuffer::sptr p_buf =
+                            auto p_buf =
                                 top->d_block_buffers[p]
                                                     [0]; // only one buffer per input port
 
@@ -253,8 +284,6 @@ private:
                 break;
             }
         }
-
-
     }
 };
 } // namespace schedulers
