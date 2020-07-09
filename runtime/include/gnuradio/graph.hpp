@@ -206,6 +206,23 @@ public:
 
         return unique_vector<node_sptr>(tmp);
     }
+
+    std::vector<edge> find_edge(port_sptr port)
+    {
+        std::vector<edge> ret;
+        for (auto& e : edges()) {
+            if (e.src().port() == port)
+                ret.push_back(e);
+
+            if (e.dst().port() == port)
+                ret.push_back(e);
+        }
+
+        if (ret.empty())
+            throw std::invalid_argument("edge not found");
+
+        return ret;
+    }
 };
 
 typedef std::shared_ptr<graph> graph_sptr;
