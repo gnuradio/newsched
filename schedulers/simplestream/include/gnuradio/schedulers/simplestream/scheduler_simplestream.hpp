@@ -3,6 +3,7 @@
 // #include <boost/circular_buffer.hpp>
 #include <gnuradio/simplebuffer.hpp>
 #include <thread> // std::thread
+#include <gnuradio/domain_adapter.hpp>
 namespace gr {
 
 namespace schedulers {
@@ -12,12 +13,14 @@ namespace schedulers {
 
 class scheduler_simplestream : public scheduler
 {
+    private:
+    std::string _name;
 public:
     static const int s_fixed_buf_size = 100;
     static const int s_min_items_to_process = 1;
     static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
 
-    scheduler_simplestream() : scheduler() {}
+    scheduler_simplestream(const std::string name="simplestream") : scheduler(name) {}
     ~scheduler_simplestream(){
 
     };
@@ -29,11 +32,29 @@ public:
         // if (fg->is_flat())  // flatten
 
         // not all edges may be used
-        for (const auto& e : fg->edges()) {
+        for (auto e : fg->edges()) {
             // every edge needs a buffer
             d_edge_catalog[e.identifier()] = e;
-            d_edge_buffers[e.identifier()] =
-                simplebuffer::make(s_fixed_buf_size, e.itemsize());
+
+            auto src_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.src().node());
+            auto dst_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.dst().node());
+            
+            // Fixed assumption that buffer is contained in downstream domain_adapter
+            if (src_da_cast != nullptr) {
+                auto buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
+                src_da_cast->set_buffer(buf);
+                auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
+                d_edge_buffers[e.identifier()] = tmp;
+            } else if (dst_da_cast != nullptr) {
+
+                d_edge_buffers[e.identifier()] = std::dynamic_pointer_cast<buffer>(dst_da_cast);
+
+            } else {
+                d_edge_buffers[e.identifier()] =
+                    simplebuffer::make(s_fixed_buf_size, e.itemsize());
+            }
+
+            d_edge_buffers[e.identifier()]->set_name(e.identifier());
         }
 
         for (auto& b : fg->calc_used_blocks()) {
@@ -47,14 +68,14 @@ public:
             unsigned int num_output_ports = output_ports.size();
 
             for (auto p : input_ports) {
-                d_block_buffers[p] = std::vector<simplebuffer::sptr>{};
+                d_block_buffers[p] = std::vector<buffer_sptr>{};
                 edge_vector_t ed = d_fg->find_edge(p);
                 for (auto e : ed)
                     d_block_buffers[p].push_back(d_edge_buffers[e.identifier()]);
             }
 
             for (auto p : output_ports) {
-                d_block_buffers[p] = std::vector<simplebuffer::sptr>{};
+                d_block_buffers[p] = std::vector<buffer_sptr>{};
                 edge_vector_t ed = d_fg->find_edge(p);
                 for (auto e : ed)
                     d_block_buffers[p].push_back(d_edge_buffers[e.identifier()]);
@@ -97,16 +118,17 @@ private:
     flat_graph_sptr d_fg;
     std::vector<block_sptr> d_blocks;
     std::map<std::string, edge> d_edge_catalog;
-    std::map<std::string, simplebuffer::sptr> d_edge_buffers;
+    std::map<std::string, buffer_sptr> d_edge_buffers;
     // std::map<block_sptr, std::map<block::io, std::map<int, simplebuffer::sptr>>>
     //     d_block_buffers; // store the block buffers
-    std::map<port_sptr, std::vector<simplebuffer::sptr>> d_block_buffers;
+    std::map<port_sptr, std::vector<buffer_sptr>> d_block_buffers;
     // std::map<port_sptr, simplebuffer::sptr> d_block_buffers; // store the block buffers
     std::thread d_thread;
     bool d_thread_stopped = false;
 
     static void thread_body(scheduler_simplestream* top)
     {
+        int num_empty = 0;
         while (!top->d_thread_stopped) {
 
 
@@ -245,8 +267,10 @@ private:
                 }
 
                 if (ready) {
+                    
                     work_return_code_t ret = b->do_work(work_input, work_output);
                     if (ret == work_return_code_t::WORK_OK) {
+                        
                         int i = 0;
                         for (auto p : b->input_stream_ports()) {
                             auto p_buf =
@@ -276,12 +300,24 @@ private:
 
                         did_work = true;
                     }
+                    else
+                    {
+                        for (auto buf : bufs) {
+                            buf->cancel();
+                        }
+                    }
                 }
             }
 
 
             if (!did_work) {
-                break;
+                // break;  // TODO - make a timeout instead of immediate stop
+               num_empty++;
+               std::this_thread::sleep_for(std::chrono::milliseconds(100));
+               if (num_empty >= 10)
+               {
+                   break;
+               }
             }
         }
     }

@@ -17,6 +17,7 @@ target_include_directories(gnuradio-runtime
 
 target_link_libraries(gnuradio-runtime 
 Volk::volk
+ZeroMQ::ZeroMQ
 gnuradio-blocklib-blocks)
 
 message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})

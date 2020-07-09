@@ -16,7 +16,7 @@ public:
     param_action_queue param_query_queue;
     block_callback_queue callback_queue;
 
-    scheduler(){};
+    scheduler(const std::string& name){_name = name;};
     virtual ~scheduler();
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
     virtual void initialize(flat_graph_sptr fg) = 0;
@@ -52,6 +52,9 @@ public:
     // {
     //     return _param_action_queue;
     // }
+    std::string name() { return _name; }
+    private:
+    std::string _name;
 };
 
 typedef std::shared_ptr<scheduler> scheduler_sptr;
