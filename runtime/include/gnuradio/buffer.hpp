@@ -2,11 +2,10 @@
 
 #include <memory>
 
-struct buffer_info_t
-{
+struct buffer_info_t {
     void* ptr;
     int n_items;
-    size_t item_size;  // is this necessary or stored in buffer
+    size_t item_size; // is this necessary or stored in buffer
 };
 
 /**
@@ -15,6 +14,9 @@ struct buffer_info_t
  */
 class buffer
 {
+protected:
+    std::string _name;
+
 public:
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
@@ -31,6 +33,9 @@ public:
 
     // This is not valid for all buffers, e.g. domain adapters
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems) = 0;
+
+    void set_name(const std::string& name) { _name = name; }
+    std::string name() { return _name;}
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;

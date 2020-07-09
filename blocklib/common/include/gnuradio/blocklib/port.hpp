@@ -37,6 +37,18 @@ protected:
 
 public:
     typedef std::shared_ptr<port_base> sptr;
+    static sptr make(const std::string& name,
+              //  std::shared_ptr<node> parent,
+              const port_direction_t direction,
+              const param_type_t data_type = param_type_t::CFLOAT,
+              //  const std::type_index T
+              const port_type_t port_type = port_type_t::STREAM,
+              const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+              const int multiplicity = 1)
+    {
+        return std::make_shared<port_base>(port_base(name, direction, data_type, port_type, dims, multiplicity));
+    }
+
     port_base(const std::string& name,
               //  std::shared_ptr<node> parent,
               const port_direction_t direction,
@@ -66,9 +78,12 @@ public:
     void set_index(int val) { _index = val; }
     int index() { return _index; }
     port_type_t type() { return _port_type; }
+    param_type_t data_type() { return _data_type; }
     port_direction_t direction() { return _direction; }
     size_t data_size() { return _data_size; }
     size_t itemsize() { return _itemsize; }
+    std::vector<size_t> dims() { return _dims; }
+
 };
 
 typedef port_base::sptr port_sptr;
