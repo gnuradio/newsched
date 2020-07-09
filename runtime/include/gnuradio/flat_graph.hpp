@@ -41,8 +41,14 @@ public:
 
         // Collect all blocks in the edge list
         for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
-            tmp.push_back(static_cast<block_endpoint>(p->src()).block());
-            tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
+            auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
+            auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
+            if (src_ptr != nullptr)
+                tmp.push_back(src_ptr);
+            if (dst_ptr != nullptr)
+                tmp.push_back(dst_ptr);
+            // tmp.push_back(static_cast<block_endpoint>(p->src()).block());
+            // tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
         }
 
         return unique_vector<block_sptr>(tmp);
