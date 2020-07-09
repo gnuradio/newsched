@@ -17,6 +17,9 @@ SET(CMAKE_SHARED_LINKER_FLAGS_NOOPTWITHASM
 "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
 "Flags used by the shared lib linker during NoOptWithASM builds." FORCE)
 
+# Make sure our local CMake Modules path comes first
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
+
 MARK_AS_ADVANCED(
 CMAKE_CXX_FLAGS_NOOPTWITHASM
 CMAKE_C_FLAGS_NOOPTWITHASM
@@ -50,7 +53,7 @@ find_package(Boost ${GR_BOOST_MIN_VERSION} COMPONENTS ${BOOST_REQUIRED_COMPONENT
 find_package(Volk REQUIRED)
 
 #find_package(Python3)
-#find_package(spdlog REQUIRED)
+find_package(ZeroMQ REQUIRED)
 
 #enable_testing()
 #add_subdirectory(pybind11)
