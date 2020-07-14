@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 {
     auto src = blocks::vector_source_f::make(
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
-    auto throttle = blocks::throttle::make(sizeof(float), 100);
+    auto throttle = blocks::throttle::make(sizeof(float), 32000);
     auto dummy = blocks::dummy<float>::make(7.0,13.0);
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
@@ -53,10 +53,10 @@ int main(int argc, char* argv[])
         dummy->set_a(a);
         dummy->set_b(b);
 
-        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(200))
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(2))
             break;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         a += 1.0;
         b += 1.0;
@@ -73,7 +73,6 @@ int main(int argc, char* argv[])
     }
 
     fg->stop();
-    fg->wait();
 
     // DOMAIN??
 
