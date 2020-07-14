@@ -56,7 +56,7 @@ find_package(Volk REQUIRED)
 find_package(ZeroMQ REQUIRED)
 
 enable_testing()
-find_package(Catch2)
+# find_package(Catch2)
 #add_subdirectory(pybind11)
 
 add_subdirectory(deps/catch/include)
