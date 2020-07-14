@@ -1,6 +1,6 @@
 
 
-add_executable(test_simplestream test_simplestream.cpp)
+add_executable(test_parameters_callbacks test_parameters_callbacks.cpp)
 add_executable(test_multiple_output test_multiple_output.cpp)
 add_executable(test_one_to_many test_one_to_many.cpp)
 add_executable(test_multisched test_multisched.cpp)
@@ -14,7 +14,7 @@ ${PROJECT_SOURCE_DIR}/schedulers/simplestream/include
 ${PROJECT_SOURCE_DIR}/runtime/include 
 )
 
-target_link_libraries(test_simplestream 
+target_link_libraries(test_parameters_callbacks 
     gnuradio-blocklib-common
     gnuradio-blocklib-blocks
     gnuradio-runtime
