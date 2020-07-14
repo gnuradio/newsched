@@ -55,12 +55,14 @@ find_package(Volk REQUIRED)
 #find_package(Python3)
 find_package(ZeroMQ REQUIRED)
 
-#enable_testing()
+enable_testing()
+find_package(Catch2)
 #add_subdirectory(pybind11)
+
+add_subdirectory(deps/catch/include)
 add_subdirectory(blocklib)
 add_subdirectory(runtime)
 add_subdirectory(schedulers)
 
 add_subdirectory(docs)
-
 

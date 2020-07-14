@@ -1,7 +1,7 @@
 #pragma once
 
 #include <zmq.hpp>
-
+#include <thread>
 
 #include <gnuradio/blocklib/node.hpp>
 #include <gnuradio/buffer.hpp>
