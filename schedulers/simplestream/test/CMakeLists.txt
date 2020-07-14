@@ -42,10 +42,12 @@ target_link_libraries(test_multisched
     gnuradio-scheduler-simplestream
 )
 
+########################################################
+#   QA Tests
+########################################################
 
 list(APPEND TEST_SOURCES
-qa_one_to_many.cpp
-# qa_multiple_output.cpp
+qa_scheduler_simplestream.cpp
 )
 
 add_executable(qa_simplestream ${TEST_SOURCES})
@@ -58,10 +60,10 @@ target_include_directories(qa_simplestream
     
 )
 target_link_libraries(qa_simplestream  
-    # Catch2::Catch2   
     gnuradio-blocklib-common
     gnuradio-blocklib-blocks
     gnuradio-runtime
     gnuradio-scheduler-simplestream)
+
 add_test(NAME test
     COMMAND qa_simplestream)
