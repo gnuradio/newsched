@@ -20,8 +20,6 @@ int main(int argc, char* argv[])
     auto mult2 = blocks::multiply_const_ff::make(200.0);
     auto snk = blocks::vector_sink_f::make();
 
-    // blocks::vector_sink_f snk();
-
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, throttle, 0);
     fg->connect(throttle, 0, mult1, 0);
@@ -40,7 +38,6 @@ int main(int argc, char* argv[])
                                    { sched2, { mult2, snk } } };
 
     fg->partition(partitions);
-    // fg->validate();
 
     fg->start();
     fg->wait();
