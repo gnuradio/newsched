@@ -53,12 +53,12 @@ target_include_directories(qa_simplestream
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     $<INSTALL_INTERFACE:include>
-    # PRIVATE
-    # ${CMAKE_SOURCE_DIR}/deps/catch/include
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/deps/catch/include
     
 )
 target_link_libraries(qa_simplestream  
-    Catch2::Catch2   
+    # Catch2::Catch2   
     gnuradio-blocklib-common
     gnuradio-blocklib-blocks
     gnuradio-runtime
