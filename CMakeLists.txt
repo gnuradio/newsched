@@ -26,8 +26,6 @@ CMAKE_C_FLAGS_NOOPTWITHASM
 CMAKE_EXE_LINKER_FLAGS_NOOPTWITHASM
 CMAKE_SHARED_LINKER_FLAGS_NOOPTWITHASM)
 
-#list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
-
 set(CMAKE_CXX_STANDARD 17)
 # narf – C++17 + Clang + Pybind11 requires workaround: https://github.com/pybind/pybind11/issues/1818
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -47,7 +45,7 @@ SET(GR_INCLUDE_DIR     include CACHE PATH "Path to install header files")
 
 set(BOOST_REQUIRED_COMPONENTS
 )
-set(GR_BOOST_MIN_VERSION "1.53")
+set(GR_BOOST_MIN_VERSION "1.65")
 find_package(Boost ${GR_BOOST_MIN_VERSION} COMPONENTS ${BOOST_REQUIRED_COMPONENTS})
 
 find_package(Volk REQUIRED)
