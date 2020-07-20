@@ -34,10 +34,13 @@ int main(int argc, char* argv[])
     fg->add_scheduler(sched1);
     fg->add_scheduler(sched2);
 
-    partition_conf_vec partitions{ { sched1, { src, throttle, mult1 } },
-                                   { sched2, { mult2, snk } } };
+    auto da_conf =
+        domain_adapter_zmq_tcp_conf::make(std::vector<int>{ 1234, 1235, 1236, 1237 }, "127.0.0.1", buffer_preference_t::UPSTREAM);
 
-    fg->partition(partitions);
+    domain_conf_vec dconf{ domain_conf(sched1, { src, throttle, mult1 }, da_conf),
+                           domain_conf(sched2, { mult2, snk }, da_conf)};
+
+    fg->partition(dconf);
 
     fg->start();
     fg->wait();

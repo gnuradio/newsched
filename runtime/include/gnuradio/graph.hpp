@@ -63,6 +63,12 @@ public:
     std::string identifier() const { return d_node->alias() + ":" + d_port->alias(); };
 };
 
+inline bool operator== (const node_endpoint &n1, const node_endpoint &n2)
+{
+    return (n1.node() == n2.node() &&
+            n1.port()== n2.port());
+}
+
 inline std::ostream& operator<<(std::ostream& os, const node_endpoint endp)
 {
     os << endp.identifier();
@@ -95,8 +101,8 @@ public:
     {
     }
     virtual ~edge(){};
-    node_endpoint src() { return _src; }
-    node_endpoint dst() { return _dst; }
+    node_endpoint src() const { return _src; }
+    node_endpoint dst() const { return _dst; }
 
     std::string identifier() const
     {
@@ -110,6 +116,12 @@ inline std::ostream& operator<<(std::ostream& os, const edge edge)
 {
     os << edge.identifier();
     return os;
+}
+
+inline bool operator== (const edge &e1, const edge &e2)
+{
+    return (e1.src() == e2.src() &&
+            e1.dst()== e2.dst());
 }
 
 typedef std::vector<edge> edge_vector_t;
