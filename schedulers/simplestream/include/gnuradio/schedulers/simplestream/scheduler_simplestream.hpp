@@ -1,9 +1,9 @@
 //#include <gnuradio/scheduler.hpp>
 #include <gnuradio/scheduler.hpp>
 // #include <boost/circular_buffer.hpp>
+#include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/simplebuffer.hpp>
 #include <thread> // std::thread
-#include <gnuradio/domain_adapter.hpp>
 namespace gr {
 
 namespace schedulers {
@@ -13,14 +13,15 @@ namespace schedulers {
 
 class scheduler_simplestream : public scheduler
 {
-    private:
+private:
     std::string _name;
+
 public:
     static const int s_fixed_buf_size = 100;
     static const int s_min_items_to_process = 1;
     static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
 
-    scheduler_simplestream(const std::string name="simplestream") : scheduler(name) {}
+    scheduler_simplestream(const std::string name = "simplestream") : scheduler(name) {}
     ~scheduler_simplestream(){
 
     };
@@ -38,16 +39,29 @@ public:
 
             auto src_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.src().node());
             auto dst_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.dst().node());
-            
-            // Fixed assumption that buffer is contained in downstream domain_adapter
-            if (src_da_cast != nullptr) {
-                auto buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
-                src_da_cast->set_buffer(buf);
-                auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
-                d_edge_buffers[e.identifier()] = tmp;
-            } else if (dst_da_cast != nullptr) {
 
-                d_edge_buffers[e.identifier()] = std::dynamic_pointer_cast<buffer>(dst_da_cast);
+            // Fixed assumption that buffer is contained in downstream domain_adapter
+            // TODO - read the setting from the domain_adapter
+            if (src_da_cast != nullptr) {
+                if (src_da_cast->buffer_location() == buffer_location_t::LOCAL) {
+                    auto buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
+                    src_da_cast->set_buffer(buf);
+                    auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
+                    d_edge_buffers[e.identifier()] = tmp;
+                } else {
+                    d_edge_buffers[e.identifier()] =
+                        std::dynamic_pointer_cast<buffer>(src_da_cast);
+                }
+            } else if (dst_da_cast != nullptr) {
+                if (dst_da_cast->buffer_location() == buffer_location_t::LOCAL) {
+                    auto buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
+                    dst_da_cast->set_buffer(buf);
+                    auto tmp = std::dynamic_pointer_cast<buffer>(dst_da_cast);
+                    d_edge_buffers[e.identifier()] = tmp;
+                } else {
+                    d_edge_buffers[e.identifier()] =
+                        std::dynamic_pointer_cast<buffer>(dst_da_cast);
+                }
 
             } else {
                 d_edge_buffers[e.identifier()] =
@@ -130,7 +144,7 @@ private:
     {
         int num_empty = 0;
         while (!top->d_thread_stopped) {
-
+            // std::cout << top->name() << ":while" << std::endl;
 
             // do stuff with the blocks
             bool did_work = false;
@@ -267,10 +281,10 @@ private:
                 }
 
                 if (ready) {
-                    
+                    // std::cout << top->name() << ":" << b->name() << ":work" << std::endl;
                     work_return_code_t ret = b->do_work(work_input, work_output);
                     if (ret == work_return_code_t::WORK_OK) {
-                        
+
                         int i = 0;
                         for (auto p : b->input_stream_ports()) {
                             auto p_buf =
@@ -299,9 +313,7 @@ private:
                         // update the buffers according to the items produced
 
                         did_work = true;
-                    }
-                    else
-                    {
+                    } else {
                         for (auto buf : bufs) {
                             buf->cancel();
                         }
@@ -312,12 +324,11 @@ private:
 
             if (!did_work) {
                 // break;  // TODO - make a timeout instead of immediate stop
-               num_empty++;
-               std::this_thread::sleep_for(std::chrono::milliseconds(100));
-               if (num_empty >= 10)
-               {
-                   break;
-               }
+                num_empty++;
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                if (num_empty >= 10) {
+                    break;
+                }
             }
         }
     }

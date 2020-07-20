@@ -7,11 +7,11 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocklib/blocks/dummy.hpp>
+#include <gnuradio/blocklib/blocks/fanout.hpp>
+#include <gnuradio/blocklib/blocks/multiply_const_blk.hpp>
 #include <gnuradio/blocklib/blocks/throttle.hpp>
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
-#include <gnuradio/blocklib/blocks/multiply_const_blk.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/simplestream/scheduler_simplestream.hpp>
 
@@ -27,12 +27,12 @@ TEST_CASE("block outputs one output to 2 input blocks")
 
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src->base(), 0, snk1->base(), 0);
-    fg->connect(src->base(), 0, snk2->base(), 0);
+    fg->connect(src, 0, snk1, 0);
+    fg->connect(src, 0, snk2, 0);
 
     std::shared_ptr<schedulers::scheduler_simplestream> sched(
         new schedulers::scheduler_simplestream());
-    fg->set_scheduler(sched->base());
+    fg->set_scheduler(sched);
 
     fg->validate();
 
@@ -49,13 +49,11 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
 
     std::vector<float> expected_data;
-    for (auto d : input_data)
-    {
-        expected_data.push_back(100.0*200.0*d);
+    for (auto d : input_data) {
+        expected_data.push_back(100.0 * 200.0 * d);
     }
 
-    auto src = blocks::vector_source_f::make(
-        input_data, false);
+    auto src = blocks::vector_source_f::make(input_data, false);
     auto throttle = blocks::throttle::make(sizeof(float), 100);
     auto mult1 = blocks::multiply_const_ff::make(100.0);
     auto mult2 = blocks::multiply_const_ff::make(200.0);
@@ -75,10 +73,15 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     fg->add_scheduler(sched1);
     fg->add_scheduler(sched2);
 
-    partition_conf_vec partitions{ { sched1, { src, throttle, mult1 } },
-                                   { sched2, { mult2, snk } } };
+    auto da_conf =
+        domain_adapter_zmq_tcp_conf::make(std::vector<int>{ 1234, 1235, 1236, 1237 },
+                                          "127.0.0.1",
+                                          buffer_preference_t::UPSTREAM);
 
-    fg->partition(partitions);
+    domain_conf_vec dconf{ domain_conf(sched1, { src, throttle, mult1 }, da_conf),
+                           domain_conf(sched2, { mult2, snk }, da_conf) };
+
+    fg->partition(dconf);
 
     fg->start();
     fg->wait();
@@ -86,47 +89,46 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     REQUIRE_THAT(snk->data(), Catch::Equals(expected_data));
 }
 
+#if 1
 TEST_CASE("2 sinks, query and set parameters while FG is running")
 {
     auto src = blocks::vector_source_f::make(
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
     auto throttle = blocks::throttle::make(sizeof(float), 32000);
-    auto dummy = blocks::dummy<float>::make(7.0, 13.0);
+    auto mult1 = blocks::multiply_const_ff::make(100.0);
+    auto fanout = blocks::fanout_ff::make(2);
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src->base(), 0, throttle->base(), 0);
-    fg->connect(throttle->base(), 0, dummy->base(), 0);
-    fg->connect(dummy->base(), 0, snk1->base(), 0);
-    fg->connect(dummy->base(), 1, snk2->base(), 0);
+    fg->connect(src, 0, throttle, 0);
+    fg->connect(throttle, 0, mult1, 0);
+    fg->connect(mult1, 0, fanout, 0);
+    fg->connect(fanout, 0, snk1, 0);
+    fg->connect(fanout, 1, snk2, 0);
 
     std::shared_ptr<schedulers::scheduler_simplestream> sched(
         new schedulers::scheduler_simplestream());
-    fg->set_scheduler(sched->base());
+    fg->set_scheduler(sched);
 
     fg->validate();
     fg->start();
 
     auto start = std::chrono::steady_clock::now();
 
-    float a = 1.0;
-    float b = 100.0;
+    float k = 1.0;
 
     while (true) {
-        auto query_a = dummy->a();
-        auto query_b = dummy->b();
+        auto query_k = mult1->k();
 
-        dummy->set_a(a);
-        dummy->set_b(b);
+        mult1->set_k(k);
 
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(1))
             break;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        a += 1.0;
-        b += 1.0;
+        k += 1.0;
     }
 
     fg->stop();
@@ -138,3 +140,4 @@ TEST_CASE("2 sinks, query and set parameters while FG is running")
     // TODO - check for query
     // TODO - set changes at specific sample numbers
 }
+#endif
