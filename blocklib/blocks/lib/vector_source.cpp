@@ -11,6 +11,7 @@
 #include "vector_source.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <cstring> // for memcpy
 
 using namespace std;
 
@@ -76,7 +77,8 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
         if (_settags) {
             int n_outputitems_per_vector = _data.size() / _vlen;
             for (int i = 0; i < noutput_items; i += n_outputitems_per_vector) {
-                std::copy(_data.begin(), _data.begin() + size, optr);
+                //std::copy(_data.begin(), _data.begin() + size, optr);
+                memcpy((void*)optr, (const void*)&_data[0], size * sizeof(T));
                 optr += size;
                 for (unsigned t = 0; t < _tags.size(); t++) {
                     output_tags.push_back(tag_t(n_written + i + _tags[t].offset,
