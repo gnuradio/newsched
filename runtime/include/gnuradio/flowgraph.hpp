@@ -37,6 +37,11 @@ private:
 public:
     flowgraph(){};
     typedef std::shared_ptr<flowgraph> sptr;
+    static sptr make()
+    {
+        return std::make_shared<flowgraph>(flowgraph());
+
+    }
     virtual ~flowgraph(){};
     void set_scheduler(scheduler_sptr sched)
     {
