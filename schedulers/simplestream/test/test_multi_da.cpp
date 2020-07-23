@@ -15,9 +15,12 @@ using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    auto src = blocks::vector_source_f::make(
-        std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, false);
-    auto throttle = blocks::throttle::make(sizeof(float), 100);
+    std::vector<float> input_data;
+    for (int i=0; i<10000; i++)
+        input_data.push_back((float)(i));
+
+    auto src = blocks::vector_source_f::make(input_data, false);
+    auto throttle = blocks::throttle::make(sizeof(float), 100000);
     auto fanout = blocks::fanout_cc::make(2);
     auto mult1 = blocks::multiply_const_ff::make(100.0);
     auto mult2 = blocks::multiply_const_ff::make(200.0);
@@ -25,7 +28,7 @@ int main(int argc, char* argv[])
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
 
-    flowgraph_sptr fg(new flowgraph());
+    auto fg = flowgraph::make();
     fg->connect(src, 0, throttle, 0);
     fg->connect(throttle, 0, mult1, 0);
     fg->connect(mult1, 0, fanout, 0);
