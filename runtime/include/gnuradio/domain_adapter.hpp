@@ -101,7 +101,7 @@ public:
         auto sock = top->d_socket;
         while (1) {
             zmq::message_t request(100);
-            zmq::recv_result_t res = sock->recv(request);
+            sock->recv(&request);
 
             // Parse the message
             auto action = *((da_request_t*)request.data());
@@ -109,7 +109,7 @@ public:
             case da_request_t::CANCEL: {
                 top->buffer()->cancel();
                 zmq::message_t msg(0);
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             case da_request_t::WRITE_INFO: {
                 buffer_info_t info = top->buffer()->write_info();
@@ -117,7 +117,7 @@ public:
 
                 zmq::message_t msg(sizeof(buffer_info_t));
                 memcpy(msg.data(), &info, sizeof(buffer_info_t));
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             case da_request_t::POST_WRITE: {
                 int num_items;
@@ -126,14 +126,14 @@ public:
 
 
                 zmq::message_t msg(0);
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             case da_request_t::READ_INFO: {
                 buffer_info_t info = top->buffer()->read_info();
 
                 zmq::message_t msg(sizeof(buffer_info_t));
                 memcpy(msg.data(), &info, sizeof(buffer_info_t));
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             case da_request_t::POST_READ: {
                 int num_items;
@@ -141,7 +141,7 @@ public:
                 top->buffer()->post_read(num_items);
 
                 zmq::message_t msg(0);
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             default: {
                 // // send the reply to the client
@@ -149,7 +149,7 @@ public:
                 // zmq::message_t msg(0);
 
                 zmq::message_t msg(str_msg.begin(), str_msg.end());
-                sock->send(msg, zmq::send_flags::dontwait);
+                sock->send(msg);
             } break;
             }
         }
@@ -218,8 +218,8 @@ public:
         std::string str_msg("hello");
         zmq::message_t msg(str_msg.begin(), str_msg.end());
 
-        d_socket->send(msg,  zmq::send_flags::dontwait);
-        zmq::recv_result_t res = d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
 
         std::string str =
             std::string(static_cast<char*>(response.data()), response.size());
@@ -239,8 +239,8 @@ public:
         memcpy(msg.data(), &action, 4);
 
         zmq::message_t response(sizeof(buffer_info_t));
-        d_socket->send(msg, zmq::send_flags::dontwait);
-        zmq::recv_result_t res =  d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
 
         buffer_info_t ret;
         memcpy(&ret, response.data(), sizeof(buffer_info_t));
@@ -254,8 +254,8 @@ public:
         memcpy(msg.data(), &action, 4);
 
         zmq::message_t response(sizeof(buffer_info_t));
-        d_socket->send(msg, zmq::send_flags::dontwait);
-        zmq::recv_result_t res = d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
 
         buffer_info_t ret;
         memcpy(&ret, response.data(), sizeof(buffer_info_t));
@@ -270,8 +270,8 @@ public:
         memcpy(msg.data(), &action, 4);
 
         zmq::message_t response(4);
-        d_socket->send(msg, zmq::send_flags::dontwait);
-        zmq::recv_result_t res = d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
     }
 
     virtual void post_read(int num_items)
@@ -282,8 +282,8 @@ public:
         memcpy((uint8_t*)msg.data() + 4, &num_items, sizeof(int));
 
         zmq::message_t response(0);
-        d_socket->send(msg, zmq::send_flags::dontwait);
-        zmq::recv_result_t res = d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
     }
     virtual void post_write(int num_items)
     {
@@ -293,8 +293,8 @@ public:
         memcpy((uint8_t*)msg.data() + 4, &num_items, sizeof(int));
 
         zmq::message_t response(0);
-        d_socket->send(msg, zmq::send_flags::dontwait);
-        zmq::recv_result_t res = d_socket->recv(response);
+        d_socket->send(msg);
+        d_socket->recv(&response);
     }
 
     // This is not valid for all buffers, e.g. domain adapters
