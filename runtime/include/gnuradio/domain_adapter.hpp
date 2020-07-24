@@ -96,64 +96,7 @@ public:
 
     void start_thread(sptr ptr) { d_thread = std::thread(run_thread, ptr); }
 
-    static void run_thread(sptr top) // zmq::socket_t* sock)
-    {
-        auto sock = top->d_socket;
-        while (1) {
-            zmq::message_t request(100);
-            sock->recv(&request);
-
-            // Parse the message
-            auto action = *((da_request_t*)request.data());
-            switch (action) {
-            case da_request_t::CANCEL: {
-                top->buffer()->cancel();
-                zmq::message_t msg(0);
-                sock->send(msg);
-            } break;
-            case da_request_t::WRITE_INFO: {
-                buffer_info_t info = top->buffer()->write_info();
-
-
-                zmq::message_t msg(sizeof(buffer_info_t));
-                memcpy(msg.data(), &info, sizeof(buffer_info_t));
-                sock->send(msg);
-            } break;
-            case da_request_t::POST_WRITE: {
-                int num_items;
-                memcpy(&num_items, (uint8_t*)request.data() + 4, sizeof(int));
-                top->buffer()->post_write(num_items);
-
-
-                zmq::message_t msg(0);
-                sock->send(msg);
-            } break;
-            case da_request_t::READ_INFO: {
-                buffer_info_t info = top->buffer()->read_info();
-
-                zmq::message_t msg(sizeof(buffer_info_t));
-                memcpy(msg.data(), &info, sizeof(buffer_info_t));
-                sock->send(msg);
-            } break;
-            case da_request_t::POST_READ: {
-                int num_items;
-                memcpy(&num_items, (uint8_t*)request.data() + 4, sizeof(int));
-                top->buffer()->post_read(num_items);
-
-                zmq::message_t msg(0);
-                sock->send(msg);
-            } break;
-            default: {
-                // // send the reply to the client
-                std::string str_msg("WORLD");
-                // zmq::message_t msg(0);
-
-                zmq::message_t msg(str_msg.begin(), str_msg.end());
-                sock->send(msg);
-            } break;
-            }
-        }
-    }
+    static void run_thread(sptr top);
 
     virtual void* read_ptr() { return nullptr; }
     virtual void* write_ptr() { return nullptr; }
@@ -212,19 +155,7 @@ public:
         d_socket->connect(endpoint_uri);
     }
 
-    void test()
-    {
-        zmq::message_t response(100);
-        std::string str_msg("hello");
-        zmq::message_t msg(str_msg.begin(), str_msg.end());
-
-        d_socket->send(msg);
-        d_socket->recv(&response);
-
-        std::string str =
-            std::string(static_cast<char*>(response.data()), response.size());
-        std::cout << str << std::endl;
-    }
+    void test();
 
     virtual void* read_ptr() { return nullptr; }
     virtual void* write_ptr() { return nullptr; }
@@ -232,70 +163,11 @@ public:
     // virtual int capacity() = 0;
     // virtual int size() = 0;
 
-    virtual buffer_info_t read_info()
-    {
-        zmq::message_t msg(4);
-        auto action = da_request_t::READ_INFO;
-        memcpy(msg.data(), &action, 4);
-
-        zmq::message_t response(sizeof(buffer_info_t));
-        d_socket->send(msg);
-        d_socket->recv(&response);
-
-        buffer_info_t ret;
-        memcpy(&ret, response.data(), sizeof(buffer_info_t));
-
-        return ret;
-    }
-    virtual buffer_info_t write_info()
-    {
-        zmq::message_t msg(4);
-        auto action = da_request_t::WRITE_INFO;
-        memcpy(msg.data(), &action, 4);
-
-        zmq::message_t response(sizeof(buffer_info_t));
-        d_socket->send(msg);
-        d_socket->recv(&response);
-
-        buffer_info_t ret;
-        memcpy(&ret, response.data(), sizeof(buffer_info_t));
-
-        return ret;
-    }
-    virtual void cancel()
-    {
-
-        zmq::message_t msg(4);
-        auto action = da_request_t::CANCEL;
-        memcpy(msg.data(), &action, 4);
-
-        zmq::message_t response(4);
-        d_socket->send(msg);
-        d_socket->recv(&response);
-    }
-
-    virtual void post_read(int num_items)
-    {
-        zmq::message_t msg(4 + sizeof(int));
-        auto action = da_request_t::POST_READ;
-        memcpy(msg.data(), &action, 4);
-        memcpy((uint8_t*)msg.data() + 4, &num_items, sizeof(int));
-
-        zmq::message_t response(0);
-        d_socket->send(msg);
-        d_socket->recv(&response);
-    }
-    virtual void post_write(int num_items)
-    {
-        zmq::message_t msg(4 + sizeof(int));
-        auto action = da_request_t::POST_WRITE;
-        memcpy(msg.data(), &action, 4);
-        memcpy((uint8_t*)msg.data() + 4, &num_items, sizeof(int));
-
-        zmq::message_t response(0);
-        d_socket->send(msg);
-        d_socket->recv(&response);
-    }
+    virtual buffer_info_t read_info();
+    virtual buffer_info_t write_info();
+    virtual void cancel();
+    virtual void post_read(int num_items);
+    virtual void post_write(int num_items);
 
     // This is not valid for all buffers, e.g. domain adapters
     // Currently domain adapters require fanout, and cannot copy from a shared output

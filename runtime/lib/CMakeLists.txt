@@ -1,4 +1,5 @@
 add_library(gnuradio-runtime SHARED
+  domain_adapter.cpp
   flat_graph.cpp   
   scheduler.cpp
   )
@@ -19,6 +20,9 @@ target_link_libraries(gnuradio-runtime
 Volk::volk
 ZeroMQ::ZeroMQ
 gnuradio-blocklib-blocks)
+
+# ZMQ 4.3.1 deprecated the send and recv with references.  Ignore for now // FIXME
+target_compile_options(gnuradio-runtime PRIVATE -Wno-deprecated-declarations)
 
 message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})
 #pybind11_add_module(newschedpy pybind.cpp)
