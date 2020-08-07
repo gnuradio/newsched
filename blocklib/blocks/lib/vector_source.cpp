@@ -103,7 +103,10 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
 
     } else {
         if (_offset >= _data.size())
+        {
+            work_output[0].n_produced = 0;
             return work_return_code_t::WORK_DONE; // Done!
+        }
 
         unsigned n =
             std::min(_data.size() - _offset, noutput_items * _vlen);
