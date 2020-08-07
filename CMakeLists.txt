@@ -2,7 +2,7 @@
 #
 
 cmake_minimum_required(VERSION 3.10)
-project(modulargr)
+project(newsched LANGUAGES CXX CUDA)
 
 message(STATUS ${CMAKE_BUILD_TYPE})
 
@@ -35,11 +35,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # The version number.
-set(modulargr_VERSION_MAJOR 0)
-set(modulargr_VERSION_MINOR 0)
-set(modulargr_VERSION_PATCH 1)
-set(VERSION "${modulargr_VERSION_MAJOR}.${modulargr_VERSION_MINOR}.${modulargr_VERSION_PATCH}")
-set(LIBVER "${modulargr_VERSION_MAJOR}.${modulargr_VERSION_MINOR}")
+set(newsched_VERSION_MAJOR 0)
+set(newsched_VERSION_MINOR 0)
+set(newsched_VERSION_PATCH 1)
+set(VERSION "${newsched_VERSION_MAJOR}.${newsched_VERSION_MINOR}.${newsched_VERSION_PATCH}")
+set(LIBVER "${newsched_VERSION_MAJOR}.${newsched_VERSION_MINOR}")
 
 SET(GR_INCLUDE_DIR     include CACHE PATH "Path to install header files")
 
