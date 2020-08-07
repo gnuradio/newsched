@@ -138,7 +138,7 @@ class graph : public node, public std::enable_shared_from_this<graph>
 protected:
     node_vector_t _nodes;
     edge_vector_t _edges;
-
+    node_vector_t _orphan_nodes;
 public:
     typedef std::shared_ptr<graph> sptr;
     static sptr make()
@@ -154,7 +154,9 @@ public:
         // TODO: Do a bunch of checking
 
         _edges.push_back(edge(src, dst));
-        _nodes = calc_used_nodes();
+        auto used_nodes = calc_used_nodes();
+        used_nodes.insert(used_nodes.end(), _orphan_nodes.begin(), _orphan_nodes.end());
+        _nodes = used_nodes;
 
         std::map<std::string, int> name_count;
         // update the block alias

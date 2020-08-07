@@ -10,6 +10,7 @@
 #include <gnuradio/domain.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/simplestream/scheduler_simplestream.hpp>
+#include <gnuradio/domain_adapter_zmq.hpp>
 
 using namespace gr;
 

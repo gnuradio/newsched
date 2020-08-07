@@ -15,6 +15,10 @@
 #include <iostream>
 #include <memory>
 
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+
 #include <gnuradio/blocklib/block.hpp>
 #include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/graph.hpp>
@@ -33,6 +37,9 @@ private:
     flat_graph_sptr d_flat_graph;
     std::vector<graph_sptr> d_subgraphs;
     std::vector<flat_graph_sptr> d_flat_subgraphs;
+
+    scheduler_sync _sched_sync;
+
 
 public:
     flowgraph(){};
@@ -60,9 +67,9 @@ public:
             // Go through the blocks assigned to this scheduler
             // See whether they connect to the same graph or account for a domain crossing
 
-            auto sched = conf.sched(); //std::get<0>(conf);
-            auto blocks = conf.blocks(); //std::get<1>(conf);
-            for (auto b : blocks) // for each of the blocks in the tuple
+            auto sched = conf.sched();   // std::get<0>(conf);
+            auto blocks = conf.blocks(); // std::get<1>(conf);
+            for (auto b : blocks)        // for each of the blocks in the tuple
             {
                 for (auto input_port : b->input_stream_ports()) {
                     auto edges = find_edge(input_port);
@@ -80,6 +87,10 @@ public:
                         // domain_crossings.push_back(std::make_tuple(g,e));
                         domain_crossings.push_back(e);
                         crossing_confs.push_back(conf);
+
+                        // Is this block connected to anything else in our current partition
+                        bool connected = false; // TODO - handle orphan nodes
+
                     }
                 }
             }
@@ -145,8 +156,7 @@ public:
 
 
             // else if defined: use the default defined for the domain
-            if (!da_conf)
-            {
+            if (!da_conf) {
                 da_conf = conf.da_conf();
             }
 
@@ -166,7 +176,8 @@ public:
 #endif
             // use the conf to produce the domain adapters
 
-            auto da_pair = da_conf->make_domain_adapter_pair(c.src().port(), c.dst().port());
+            auto da_pair =
+                da_conf->make_domain_adapter_pair(c.src().port(), c.dst().port());
             auto da_src = std::get<0>(da_pair);
             auto da_dst = std::get<1>(da_pair);
 
@@ -198,8 +209,56 @@ public:
     }
     void start()
     {
+        // Need thread synchronization for the schedulers - to know when they're done and
+        // signal the other schedulers that might be connected
+
+        // assign ids to the schedulers
+        int idx = 0;
         for (auto s : d_schedulers) {
-            s->start();
+            s->set_id(idx++);
+        }
+
+        // Start a monitor thread to keep track of when the schedulers signal info back to
+        // the main thread
+        std::thread monitor([this]() {
+            while (true) {
+                std::unique_lock<std::mutex> lk{ _sched_sync.sync_mutex };
+                _sched_sync.sync_cv.wait(lk);
+                std::cout << "monitor: notified --> " << _sched_sync.id << " / "
+                          << (int)_sched_sync.state << std::endl;
+
+                if (_sched_sync.state ==
+                    scheduler_state::DONE) // Notify the other threads to wrap it up
+                {
+                        for (auto s : d_schedulers) {
+                            s->set_state(scheduler_state::DONE);
+                        }
+                    break;
+                }
+            }
+
+            while (true) {
+                // Wait until all the threads are done
+
+                bool all_done = true;
+                for (auto &s : d_schedulers) {
+                    auto state = s->state();
+                    // std::cout << "**" << s->name() << ":" << ":state:" << (int) s->state() << std::endl;;
+                    if (state != scheduler_state::FLUSHED) {
+                        all_done = false;
+                    }
+                }
+                if (all_done) {
+                    for (auto s : d_schedulers) {
+                        s->set_state(scheduler_state::EXIT);
+                    }
+                    break;
+                }
+            }
+        });
+        monitor.detach();
+        for (auto s : d_schedulers) {
+            s->start(&_sched_sync);
         }
     }
     void stop()
