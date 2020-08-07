@@ -14,7 +14,7 @@
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/simplestream/scheduler_simplestream.hpp>
-#include <gnuradio/domain_adapter_zmq.hpp>
+#include <gnuradio/domain_adapter_shm.hpp>
 
 using namespace gr;
 
@@ -44,7 +44,7 @@ TEST_CASE("block outputs one output to 2 input blocks")
     REQUIRE_THAT(snk2->data(), Catch::Equals(input_data));
 }
 
-
+#if 1
 TEST_CASE("Two schedulers connected by domain adapters internally")
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
@@ -75,9 +75,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     fg->add_scheduler(sched2);
 
     auto da_conf =
-        domain_adapter_zmq_tcp_conf::make(std::vector<int>{ 1234, 1235, 1236, 1237 },
-                                          "127.0.0.1",
-                                          buffer_preference_t::UPSTREAM);
+        domain_adapter_shm_conf::make(buffer_preference_t::UPSTREAM);
 
     domain_conf_vec dconf{ domain_conf(sched1, { src, throttle, mult1 }, da_conf),
                            domain_conf(sched2, { mult2, snk }, da_conf) };
@@ -89,8 +87,9 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
 
     REQUIRE_THAT(snk->data(), Catch::Equals(expected_data));
 }
+#endif
 
-#if 1
+#if 0
 TEST_CASE("2 sinks, query and set parameters while FG is running")
 {
     auto src = blocks::vector_source_f::make(
