@@ -1,6 +1,6 @@
 install(FILES
   fanout.hpp
-  multiply_const_blk.hpp
+  multiply_const.hpp
   throttle.hpp
   vector_source.hpp
   vector_sink.hpp
