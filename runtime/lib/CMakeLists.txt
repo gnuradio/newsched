@@ -1,5 +1,5 @@
 add_library(gnuradio-runtime SHARED
-  domain_adapter.cpp
+  domain_adapter_zmq.cpp
   flat_graph.cpp   
   scheduler.cpp
   )

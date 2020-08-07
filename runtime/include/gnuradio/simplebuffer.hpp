@@ -52,29 +52,35 @@ public:
     void* read_ptr() { return (void*)&_buffer[_read_index]; }
     void* write_ptr() { return (void*)&_buffer[_write_index]; }
 
-    virtual buffer_info_t read_info()
+    virtual bool read_info(buffer_info_t &info)
     {
         // Need to lock the buffer to freeze the current state
-        _buf_mutex.lock();
-        buffer_info_t ret;
+        if (!_buf_mutex.try_lock())
+        {
+            return false;
+        }
+        // _buf_mutex.lock();
 
-        ret.ptr = read_ptr();
-        ret.n_items = size();
-        ret.item_size = _item_size;
+        info.ptr = read_ptr();
+        info.n_items = size();
+        info.item_size = _item_size;
 
-        return ret;
+        return true;
     }
 
-    virtual buffer_info_t write_info()
+    virtual bool write_info(buffer_info_t& info)
     {
-        _buf_mutex.lock();
-        buffer_info_t ret;
+        if (!_buf_mutex.try_lock())
+        {
+            return false;
+        }
+        // _buf_mutex.lock();
 
-        ret.ptr = write_ptr();
-        ret.n_items = capacity() - size();
-        ret.item_size = _item_size;
+        info.ptr = write_ptr();
+        info.n_items = capacity() - size();
+        info.item_size = _item_size;
 
-        return ret;
+        return true;
     }
 
     virtual void cancel() { _buf_mutex.unlock(); }

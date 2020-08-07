@@ -17,9 +17,12 @@ private:
     std::string _name;
 
 public:
-    static const int s_fixed_buf_size = 100;
+    scheduler_sync* sched_sync;
+    static const int s_fixed_buf_size = 8192;
     static const int s_min_items_to_process = 1;
     static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
+
+    typedef std::shared_ptr<scheduler_simplestream> sptr;
 
     scheduler_simplestream(const std::string name = "simplestream") : scheduler(name) {}
     ~scheduler_simplestream(){
@@ -40,8 +43,6 @@ public:
             auto src_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.src().node());
             auto dst_da_cast = std::dynamic_pointer_cast<domain_adapter>(e.dst().node());
 
-            // Fixed assumption that buffer is contained in downstream domain_adapter
-            // TODO - read the setting from the domain_adapter
             if (src_da_cast != nullptr) {
                 if (src_da_cast->buffer_location() == buffer_location_t::LOCAL) {
                     auto buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
@@ -97,8 +98,9 @@ public:
         }
     }
 
-    void start()
+    void start(scheduler_sync* sync)
     {
+        sched_sync = sync;
         for (auto& b : d_blocks) {
             b->start();
         }
@@ -122,9 +124,9 @@ public:
         }
     }
 
-    void run()
+    void run(scheduler_sync* sync)
     {
-        start();
+        start(sync);
         wait();
     }
 
@@ -143,6 +145,8 @@ private:
     static void thread_body(scheduler_simplestream* top)
     {
         int num_empty = 0;
+	bool work_done = false;
+	top->set_state(scheduler_state::WORKING);
         while (!top->d_thread_stopped) {
             // std::cout << top->name() << ":while" << std::endl;
 
@@ -216,7 +220,15 @@ private:
                 for (auto p : b->input_stream_ports()) {
                     auto p_buf = top->d_block_buffers[p][0];
 
-                    auto read_info = p_buf->read_info();
+
+                    buffer_info_t read_info;
+                    ready = p_buf->read_info(read_info);
+
+                    // std::cout << top->name() << ":" << b->name() << ":read_info:" <<
+                    // ready << "-" << read_info.n_items << std::endl;
+                    if (!ready)
+                        break;
+
                     bufs.push_back(p_buf);
 
                     if (read_info.n_items < s_min_items_to_process) {
@@ -234,6 +246,7 @@ private:
                     for (auto buf : bufs) {
                         buf->cancel();
                     }
+                    std::this_thread::yield();
                     continue;
                 }
 
@@ -248,16 +261,19 @@ private:
 
                     void* write_ptr = nullptr;
                     for (auto p_buf : top->d_block_buffers[p]) {
-                        auto write_info = p_buf->write_info();
+                        buffer_info_t write_info;
+                        ready = p_buf->write_info(write_info);
+                        if (!ready)
+                            break;
                         bufs.push_back(p_buf);
 
-                        if (write_info.n_items < s_max_buf_items) {
+                        if (write_info.n_items <= s_max_buf_items) {
                             ready = false;
                             break;
                         }
 
                         int tmp_buf_size = write_info.n_items;
-                        if (tmp_buf_size < max_output_buffer)
+                        if (tmp_buf_size < max_output_buffer - 1)
                             max_output_buffer = tmp_buf_size;
 
                         // store the first buffer
@@ -281,9 +297,23 @@ private:
                 }
 
                 if (ready) {
-                    // std::cout << top->name() << ":" << b->name() << ":work" << std::endl;
                     work_return_code_t ret = b->do_work(work_input, work_output);
-                    if (ret == work_return_code_t::WORK_OK) {
+
+                    if (ret == work_return_code_t::WORK_DONE) {
+                        work_done = true;
+                        {
+                            // Signal to the monitor thread that we are done working
+                            std::lock_guard<std::mutex> lk(top->sched_sync->sync_mutex);
+                            top->sched_sync->id = top->id();
+                            top->sched_sync->state = scheduler_state::DONE;
+
+                            if (top->state() != scheduler_state::EXIT)
+                                top->set_state(scheduler_state::DONE);
+                        }
+                        top->sched_sync->sync_cv.notify_one();
+                    }
+                    if (ret == work_return_code_t::WORK_OK ||
+                        ret == work_return_code_t::WORK_DONE) {
 
                         int i = 0;
                         for (auto p : b->input_stream_ports()) {
@@ -311,26 +341,43 @@ private:
                             i++;
                         }
                         // update the buffers according to the items produced
-
-                        did_work = true;
+                        if (ret != work_return_code_t::WORK_DONE)
+                            did_work = true;
                     } else {
                         for (auto buf : bufs) {
                             buf->cancel();
                         }
+                        std::this_thread::yield();
                     }
                 }
             }
 
 
             if (!did_work) {
-                // break;  // TODO - make a timeout instead of immediate stop
-                num_empty++;
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                if (num_empty >= 10) {
-                    break;
+                // std::this_thread::yield();
+                std::this_thread::sleep_for(std::chrono::microseconds(2));
+                // No blocks did work in this iteration
+
+                if (top->state() == scheduler_state::DONE) {
+                    num_empty++;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+                    if (num_empty >= 10) {
+                        top->set_state(scheduler_state::FLUSHED);
+                    }
                 }
             }
+
+            if (top->state() == scheduler_state::EXIT) {
+                top->d_thread_stopped = true;
+                break;
+            }
         }
+
+        std::cout << "... exiting" << std::endl;
+        std::cout << top->name() << ":" << std::endl;
+        ;
+
     }
 };
 } // namespace schedulers
