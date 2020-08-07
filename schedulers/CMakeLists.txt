@@ -1,2 +1,5 @@
 add_subdirectory(simplestream)
-add_subdirectory(cuda)
+
+if(GR_ENABLE_CUDA)
+    add_subdirectory(cuda)
+endif()

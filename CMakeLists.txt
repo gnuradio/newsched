@@ -2,7 +2,18 @@
 #
 
 cmake_minimum_required(VERSION 3.10)
-project(newsched LANGUAGES CXX CUDA)
+project(newsched LANGUAGES CXX)
+
+include(CheckLanguage)
+check_language(CUDA)
+
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+  set(GR_ENABLE_CUDA ON)
+else()
+  message(STATUS "No CUDA compiler found")
+  set(GR_ENABLE_CUDA OFF)
+endif()
 
 message(STATUS ${CMAKE_BUILD_TYPE})
 
