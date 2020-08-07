@@ -4,7 +4,7 @@
  *
  */
 
-#include "multiply_const_blk.hpp"
+#include "multiply_const.hpp"
 #include <volk/volk.h>
 #include <chrono>
 #include <mutex>

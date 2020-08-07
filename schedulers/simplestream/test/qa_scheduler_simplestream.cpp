@@ -8,7 +8,7 @@
 #include <thread>
 
 #include <gnuradio/blocklib/blocks/fanout.hpp>
-#include <gnuradio/blocklib/blocks/multiply_const_blk.hpp>
+#include <gnuradio/blocklib/blocks/multiply_const.hpp>
 #include <gnuradio/blocklib/blocks/throttle.hpp>
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
