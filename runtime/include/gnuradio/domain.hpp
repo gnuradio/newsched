@@ -4,8 +4,7 @@
 #include <memory>
 
 #include <gnuradio/blocklib/block.hpp>
-// #include <gnuradio/domain_adapter.hpp>
-#include <gnuradio/domain_adapter_conf.hpp>
+#include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/graph.hpp>
 #include <gnuradio/scheduler.hpp>
 
@@ -35,22 +34,6 @@ private:
     domain_adapter_conf_sptr _da_conf;
     domain_adapter_conf_per_edge _da_edge_confs;
 };
-
-
-// class domain_conf
-// {
-// public:
-//     domain_conf(scheduler_sptr sched, std::vector<block_sptr> blocks)
-//         : _sched(sched), _blocks(blocks)
-//     {
-//     }
-
-//     auto sched() { return _sched; }
-//     auto blocks() { return _blocks; }
-// private:
-//     scheduler_sptr _sched;
-//     std::vector<block_sptr> _blocks;
-// };
 
 typedef std::vector<domain_conf> domain_conf_vec;
 

@@ -24,8 +24,8 @@ public:
     // virtual int capacity() = 0;
     // virtual int size() = 0;
 
-    virtual buffer_info_t read_info() = 0;
-    virtual buffer_info_t write_info() = 0;
+    virtual bool read_info(buffer_info_t &info) = 0;
+    virtual bool write_info(buffer_info_t &info) = 0;
     virtual void cancel() = 0;
 
     virtual void post_read(int num_items) = 0;
