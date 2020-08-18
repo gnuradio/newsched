@@ -3,8 +3,8 @@
 #define INCLUDED_GR_RUNTIME_GRAPH_H
 
 #include "api.h"
-#include <gnuradio/blocklib/block.hpp>
-#include <gnuradio/blocklib/node.hpp>
+#include <gnuradio/block.hpp>
+#include <gnuradio/node.hpp>
 #include <iostream>
 #include <utility>
 #include <vector>

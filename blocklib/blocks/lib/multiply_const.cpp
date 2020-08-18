@@ -10,8 +10,6 @@
 #include <mutex>
 #include <thread>
 
-// FIXME - would like to avoid dependence on scheduler
-// conditionally include this
 #include <gnuradio/scheduler.hpp>
 
 namespace gr {
@@ -131,8 +129,6 @@ double multiply_const<T>::do_a_bunch_of_things(const int x,
         while (!cb_complete) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
-        std::cout << "callback returned " << val << std::endl;
 
         return val;
     }

@@ -1,5 +1,6 @@
 add_library(gnuradio-blocklib-blocks SHARED
   fanout.cpp
+  head.cpp
   multiply_const.cpp
   throttle.cpp
   vector_sink.cpp
@@ -13,11 +14,11 @@ target_include_directories(gnuradio-blocklib-blocks
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/blocklib/blocks
-  ${PROJECT_SOURCE_DIR}/blocklib/common/include
   ${PROJECT_SOURCE_DIR}/runtime/include
   )
 
   # TODO - learn how to include against runtime with INSTALL_INTERFACE
 
   target_link_libraries(gnuradio-blocklib-blocks PUBLIC
-  gnuradio-blocklib-common Volk::volk)
+  gnuradio-runtime 
+  Volk::volk)

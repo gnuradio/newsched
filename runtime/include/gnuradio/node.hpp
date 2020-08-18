@@ -13,8 +13,8 @@
 
 #include <algorithm>
 
-#include <gnuradio/blocklib/io_signature.hpp>
-#include <gnuradio/blocklib/port.hpp>
+#include <gnuradio/io_signature.hpp>
+#include <gnuradio/port.hpp>
 
 namespace gr {
 class node
@@ -110,7 +110,10 @@ public:
 
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }
-    void set_alias(std::string alias) { d_alias = alias; }
+    void set_alias(std::string alias)
+    {
+        d_alias = alias;
+    }
 
     port_sptr get_port(std::string& name, port_type_t type, port_direction_t direction)
     {

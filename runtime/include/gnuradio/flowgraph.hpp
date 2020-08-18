@@ -19,7 +19,7 @@
 #include <mutex>
 #include <queue>
 
-#include <gnuradio/blocklib/block.hpp>
+#include <gnuradio/block.hpp>
 #include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/graph.hpp>
 #include <gnuradio/scheduler.hpp>

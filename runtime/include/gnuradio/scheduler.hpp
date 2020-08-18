@@ -6,7 +6,7 @@
 #include <mutex>
 #include <queue>
 
-#include <gnuradio/blocklib/callback.hpp>
+#include <gnuradio/callback.hpp>
 #include <gnuradio/flat_graph.hpp>
 
 namespace gr {
