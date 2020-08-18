@@ -64,6 +64,8 @@ find_package(Volk REQUIRED)
 
 #find_package(Python3)
 find_package(ZeroMQ REQUIRED)
+find_package(yaml-cpp "0.6" REQUIRED)  # min 0.6
+find_package(spdlog REQUIRED)
 
 enable_testing()
 

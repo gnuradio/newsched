@@ -19,6 +19,7 @@ target_include_directories(gnuradio-scheduler-simplestream
   # TODO - learn how to include against runtime with INSTALL_INTERFACE
 
   target_link_libraries(gnuradio-scheduler-simplestream PUBLIC
+    spdlog::spdlog
     gnuradio-runtime
     Boost::boost
     pthread)
