@@ -13,14 +13,15 @@
 namespace gr {
 
 
-enum class scheduler_state { WORKING, DONE, FLUSHED, EXIT};
+enum class scheduler_state { WORKING, DONE, FLUSHED, EXIT };
 
 struct scheduler_sync {
     std::mutex sync_mutex;
     std::condition_variable sync_cv;
+    std::atomic<int> ready = 0;
 
     // These are the things to signal back to the main thread
-    scheduler_state state; 
+    scheduler_state state;
     int id;
 };
 
