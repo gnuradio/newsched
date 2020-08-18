@@ -89,7 +89,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
 }
 #endif
 
-#if 0
+#if 1
 TEST_CASE("2 sinks, query and set parameters while FG is running")
 {
     auto src = blocks::vector_source_f::make(
