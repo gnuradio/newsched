@@ -2,6 +2,7 @@ add_library(gnuradio-runtime SHARED
   domain_adapter_zmq.cpp
   flat_graph.cpp   
   scheduler.cpp
+  realtime.cpp
   )
 set_target_properties(gnuradio-runtime PROPERTIES
             CXX_STANDARD 17
