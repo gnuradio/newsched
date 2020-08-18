@@ -14,13 +14,14 @@
 #include <string>
 #include <vector>
 
-#include <gnuradio/blocklib/block_callbacks.hpp>
-#include <gnuradio/blocklib/block_work_io.hpp>
-#include <gnuradio/blocklib/callback.hpp>
-#include <gnuradio/blocklib/gpdict.hpp>
-#include <gnuradio/blocklib/io_signature.hpp>
-#include <gnuradio/blocklib/node.hpp>
-#include <gnuradio/blocklib/parameter.hpp>
+#include <gnuradio/block_callbacks.hpp>
+#include <gnuradio/block_work_io.hpp>
+#include <gnuradio/callback.hpp>
+#include <gnuradio/gpdict.hpp>
+#include <gnuradio/io_signature.hpp>
+#include <gnuradio/node.hpp>
+#include <gnuradio/parameter.hpp>
+
 
 namespace gr {
 

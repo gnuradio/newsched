@@ -3,7 +3,7 @@
 #include <zmq.hpp>
 #include <thread>
 
-#include <gnuradio/blocklib/node.hpp>
+#include <gnuradio/node.hpp>
 #include <gnuradio/buffer.hpp>
 #include <gnuradio/graph.hpp>
 

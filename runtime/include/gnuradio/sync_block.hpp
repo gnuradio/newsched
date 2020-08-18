@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <limits>
-#include <gnuradio/blocklib/block.hpp>
+#include <gnuradio/block.hpp>
 
 
 namespace gr {

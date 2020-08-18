@@ -1,7 +1,7 @@
 #ifndef INCLUDED_VECTOR_SOURCE_HPP
 #define INCLUDED_VECTOR_SOURCE_HPP
 
-#include <gnuradio/blocklib/sync_block.hpp>
+#include <gnuradio/sync_block.hpp>
 
 namespace gr {
 namespace blocks {
