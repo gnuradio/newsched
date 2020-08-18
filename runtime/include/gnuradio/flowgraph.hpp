@@ -43,7 +43,7 @@ private:
 
 
 public:
-    flowgraph(){};
+    flowgraph(){set_alias("flowgraph");};
     typedef std::shared_ptr<flowgraph> sptr;
     virtual ~flowgraph(){_monitor_thread_stopped = true;};
     void set_scheduler(scheduler_sptr sched)
