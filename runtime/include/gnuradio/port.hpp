@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/blocklib/parameter_types.hpp>
+#include <gnuradio/parameter_types.hpp>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
@@ -32,7 +32,7 @@ protected:
     std::vector<size_t> _dims; // allow for matrices to be sent naturally across ports
     // empty dims refers to a scalar, dims=[n] same as vlen=n
     int _multiplicity; // port can be replicated as in grc
-    size_t _data_size;
+    size_t _datasize;
     size_t _itemsize; // data size across all dims
 
 public:
@@ -66,10 +66,28 @@ public:
           _multiplicity(multiplicity)
     {
         // _type_info = param_type_info(_data_type); // might not be needed
-        _data_size = parameter_functions::param_size_info(_data_type);
-        _itemsize = _data_size;
+        _datasize = parameter_functions::param_size_info(_data_type);
+        _itemsize = _datasize;
         for (auto d : _dims)
             _itemsize *= d;
+    }
+
+    port_base(const std::string& name,
+              //  std::shared_ptr<node> parent,
+              const port_direction_t direction,
+              const size_t itemsize,
+              const port_type_t port_type = port_type_t::STREAM,
+              const int multiplicity = 1)
+        : _name(name),
+          //   _parent(parent),
+          _direction(direction),
+          _data_type(param_type_t::UNTYPED),
+          _port_type(port_type),
+          _multiplicity(multiplicity),
+          _itemsize(itemsize),
+          _datasize(itemsize)
+    {
+
     }
 
     std::string name() { return _name; }
@@ -80,7 +98,7 @@ public:
     port_type_t type() { return _port_type; }
     param_type_t data_type() { return _data_type; }
     port_direction_t direction() { return _direction; }
-    size_t data_size() { return _data_size; }
+    size_t data_size() { return _datasize; }
     size_t itemsize() { return _itemsize; }
     std::vector<size_t> dims() { return _dims; }
 
@@ -125,5 +143,35 @@ public:
 };
 
 typedef std::vector<port_sptr> port_vector_t;
+
+
+class untyped_port : public port_base
+{
+public:
+    static std::shared_ptr<untyped_port>
+    make(const std::string& name,
+         //    std::shared_ptr<node> parent,
+         const port_direction_t direction,
+         const size_t itemsize,
+         const port_type_t port_type = port_type_t::STREAM,
+         const int multiplicity = 1)
+    {
+        return std::shared_ptr<untyped_port>(
+            new untyped_port(name, direction, itemsize, port_type, multiplicity));
+    }
+    untyped_port(const std::string& name,
+         //    std::shared_ptr<node> parent,
+         const port_direction_t direction,
+         const size_t itemsize,
+         const port_type_t port_type = port_type_t::STREAM,
+         const int multiplicity = 1)
+        : port_base(name,
+                    direction,
+                    itemsize,
+                    port_type,
+                    multiplicity)
+    {
+    }
+};
 
 } // namespace gr

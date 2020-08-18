@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/parameter.hpp>
+#include <gnuradio/parameter.hpp>
 
 namespace gr {
 
@@ -28,16 +28,16 @@ namespace gr {
 // template class parameter_base<std::uint64_t>;
 
 
-template class parameter<float>;
-template class parameter<double>;
-template class parameter<gr_complex>;
-template class parameter<std::int8_t>;
-template class parameter<std::int16_t>;
-template class parameter<std::int32_t>;
-template class parameter<std::int64_t>;
-template class parameter<std::uint8_t>;
-template class parameter<std::uint16_t>;
-template class parameter<std::uint32_t>;
-template class parameter<std::uint64_t>;
+// template class parameter<float>;
+// template class parameter<double>;
+// template class parameter<gr_complex>;
+// template class parameter<std::int8_t>;
+// template class parameter<std::int16_t>;
+// template class parameter<std::int32_t>;
+// template class parameter<std::int64_t>;
+// template class parameter<std::uint8_t>;
+// template class parameter<std::uint16_t>;
+// template class parameter<std::uint32_t>;
+// template class parameter<std::uint64_t>;
 
 }

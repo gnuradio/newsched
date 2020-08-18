@@ -15,31 +15,27 @@ ${PROJECT_SOURCE_DIR}/runtime/include
 )
 
 target_link_libraries(test_parameters_callbacks 
-    gnuradio-blocklib-common
-    gnuradio-blocklib-blocks
     gnuradio-runtime
+    gnuradio-blocklib-blocks
     gnuradio-scheduler-simplestream
 )
 
 
 target_link_libraries(test_one_to_many 
-    gnuradio-blocklib-common
-    gnuradio-blocklib-blocks
     gnuradio-runtime
+    gnuradio-blocklib-blocks
     gnuradio-scheduler-simplestream
 )
 
 target_link_libraries(test_multisched 
-    gnuradio-blocklib-common
-    gnuradio-blocklib-blocks
     gnuradio-runtime
+    gnuradio-blocklib-blocks  
     gnuradio-scheduler-simplestream
 )
 
 target_link_libraries(test_multi_da
-    gnuradio-blocklib-common
-    gnuradio-blocklib-blocks
     gnuradio-runtime
+    gnuradio-blocklib-blocks
     gnuradio-scheduler-simplestream
 )
 
@@ -61,9 +57,8 @@ target_include_directories(qa_simplestream
     
 )
 target_link_libraries(qa_simplestream  
-    gnuradio-blocklib-common
-    gnuradio-blocklib-blocks
     gnuradio-runtime
+    gnuradio-blocklib-blocks
     gnuradio-scheduler-simplestream)
 
 add_test(NAME test

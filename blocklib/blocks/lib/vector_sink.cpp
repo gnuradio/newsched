@@ -12,8 +12,6 @@
 #include <algorithm>
 #include <iostream>
 
-// FIXME - would like to avoid dependence on scheduler
-// conditionally include this
 #include <gnuradio/scheduler.hpp>
 
 using namespace std;

@@ -11,7 +11,7 @@
 #ifndef INCLUDED_GR_THROTTLE_H
 #define INCLUDED_GR_THROTTLE_H
 
-#include <gnuradio/blocklib/sync_block.hpp>
+#include <gnuradio/sync_block.hpp>
 #include <chrono>
 
 namespace gr {
@@ -38,15 +38,15 @@ public:
 
     static sptr make(size_t itemsize, double samples_per_sec, bool ignore_tags = true)
     {
-        auto ptr = std::make_shared<throttle>(throttle(itemsize, samples_per_sec, ignore_tags));
+        auto ptr =
+            std::make_shared<throttle>(throttle(itemsize, samples_per_sec, ignore_tags));
 
-        // TODO: make the throttle "don't care" type (size only)
-        ptr->add_port(port<uint8_t>::make(
-            "input", port_direction_t::INPUT, port_type_t::STREAM, std::vector<size_t>{ 1 }));
-        ptr->add_port(port<uint8_t>::make("output",
-                                port_direction_t::OUTPUT,
-                                port_type_t::STREAM,
-                                std::vector<size_t>{ 1 }));
+        ptr->add_port(untyped_port::make(
+            "input", port_direction_t::INPUT, itemsize, port_type_t::STREAM));
+
+
+        ptr->add_port(untyped_port::make(
+            "output", port_direction_t::OUTPUT, itemsize, port_type_t::STREAM));
 
         return ptr;
     }
@@ -71,7 +71,6 @@ private:
     double d_sample_rate;
     std::chrono::duration<double> d_sample_period;
     const bool d_ignore_tags;
-
 };
 
 } /* namespace blocks */

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <gnuradio/blocklib/parameter_types.hpp>
+#include <gnuradio/parameter_types.hpp>
 #include <any>
 #include <string>
 #include <vector>
 #include <queue>
+#include <memory>
+#include <functional>
 
 namespace gr {
 
