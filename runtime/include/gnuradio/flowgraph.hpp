@@ -39,12 +39,13 @@ private:
     std::vector<flat_graph_sptr> d_flat_subgraphs;
 
     scheduler_sync _sched_sync;
+    bool _monitor_thread_stopped = false;
 
 
 public:
     flowgraph(){};
     typedef std::shared_ptr<flowgraph> sptr;
-    virtual ~flowgraph(){};
+    virtual ~flowgraph(){_monitor_thread_stopped = true;};
     void set_scheduler(scheduler_sptr sched)
     {
         d_schedulers = std::vector<scheduler_sptr>{ sched };
@@ -210,6 +211,8 @@ public:
     }
     void start()
     {
+        using namespace std::chrono_literals;
+        gr_log_trace(_debug_logger, "start()");
         // Need thread synchronization for the schedulers - to know when they're done and
         // signal the other schedulers that might be connected
 
@@ -222,23 +225,28 @@ public:
         // Start a monitor thread to keep track of when the schedulers signal info back to
         // the main thread
         std::thread monitor([this]() {
-            while (true) {
+            while (!_monitor_thread_stopped) {
                 std::unique_lock<std::mutex> lk{ _sched_sync.sync_mutex };
-                _sched_sync.sync_cv.wait(lk);
-                std::cout << "monitor: notified --> " << _sched_sync.id << " / "
-                          << (int)_sched_sync.state << std::endl;
-
-                if (_sched_sync.state ==
-                    scheduler_state::DONE) // Notify the other threads to wrap it up
+                if(_sched_sync.sync_cv.wait_for(lk, 1s, [this]{return _sched_sync.ready == true; } ))
                 {
-                        for (auto s : d_schedulers) {
-                            s->set_state(scheduler_state::DONE);
-                        }
-                    break;
+                    gr_log_debug(_debug_logger,"monitor: notified --> {} / {}",_sched_sync.id, (int)_sched_sync.state);
+
+                    if (_sched_sync.state ==
+                        scheduler_state::DONE) // Notify the other threads to wrap it up
+                    {
+                            for (auto s : d_schedulers) {
+                                s->set_state(scheduler_state::DONE);
+                            }
+                        break;
+                    }
+                }
+                else
+                {
+                    continue;
                 }
             }
 
-            while (true) {
+            while (!_monitor_thread_stopped) {
                 // Wait until all the threads are done
 
                 bool all_done = true;

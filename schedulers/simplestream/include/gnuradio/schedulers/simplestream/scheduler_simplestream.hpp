@@ -18,13 +18,19 @@ private:
 
 public:
     scheduler_sync* sched_sync;
-    static const int s_fixed_buf_size = 8192;
+    const int s_fixed_buf_size;
     static const int s_min_items_to_process = 1;
-    static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
+    const int s_max_buf_items; // = s_fixed_buf_size / 2;
 
     typedef std::shared_ptr<scheduler_simplestream> sptr;
 
-    scheduler_simplestream(const std::string name = "simplestream") : scheduler(name) {}
+    scheduler_simplestream(const std::string name = "simplestream",
+                           const unsigned int fixed_buf_size = 8192)
+        : scheduler(name),
+          s_fixed_buf_size(fixed_buf_size),
+          s_max_buf_items(fixed_buf_size / 2)
+    {
+    }
     ~scheduler_simplestream(){
 
     };
@@ -223,7 +229,7 @@ private:
                         break;
                     }
                 }
-
+                    
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);
 
@@ -291,7 +297,7 @@ private:
                             break;
                         bufs.push_back(p_buf);
 
-                        if (write_info.n_items <= s_max_buf_items) {
+                        if (write_info.n_items <= top->s_max_buf_items) {
                             ready = false;
                             break;
                         }
@@ -305,7 +311,7 @@ private:
                             write_ptr = write_info.ptr;
                     }
 
-                    max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
+                    max_output_buffer = std::min(max_output_buffer, top->s_max_buf_items);
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
 
                     work_output.push_back(
@@ -337,6 +343,7 @@ private:
                             if (top->state() != scheduler_state::EXIT)
                                 top->set_state(scheduler_state::DONE);
                         }
+                        top->sched_sync->ready = true;
                         top->sched_sync->sync_cv.notify_one();
                     }
                     if (ret == work_return_code_t::WORK_OK ||
@@ -397,29 +404,30 @@ private:
 
             if (!did_work) {
                 // std::this_thread::yield();
+                gr_log_debug(top->_debug_logger, "no work in this iteration");
                 std::this_thread::sleep_for(std::chrono::microseconds(2));
                 // No blocks did work in this iteration
 
                 if (top->state() == scheduler_state::DONE) {
-                    num_empty++;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    // num_empty++;
+                    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    gr_log_debug(top->_debug_logger, "flushing ..");
 
-                    if (num_empty >= 10) {
-                        top->set_state(scheduler_state::FLUSHED);
-                    }
+                    // if (num_empty >= 10) {
+                    top->set_state(scheduler_state::FLUSHED);
+                    // }
                 }
             }
 
             if (top->state() == scheduler_state::EXIT) {
+                gr_log_debug(top->_debug_logger,"scheduler state has been set to exit");
                 top->d_thread_stopped = true;
                 break;
             }
         }
 
-        std::cout << "... exiting" << std::endl;
-        std::cout << top->name() << ":" << std::endl;
-        ;
-
+        gr_log_debug(top->_debug_logger,"exiting");
+        gr_log_info(top->_logger, "exiting");
     }
 };
 } // namespace schedulers
