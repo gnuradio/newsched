@@ -179,12 +179,14 @@ public:
 
     virtual void on_parameter_change(param_action_sptr action)
     {
+        gr_log_debug(_debug_logger, "block: on_parameter_change");
         auto param = parameters.get(action->id());
         param->set_value(action->any_value());
     }
 
     virtual void on_parameter_query(param_action_sptr action)
     {
+        gr_log_debug(_debug_logger, "block: on_parameter_query");
         auto param = parameters.get(action->id());
         action->set_any_value(param->any_value());
     }

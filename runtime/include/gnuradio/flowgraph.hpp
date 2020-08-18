@@ -203,6 +203,7 @@ public:
     }
     void validate()
     {
+        gr_log_trace(_debug_logger, "validate()");
         d_flat_graph = flat_graph::make_flat(base());
         for (auto sched : d_schedulers)
             sched->initialize(d_flat_graph);
@@ -263,12 +264,14 @@ public:
     }
     void stop()
     {
+        gr_log_trace(_debug_logger, "stop()");
         for (auto s : d_schedulers) {
             s->stop();
         }
     }
     void wait()
     {
+        gr_log_trace(_debug_logger, "wait()");
         for (auto s : d_schedulers) {
             s->wait();
         }
