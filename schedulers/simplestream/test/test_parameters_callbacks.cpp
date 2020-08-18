@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         blocks::multiply_const_ff::make(100.0); // create a block that multiplies by 17
     auto src = blocks::vector_source_f::make(
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
-    auto throttle = blocks::throttle::make(sizeof(float), 100);
+    auto throttle = blocks::throttle::make(sizeof(float), 10000);
     auto snk = blocks::vector_sink_f::make();
     // blocks::vector_sink_f snk();
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
 
     std::shared_ptr<schedulers::scheduler_simplestream> sched(
-        new schedulers::scheduler_simplestream());
+        new schedulers::scheduler_simplestream("sched1", 8192));
     fg->set_scheduler(sched->base());
 
     fg->validate();
@@ -52,10 +52,10 @@ int main(int argc, char* argv[])
         mult->do_a_bunch_of_things(
             1, 2.0, std::vector<gr_complex>{ gr_complex(4.0, 5.0) });
 
-        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(200))
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(3))
             break;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         k += 1.0;
 
@@ -68,13 +68,7 @@ int main(int argc, char* argv[])
         std::cout << d << ' ';
 
     fg->stop();
-    fg->wait();
 
-    // DOMAIN??
-
-
-    // sched.start();
-    // sched.wait();
 
     for (const auto& d : snk->data())
         std::cout << d << ' ';
