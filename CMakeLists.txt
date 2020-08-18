@@ -34,6 +34,17 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+########################################################################
+# Incorporate CMake function/macros overloading.
+########################################################################
+
+include(CMakeOverloads)
+
+########################################################################
+# Compiler specific setup
+########################################################################
+include(GrMiscUtils) #compiler flag check
+
 # The version number.
 set(modulargr_VERSION_MAJOR 0)
 set(modulargr_VERSION_MINOR 0)
@@ -44,6 +55,7 @@ set(LIBVER "${modulargr_VERSION_MAJOR}.${modulargr_VERSION_MINOR}")
 SET(GR_INCLUDE_DIR     include CACHE PATH "Path to install header files")
 
 set(BOOST_REQUIRED_COMPONENTS
+program_options
 )
 set(GR_BOOST_MIN_VERSION "1.65")
 find_package(Boost ${GR_BOOST_MIN_VERSION} COMPONENTS ${BOOST_REQUIRED_COMPONENTS})
@@ -59,6 +71,6 @@ add_subdirectory(deps/catch/include)
 add_subdirectory(blocklib)
 add_subdirectory(runtime)
 add_subdirectory(schedulers)
-
+add_subdirectory(bench)
 add_subdirectory(docs)
 
