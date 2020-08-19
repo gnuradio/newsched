@@ -61,8 +61,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     auto snk = blocks::vector_sink_f::make();
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src, 0, throttle, 0);
-    fg->connect(throttle, 0, mult1, 0);
+    fg->connect(src, 0, mult1, 0);
     fg->connect(mult1, 0, mult2, 0);
     fg->connect(mult2, 0, snk, 0);
 
@@ -77,7 +76,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     auto da_conf =
         domain_adapter_shm_conf::make(buffer_preference_t::UPSTREAM);
 
-    domain_conf_vec dconf{ domain_conf(sched1, { src, throttle, mult1 }, da_conf),
+    domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }, da_conf),
                            domain_conf(sched2, { mult2, snk }, da_conf) };
 
     fg->partition(dconf);
