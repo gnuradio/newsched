@@ -135,7 +135,7 @@ public:
     }
 
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port)
+    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {
 
         if (_buf_pref == buffer_preference_t::DOWNSTREAM) {
@@ -184,7 +184,7 @@ public:
     }
 
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port)
+    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {
         // TODO: check whether port is available
         auto port = _available_ports[0];
