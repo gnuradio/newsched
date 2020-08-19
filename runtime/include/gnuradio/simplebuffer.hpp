@@ -65,6 +65,7 @@ public:
         info.ptr = read_ptr();
         info.n_items = size();
         info.item_size = _item_size;
+        info.total_items = _total_read;
 
         return true;
     }
@@ -81,6 +82,7 @@ public:
         info.ptr = write_ptr();
         info.n_items = capacity() - size();
         info.item_size = _item_size;
+        info.total_items = _total_written;
 
         return true;
     }
@@ -98,6 +100,7 @@ public:
         if (_read_index >= _buf_size) {
             _read_index -= _buf_size;
         }
+        _total_read += num_items;
         // _buf_mutex.unlock();
     }
     virtual void post_write(int num_items)
@@ -124,6 +127,7 @@ public:
             _write_index -= _buf_size;
         }
 
+        _total_written += num_items;
         // _buf_mutex.unlock();
     }
 
