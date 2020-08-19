@@ -25,6 +25,9 @@ jobs:
       working-directory: build
       run: make -j
     # run tests
+    - name: run tests verbose
+      working-directory: build
+      run: ctest -VV
     - name: run tests
       working-directory: build
       run: make test
