@@ -32,11 +32,11 @@ class scheduler;
  *
  */
 enum class work_return_code_t {
-    WORK_INSUFFICIENT_OUTPUT_ITEMS = -4,
-    WORK_INSUFFICIENT_INPUT_ITEMS = -3,
-    WORK_CALLED_PRODUCE = -2,
-    WORK_DONE = -1,
-    WORK_OK = 0,
+
+    WORK_INSUFFICIENT_OUTPUT_ITEMS = -3, /// work requires a larger output buffer to produce output
+    WORK_INSUFFICIENT_INPUT_ITEMS = -2, /// work requires a larger input buffer to produce output
+    WORK_DONE = -1, /// this block has completed its processing and the flowgraph should be done
+    WORK_OK = 0, /// work call was successful and return values in i/o structs are valid
 };
 
 /**
