@@ -41,8 +41,8 @@ protected:
     buffer_sptr _buffer = nullptr;
     buffer_location_t _buffer_loc;
 
-    domain_adapter(buffer_location_t buf_loc)
-        : node("domain_adapter"), _buffer_loc(buf_loc)
+    domain_adapter(buffer_location_t buf_loc, const std::string& name="domain_adapter")
+        : node(name), _buffer_loc(buf_loc)
     {
     }
 
@@ -66,7 +66,7 @@ protected:
 
 public:
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port)
+    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {
         throw std::runtime_error("Cannot create domain adapter pair from base class");
     };

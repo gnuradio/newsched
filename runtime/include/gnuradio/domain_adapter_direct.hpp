@@ -218,7 +218,7 @@ public:
     }
 
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port)
+    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {
         auto direct_sync = direct_sync::make();
 

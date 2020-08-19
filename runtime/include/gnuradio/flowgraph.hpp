@@ -20,10 +20,10 @@
 #include <queue>
 
 #include <gnuradio/block.hpp>
+#include <gnuradio/domain.hpp>
 #include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/graph.hpp>
 #include <gnuradio/scheduler.hpp>
-#include <gnuradio/domain.hpp>
 
 namespace gr {
 
@@ -43,9 +43,9 @@ private:
 
 
 public:
-    flowgraph(){set_alias("flowgraph");};
+    flowgraph() { set_alias("flowgraph"); };
     typedef std::shared_ptr<flowgraph> sptr;
-    virtual ~flowgraph(){_monitor_thread_stopped = true;};
+    virtual ~flowgraph() { _monitor_thread_stopped = true; };
     void set_scheduler(scheduler_sptr sched)
     {
         d_schedulers = std::vector<scheduler_sptr>{ sched };
@@ -89,9 +89,9 @@ public:
                         domain_crossings.push_back(e);
                         crossing_confs.push_back(conf);
 
-                        // Is this block connected to anything else in our current partition
+                        // Is this block connected to anything else in our current
+                        // partition
                         bool connected = false; // TODO - handle orphan nodes
-
                     }
                 }
             }
@@ -142,14 +142,12 @@ public:
             // right now, only one port - have a list of available ports
             // put the buffer downstream
             auto conf = crossing_confs[crossing_index];
-            
+
             // Does the crossing have a specific domain adapter defined
             domain_adapter_conf_sptr da_conf = nullptr;
-            for (auto ec : conf.da_edge_confs())
-            {
+            for (auto ec : conf.da_edge_confs()) {
                 auto conf_edge = std::get<0>(ec);
-                if (c == conf_edge)
-                {
+                if (c == conf_edge) {
                     da_conf = std::get<1>(ec);
                     break;
                 }
@@ -177,8 +175,10 @@ public:
 #endif
             // use the conf to produce the domain adapters
 
-            auto da_pair =
-                da_conf->make_domain_adapter_pair(c.src().port(), c.dst().port());
+            auto da_pair = da_conf->make_domain_adapter_pair(
+                c.src().port(),
+                c.dst().port(),
+                "da_" + c.src().node()->name() + "->" + c.dst().node()->name());
             auto da_src = std::get<0>(da_pair);
             auto da_dst = std::get<1>(da_pair);
 
@@ -227,21 +227,22 @@ public:
         std::thread monitor([this]() {
             while (!_monitor_thread_stopped) {
                 std::unique_lock<std::mutex> lk{ _sched_sync.sync_mutex };
-                if(_sched_sync.sync_cv.wait_for(lk, 1s, [this]{return _sched_sync.ready == true; } ))
-                {
-                    gr_log_debug(_debug_logger,"monitor: notified --> {} / {}",_sched_sync.id, (int)_sched_sync.state);
+                if (_sched_sync.sync_cv.wait_for(
+                        lk, 1s, [this] { return _sched_sync.ready == true; })) {
+                    gr_log_debug(_debug_logger,
+                                 "monitor: notified --> {} / {}",
+                                 _sched_sync.id,
+                                 (int)_sched_sync.state);
 
                     if (_sched_sync.state ==
                         scheduler_state::DONE) // Notify the other threads to wrap it up
                     {
-                            for (auto s : d_schedulers) {
-                                s->set_state(scheduler_state::DONE);
-                            }
+                        for (auto s : d_schedulers) {
+                            s->set_state(scheduler_state::DONE);
+                        }
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     continue;
                 }
             }
@@ -250,9 +251,10 @@ public:
                 // Wait until all the threads are done
 
                 bool all_done = true;
-                for (auto &s : d_schedulers) {
+                for (auto& s : d_schedulers) {
                     auto state = s->state();
-                    // std::cout << "**" << s->name() << ":" << ":state:" << (int) s->state() << std::endl;;
+                    // std::cout << "**" << s->name() << ":" << ":state:" << (int)
+                    // s->state() << std::endl;;
                     if (state != scheduler_state::FLUSHED) {
                         all_done = false;
                     }

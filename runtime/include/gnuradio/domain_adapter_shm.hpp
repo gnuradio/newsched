@@ -40,9 +40,9 @@ private:
 public:
     shm_sync_sptr p_sync;
     typedef std::shared_ptr<domain_adapter_shm_svr> sptr;
-    static sptr make(shm_sync_sptr sync, port_sptr other_port)
+    static sptr make(shm_sync_sptr sync, port_sptr other_port, const std::string& name="domain_adapter_shm_svr")
     {
-        auto ptr = std::make_shared<domain_adapter_shm_svr>(domain_adapter_shm_svr(sync));
+        auto ptr = std::make_shared<domain_adapter_shm_svr>(domain_adapter_shm_svr(sync,name));
 
         ptr->add_port(port_base::make("output",
                                       port_direction_t::OUTPUT,
@@ -55,8 +55,8 @@ public:
         return ptr;
     }
 
-    domain_adapter_shm_svr(shm_sync_sptr sync)
-        : domain_adapter(buffer_location_t::LOCAL), p_sync(sync)
+    domain_adapter_shm_svr(shm_sync_sptr sync,const std::string& name)
+        : domain_adapter(buffer_location_t::LOCAL,name), p_sync(sync)
     {
     }
 
@@ -67,18 +67,22 @@ public:
         while (true) {
             {
                 std::unique_lock<std::mutex> l(top->p_sync->mtx);
-                //std::cout << "svr unlock" << std::endl;
+                
+                gr_log_trace(top->_debug_logger,"svr unlock");
                 top->p_sync->cv.wait(l, [top]{return top->p_sync->ready == 1;});
-                //std::cout << "svr out of wait" << std::endl;
+                gr_log_trace(top->_debug_logger,"svr out of wait");
+                
 
                 switch (top->p_sync->request) {
                 case da_request_t::CANCEL:
                     //std::cout << "svr CANCEL" << std::endl;
+                    gr_log_trace(top->_debug_logger,"svr CANCEL");
                     top->buffer()->cancel();
                     top->p_sync->response = da_response_t::OK;
                     break;
                 case da_request_t::WRITE_INFO:
                     //std::cout << "svr WRITE_INFO" << std::endl;
+                    gr_log_trace(top->_debug_logger,"svr WRITE_INFO");
                     if (top->buffer()->write_info(top->p_sync->info)) {
                         top->p_sync->response = da_response_t::OK;
                     } else {
@@ -87,6 +91,7 @@ public:
                     break;
                 case da_request_t::READ_INFO:
                     //std::cout << "svr READ_INFO" << std::endl;
+                    gr_log_trace(top->_debug_logger,"svr READ_INFO");
                     if (top->buffer()->read_info(top->p_sync->info)) {
                         top->p_sync->response = da_response_t::OK;
                     } else {
@@ -95,19 +100,23 @@ public:
                     break;
                 case da_request_t::POST_WRITE:
                     //std::cout << "svr POST_WRITE" << std::endl;
+                    gr_log_trace(top->_debug_logger,"svr POST_WRITE");
                     top->buffer()->post_write(top->p_sync->num_items);
                     top->p_sync->response = da_response_t::OK;
                     break;
                 case da_request_t::POST_READ:
                     //std::cout << "svr POST_READ" << std::endl;
+                    gr_log_trace(top->_debug_logger,"svr POST_READ");
                     top->buffer()->post_read(top->p_sync->num_items);
                     top->p_sync->response = da_response_t::OK;
                     break;
                 }
 
                 //std::cout << "svr out of switch" << std::endl;
+                gr_log_trace(top->_debug_logger,"svr out of switch");
                 l.unlock();
                 //std::cout << "svr notify_one" << std::endl;
+                gr_log_trace(top->_debug_logger,"svr notify_one");
                 top->p_sync->ready = 2;
                 top->p_sync->cv.notify_one();
             }
@@ -136,9 +145,9 @@ private:
 
 public:
     typedef std::shared_ptr<domain_adapter_shm_cli> sptr;
-    static sptr make(shm_sync_sptr sync, port_sptr other_port)
+    static sptr make(shm_sync_sptr sync, port_sptr other_port, const std::string& name="domain_adapter_shm_svr")
     {
-        auto ptr = std::make_shared<domain_adapter_shm_cli>(domain_adapter_shm_cli(sync));
+        auto ptr = std::make_shared<domain_adapter_shm_cli>(domain_adapter_shm_cli(sync, name));
 
         // Type of port is not known at compile time
         ptr->add_port(port_base::make("input",
@@ -149,8 +158,8 @@ public:
 
         return ptr;
     }
-    domain_adapter_shm_cli(shm_sync_sptr sync)
-        : domain_adapter(buffer_location_t::LOCAL), p_sync(sync)
+    domain_adapter_shm_cli(shm_sync_sptr sync, const std::string& name)
+        : domain_adapter(buffer_location_t::LOCAL, name), p_sync(sync)
     {
     }
 
@@ -293,21 +302,21 @@ public:
     }
 
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port)
+    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {
         auto shm_sync = shm_sync::make();
 
         if (_buf_pref == buffer_preference_t::DOWNSTREAM) {
-            auto upstream_adapter = domain_adapter_shm_cli::make(shm_sync, upstream_port);
+            auto upstream_adapter = domain_adapter_shm_cli::make(shm_sync, upstream_port, name + "_cli");
             auto downstream_adapter =
-                domain_adapter_shm_svr::make(shm_sync, downstream_port);
+                domain_adapter_shm_svr::make(shm_sync, downstream_port, name + "_svr");
 
             return std::make_pair(upstream_adapter, downstream_adapter);
         } else {
             auto downstream_adapter =
-                domain_adapter_shm_cli::make(shm_sync, upstream_port);
+                domain_adapter_shm_cli::make(shm_sync, upstream_port, name + "_cli");
             auto upstream_adapter =
-                domain_adapter_shm_svr::make(shm_sync, downstream_port);
+                domain_adapter_shm_svr::make(shm_sync, downstream_port, name + "_svr");
 
             return std::make_pair(upstream_adapter, downstream_adapter);
         }
