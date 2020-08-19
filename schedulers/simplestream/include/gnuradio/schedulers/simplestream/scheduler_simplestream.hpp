@@ -409,13 +409,13 @@ private:
                 // No blocks did work in this iteration
 
                 if (top->state() == scheduler_state::DONE) {
-                    // num_empty++;
-                    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    num_empty++;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     gr_log_debug(top->_debug_logger, "flushing ..");
 
-                    // if (num_empty >= 10) {
+                    if (num_empty >= 5) {
                     top->set_state(scheduler_state::FLUSHED);
-                    // }
+                    }
                 }
             }
 
