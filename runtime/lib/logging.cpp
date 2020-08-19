@@ -122,8 +122,10 @@ logger_sptr logging::get_logger(const std::string& logger_name,
         }
 
     } else {
-        std::cout << "Logger: " << config_name << " not found in configuration"
-                  << std::endl;
+        // std::cout << "Logger: " << config_name << " not found in configuration"
+        //           << std::endl;
+        // If a logger is not found, all the loggers will have nullptr.  This printout is annoying in CI tests
+        // TODO: have a default logger in the build directory
     }
 
 
