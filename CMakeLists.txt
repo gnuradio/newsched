@@ -2,7 +2,18 @@
 #
 
 cmake_minimum_required(VERSION 3.10)
-project(modulargr)
+project(newsched LANGUAGES CXX)
+
+include(CheckLanguage)
+check_language(CUDA)
+
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+  set(GR_ENABLE_CUDA ON)
+else()
+  message(STATUS "No CUDA compiler found")
+  set(GR_ENABLE_CUDA OFF)
+endif()
 
 message(STATUS ${CMAKE_BUILD_TYPE})
 
@@ -46,11 +57,11 @@ include(CMakeOverloads)
 include(GrMiscUtils) #compiler flag check
 
 # The version number.
-set(modulargr_VERSION_MAJOR 0)
-set(modulargr_VERSION_MINOR 0)
-set(modulargr_VERSION_PATCH 1)
-set(VERSION "${modulargr_VERSION_MAJOR}.${modulargr_VERSION_MINOR}.${modulargr_VERSION_PATCH}")
-set(LIBVER "${modulargr_VERSION_MAJOR}.${modulargr_VERSION_MINOR}")
+set(newsched_VERSION_MAJOR 0)
+set(newsched_VERSION_MINOR 0)
+set(newsched_VERSION_PATCH 1)
+set(VERSION "${newsched_VERSION_MAJOR}.${newsched_VERSION_MINOR}.${newsched_VERSION_PATCH}")
+set(LIBVER "${newsched_VERSION_MAJOR}.${newsched_VERSION_MINOR}")
 
 SET(GR_INCLUDE_DIR     include CACHE PATH "Path to install header files")
 
