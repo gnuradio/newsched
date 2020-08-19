@@ -24,19 +24,24 @@ enum class tag_propagation_policy_t {
 class tag_t
 {
 public:
-    tag_t(uint64_t offset, std::string& key, std::string& value, std::string& srcid)
-    {
-        offset = offset;
-        key = key;
-        value = value;
-        srcid = srcid;
-    }
     uint64_t offset;
     std::string key;
     // .... value  -- do without pmts for now
     std::string value;
     std::string srcid;
+    tag_t(uint64_t offset, std::string key, std::string value, std::string srcid)
+        : offset(offset), key(key), value(value), srcid(srcid)
+    {
+    }
 };
+
+// tag_t(uint64_t offset,
+//       const std::string& key,
+//       const std::string& value,
+//       const std::string& srcid)
+//     : offset(offset), key(key), value(value), srcid(srcid)
+// {
+// }
 } // namespace gr
 
 #endif
