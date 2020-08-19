@@ -1,4 +1,3 @@
-add_subdirectory(common)
 add_subdirectory(blocks)
 
 if(GR_ENABLE_CUDA)

@@ -61,8 +61,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     auto snk = blocks::vector_sink_f::make();
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src, 0, throttle, 0);
-    fg->connect(throttle, 0, mult1, 0);
+    fg->connect(src, 0, mult1, 0);
     fg->connect(mult1, 0, mult2, 0);
     fg->connect(mult2, 0, snk, 0);
 
@@ -77,7 +76,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     auto da_conf =
         domain_adapter_shm_conf::make(buffer_preference_t::UPSTREAM);
 
-    domain_conf_vec dconf{ domain_conf(sched1, { src, throttle, mult1 }, da_conf),
+    domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }, da_conf),
                            domain_conf(sched2, { mult2, snk }, da_conf) };
 
     fg->partition(dconf);
@@ -89,7 +88,7 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
 }
 #endif
 
-#if 0
+#if 1
 TEST_CASE("2 sinks, query and set parameters while FG is running")
 {
     auto src = blocks::vector_source_f::make(
@@ -108,10 +107,11 @@ TEST_CASE("2 sinks, query and set parameters while FG is running")
     fg->connect(fanout, 1, snk2, 0);
 
     std::shared_ptr<schedulers::scheduler_simplestream> sched(
-        new schedulers::scheduler_simplestream());
+        new schedulers::scheduler_simplestream("sched1",100));
     fg->set_scheduler(sched);
 
     fg->validate();
+
     fg->start();
 
     auto start = std::chrono::steady_clock::now();
@@ -132,6 +132,8 @@ TEST_CASE("2 sinks, query and set parameters while FG is running")
     }
 
     fg->stop();
+
+    std::cout << "fg stopped" << std::endl;
 
     // now look at the data
     REQUIRE(snk1->data().size() > 5);

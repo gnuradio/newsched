@@ -18,13 +18,19 @@ private:
 
 public:
     scheduler_sync* sched_sync;
-    static const int s_fixed_buf_size = 8192;
+    const int s_fixed_buf_size;
     static const int s_min_items_to_process = 1;
-    static constexpr int s_max_buf_items = s_fixed_buf_size / 2;
+    const int s_max_buf_items; // = s_fixed_buf_size / 2;
 
     typedef std::shared_ptr<scheduler_simplestream> sptr;
 
-    scheduler_simplestream(const std::string name = "simplestream") : scheduler(name) {}
+    scheduler_simplestream(const std::string name = "simplestream",
+                           const unsigned int fixed_buf_size = 8192)
+        : scheduler(name),
+          s_fixed_buf_size(fixed_buf_size),
+          s_max_buf_items(fixed_buf_size / 2)
+    {
+    }
     ~scheduler_simplestream(){
 
     };
@@ -145,8 +151,9 @@ private:
     static void thread_body(scheduler_simplestream* top)
     {
         int num_empty = 0;
-	bool work_done = false;
-	top->set_state(scheduler_state::WORKING);
+        bool work_done = false;
+        top->set_state(scheduler_state::WORKING);
+        gr_log_info(top->_logger, "starting thread");
         while (!top->d_thread_stopped) {
             // std::cout << top->name() << ":while" << std::endl;
 
@@ -158,6 +165,10 @@ private:
                 // handle parameter changes - queues need to be made thread safe
                 while (!top->param_change_queue.empty()) {
                     auto item = top->param_change_queue.front();
+                    gr_log_debug(top->_debug_logger,
+                                 "param_change_queue - dequeue {} - {}",
+                                 item.block_id,
+                                 b->alias());
                     if (item.block_id == b->alias()) {
                         b->on_parameter_change(item.param_action);
 
@@ -178,6 +189,10 @@ private:
                 // handle parameter queries
                 while (!top->param_query_queue.empty()) {
                     auto item = top->param_query_queue.front();
+                    gr_log_debug(top->_debug_logger,
+                                 "param_query_queue - dequeue {} - {}",
+                                 item.block_id,
+                                 b->alias());
                     if (item.block_id == b->alias()) {
                         b->on_parameter_query(item.param_action);
 
@@ -195,6 +210,10 @@ private:
                 // handle general callbacks
                 while (!top->callback_queue.empty()) {
                     auto item = top->callback_queue.front();
+                    gr_log_debug(top->_debug_logger,
+                                 "callback_queue - dequeue {} - {}",
+                                 item.block_id,
+                                 b->alias());
                     if (item.block_id == b->alias()) {
                         auto cbs = item.cb_struct;
                         auto ret = b->callbacks()[cbs.callback_name](cbs.args);
@@ -210,7 +229,7 @@ private:
                         break;
                     }
                 }
-
+                    
                 std::vector<block_work_input> work_input;   //(num_input_ports);
                 std::vector<block_work_output> work_output; //(num_output_ports);
 
@@ -223,6 +242,10 @@ private:
 
                     buffer_info_t read_info;
                     ready = p_buf->read_info(read_info);
+                    gr_log_debug(top->_debug_logger,
+                                 "read_info {} - {}",
+                                 b->name(),
+                                 read_info.n_items);
 
                     // std::cout << top->name() << ":" << b->name() << ":read_info:" <<
                     // ready << "-" << read_info.n_items << std::endl;
@@ -243,6 +266,7 @@ private:
 
                 if (!ready) {
                     // clean up the buffers that we now won't be using
+                    gr_log_debug(top->_debug_logger, "cancel");
                     for (auto buf : bufs) {
                         buf->cancel();
                     }
@@ -263,11 +287,17 @@ private:
                     for (auto p_buf : top->d_block_buffers[p]) {
                         buffer_info_t write_info;
                         ready = p_buf->write_info(write_info);
+                        gr_log_debug(top->_debug_logger,
+                                     "write_info {} - {} @ {} {}",
+                                     b->name(),
+                                     write_info.n_items,
+                                     write_info.ptr,
+                                     write_info.item_size);
                         if (!ready)
                             break;
                         bufs.push_back(p_buf);
 
-                        if (write_info.n_items <= s_max_buf_items) {
+                        if (write_info.n_items <= top->s_max_buf_items) {
                             ready = false;
                             break;
                         }
@@ -281,7 +311,7 @@ private:
                             write_ptr = write_info.ptr;
                     }
 
-                    max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
+                    max_output_buffer = std::min(max_output_buffer, top->s_max_buf_items);
                     std::vector<tag_t> tags; // needs to be associated with edge buffers
 
                     work_output.push_back(
@@ -297,7 +327,10 @@ private:
                 }
 
                 if (ready) {
+                    gr_log_debug(top->_debug_logger, "do_work for {}", b->alias());
                     work_return_code_t ret = b->do_work(work_input, work_output);
+                    gr_log_debug(top->_debug_logger, "do_work returned {}", ret);
+
 
                     if (ret == work_return_code_t::WORK_DONE) {
                         work_done = true;
@@ -310,6 +343,7 @@ private:
                             if (top->state() != scheduler_state::EXIT)
                                 top->set_state(scheduler_state::DONE);
                         }
+                        top->sched_sync->ready = true;
                         top->sched_sync->sync_cv.notify_one();
                     }
                     if (ret == work_return_code_t::WORK_OK ||
@@ -321,7 +355,12 @@ private:
                                 top->d_block_buffers[p]
                                                     [0]; // only one buffer per input port
 
+                            gr_log_debug(top->_debug_logger,
+                                         "post_read {} - {}",
+                                         b->name(),
+                                         work_input[i].n_consumed);
                             p_buf->post_read(work_input[i].n_consumed);
+                            gr_log_debug(top->_debug_logger,".");
                             i++;
                         }
 
@@ -330,13 +369,23 @@ private:
                             int j = 0;
                             for (auto p_buf : top->d_block_buffers[p]) {
                                 if (j > 0) {
+                                    gr_log_debug(top->_debug_logger,
+                                                 "copy_items {} - {}",
+                                                 b->name(),
+                                                 work_output[i].n_produced);
                                     p_buf->copy_items(top->d_block_buffers[p][0],
                                                       work_output[i].n_produced);
+                                    gr_log_debug(top->_debug_logger,".");
                                 }
                                 j++;
                             }
                             for (auto p_buf : top->d_block_buffers[p]) {
+                                gr_log_debug(top->_debug_logger,
+                                             "post_write {} - {}",
+                                             b->name(),
+                                             work_output[i].n_produced);
                                 p_buf->post_write(work_output[i].n_produced);
+                                gr_log_debug(top->_debug_logger,".");
                             }
                             i++;
                         }
@@ -355,29 +404,30 @@ private:
 
             if (!did_work) {
                 // std::this_thread::yield();
+                gr_log_debug(top->_debug_logger, "no work in this iteration");
                 std::this_thread::sleep_for(std::chrono::microseconds(2));
                 // No blocks did work in this iteration
 
                 if (top->state() == scheduler_state::DONE) {
                     num_empty++;
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    gr_log_debug(top->_debug_logger, "flushing ..");
 
-                    if (num_empty >= 10) {
-                        top->set_state(scheduler_state::FLUSHED);
+                    if (num_empty >= 5) {
+                    top->set_state(scheduler_state::FLUSHED);
                     }
                 }
             }
 
             if (top->state() == scheduler_state::EXIT) {
+                gr_log_debug(top->_debug_logger,"scheduler state has been set to exit");
                 top->d_thread_stopped = true;
                 break;
             }
         }
 
-        std::cout << "... exiting" << std::endl;
-        std::cout << top->name() << ":" << std::endl;
-        ;
-
+        gr_log_debug(top->_debug_logger,"exiting");
+        gr_log_info(top->_logger, "exiting");
     }
 };
 } // namespace schedulers

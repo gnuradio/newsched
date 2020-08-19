@@ -11,7 +11,7 @@
 #ifndef INCLUDED_VECTOR_SINK_HPP
 #define INCLUDED_VECTOR_SINK_HPP
 
-#include <gnuradio/blocklib/sync_block.hpp>
+#include <gnuradio/sync_block.hpp>
 
 #include <cstdint>
 #include <mutex>

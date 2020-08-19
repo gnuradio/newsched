@@ -14,13 +14,14 @@
 #include <string>
 #include <vector>
 
-#include <gnuradio/blocklib/block_callbacks.hpp>
-#include <gnuradio/blocklib/block_work_io.hpp>
-#include <gnuradio/blocklib/callback.hpp>
-#include <gnuradio/blocklib/gpdict.hpp>
-#include <gnuradio/blocklib/io_signature.hpp>
-#include <gnuradio/blocklib/node.hpp>
-#include <gnuradio/blocklib/parameter.hpp>
+#include <gnuradio/block_callbacks.hpp>
+#include <gnuradio/block_work_io.hpp>
+#include <gnuradio/callback.hpp>
+#include <gnuradio/gpdict.hpp>
+#include <gnuradio/io_signature.hpp>
+#include <gnuradio/node.hpp>
+#include <gnuradio/parameter.hpp>
+
 
 namespace gr {
 
@@ -178,12 +179,14 @@ public:
 
     virtual void on_parameter_change(param_action_sptr action)
     {
+        gr_log_debug(_debug_logger, "block: on_parameter_change");
         auto param = parameters.get(action->id());
         param->set_value(action->any_value());
     }
 
     virtual void on_parameter_query(param_action_sptr action)
     {
+        gr_log_debug(_debug_logger, "block: on_parameter_query");
         auto param = parameters.get(action->id());
         action->set_any_value(param->any_value());
     }

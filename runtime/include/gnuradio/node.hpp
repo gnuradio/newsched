@@ -13,8 +13,9 @@
 
 #include <algorithm>
 
-#include <gnuradio/blocklib/io_signature.hpp>
-#include <gnuradio/blocklib/port.hpp>
+#include <gnuradio/io_signature.hpp>
+#include <gnuradio/port.hpp>
+#include <gnuradio/logging.hpp>
 
 namespace gr {
 class node
@@ -27,6 +28,9 @@ protected:
     std::vector<port_sptr> d_all_ports;
     std::vector<port_sptr> d_input_ports;
     std::vector<port_sptr> d_output_ports;
+
+    logger_sptr _logger;
+    logger_sptr _debug_logger;
 
     void add_port(port_sptr p)
     {
@@ -110,7 +114,14 @@ public:
 
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }
-    void set_alias(std::string alias) { d_alias = alias; }
+    void set_alias(std::string alias)
+    {
+        d_alias = alias;
+
+        // Instantiate the loggers when the alias is set
+        _logger = logging::get_logger(alias, "default");
+        _debug_logger = logging::get_logger(alias+"_dbg", "debug");
+    }
 
     port_sptr get_port(std::string& name, port_type_t type, port_direction_t direction)
     {
