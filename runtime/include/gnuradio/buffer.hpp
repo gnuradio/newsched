@@ -4,8 +4,9 @@
 
 struct buffer_info_t {
     void* ptr;
-    int n_items;
-    size_t item_size; // is this necessary or stored in buffer
+    int n_items; // number of items available to be read or written
+    size_t item_size; 
+    int total_items;  // the total number of items read/written from/to this buffer
 };
 
 /**
@@ -16,7 +17,8 @@ class buffer
 {
 protected:
     std::string _name;
-
+    int _total_read = 0;
+    int _total_written = 0;
 public:
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
