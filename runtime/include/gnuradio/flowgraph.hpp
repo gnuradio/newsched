@@ -178,7 +178,7 @@ public:
             auto da_pair = da_conf->make_domain_adapter_pair(
                 c.src().port(),
                 c.dst().port(),
-                "da_" + c.src().node()->name() + "->" + c.dst().node()->name());
+                "da_" + c.src().node()->alias() + "->" + c.dst().node()->alias());
             auto da_src = std::get<0>(da_pair);
             auto da_dst = std::get<1>(da_pair);
 

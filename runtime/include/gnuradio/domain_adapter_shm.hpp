@@ -4,6 +4,9 @@
 #include <condition_variable>
 #include <mutex>
 #include <atomic>
+
+using namespace std::chrono_literals;
+
 namespace gr {
 
 class shm_sync
@@ -69,7 +72,8 @@ public:
                 std::unique_lock<std::mutex> l(top->p_sync->mtx);
                 
                 gr_log_trace(top->_debug_logger,"svr unlock");
-                top->p_sync->cv.wait(l, [top]{return top->p_sync->ready == 1;});
+                //top->p_sync->cv.wait_for(l, 100ms,[top]{return top->p_sync->ready == 1;});
+                top->p_sync->cv.wait(l,[top]{return top->p_sync->ready == 1;});
                 gr_log_trace(top->_debug_logger,"svr out of wait");
                 
 
@@ -115,10 +119,10 @@ public:
                 //std::cout << "svr out of switch" << std::endl;
                 gr_log_trace(top->_debug_logger,"svr out of switch");
                 l.unlock();
-                //std::cout << "svr notify_one" << std::endl;
-                gr_log_trace(top->_debug_logger,"svr notify_one");
+                //std::cout << "svr notify_all" << std::endl;
+                gr_log_trace(top->_debug_logger,"svr notify_all");
                 top->p_sync->ready = 2;
-                top->p_sync->cv.notify_one();
+                top->p_sync->cv.notify_all();
             }
         }
     }
@@ -174,17 +178,20 @@ public:
         {
             // std::lock_guard<std::mutex> l(p_sync->mtx);
             //std::cout << "read_info unlock" << std::endl;
+            gr_log_trace(_debug_logger,"read_info unlock");
             p_sync->request = da_request_t::READ_INFO;
             p_sync->ready = 1;
         }
 
-        //std::cout << "read_info notify_one" << std::endl;
-        p_sync->cv.notify_one();
+        //std::cout << "read_info notify_all" << std::endl;
+        gr_log_trace(_debug_logger,"read_info notify_all");
+        p_sync->cv.notify_all();
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
             //std::cout << "read_info wait" << std::endl;
-            p_sync->cv.wait(l, [this]{return p_sync->ready == 2;});
+            gr_log_trace(_debug_logger,"read_info wait");
+            p_sync->cv.wait_for(l, 100ms,[this]{return p_sync->ready == 2;});
 
             if (p_sync->response == da_response_t::OK) {
                 info = p_sync->info;
@@ -201,16 +208,18 @@ public:
         {
             // std::lock_guard<std::mutex> l(p_sync->mtx);
             //std::cout << "write_info unlock" << std::endl;
+            gr_log_trace(_debug_logger,"write_info unlock");
             p_sync->request = da_request_t::WRITE_INFO;
             p_sync->ready = 1;
         }
-        //std::cout << "write_info notify_one" << std::endl;
-        p_sync->cv.notify_one();
+        //std::cout << "write_info notify_all" << std::endl;
+        p_sync->cv.notify_all();
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
             //std::cout << "write_info wait" << std::endl;
-            p_sync->cv.wait(l, [this]{return p_sync->ready == 2;});
+            gr_log_trace(_debug_logger,"write_info wait");
+            p_sync->cv.wait_for(l, 100ms,[this]{return p_sync->ready == 2;});
 
             if (p_sync->response == da_response_t::OK) {
                 info = p_sync->info;
@@ -227,17 +236,22 @@ public:
         {
             // std::lock_guard<std::mutex> l(p_sync->mtx);
             //std::cout << "cancel unlock" << std::endl;
+            gr_log_trace(_debug_logger,"cancel unlock");
             p_sync->request = da_request_t::CANCEL;
             p_sync->ready = 1;
         }
-        //std::cout << "cancel notify_one" << std::endl;
-        p_sync->cv.notify_one();
+        //std::cout << "cancel notify_all" << std::endl;
+        gr_log_trace(_debug_logger,"cancel notify_all");
+        p_sync->cv.notify_all();
+        gr_log_trace(_debug_logger,".");
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
             //std::cout << "cancel wait" << std::endl;
-            p_sync->cv.wait(l, [this]{return p_sync->ready == 2;});
+            gr_log_trace(_debug_logger,"cancel wait");
+            p_sync->cv.wait_for(l, 100ms,[this]{return p_sync->ready == 2;});
             p_sync->ready = 0;
+            gr_log_trace(_debug_logger,"cancel ready");
         }
     }
 
@@ -246,17 +260,20 @@ public:
         {
             // std::lock_guard<std::mutex> l(p_sync->mtx);
             //std::cout << "post_read unlock" << std::endl;
+            gr_log_trace(_debug_logger,"post_read unlock");
             p_sync->request = da_request_t::POST_READ;
             p_sync->num_items = num_items;
             p_sync->ready = 1;
         }
-        //std::cout << "post_read notify_one" << std::endl;
-        p_sync->cv.notify_one();
+        //std::cout << "post_read notify_all" << std::endl;
+        gr_log_trace(_debug_logger,"post_read notify_all");
+        p_sync->cv.notify_all();
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
             //std::cout << "post_read wait" << std::endl;
-            p_sync->cv.wait(l, [this]{return p_sync->ready == 2;});
+            gr_log_trace(_debug_logger,"post_read wait");
+            p_sync->cv.wait_for(l, 100ms,[this]{return p_sync->ready == 2;});
             p_sync->ready = 0;
         }
     }
@@ -265,17 +282,20 @@ public:
         {
             // std::lock_guard<std::mutex> l(p_sync->mtx);
             //std::cout << "post_write unlock" << std::endl;
+            gr_log_trace(_debug_logger,"post_write unlock");
             p_sync->request = da_request_t::POST_WRITE;
             p_sync->num_items = num_items;
             p_sync->ready = 1;
         }
-        //std::cout << "post_write notify_one" << std::endl;
-        p_sync->cv.notify_one();
+        //std::cout << "post_write notify_all" << std::endl;
+        gr_log_trace(_debug_logger,"post_write notify_all");
+        p_sync->cv.notify_all();
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
             //std::cout << "post_write wait" << std::endl;
-            p_sync->cv.wait(l, [this]{return p_sync->ready == 2;});
+            gr_log_trace(_debug_logger,"post_write wait");
+            p_sync->cv.wait_for(l, 100ms,[this]{return p_sync->ready == 2;});
             p_sync->ready = 0;
         }
     }

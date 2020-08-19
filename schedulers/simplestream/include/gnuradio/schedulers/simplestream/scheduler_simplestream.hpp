@@ -244,7 +244,7 @@ private:
                     ready = p_buf->read_info(read_info);
                     gr_log_debug(top->_debug_logger,
                                  "read_info {} - {}",
-                                 b->name(),
+                                 b->alias(),
                                  read_info.n_items);
 
                     // std::cout << top->name() << ":" << b->name() << ":read_info:" <<
@@ -265,12 +265,12 @@ private:
                 }
 
                 if (!ready) {
-                    // clean up the buffers that we now won't be using
-                    gr_log_debug(top->_debug_logger, "cancel");
-                    for (auto buf : bufs) {
-                        buf->cancel();
-                    }
-                    std::this_thread::yield();
+                //     // clean up the buffers that we now won't be using
+                //     gr_log_debug(top->_debug_logger, "cancel");
+                //     for (auto buf : bufs) {
+                //         buf->cancel();
+                //     }
+                //     std::this_thread::yield();
                     continue;
                 }
 
@@ -289,7 +289,7 @@ private:
                         ready = p_buf->write_info(write_info);
                         gr_log_debug(top->_debug_logger,
                                      "write_info {} - {} @ {} {}",
-                                     b->name(),
+                                     b->alias(),
                                      write_info.n_items,
                                      write_info.ptr,
                                      write_info.item_size);
@@ -319,10 +319,11 @@ private:
                 }
 
                 if (!ready) {
-                    // clean up the buffers that we now won't be using
-                    for (auto buf : bufs) {
-                        buf->cancel();
-                    }
+                //     // clean up the buffers that we now won't be using
+                //     gr_log_debug(top->_debug_logger, "cancel");
+                //     for (auto buf : bufs) {
+                //         buf->cancel();
+                //     }
                     continue;
                 }
 
@@ -357,7 +358,7 @@ private:
 
                             gr_log_debug(top->_debug_logger,
                                          "post_read {} - {}",
-                                         b->name(),
+                                         b->alias(),
                                          work_input[i].n_consumed);
                             p_buf->post_read(work_input[i].n_consumed);
                             gr_log_debug(top->_debug_logger,".");
@@ -371,7 +372,7 @@ private:
                                 if (j > 0) {
                                     gr_log_debug(top->_debug_logger,
                                                  "copy_items {} - {}",
-                                                 b->name(),
+                                                 b->alias(),
                                                  work_output[i].n_produced);
                                     p_buf->copy_items(top->d_block_buffers[p][0],
                                                       work_output[i].n_produced);
@@ -382,7 +383,7 @@ private:
                             for (auto p_buf : top->d_block_buffers[p]) {
                                 gr_log_debug(top->_debug_logger,
                                              "post_write {} - {}",
-                                             b->name(),
+                                             b->alias(),
                                              work_output[i].n_produced);
                                 p_buf->post_write(work_output[i].n_produced);
                                 gr_log_debug(top->_debug_logger,".");
@@ -392,10 +393,12 @@ private:
                         // update the buffers according to the items produced
                         if (ret != work_return_code_t::WORK_DONE)
                             did_work = true;
-                    } else {
-                        for (auto buf : bufs) {
-                            buf->cancel();
-                        }
+                    } 
+                    else {
+                    //     gr_log_debug(top->_debug_logger, "cancel");
+                    //     for (auto buf : bufs) {
+                    //         buf->cancel();
+                    //     }
                         std::this_thread::yield();
                     }
                 }
@@ -403,9 +406,10 @@ private:
 
 
             if (!did_work) {
-                // std::this_thread::yield();
+                
                 gr_log_debug(top->_debug_logger, "no work in this iteration");
-                std::this_thread::sleep_for(std::chrono::microseconds(2));
+                // std::this_thread::sleep_for(std::chrono::microseconds(2));
+                std::this_thread::yield();
                 // No blocks did work in this iteration
 
                 if (top->state() == scheduler_state::DONE) {

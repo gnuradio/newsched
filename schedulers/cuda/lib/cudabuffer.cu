@@ -4,12 +4,14 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-
+// #include <boost/thread/mutex.hpp>
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-
 #include <gnuradio/schedulers/cuda/cudabuffer.hpp>
+
+
+// typedef boost::unique_lock<boost::mutex> scoped_lock;
 
 namespace gr
 {
@@ -68,10 +70,11 @@ void* cuda_buffer::write_ptr()
 bool cuda_buffer::read_info(buffer_info_t& info)
 {
     // Need to lock the buffer to freeze the current state
-    if (!_buf_mutex.try_lock()) {
-        return false;
-    }
+    // if (!_buf_mutex.try_lock()) {
+    //     return false;
+    // }
     // _buf_mutex.lock();
+    std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = read_ptr();
     info.n_items = size();
@@ -82,10 +85,11 @@ bool cuda_buffer::read_info(buffer_info_t& info)
 
 bool cuda_buffer::write_info(buffer_info_t& info)
 {
-    if (!_buf_mutex.try_lock()) {
-        return false;
-    }
+    // if (!_buf_mutex.try_lock()) {
+    //     return false;
+    // }
     // _buf_mutex.lock();
+    std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = write_ptr();
     info.n_items = capacity() - size();
@@ -94,19 +98,24 @@ bool cuda_buffer::write_info(buffer_info_t& info)
     return true;
 }
 
-void cuda_buffer::cancel() { _buf_mutex.unlock(); }
+void cuda_buffer::cancel() 
+{}
+// { _buf_mutex.unlock(); }
 
 void cuda_buffer::post_read(int num_items)
 {
+    std::lock_guard<std::mutex> guard(_buf_mutex);
     // advance the read pointer
     _read_index += num_items * _item_size;
     if (_read_index >= _buf_size) {
         _read_index -= _buf_size;
     }
-    _buf_mutex.unlock();
+    // _buf_mutex.unlock();
 }
 void cuda_buffer::post_write(int num_items)
 {
+    std::lock_guard<std::mutex> guard(_buf_mutex);
+
     unsigned int bytes_written = num_items * _item_size;
     int wi1 = _write_index;
     int wi2 = _write_index + _buf_size;
@@ -156,11 +165,12 @@ void cuda_buffer::post_write(int num_items)
         _write_index -= _buf_size;
     }
 
-    _buf_mutex.unlock();
+    // _buf_mutex.unlock();
 }
 
 void cuda_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
 {
+    std::lock_guard<std::mutex> guard(_buf_mutex);
     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
 }
 }
