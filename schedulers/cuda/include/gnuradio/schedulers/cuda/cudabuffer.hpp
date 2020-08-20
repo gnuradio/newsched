@@ -46,6 +46,9 @@ public:
     virtual bool write_info(buffer_info_t& info);
     virtual void cancel();
 
+    // virtual std::vector<tag_t> get_tags(unsigned int num_items);
+    // virtual void add_tags(uint64_t offset, std::vector<tag_t>& tags);
+
     virtual void post_read(int num_items);
     virtual void post_write(int num_items);
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems);

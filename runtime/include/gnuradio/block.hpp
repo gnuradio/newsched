@@ -33,9 +33,12 @@ class scheduler;
  */
 enum class work_return_code_t {
 
-    WORK_INSUFFICIENT_OUTPUT_ITEMS = -3, /// work requires a larger output buffer to produce output
-    WORK_INSUFFICIENT_INPUT_ITEMS = -2, /// work requires a larger input buffer to produce output
-    WORK_DONE = -1, /// this block has completed its processing and the flowgraph should be done
+    WORK_INSUFFICIENT_OUTPUT_ITEMS =
+        -3, /// work requires a larger output buffer to produce output
+    WORK_INSUFFICIENT_INPUT_ITEMS =
+        -2, /// work requires a larger input buffer to produce output
+    WORK_DONE =
+        -1, /// this block has completed its processing and the flowgraph should be done
     WORK_OK = 0, /// work call was successful and return values in i/o structs are valid
 };
 
@@ -58,6 +61,7 @@ private:
     bool d_output_multiple_set = false;
     bool d_running = false;
     unsigned int d_output_multiple;
+    tag_propagation_policy_t d_tag_propagation_policy;
 
     std::map<std::string, block_callback_fcn>
         _callback_function_map; // callback_function_map["mult0"]["do_something"](x,y,z)
@@ -72,9 +76,6 @@ protected:
 
     void set_relative_rate(double relative_rate){};
     void set_relative_rate(unsigned int numerator, unsigned int denominator){};
-
-    //   tag_propagation_policy_t tag_propagation_policy();
-    //   void set_tag_propagation_policy(tag_propagation_policy_t p);
 
     std::vector<block_callback> d_block_callbacks;
 
@@ -143,6 +144,14 @@ public:
         return d_output_signature_capability;
     }
 
+    tag_propagation_policy_t tag_propagation_policy()
+    {
+        return d_tag_propagation_policy;
+    };
+    void set_tag_propagation_policy(tag_propagation_policy_t p)
+    {
+        d_tag_propagation_policy = p;
+    };
 
     /**
      * @brief Abstract method to call signal processing work from a derived block

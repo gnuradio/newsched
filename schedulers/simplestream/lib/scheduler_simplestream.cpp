@@ -218,9 +218,9 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                     break;
                 }
 
-                std::vector<tag_t> tags; // needs to be associated with edge buffers
-                work_input.push_back(
-                    block_work_input(read_info.n_items, 0, read_info.ptr, tags));
+                auto tags = p_buf->get_tags(read_info.n_items);
+                work_input.push_back(block_work_input(
+                    read_info.n_items, read_info.total_items, read_info.ptr, tags));
             }
 
             if (!ready) {
@@ -243,6 +243,7 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                 int max_output_buffer = std::numeric_limits<int>::max();
 
                 void* write_ptr = nullptr;
+                uint64_t nitems_written;
                 for (auto p_buf : top->d_block_buffers[p]) {
                     buffer_info_t write_info;
                     ready = p_buf->write_info(write_info);
@@ -266,15 +267,17 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                         max_output_buffer = tmp_buf_size;
 
                     // store the first buffer
-                    if (!write_ptr)
+                    if (!write_ptr) {
                         write_ptr = write_info.ptr;
+                        nitems_written = write_info.total_items;
+                    }
                 }
 
                 max_output_buffer = std::min(max_output_buffer, top->s_max_buf_items);
                 std::vector<tag_t> tags; // needs to be associated with edge buffers
 
-                work_output.push_back(
-                    block_work_output(max_output_buffer, 0, write_ptr, tags));
+                work_output.push_back(block_work_output(
+                    max_output_buffer, nitems_written, write_ptr, tags));
             }
 
             if (!ready) {
@@ -309,21 +312,49 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                 if (ret == work_return_code_t::WORK_OK ||
                     ret == work_return_code_t::WORK_DONE) {
 
-                    int i = 0;
+                    int input_port_index = 0;
                     for (auto p : b->input_stream_ports()) {
                         auto p_buf =
                             top->d_block_buffers[p][0]; // only one buffer per input port
 
+                        // Pass the tags according to TPP
+                        if (b->tag_propagation_policy() ==
+                            tag_propagation_policy_t::TPP_ALL_TO_ALL) {
+                            int output_port_index = 0;
+                            for (auto op : b->output_stream_ports()) {
+                                for (auto p_out_buf : top->d_block_buffers[op]) {
+                                    p_out_buf->add_tags(
+                                        work_output[output_port_index].n_produced,
+                                        work_input[input_port_index].tags);
+                                }
+                                output_port_index++;
+                            }
+                        } else if (b->tag_propagation_policy() ==
+                                   tag_propagation_policy_t::TPP_ONE_TO_ONE) {
+                            int output_port_index = 0;
+                            for (auto op : b->output_stream_ports()) {
+                                if (output_port_index == input_port_index) {
+                                    for (auto p_out_buf : top->d_block_buffers[op]) {
+                                        p_out_buf->add_tags(
+                                            work_output[output_port_index].n_produced,
+                                            work_input[input_port_index].tags);
+                                    }
+                                }
+                                output_port_index++;
+                            }
+                        }
+
                         gr_log_debug(top->_debug_logger,
                                      "post_read {} - {}",
                                      b->alias(),
-                                     work_input[i].n_consumed);
-                        p_buf->post_read(work_input[i].n_consumed);
+                                     work_input[input_port_index].n_consumed);
+
+                        p_buf->post_read(work_input[input_port_index].n_consumed);
                         gr_log_debug(top->_debug_logger, ".");
-                        i++;
+                        input_port_index++;
                     }
 
-                    i = 0;
+                    int output_port_index = 0;
                     for (auto p : b->output_stream_ports()) {
                         int j = 0;
                         for (auto p_buf : top->d_block_buffers[p]) {
@@ -331,22 +362,29 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                                 gr_log_debug(top->_debug_logger,
                                              "copy_items {} - {}",
                                              b->alias(),
-                                             work_output[i].n_produced);
-                                p_buf->copy_items(top->d_block_buffers[p][0],
-                                                  work_output[i].n_produced);
+                                             work_output[output_port_index].n_produced);
+                                p_buf->copy_items(
+                                    top->d_block_buffers[p][0],
+                                    work_output[output_port_index].n_produced);
                                 gr_log_debug(top->_debug_logger, ".");
                             }
                             j++;
                         }
                         for (auto p_buf : top->d_block_buffers[p]) {
+                            // Add the tags that were collected in the work() call
+                            if (!work_output[output_port_index].tags.empty()) {
+                                p_buf->add_tags(work_output[output_port_index].n_produced,
+                                                work_output[output_port_index].tags);
+                            }
+
                             gr_log_debug(top->_debug_logger,
                                          "post_write {} - {}",
                                          b->alias(),
-                                         work_output[i].n_produced);
-                            p_buf->post_write(work_output[i].n_produced);
+                                         work_output[output_port_index].n_produced);
+                            p_buf->post_write(work_output[output_port_index].n_produced);
                             gr_log_debug(top->_debug_logger, ".");
                         }
-                        i++;
+                        output_port_index++;
                     }
                     // update the buffers according to the items produced
                     if (ret != work_return_code_t::WORK_DONE)

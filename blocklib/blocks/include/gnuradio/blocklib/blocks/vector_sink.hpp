@@ -66,6 +66,10 @@ public:
     {
         return request_parameter_query<std::vector<T>>(params::id_data);
     }
+    std::vector<tag_t> tags()
+    {
+        return request_parameter_query<std::vector<tag_t>>(params::id_tags);
+    }
 
     // since _data is changed inside work(), we must catch and update the current value
     virtual void on_parameter_query(param_action_sptr action)
@@ -73,7 +77,12 @@ public:
         if (action->id() == id_data) {
             auto param = parameters.get(action->id());
             action->set_any_value(std::any_cast<std::vector<T>>(_data));
-        } else {
+        } 
+        else if (action->id() == id_tags) {
+            auto param = parameters.get(action->id());
+            action->set_any_value(std::any_cast<std::vector<tag_t>>(_tags));
+        } 
+        else {
             block::on_parameter_query(action);
         }
     }

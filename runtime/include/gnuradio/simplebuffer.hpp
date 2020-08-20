@@ -7,6 +7,7 @@
 
 #include <gnuradio/buffer.hpp>
 
+namespace gr {
 class simplebuffer : public buffer
 {
 private:
@@ -17,8 +18,8 @@ private:
     unsigned int _item_size;
     unsigned int _buf_size;
 
-    std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and
-                           // used scoped lock outside on the caller
+    std::mutex _buf_mutex;
+    std::vector<tag_t> _tags;
 
 public:
     typedef std::shared_ptr<simplebuffer> sptr;
@@ -87,8 +88,7 @@ public:
         return true;
     }
 
-    virtual void cancel() 
-    {} 
+    virtual void cancel() {}
     // { _buf_mutex.unlock(); }
 
     virtual void post_read(int num_items)
@@ -137,4 +137,37 @@ public:
 
         memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
     }
+
+    virtual std::vector<tag_t> get_tags(unsigned int num_items) override
+    {
+        std::scoped_lock guard(_buf_mutex);
+
+        // Find all the tags from total_read to total_read+offset
+        std::vector<tag_t> ret;
+        for (auto& tag : _tags) {
+            if (tag.offset >= _total_read && tag.offset < _total_read + num_items) {
+                ret.push_back(tag);
+            }
+        }
+
+        return ret;
+    }
+    virtual void
+    add_tags(unsigned int num_items,
+             std::vector<tag_t>& tags) // overload with convenience functions later
+        override
+    {
+        std::scoped_lock guard(_buf_mutex);
+
+        for (auto tag : tags) {
+            if (tag.offset < _total_written ||
+                tag.offset >= _total_written + _num_items) {
+
+            } else {
+                _tags.push_back(tag);
+            }
+        }
+    }
 };
+
+} // namespace gr
