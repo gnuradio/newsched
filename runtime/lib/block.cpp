@@ -5,7 +5,7 @@
 
 namespace gr {
 // block::~block() {}
-block::block(const std::string& name) : node(name) {}
+block::block(const std::string& name) : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL) {}
 
 
 template <class T>
@@ -86,6 +86,8 @@ template std::vector<uint8_t> block::request_parameter_query<std::vector<uint8_t
 template std::vector<uint16_t> block::request_parameter_query<std::vector<uint16_t>>(int);
 template std::vector<uint32_t> block::request_parameter_query<std::vector<uint32_t>>(int);
 template std::vector<uint64_t> block::request_parameter_query<std::vector<uint64_t>>(int);
+
+template std::vector<tag_t> block::request_parameter_query<std::vector<tag_t>>(int);
 
 template void block::request_parameter_change<float>(int, float);
 template void block::request_parameter_change<double>(int, double);

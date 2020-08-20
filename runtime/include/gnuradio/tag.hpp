@@ -29,9 +29,13 @@ public:
     // .... value  -- do without pmts for now
     std::string value;
     std::string srcid;
-    tag_t(uint64_t offset, std::string key, std::string value, std::string srcid)
+    tag_t(uint64_t offset, std::string key, std::string value, std::string srcid = "")
         : offset(offset), key(key), value(value), srcid(srcid)
     {
+    }
+    bool operator==(const tag_t& rhs) const
+    {
+        return (rhs.key == key && rhs.value == value && rhs.srcid == srcid);
     }
 };
 
