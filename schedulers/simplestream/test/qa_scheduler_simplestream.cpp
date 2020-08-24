@@ -95,7 +95,7 @@ TEST_CASE("2 sinks, query and set parameters while FG is running")
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
     auto throttle = blocks::throttle::make(sizeof(float), 32000);
     auto mult1 = blocks::multiply_const_ff::make(100.0);
-    auto fanout = blocks::fanout_ff::make(2);
+    auto fanout = blocks::fanout::make(sizeof(float), 2);
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
 

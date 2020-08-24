@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     auto src = blocks::vector_source_f::make(
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, false);
     auto throttle = blocks::throttle::make(sizeof(float), 100);
-    auto fanout = blocks::fanout_cc::make(2);
+    auto fanout = blocks::fanout::make(sizeof(gr_complex),2);
     auto mult1 = blocks::multiply_const_ff::make(100.0);
     auto mult2 = blocks::multiply_const_ff::make(200.0);
     auto mult3 = blocks::multiply_const_ff::make(300.0);
