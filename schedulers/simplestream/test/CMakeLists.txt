@@ -53,6 +53,7 @@ target_link_libraries(test_tags
 
 list(APPEND TEST_SOURCES
 qa_scheduler_simplestream.cpp
+qa_tags.cpp
 )
 
 add_executable(qa_simplestream ${TEST_SOURCES})
@@ -69,5 +70,5 @@ target_link_libraries(qa_simplestream
     gnuradio-blocklib-blocks
     gnuradio-scheduler-simplestream)
 
-add_test(NAME test
+add_test(NAME simplestream_tests
     COMMAND qa_simplestream)
