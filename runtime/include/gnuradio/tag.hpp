@@ -37,6 +37,10 @@ public:
     {
         return (rhs.key == key && rhs.value == value && rhs.srcid == srcid);
     }
+    bool operator!=(const tag_t& rhs) const
+    {
+        return (rhs.key != key || rhs.value != value || rhs.srcid == srcid);
+    }
 };
 
 // tag_t(uint64_t offset,
