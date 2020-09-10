@@ -20,7 +20,7 @@ void block::request_parameter_change(int param_id, T new_value)
             cv.notify_one();
         };
         p_scheduler->request_parameter_change(
-            alias(), param_action<T>::make(param_id, new_value, 0), lam);
+            id(), param_action<T>::make(param_id, new_value, 0), lam);
 
         // block until confirmation that parameter has been set
         std::unique_lock<std::mutex> lk(m);
@@ -47,7 +47,7 @@ T block::request_parameter_query(int param_id)
         };
 
         p_scheduler->request_parameter_query(
-            alias(), param_action<T>::make(param_id), lam);
+            id(), param_action<T>::make(param_id), lam);
 
         std::unique_lock<std::mutex> lk(m);
         cv.wait(lk);
