@@ -66,7 +66,7 @@ public:
         memcpy(optr, iptr, n*_itemsize);
         
         _ncopied_items += n;
-        work_output[0].n_produced = work_output[0].n_items;
+        work_output[0].n_produced = n;
 
         return work_return_code_t::WORK_OK;
     }
