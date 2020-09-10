@@ -5,6 +5,7 @@ add_library(gnuradio-runtime SHARED
   sync_block.cpp
   domain_adapter_zmq.cpp
   flat_graph.cpp
+  flowgraph_monitor.cpp
   flowgraph.cpp
   logging.cpp
   scheduler.cpp

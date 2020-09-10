@@ -21,6 +21,7 @@
 #include <gnuradio/block.hpp>
 #include <gnuradio/domain.hpp>
 #include <gnuradio/domain_adapter.hpp>
+#include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/graph.hpp>
 #include <gnuradio/scheduler.hpp>
 
@@ -39,7 +40,7 @@ private:
 
     scheduler_sync _sched_sync;
     bool _monitor_thread_stopped = false;
-
+    flowgraph_monitor_sptr d_fgmon;
 
 public:
     flowgraph() { set_alias("flowgraph"); };
@@ -58,4 +59,3 @@ public:
 
 typedef flowgraph::sptr flowgraph_sptr;
 } // namespace gr
-

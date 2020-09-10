@@ -16,13 +16,18 @@
 #include <gnuradio/io_signature.hpp>
 #include <gnuradio/port.hpp>
 #include <gnuradio/logging.hpp>
+#include <gnuradio/nodeid_generator.hpp>
 
 namespace gr {
+
+typedef uint32_t nodeid_t;
+
 class node
 {
 protected:
     std::string d_name;
     std::string d_alias;
+    nodeid_t    d_id; // Unique number given to block from runtime
     io_signature d_input_signature;
     io_signature d_output_signature;
     std::vector<port_sptr> d_all_ports;
@@ -63,7 +68,9 @@ protected:
 
 public:
     node() : d_name("") {}
-    node(const std::string& name) : d_name(name) {}
+    node(const std::string& name) : d_name(name) {
+        d_id = nodeid_generator::get_id();
+    }
     virtual ~node() {}
     typedef std::shared_ptr<node> sptr;
 
@@ -114,6 +121,7 @@ public:
 
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }
+    uint32_t id() { return d_id; }
     void set_alias(std::string alias)
     {
         d_alias = alias;
@@ -121,6 +129,11 @@ public:
         // Instantiate the loggers when the alias is set
         _logger = logging::get_logger(alias, "default");
         _debug_logger = logging::get_logger(alias+"_dbg", "debug");
+    }
+
+    void set_id(uint32_t id)
+    {
+        d_id = id;
     }
 
     port_sptr get_port(std::string& name, port_type_t type, port_direction_t direction)
