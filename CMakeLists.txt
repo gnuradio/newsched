@@ -81,6 +81,7 @@ find_package(spdlog REQUIRED)
 enable_testing()
 
 add_subdirectory(deps/catch/include)
+add_subdirectory(pmt)
 add_subdirectory(blocklib)
 add_subdirectory(runtime)
 add_subdirectory(schedulers)
