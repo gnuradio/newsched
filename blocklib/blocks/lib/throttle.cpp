@@ -71,12 +71,12 @@ work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
     char* out = (char*)work_output[0].items;
     auto noutput_items = work_output[0].n_items;
 
-    std::memcpy(out, in, noutput_items * d_itemsize);
     d_total_samples += noutput_items;
 
     auto now = std::chrono::steady_clock::now();
     auto expected_time = d_start + d_sample_period * d_total_samples;
 
+    int n = noutput_items;
     if (expected_time > now) {
         auto limit_duration =
             std::chrono::duration<double>(std::numeric_limits<long>::max());
@@ -85,10 +85,18 @@ work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
         //                  "WARNING: Throttle sleep time overflow! You "
         //                  "are probably using a very low sample rate.");
         // }
-        std::this_thread::sleep_until(expected_time);
+
+        // We should no longer block inside of a work function since it may not have its
+        // own thread std::this_thread::sleep_until(expected_time);
+
+        // need a more intelligent solution to inform the scheduler 
+        // to return at a certain time
+        n = 0;
+        d_total_samples -= noutput_items;
     }
 
-    work_output[0].n_produced = work_output[0].n_items;
+    std::memcpy(out, in, n * d_itemsize);
+    work_output[0].n_produced = n;
     return work_return_code_t::WORK_OK;
 }
 
