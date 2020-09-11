@@ -39,8 +39,7 @@ public:
 
     void initialize(flat_graph_sptr fg,
                     flowgraph_monitor_sptr fgmon,
-                    block_scheduler_map block_sched_map,
-                    const buffer_factory_function& bff)
+                    block_scheduler_map block_sched_map)
     {
         d_fg = fg;
         d_fgmon = fgmon;
@@ -48,10 +47,7 @@ public:
 
         // if (fg->is_flat())  // flatten
 
-        buffer_factory_function buf_factory = bff;
-        if (buf_factory == nullptr) {
-            buf_factory = _default_buf_factory;
-        }
+        buffer_factory_function buf_factory = _default_buf_factory;
 
         // not all edges may be used
         for (auto e : fg->edges()) {
@@ -78,11 +74,9 @@ public:
             if (src_da_cast != nullptr) {
                 if (src_da_cast->buffer_location() == buffer_location_t::LOCAL) {
                     buffer_sptr buf;
-                    if (!buf_factory)
-                        buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
-                    else
-                        buf = buf_factory(
-                            s_fixed_buf_size, e.itemsize(), buffer_position_t::INGRESS);
+
+                    buf = buf_factory(
+                        s_fixed_buf_size, e.itemsize(), buffer_position_t::INGRESS);
 
                     src_da_cast->set_buffer(buf);
                     auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
@@ -94,11 +88,9 @@ public:
             } else if (dst_da_cast != nullptr) {
                 if (dst_da_cast->buffer_location() == buffer_location_t::LOCAL) {
                     buffer_sptr buf;
-                    if (!buf_factory)
-                        buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
-                    else
-                        buf = buf_factory(
-                            s_fixed_buf_size, e.itemsize(), buffer_position_t::EGRESS);
+
+                    buf = buf_factory(
+                        s_fixed_buf_size, e.itemsize(), buffer_position_t::EGRESS);
                     dst_da_cast->set_buffer(buf);
                     auto tmp = std::dynamic_pointer_cast<buffer>(dst_da_cast);
                     d_edge_buffers[e.identifier()] = tmp;
@@ -112,10 +104,8 @@ public:
             // buffer
             else {
                 buffer_sptr buf;
-                if (!buf_factory)
-                    buf = simplebuffer::make(s_fixed_buf_size, e.itemsize());
-                else
-                    buf = buf_factory(s_fixed_buf_size, e.itemsize(), buffer_position_t::NORMAL);
+                buf = buf_factory(
+                    s_fixed_buf_size, e.itemsize(), buffer_position_t::NORMAL);
 
                 d_edge_buffers[e.identifier()] = buf;
             }
