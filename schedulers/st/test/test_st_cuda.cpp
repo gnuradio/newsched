@@ -2,21 +2,27 @@
 #include <iostream>
 #include <thread>
 
+#include <gnuradio/blocklib/blocks/head.hpp>
 #include <gnuradio/blocklib/blocks/multiply_const.hpp>
+#include <gnuradio/blocklib/blocks/null_sink.hpp>
+#include <gnuradio/blocklib/blocks/throttle.hpp>
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
-#include <gnuradio/blocklib/cuda/multiply_const.hpp>
-#include <gnuradio/blocklib/cuda/multiply_const2.hpp>
 #include <gnuradio/domain_adapter_shm.hpp>
 #include <gnuradio/flowgraph.hpp>
-#include <gnuradio/schedulers/cuda/scheduler_cuda.hpp>
-#include <gnuradio/schedulers/simplestream/scheduler_simplestream.hpp>
+#include <gnuradio/logging.hpp>
+#include <gnuradio/schedulers/st/scheduler_st.hpp>
+#include <gnuradio/blocklib/cuda/multiply_const.hpp>
+#include <gnuradio/blocklib/cuda/multiply_const2.hpp>
+
+#include <gnuradio/cudabuffer.hpp>
+#include <gnuradio/simplebuffer.hpp>
 
 using namespace gr;
 
 int main(int argc, char* argv[])
 {
-
+    auto logger = logging::get_logger("TEST_ST_CUDA", "debug");
     float k = 323.0;
     int nsamps = 5000000;
     std::vector<float> input_data(nsamps);
@@ -39,8 +45,8 @@ int main(int argc, char* argv[])
         fg->connect(mult, 0, snk, 0);
 
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched(
-            new schedulers::scheduler_simplestream());
+        std::shared_ptr<schedulers::scheduler_st> sched(
+            new schedulers::scheduler_st());
         fg->set_scheduler(sched);
 
         fg->validate();
@@ -70,8 +76,8 @@ int main(int argc, char* argv[])
         fg->connect(src, 0, mult, 0);
         fg->connect(mult, 0, snk, 0);
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched(
-            new schedulers::scheduler_simplestream());
+        std::shared_ptr<schedulers::scheduler_st> sched(
+            new schedulers::scheduler_st());
         fg->set_scheduler(sched);
 
         fg->validate();
@@ -115,10 +121,10 @@ int main(int argc, char* argv[])
         fg->connect(mult4, 0, snk, 0);
 
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched1(
-            new schedulers::scheduler_simplestream("sched1"));
-        std::shared_ptr<schedulers::scheduler_simplestream> sched2(
-            new schedulers::scheduler_simplestream("sched2"));
+        std::shared_ptr<schedulers::scheduler_st> sched1(
+            new schedulers::scheduler_st("sched1"));
+        std::shared_ptr<schedulers::scheduler_st> sched2(
+            new schedulers::scheduler_st("sched2"));
         fg->add_scheduler(sched1);
         fg->add_scheduler(sched2);
 
@@ -166,10 +172,10 @@ int main(int argc, char* argv[])
         fg->connect(mult4, 0, snk, 0);
 
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched1(
-            new schedulers::scheduler_simplestream("sched1"));
-        std::shared_ptr<schedulers::scheduler_simplestream> sched2(
-            new schedulers::scheduler_simplestream("sched2"));
+        std::shared_ptr<schedulers::scheduler_st> sched1(
+            new schedulers::scheduler_st("sched1"));
+        std::shared_ptr<schedulers::scheduler_st> sched2(
+            new schedulers::scheduler_st("sched2"));
         fg->add_scheduler(sched1);
         fg->add_scheduler(sched2);
 
@@ -217,14 +223,15 @@ int main(int argc, char* argv[])
         fg->connect(mult4, 0, snk, 0);
 
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched1(
-            new schedulers::scheduler_simplestream("sched1"));
-        std::shared_ptr<schedulers::scheduler_cuda> sched2(
-            new schedulers::scheduler_cuda("sched2"));
-        // std::shared_ptr<schedulers::scheduler_simplestream> sched2(
-        //     new schedulers::scheduler_simplestream("sched2"));
+        std::shared_ptr<schedulers::scheduler_st> sched1(
+            new schedulers::scheduler_st("sched1"));
+        std::shared_ptr<schedulers::scheduler_st> sched2(
+            new schedulers::scheduler_st("sched2"));
+        // std::shared_ptr<schedulers::scheduler_st> sched2(
+        //     new schedulers::scheduler_st("sched2"));
         fg->add_scheduler(sched1);
         fg->add_scheduler(sched2);
+        sched2->set_default_buffer_factory(cuda_buffer::make);
 
         auto da_conf_upstream =
             domain_adapter_shm_conf::make(buffer_preference_t::UPSTREAM);

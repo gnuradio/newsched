@@ -2,20 +2,22 @@
 
 add_executable(test_scheduler_st test_scheduler_st.cpp)
 
-target_include_directories(gnuradio-scheduler-st
-PUBLIC
-$<INSTALL_INTERFACE:include>
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-PRIVATE
-${PROJECT_SOURCE_DIR}/schedulers/default/include
-${PROJECT_SOURCE_DIR}/runtime/include 
-)
-
 target_link_libraries(test_scheduler_st 
     gnuradio-runtime
     gnuradio-blocklib-blocks
     gnuradio-scheduler-st
 )
+
+
+add_executable(st_cuda test_st_cuda.cpp)
+
+target_link_libraries(st_cuda 
+    gnuradio-runtime
+    gnuradio-blocklib-blocks
+    gnuradio-scheduler-st
+    gnuradio-blocklib-cuda-cu
+    gnuradio-blocklib-cuda
+)    
 
 
 
