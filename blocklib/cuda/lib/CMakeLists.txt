@@ -1,11 +1,11 @@
 add_library(gnuradio-blocklib-cuda-cu SHARED
   multiply_const.cu
-  multiply_const2.cu
+  multiply_const_doublecopy.cu
   )
 
   add_library(gnuradio-blocklib-cuda SHARED
   multiply_const.cpp
-  multiply_const2.cpp
+  multiply_const_doublecopy.cpp
   )
 
 target_include_directories(gnuradio-blocklib-cuda
