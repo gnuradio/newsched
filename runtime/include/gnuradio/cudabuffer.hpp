@@ -34,7 +34,9 @@ public:
                 cuda_buffer_type type = cuda_buffer_type::D2D);
     ~cuda_buffer();
 
-    static sptr make(size_t num_items, size_t item_size, cuda_buffer_type type = cuda_buffer_type::D2D);
+    static buffer_sptr make(size_t num_items,
+                        size_t item_size,
+                        buffer_position_t buf_pos = buffer_position_t::NORMAL);
     int size();
     int capacity();
 

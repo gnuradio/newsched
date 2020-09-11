@@ -36,8 +36,22 @@ ${YAML_CPP_LIBRARIES}
 # ZMQ 4.3.1 deprecated the send and recv with references.  Ignore for now // FIXME
 target_compile_options(gnuradio-runtime PRIVATE -Wno-deprecated-declarations)
 
-message(STATUS ${INTERFACE_INCLUDE_DIRECTORIES})
-#pybind11_add_module(newschedpy pybind.cpp)
-#target_link_libraries(newschedpy PUBLIC newsched)
+if(GR_ENABLE_CUDA)
+add_library(gnuradio-runtime-cu SHARED
+  cudabuffer.cu
+  )
+  target_include_directories(gnuradio-runtime-cu
+  PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../runtime/include 
+  )
 
-#install(TARGETS newsched)
+  target_link_libraries(gnuradio-runtime
+  PUBLIC
+  gnuradio-runtime-cu)
+
+  set_target_properties(gnuradio-runtime-cu PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(gnuradio-runtime-cu PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+endif ()

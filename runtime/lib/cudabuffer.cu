@@ -8,16 +8,13 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/schedulers/cuda/cudabuffer.hpp>
+#include <gnuradio/cudabuffer.hpp>
 
 
 // typedef boost::unique_lock<boost::mutex> scoped_lock;
 
-namespace gr
-{
-cuda_buffer::cuda_buffer(size_t num_items,
-                         size_t item_size,
-                         cuda_buffer_type type)
+namespace gr {
+cuda_buffer::cuda_buffer(size_t num_items, size_t item_size, cuda_buffer_type type)
     : _num_items(num_items),
       _item_size(item_size),
       _buffer_type(type),
@@ -34,9 +31,20 @@ cuda_buffer::cuda_buffer(size_t num_items,
 }
 cuda_buffer::~cuda_buffer() { cudaFree(_device_buffer); }
 
-cuda_buffer::sptr cuda_buffer::make(size_t num_items, size_t item_size, cuda_buffer_type type)
+buffer_sptr cuda_buffer::make(size_t num_items,
+                        size_t item_size,
+                        buffer_position_t buf_pos)
 {
-    return cuda_buffer::sptr(new cuda_buffer(num_items, item_size, type));
+    // This is not well abstracted at all, needs more thought.  
+    // Is an ingress/egress distinction good enough - how would we handle
+    //  direct to/from FPGA types of buffers??
+    cuda_buffer_type type = cuda_buffer_type::D2D;
+    if (buf_pos == buffer_position_t::INGRESS) {
+        type = cuda_buffer_type::H2D;
+    } else if (buf_pos == buffer_position_t::EGRESS) {
+        type = cuda_buffer_type::D2H;
+    }
+    return buffer_sptr(new cuda_buffer(num_items, item_size, type));
 }
 
 int cuda_buffer::size()
@@ -98,8 +106,7 @@ bool cuda_buffer::write_info(buffer_info_t& info)
     return true;
 }
 
-void cuda_buffer::cancel() 
-{}
+void cuda_buffer::cancel() {}
 // { _buf_mutex.unlock(); }
 
 void cuda_buffer::post_read(int num_items)
@@ -153,11 +160,15 @@ void cuda_buffer::post_write(int num_items)
             memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
     } else // D2D
     {
-        cudaMemcpy(&_device_buffer[wi2], &_device_buffer[wi1], num_bytes_1,
+        cudaMemcpy(&_device_buffer[wi2],
+                   &_device_buffer[wi1],
+                   num_bytes_1,
                    cudaMemcpyDeviceToDevice);
         if (num_bytes_2)
-            cudaMemcpy(&_device_buffer[0], &_device_buffer[_buf_size], num_bytes_2,
-                   cudaMemcpyDeviceToDevice);
+            cudaMemcpy(&_device_buffer[0],
+                       &_device_buffer[_buf_size],
+                       num_bytes_2,
+                       cudaMemcpyDeviceToDevice);
     }
     // advance the write pointer
     _write_index += bytes_written;
@@ -173,4 +184,4 @@ void cuda_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
     std::lock_guard<std::mutex> guard(_buf_mutex);
     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
 }
-}
+} // namespace gr
