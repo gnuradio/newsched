@@ -12,8 +12,8 @@
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/logging.hpp>
 #include <gnuradio/schedulers/st/scheduler_st.hpp>
+#include <gnuradio/blocklib/cuda/multiply_const_doublecopy.hpp>
 #include <gnuradio/blocklib/cuda/multiply_const.hpp>
-#include <gnuradio/blocklib/cuda/multiply_const2.hpp>
 
 #include <gnuradio/cudabuffer.hpp>
 #include <gnuradio/simplebuffer.hpp>
@@ -158,8 +158,8 @@ int main(int argc, char* argv[])
         /// Test the non-cuda version with the domain adapter
         // Add extra multiplies because we don't yet deal with orphan nodes
         auto mult1 = blocks::multiply_const_ff::make(k1);
-        auto mult2 = cuda::multiply_const_ff::make(k2);
-        auto mult3 = cuda::multiply_const_ff::make(k3);
+        auto mult2 = cuda::multiply_const_doublecopy_ff::make(k2);
+        auto mult3 = cuda::multiply_const_doublecopy_ff::make(k3);
         auto mult4 = blocks::multiply_const_ff::make(k4);
         auto src = blocks::vector_source_f::make(input_data, false);
         auto snk = blocks::vector_sink_f::make();
@@ -209,8 +209,8 @@ int main(int argc, char* argv[])
         /// CUDA domain scheduler
         // Add extra multiplies because we don't yet deal with orphan nodes
         auto mult1 = blocks::multiply_const_ff::make(k1);
-        auto mult2 = cuda::multiply_const2_ff::make(k2);
-        auto mult3 = cuda::multiply_const2_ff::make(k3);
+        auto mult2 = cuda::multiply_const_ff::make(k2);
+        auto mult3 = cuda::multiply_const_ff::make(k3);
         auto mult4 = blocks::multiply_const_ff::make(k4);
         auto src = blocks::vector_source_f::make(input_data, false);
         auto snk = blocks::vector_sink_f::make();
