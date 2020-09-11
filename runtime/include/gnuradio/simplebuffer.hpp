@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string.h>
 #include <algorithm>
 #include <cstdint>
@@ -34,9 +36,9 @@ public:
         _write_index = 0;
     }
 
-    static sptr make(size_t num_items, size_t item_size)
+    static buffer_sptr make(size_t num_items, size_t item_size, buffer_position_t buf_pos=buffer_position_t::NORMAL)
     {
-        return sptr(new simplebuffer(num_items, item_size));
+        return buffer_sptr(new simplebuffer(num_items, item_size));
     }
 
     int size()

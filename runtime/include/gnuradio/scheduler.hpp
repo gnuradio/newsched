@@ -6,6 +6,7 @@
 #include <mutex>
 #include <queue>
 
+#include <gnuradio/buffer.hpp>
 #include <gnuradio/callback.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flat_graph.hpp>
@@ -63,6 +64,13 @@ struct neighbor_scheduler_info {
 
 typedef std::map<nodeid_t, neighbor_scheduler_info> block_scheduler_map;
 
+/**
+ * @brief The factory function used for allocating buffers
+ * 
+ */
+typedef std::function<std::shared_ptr<buffer>(size_t, size_t, buffer_position_t)>
+    buffer_factory_function;
+
 class scheduler : public std::enable_shared_from_this<scheduler>
 {
 
@@ -84,7 +92,8 @@ public:
     virtual void
     initialize(flat_graph_sptr fg,
                flowgraph_monitor_sptr fgmon,
-               block_scheduler_map scheduler_adapter_map = block_scheduler_map()) = 0;
+               block_scheduler_map scheduler_adapter_map = block_scheduler_map(),
+               const buffer_factory_function& bff = nullptr) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void wait() = 0;
@@ -139,9 +148,16 @@ public:
     scheduler_state state() { return _state; }
     void set_state(scheduler_state state) { _state = state; }
 
+    virtual void set_default_buffer_factory(const buffer_factory_function& bff)
+    {
+        _default_buf_factory = bff;
+    }
+
 protected:
     logger_sptr _logger;
     logger_sptr _debug_logger;
+
+    buffer_factory_function _default_buf_factory = nullptr;
 
 private:
     std::string _name;
