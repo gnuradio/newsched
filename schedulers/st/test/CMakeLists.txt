@@ -8,7 +8,7 @@ target_link_libraries(test_scheduler_st
     gnuradio-scheduler-st
 )
 
-
+if (GR_ENABLE_CUDA)
 add_executable(st_cuda test_st_cuda.cpp)
 
 target_link_libraries(st_cuda 
@@ -18,7 +18,7 @@ target_link_libraries(st_cuda
     gnuradio-blocklib-cuda-cu
     gnuradio-blocklib-cuda
 )    
-
+endif()
 
 
 ########################################################
