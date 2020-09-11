@@ -66,7 +66,7 @@ typedef std::map<nodeid_t, neighbor_scheduler_info> block_scheduler_map;
 
 /**
  * @brief The factory function used for allocating buffers
- * 
+ *
  */
 typedef std::function<std::shared_ptr<buffer>(size_t, size_t, buffer_position_t)>
     buffer_factory_function;
@@ -92,8 +92,7 @@ public:
     virtual void
     initialize(flat_graph_sptr fg,
                flowgraph_monitor_sptr fgmon,
-               block_scheduler_map scheduler_adapter_map = block_scheduler_map(),
-               const buffer_factory_function& bff = nullptr) = 0;
+               block_scheduler_map scheduler_adapter_map = block_scheduler_map()) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void wait() = 0;
