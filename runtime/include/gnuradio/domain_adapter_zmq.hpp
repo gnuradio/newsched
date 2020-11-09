@@ -22,7 +22,7 @@ public:
     static sptr make(const std::string& endpoint_uri, port_sptr other_port)
     {
         auto ptr = std::make_shared<domain_adapter_zmq_rep_svr>(
-            domain_adapter_zmq_rep_svr(endpoint_uri));
+            endpoint_uri);
 
         ptr->add_port(port_base::make("output",
                                       port_direction_t::OUTPUT,
@@ -76,7 +76,7 @@ public:
     static sptr make(const std::string& endpoint_uri, port_sptr other_port)
     {
         auto ptr = std::make_shared<domain_adapter_zmq_req_cli>(
-            domain_adapter_zmq_req_cli(endpoint_uri));
+            endpoint_uri);
 
         // Type of port is not known at compile time
         ptr->add_port(port_base::make("input",
@@ -122,7 +122,7 @@ public:
                      const std::string& endpoint_downstream)
     {
         return std::make_shared<domain_adapter_zmq_conf>(
-            domain_adapter_zmq_conf(buf_pref, endpoint_upstream, endpoint_downstream));
+            buf_pref, endpoint_upstream, endpoint_downstream);
     }
 
     domain_adapter_zmq_conf(buffer_preference_t buf_pref,
@@ -173,7 +173,7 @@ public:
                      buffer_preference_t buf_pref = buffer_preference_t::DOWNSTREAM)
     {
         return std::make_shared<domain_adapter_zmq_tcp_conf>(
-            domain_adapter_zmq_tcp_conf(ports, ip_address, buf_pref));
+            ports, ip_address, buf_pref);
     }
 
     domain_adapter_zmq_tcp_conf(std::vector<int> ports,
