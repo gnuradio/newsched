@@ -98,8 +98,7 @@ public:
                      T* value_ptr,
                      const std::vector<size_t> dims = std::vector<size_t>{ 1 })
     {
-        return std::make_shared<param<T>>(
-            param<T>(id, name, default_value, value_ptr, dims));
+        return std::make_shared<param<T>>(id, name, default_value, value_ptr, dims);
     }
     param(const uint32_t id,
           const std::string name,
@@ -173,13 +172,13 @@ public:
 
     static sptr make(uint32_t id)
     {
-        return std::make_shared<param_action<T>>(param_action<T>(id));
+        return std::make_shared<param_action<T>>(id);
     }
 
     static sptr make(uint32_t id, T new_value, uint64_t at_sample)
     {
         return std::make_shared<param_action<T>>(
-            param_action<T>(id, new_value, at_sample));
+            id, new_value, at_sample);
     }
 
     // Constructor where the current value is "don't care"
