@@ -48,7 +48,7 @@ public:
                      const std::string& name = "domain_adapter_shm_svr")
     {
         auto ptr =
-            std::make_shared<domain_adapter_shm_svr>(domain_adapter_shm_svr(sync, name));
+            std::make_shared<domain_adapter_shm_svr>(sync, name);
 
         ptr->add_port(port_base::make("output",
                                       port_direction_t::OUTPUT,
@@ -158,7 +158,7 @@ public:
                      const std::string& name = "domain_adapter_shm_svr")
     {
         auto ptr =
-            std::make_shared<domain_adapter_shm_cli>(domain_adapter_shm_cli(sync, name));
+            std::make_shared<domain_adapter_shm_cli>(sync, name);
 
         // Type of port is not known at compile time
         ptr->add_port(port_base::make("input",
@@ -170,7 +170,7 @@ public:
         return ptr;
     }
     domain_adapter_shm_cli(shm_sync_sptr sync, const std::string& name)
-        : domain_adapter(buffer_location_t::LOCAL, name), p_sync(sync)
+        : domain_adapter(buffer_location_t::REMOTE, name), p_sync(sync)
     {
     }
 
@@ -375,7 +375,7 @@ public:
     static sptr make(buffer_preference_t buf_pref = buffer_preference_t::DOWNSTREAM)
     {
         return std::make_shared<domain_adapter_shm_conf>(
-            domain_adapter_shm_conf(buf_pref));
+            buf_pref);
     }
 
     domain_adapter_shm_conf(buffer_preference_t buf_pref) : domain_adapter_conf(buf_pref)
