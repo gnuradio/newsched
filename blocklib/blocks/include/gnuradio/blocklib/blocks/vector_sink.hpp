@@ -29,7 +29,7 @@ public:
 
     static sptr make(const size_t vlen = 1, const size_t reserve_items = 1024)
     {
-        auto ptr = std::make_shared<vector_sink>(vector_sink(vlen, reserve_items));
+        auto ptr = std::make_shared<vector_sink>(vlen, reserve_items);
 
         ptr->add_port(port<T>::make("input",
                                     port_direction_t::INPUT,

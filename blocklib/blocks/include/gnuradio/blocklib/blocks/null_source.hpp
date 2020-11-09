@@ -16,7 +16,7 @@ public:
     static sptr make(size_t itemsize, size_t nports = 1)
     {
 
-        auto ptr = std::make_shared<null_source>(null_source(itemsize, nports));
+        auto ptr = std::make_shared<null_source>(itemsize, nports);
         ptr->add_param(param<size_t>::make(null_source::params::id_itemsize,
                                            "itemsize",
                                            itemsize,

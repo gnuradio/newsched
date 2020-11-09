@@ -13,7 +13,7 @@ public:
     typedef std::shared_ptr<multiply_const> sptr;
     static sptr make(const T k, const size_t vlen = 1)
     {
-        auto ptr = std::make_shared<multiply_const>(multiply_const<T>());
+        auto ptr = std::make_shared<multiply_const>();
 
         ptr->add_port(port<T>::make("input",
                                     port_direction_t::INPUT,

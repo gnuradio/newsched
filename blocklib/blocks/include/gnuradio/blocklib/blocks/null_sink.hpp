@@ -23,7 +23,7 @@ public:
 
     static sptr make(const size_t itemsize, const size_t nports=1)
     {
-        auto ptr = std::make_shared<null_sink>(null_sink(itemsize, nports));
+        auto ptr = std::make_shared<null_sink>(itemsize, nports);
 
         for (int i = 0; i < nports; i++) {
             ptr->add_port(untyped_port::make("input" + std::to_string(i),

@@ -15,7 +15,7 @@ public:
     typedef std::shared_ptr<head> sptr;
     static sptr make(size_t itemsize, size_t nitems)
     {
-        auto ptr = std::make_shared<head>(head(itemsize, nitems));
+        auto ptr = std::make_shared<head>(itemsize, nitems);
 
         ptr->add_param(param<size_t>::make(
             head::params::id_nitems, "itemsize", itemsize, &(ptr->_itemsize)));

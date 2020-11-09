@@ -39,7 +39,7 @@ public:
     static sptr make(size_t itemsize, double samples_per_sec, bool ignore_tags = true)
     {
         auto ptr =
-            std::make_shared<throttle>(throttle(itemsize, samples_per_sec, ignore_tags));
+            std::make_shared<throttle>(itemsize, samples_per_sec, ignore_tags);
 
         ptr->add_port(untyped_port::make(
             "input", port_direction_t::INPUT, itemsize, port_type_t::STREAM));

@@ -20,7 +20,7 @@ public:
                      const std::vector<tag_t>& tags = std::vector<tag_t>())
     {
 
-        auto ptr = std::make_shared<vector_source>(vector_source(data, repeat, vlen, tags));
+        auto ptr = std::make_shared<vector_source>(data, repeat, vlen, tags);
 
 
         ptr->add_port(port<T>::make("output",

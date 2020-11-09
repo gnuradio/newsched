@@ -13,7 +13,7 @@ public:
     typedef std::shared_ptr<fanout> sptr;
     static sptr make( size_t itemsize, size_t nports = 2)
     {
-        auto ptr = std::make_shared<fanout>(fanout(itemsize, nports));
+        auto ptr = std::make_shared<fanout>(itemsize, nports);
 
         ptr->add_param(param<size_t>::make(
             fanout::params::id_nports, "nports", nports, &(ptr->_nports)));
