@@ -77,7 +77,7 @@ public:
     typedef std::shared_ptr<pmt_scalar> sptr;
     static sptr make(const T value)
     {
-        return std::make_shared<pmt_scalar<T>>(pmt_scalar<T>(value));
+        return std::make_shared<pmt_scalar<T>>(value);
     }
 
     pmt_scalar(const T& value)
@@ -116,7 +116,7 @@ public:
     typedef std::shared_ptr<pmt_vector> sptr;
     static sptr make(const T value)
     {
-        return std::make_shared<pmt_vector<T>>(pmt_vector<T>(value));
+        return std::make_shared<pmt_vector<T>>(value);
     }
 
     pmt_vector(const std::vector<T>& value)
