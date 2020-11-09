@@ -46,7 +46,7 @@ public:
               const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
               const int multiplicity = 1)
     {
-        return std::make_shared<port_base>(port_base(name, direction, data_type, port_type, dims, multiplicity));
+        return std::make_shared<port_base>(name, direction, data_type, port_type, dims, multiplicity);
     }
 
     port_base(const std::string& name,
