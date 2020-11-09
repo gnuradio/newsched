@@ -69,7 +69,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                 // Is the other block in our current partition
                 if (std::find(blocks.begin(), blocks.end(), other_block) !=
                     blocks.end()) {
-                    g->connect(e.src(), e.dst());
+                    g->connect(e.src(), e.dst(), e.buffer_factory(), e.buf_properties());
                 } else {
                     // add this edge to the list of domain crossings
                     // domain_crossings.push_back(std::make_tuple(g,e));
@@ -85,6 +85,31 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
         d_subgraphs.push_back(g);
         partition_scheds.push_back(sched);
+    }
+
+    int idx = 0;
+    for (auto& conf : confs) {
+        auto g = d_subgraphs[idx];
+
+        // see that all the blocks in conf->blocks() are in g, and if not, add them as
+        // orphan nodes
+
+        for (auto b : conf.blocks()) // for each of the blocks in the tuple
+        {
+            bool connected = false;
+            for (auto e : g->edges()) {
+                if (e.src().node() == b || e.dst().node() == b) {
+                    connected = true;
+                    break;
+                }
+            }
+
+            if (!connected) {
+                g->add_orphan_node(b);
+            }
+        }
+
+        idx++;
     }
 
     // Now, let's set up domain adapters at the domain crossings
@@ -162,8 +187,14 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
         // Attach domain adapters to the src and dest blocks
         // domain adapters only have one port
-        src_block_graph->connect(c.src(), node_endpoint(da_src, da_src->all_ports()[0]));
-        dst_block_graph->connect(node_endpoint(da_dst, da_dst->all_ports()[0]), c.dst());
+        src_block_graph->connect(c.src(),
+                                 node_endpoint(da_src, da_src->all_ports()[0]),
+                                 c.buffer_factory(),
+                                 c.buf_properties());
+        dst_block_graph->connect(node_endpoint(da_dst, da_dst->all_ports()[0]),
+                                 c.dst(),
+                                 c.buffer_factory(),
+                                 c.buf_properties());
 
 
         // Set the block id to "other scheduler" maps
@@ -172,13 +203,11 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
         auto dst_block_id = c.dst().node()->id();
         auto src_block_id = c.src().node()->id();
 
-        neighbor_map_per_scheduler[block_to_scheduler_map[dst_block_id]]
-                                         [dst_block_id].set_upstream(
-                                             block_to_scheduler_map[src_block_id], src_block_id);
+        neighbor_map_per_scheduler[block_to_scheduler_map[dst_block_id]][dst_block_id]
+            .set_upstream(block_to_scheduler_map[src_block_id], src_block_id);
 
-        neighbor_map_per_scheduler[block_to_scheduler_map[src_block_id]]
-                                         [src_block_id].add_downstream(
-                                             block_to_scheduler_map[dst_block_id], dst_block_id);
+        neighbor_map_per_scheduler[block_to_scheduler_map[src_block_id]][src_block_id]
+            .add_downstream(block_to_scheduler_map[dst_block_id], dst_block_id);
 
         crossing_index++;
     }
@@ -186,10 +215,9 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     d_flat_subgraphs.clear();
     for (auto i = 0; i < partition_scheds.size(); i++) {
         d_flat_subgraphs.push_back(flat_graph::make_flat(d_subgraphs[i]));
-        partition_scheds[i]->initialize(
-            d_flat_subgraphs[i],
-            d_fgmon,
-            neighbor_map_per_scheduler[partition_scheds[i]]);
+        partition_scheds[i]->initialize(d_flat_subgraphs[i],
+                                        d_fgmon,
+                                        neighbor_map_per_scheduler[partition_scheds[i]]);
     }
 }
 

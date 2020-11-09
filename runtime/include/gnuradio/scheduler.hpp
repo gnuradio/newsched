@@ -64,13 +64,6 @@ struct neighbor_scheduler_info {
 
 typedef std::map<nodeid_t, neighbor_scheduler_info> block_scheduler_map;
 
-/**
- * @brief The factory function used for allocating buffers
- *
- */
-typedef std::function<std::shared_ptr<buffer>(size_t, size_t, buffer_position_t)>
-    buffer_factory_function;
-
 class scheduler : public std::enable_shared_from_this<scheduler>
 {
 
@@ -147,9 +140,11 @@ public:
     scheduler_state state() { return _state; }
     void set_state(scheduler_state state) { _state = state; }
 
-    virtual void set_default_buffer_factory(const buffer_factory_function& bff)
+    virtual void set_default_buffer_factory(const buffer_factory_function& bff,
+                                            std::shared_ptr<buffer_properties> bp = nullptr)
     {
         _default_buf_factory = bff;
+        _default_buf_properties = bp;
     }
 
 protected:
@@ -157,6 +152,7 @@ protected:
     logger_sptr _debug_logger;
 
     buffer_factory_function _default_buf_factory = nullptr;
+    std::shared_ptr<buffer_properties> _default_buf_properties = nullptr;
 
 private:
     std::string _name;

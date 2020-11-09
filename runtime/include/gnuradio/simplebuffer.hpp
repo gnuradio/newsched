@@ -34,9 +34,13 @@ public:
         _buffer.resize(_buf_size * 2); // double circular buffer
         _read_index = 0;
         _write_index = 0;
+
+        set_type("simplebuffer");
     }
 
-    static buffer_sptr make(size_t num_items, size_t item_size, buffer_position_t buf_pos=buffer_position_t::NORMAL)
+    static buffer_sptr make(size_t num_items,
+                            size_t item_size,
+                            std::shared_ptr<buffer_properties> buffer_properties)
     {
         return buffer_sptr(new simplebuffer(num_items, item_size));
     }
@@ -83,7 +87,9 @@ public:
         std::scoped_lock guard(_buf_mutex);
 
         info.ptr = write_ptr();
-        info.n_items = capacity() - size();
+        info.n_items = capacity() - size() - 1; // always keep the write pointer 1 behind the read ptr
+        if (info.n_items < 0)
+            info.n_items = 0;
         info.item_size = _item_size;
         info.total_items = _total_written;
 
