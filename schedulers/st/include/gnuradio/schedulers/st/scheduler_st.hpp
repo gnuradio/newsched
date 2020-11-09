@@ -22,6 +22,7 @@ public:
     const int s_fixed_buf_size;
     static const int s_min_items_to_process = 1;
     const int s_max_buf_items; // = s_fixed_buf_size / 2;
+    const int s_min_buf_items = 1;
 
     typedef std::shared_ptr<scheduler_st> sptr;
 
@@ -29,13 +30,78 @@ public:
                  const unsigned int fixed_buf_size = 8192)
         : scheduler(name),
           s_fixed_buf_size(fixed_buf_size),
-          s_max_buf_items(fixed_buf_size / 2)
+          s_max_buf_items(fixed_buf_size - 1)
     {
         _default_buf_factory = simplebuffer::make;
     }
     ~scheduler_st(){
 
     };
+
+    int get_buffer_num_items(edge e, flat_graph_sptr fg)
+    {
+        int item_size = e.itemsize();
+
+        // *2 because we're now only filling them 1/2 way in order to
+        // increase the available parallelism when using the TPB scheduler.
+        // (We're double buffering, where we used to single buffer)
+        int nitems = s_fixed_buf_size * 2 / item_size;
+
+        auto grblock = std::dynamic_pointer_cast<block>(e.src().node());
+        if (grblock == nullptr) // might be a domain adapter, not a block
+        {
+            grblock = std::dynamic_pointer_cast<block>(e.dst().node());
+        }
+
+        // Make sure there are at least twice the output_multiple no. of items
+        if (nitems < 2 * grblock->output_multiple()) // Note: this means output_multiple()
+            nitems =
+                2 * grblock->output_multiple(); // can't be changed by block dynamically
+
+        // // limit buffer size if indicated
+        // if (grblock->max_output_buffer(port) > 0) {
+        //     // std::cout << "constraining output items to " <<
+        //     block->max_output_buffer(port)
+        //     // << "\n";
+        //     nitems = std::min((long)nitems, (long)grblock->max_output_buffer(port));
+        //     nitems -= nitems % grblock->output_multiple();
+        //     if (nitems < 1)
+        //         throw std::runtime_error("problems allocating a buffer with the given
+        //         max "
+        //                                 "output buffer constraint!");
+        // } else if (grblock->min_output_buffer(port) > 0) {
+        //     nitems = std::max((long)nitems, (long)grblock->min_output_buffer(port));
+        //     nitems -= nitems % grblock->output_multiple();
+        //     if (nitems < 1)
+        //         throw std::runtime_error("problems allocating a buffer with the given
+        //         min "
+        //                                 "output buffer constraint!");
+        // }
+
+        // FIXME: Downstream block connections get messed up by domain adapters
+        //   Need to tag the blocks before they get partitioned 
+        //   and store the information in the edge objects
+        //   also allow for different rates out of different ports
+
+        // // If any downstream blocks are decimators and/or have a large output_multiple,
+        // // ensure we have a buffer at least twice their decimation
+        // // factor*output_multiple
+        // auto blocks = fg->calc_downstream_blocks(grblock, port);
+
+        // for (auto&  p : blocks) {
+        //     // block_sptr dgrblock = cast_to_block_sptr(*p);
+        //     // if (!dgrblock)
+        //     //     throw std::runtime_error("allocate_buffer found non-gr::block");
+
+        //     // double decimation = (1.0 / dgrblock->relative_rate());
+        //     int multiple = p->output_multiple();
+        //     nitems =
+        //         std::max(nitems, static_cast<int>(2 * (multiple)));
+        //         // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
+        // }
+
+        return nitems;
+    }
 
     void initialize(flat_graph_sptr fg,
                     flowgraph_monitor_sptr fgmon,
@@ -48,11 +114,15 @@ public:
         // if (fg->is_flat())  // flatten
 
         buffer_factory_function buf_factory = _default_buf_factory;
+        std::shared_ptr<buffer_properties> buf_props = _default_buf_properties;
 
         // not all edges may be used
         for (auto e : fg->edges()) {
             // every edge needs a buffer
             d_edge_catalog[e.identifier()] = e;
+
+            auto num_items = get_buffer_num_items(e, fg);
+
 
             // Determine whether the blocks on either side of the edge are domain adapters
             // If so, Domain adapters need their own buffer explicitly set
@@ -75,28 +145,41 @@ public:
                 if (src_da_cast->buffer_location() == buffer_location_t::LOCAL) {
                     buffer_sptr buf;
 
-                    buf = buf_factory(
-                        s_fixed_buf_size, e.itemsize(), buffer_position_t::INGRESS);
+                    if (e.has_custom_buffer()) {
+                        buf = e.buffer_factory()(
+                            num_items, e.itemsize(), e.buf_properties());
+                    } else {
+                        buf = buf_factory(num_items, e.itemsize(), buf_props);
+                    }
 
                     src_da_cast->set_buffer(buf);
                     auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
                     d_edge_buffers[e.identifier()] = tmp;
+                    gr_log_info(_logger, "Edge: {}, Buf: {}",e.identifier(), buf->type());
                 } else {
                     d_edge_buffers[e.identifier()] =
                         std::dynamic_pointer_cast<buffer>(src_da_cast);
+                    gr_log_info(_logger, "Edge: {}, Buf: SRC_DA",e.identifier());
                 }
             } else if (dst_da_cast != nullptr) {
                 if (dst_da_cast->buffer_location() == buffer_location_t::LOCAL) {
                     buffer_sptr buf;
 
-                    buf = buf_factory(
-                        s_fixed_buf_size, e.itemsize(), buffer_position_t::EGRESS);
+                    if (e.has_custom_buffer()) {
+                        buf = e.buffer_factory()(
+                            num_items, e.itemsize(), e.buf_properties());
+                    } else {
+                        buf = buf_factory(num_items, e.itemsize(), buf_props);
+                    }
+
                     dst_da_cast->set_buffer(buf);
                     auto tmp = std::dynamic_pointer_cast<buffer>(dst_da_cast);
                     d_edge_buffers[e.identifier()] = tmp;
+                    gr_log_info(_logger, "Edge: {}, Buf: {}",e.identifier(), buf->type());
                 } else {
                     d_edge_buffers[e.identifier()] =
                         std::dynamic_pointer_cast<buffer>(dst_da_cast);
+                    gr_log_info(_logger, "Edge: {}, Buf: DST_DA",e.identifier());
                 }
 
             }
@@ -104,10 +187,14 @@ public:
             // buffer
             else {
                 buffer_sptr buf;
-                buf = buf_factory(
-                    s_fixed_buf_size, e.itemsize(), buffer_position_t::NORMAL);
+                if (e.has_custom_buffer()) {
+                    buf = e.buffer_factory()(num_items, e.itemsize(), e.buf_properties());
+                } else {
+                    buf = buf_factory(num_items, e.itemsize(), buf_props);
+                }
 
                 d_edge_buffers[e.identifier()] = buf;
+                gr_log_info(_logger, "Edge: {}, Buf: {}",e.identifier(), buf->type());
             }
         }
 
@@ -145,7 +232,7 @@ public:
         d_thread = std::thread(thread_body, this);
 
         push_message(std::make_shared<scheduler_action>(
-            scheduler_action(scheduler_action_t::NOTIFY_ALL)));
+            scheduler_action_t::NOTIFY_ALL));
     }
     void stop()
     {
@@ -184,7 +271,6 @@ public:
             std::vector<block_work_input> work_input;   //(num_input_ports);
             std::vector<block_work_output> work_output; //(num_output_ports);
 
-            std::vector<buffer_sptr> bufs;
             // for each input port of the block
             bool ready = true;
             for (auto p : b->input_stream_ports()) {
@@ -198,8 +284,6 @@ public:
 
                 if (!ready)
                     break;
-
-                bufs.push_back(p_buf);
 
                 if (read_info.n_items < s_min_items_to_process) {
                     ready = false;
@@ -238,14 +322,22 @@ public:
                                  write_info.item_size);
                     if (!ready)
                         break;
-                    bufs.push_back(p_buf);
 
-                    if (write_info.n_items <= s_max_buf_items) {
+                    int tmp_buf_size = write_info.n_items;
+                    if (tmp_buf_size < s_min_buf_items) {
                         ready = false;
                         break;
                     }
+                    // while (tmp_buf_size > p_buf->) {
+                    //     tmp_buf_size >>= 1;
+                    //     if (tmp_buf_size < s_min_buf_items)
+                    //     {
+                    //         ready = false;
+                    //         break;
+                    //     }
+                    // }
+                    // if (!ready) { break; }
 
-                    int tmp_buf_size = write_info.n_items;
                     if (tmp_buf_size < max_output_buffer - 1)
                         max_output_buffer = tmp_buf_size;
 
@@ -259,6 +351,20 @@ public:
                 max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
                 std::vector<tag_t> tags; // needs to be associated with edge buffers
 
+                if (b->output_multiple_set()) {
+                    // quantize to the output multiple
+                    if (max_output_buffer < b->output_multiple()) {
+                        max_output_buffer = b->output_multiple();
+                    }
+
+                    max_output_buffer =
+                        b->output_multiple() * (max_output_buffer / b->output_multiple());
+                    if (max_output_buffer == 0) {
+                        ready = false;
+                        break;
+                    }
+                }
+
                 work_output.push_back(block_work_output(
                     max_output_buffer, nitems_written, write_ptr, tags));
             }
@@ -269,14 +375,35 @@ public:
             }
 
             if (ready) {
-                gr_log_debug(_debug_logger, "do_work for {}", b->alias());
-                work_return_code_t ret = b->do_work(work_input, work_output);
-                gr_log_debug(_debug_logger, "do_work returned {}", ret);
+                work_return_code_t ret;
+                while (true) {
 
-                if (ret == work_return_code_t::WORK_DONE) {
-                    per_block_status[b->id()] = scheduler_iteration_status::DONE;
-                } else if (ret == work_return_code_t::WORK_OK) {
-                    per_block_status[b->id()] = scheduler_iteration_status::READY;
+                    if (work_output.size() > 0)
+                        gr_log_debug(_debug_logger,
+                                     "do_work for {}, {}",
+                                     b->alias(),
+                                     work_output[0].n_items);
+                    else
+                        gr_log_debug(_debug_logger, "do_work for {}", b->alias());
+
+
+                    ret = b->do_work(work_input, work_output);
+                    gr_log_debug(_debug_logger, "do_work returned {}", ret);
+
+
+                    if (ret == work_return_code_t::WORK_DONE) {
+                        per_block_status[b->id()] = scheduler_iteration_status::DONE;
+                        break;
+                    } else if (ret == work_return_code_t::WORK_OK) {
+                        per_block_status[b->id()] = scheduler_iteration_status::READY;
+                        break;
+                    } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
+                        work_output[0].n_items >>= 1;
+                        if (work_output[0].n_items < 4) // min block size
+                        {
+                            break;
+                        }
+                    }
                 }
                 // TODO - handle READY_NO_OUTPUT
 
@@ -368,7 +495,7 @@ public:
     void notify_self()
     {
         push_message(std::make_shared<scheduler_action>(
-            scheduler_action(scheduler_action_t::NOTIFY_ALL)));
+            scheduler_action_t::NOTIFY_ALL));
     }
 
     std::vector<scheduler_sptr> get_neighbors_upstream(nodeid_t blkid)
@@ -417,12 +544,12 @@ public:
     void notify_upstream(scheduler_sptr upstream_sched)
     {
         upstream_sched->push_message(std::make_shared<scheduler_action>(
-            scheduler_action(scheduler_action_t::NOTIFY_INPUT)));
+            scheduler_action_t::NOTIFY_INPUT));
     }
     void notify_downstream(scheduler_sptr downstream_sched)
     {
         downstream_sched->push_message(std::make_shared<scheduler_action>(
-            scheduler_action(scheduler_action_t::NOTIFY_OUTPUT)));
+            scheduler_action_t::NOTIFY_OUTPUT));
     }
 
     void handle_parameter_query(std::shared_ptr<param_query_action> item)
@@ -497,6 +624,8 @@ private:
                             fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
                         break;
                     case scheduler_action_t::EXIT:
+                        gr_log_debug(top->_debug_logger,
+                                     "fgm signaled EXIT, exiting thread");
                         // fgmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
                         top->d_thread_stopped = true;
@@ -504,6 +633,7 @@ private:
                     case scheduler_action_t::NOTIFY_OUTPUT:
                     case scheduler_action_t::NOTIFY_INPUT:
                     case scheduler_action_t::NOTIFY_ALL: {
+                        gr_log_debug(top->_debug_logger, "got NOTIFY");
 
                         auto s = top->run_one_iteration();
                         std::string dbg_work_done;
@@ -576,6 +706,7 @@ private:
                         }
 
                         if (notify_self) {
+                            gr_log_debug(top->_debug_logger, "notifying self");
                             top->notify_self();
                         }
 

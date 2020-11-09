@@ -1,11 +1,11 @@
 #pragma once
 
 #include <gnuradio/tag.hpp>
+#include <functional>
 #include <memory>
 #include <vector>
 
 namespace gr {
-
 
 
 /**
@@ -32,10 +32,12 @@ class buffer
 {
 protected:
     std::string _name;
+    std::string _type;
     int _total_read = 0;
     int _total_written = 0;
 
-
+    void set_type(const std::string& type) { _type = type; }
+    
 public:
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
@@ -62,8 +64,31 @@ public:
 
     void set_name(const std::string& name) { _name = name; }
     std::string name() { return _name; }
+
+    std::string type() { return _type; }
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;
+
+/**
+ * @brief Base class for passing custom buffer properties into factory method
+ *
+ * Buffer Properties will vary according to the particular buffer
+ */
+class buffer_properties
+{
+public:
+    // typedef sptr std::shared_ptr<buffer_properties>;
+    buffer_properties() {}
+    virtual ~buffer_properties() {}
+    // buffer_factory_function bff() { return _bff; }
+
+// private:
+    // buffer_factory_function _bff;
+};
+
+
+typedef std::function<std::shared_ptr<buffer>(size_t, size_t, std::shared_ptr<buffer_properties>)>
+    buffer_factory_function;
 
 } // namespace gr
