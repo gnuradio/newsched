@@ -1,0 +1,1 @@
+install_headers('scheduler_st.hpp', subdir : 'gnuradio/schedulers/st')
