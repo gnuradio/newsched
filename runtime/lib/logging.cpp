@@ -37,7 +37,7 @@ logger_config::logger_config(YAML::Node config)
 // unnecessary
 std::shared_ptr<logger_config> logger_config::parse(YAML::Node config)
 {
-    return std::make_shared<logger_config>(logger_config(config));
+    return std::make_shared<logger_config>(config);
 }
 
 
