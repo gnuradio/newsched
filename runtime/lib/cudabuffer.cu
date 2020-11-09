@@ -28,23 +28,21 @@ cuda_buffer::cuda_buffer(size_t num_items, size_t item_size, cuda_buffer_type ty
         &_device_buffer,
         _buf_size *
             2); // double circular buffer - should do something more intelligent here
+    set_type("cuda_buffer_" + std::to_string((int)_type));
 }
 cuda_buffer::~cuda_buffer() { cudaFree(_device_buffer); }
 
 buffer_sptr cuda_buffer::make(size_t num_items,
-                        size_t item_size,
-                        buffer_position_t buf_pos)
+                              size_t item_size,
+                              std::shared_ptr<buffer_properties> buffer_properties)
 {
-    // This is not well abstracted at all, needs more thought.  
-    // Is an ingress/egress distinction good enough - how would we handle
-    //  direct to/from FPGA types of buffers??
-    cuda_buffer_type type = cuda_buffer_type::D2D;
-    if (buf_pos == buffer_position_t::INGRESS) {
-        type = cuda_buffer_type::H2D;
-    } else if (buf_pos == buffer_position_t::EGRESS) {
-        type = cuda_buffer_type::D2H;
+    auto cbp = std::dynamic_pointer_cast<cuda_buffer_properties>(buffer_properties);
+    if (cbp != nullptr) {
+        return buffer_sptr(new cuda_buffer(num_items, item_size, cbp->buffer_type()));
+    } else {
+        throw std::runtime_error(
+            "Failed to cast buffer properties to cuda_buffer_properties");
     }
-    return buffer_sptr(new cuda_buffer(num_items, item_size, type));
 }
 
 int cuda_buffer::size()
@@ -100,7 +98,10 @@ bool cuda_buffer::write_info(buffer_info_t& info)
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = write_ptr();
-    info.n_items = capacity() - size();
+    info.n_items =
+        capacity() - size() - 1; // always keep the write pointer 1 behind the read ptr
+    if (info.n_items < 0)
+        info.n_items = 0;
     info.item_size = _item_size;
 
     return true;
@@ -138,17 +139,18 @@ void cuda_buffer::post_write(int num_items)
                    bytes_written,
                    cudaMemcpyHostToDevice);
 
-        memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
+        // memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
         cudaMemcpy(&_device_buffer[wi2],
                    &_device_buffer[wi1],
                    num_bytes_1,
                    cudaMemcpyDeviceToDevice);
-        if (num_bytes_2)
-            memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
-        cudaMemcpy(&_device_buffer[0],
-                   &_device_buffer[_buf_size],
-                   num_bytes_2,
-                   cudaMemcpyDeviceToDevice);
+        if (num_bytes_2) {
+            // memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
+            cudaMemcpy(&_device_buffer[0],
+                       &_device_buffer[_buf_size],
+                       num_bytes_2,
+                       cudaMemcpyDeviceToDevice);
+        }
     } else if (_buffer_type == cuda_buffer_type::D2H) {
         cudaMemcpy(&_host_buffer[wi1],
                    &_device_buffer[wi1],
@@ -156,8 +158,18 @@ void cuda_buffer::post_write(int num_items)
                    cudaMemcpyDeviceToHost);
 
         memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
-        if (num_bytes_2)
+        // cudaMemcpy(&_device_buffer[wi2],
+        //            &_device_buffer[wi1],
+        //            num_bytes_1,
+        //            cudaMemcpyDeviceToDevice);
+
+        if (num_bytes_2) {
             memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
+            // cudaMemcpy(&_device_buffer[0],
+            //            &_device_buffer[_buf_size],
+            //            num_bytes_2,
+            //            cudaMemcpyDeviceToDevice);
+        }
     } else // D2D
     {
         cudaMemcpy(&_device_buffer[wi2],

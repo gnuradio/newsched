@@ -39,6 +39,7 @@ target_compile_options(gnuradio-runtime PRIVATE -Wno-deprecated-declarations)
 if(GR_ENABLE_CUDA)
 add_library(gnuradio-runtime-cu SHARED
   cudabuffer.cu
+  cudabuffer_pinned.cu
   )
   target_include_directories(gnuradio-runtime-cu
   PUBLIC

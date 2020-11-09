@@ -8,52 +8,44 @@
 #include <gnuradio/buffer.hpp>
 
 namespace gr {
-enum class cuda_buffer_type { D2D, H2D, D2H };
 
-
-class cuda_buffer_properties : public buffer_properties
+class cuda_buffer_pinned_properties : public buffer_properties
 {
 public:
     // typedef sptr std::shared_ptr<buffer_properties>;
-    cuda_buffer_properties(cuda_buffer_type buffer_type_)
-        : buffer_properties(), _buffer_type(buffer_type_)
+    cuda_buffer_pinned_properties()
+        : buffer_properties()
     {
     }
-    cuda_buffer_type buffer_type() { return _buffer_type; }
-    static std::shared_ptr<buffer_properties> make(cuda_buffer_type buffer_type_)
+    static std::shared_ptr<buffer_properties> make()
     {
         return std::dynamic_pointer_cast<buffer_properties>(
-            std::make_shared<cuda_buffer_properties>(buffer_type_));
+            std::make_shared<cuda_buffer_pinned_properties>());
     }
-
-private:
-    cuda_buffer_type _buffer_type;
 };
 
 
-class cuda_buffer : public buffer
+class cuda_buffer_pinned : public buffer
 {
 private:
-    std::vector<uint8_t> _host_buffer;
-    uint8_t* _device_buffer;
+    uint8_t* _pinned_buffer;
     unsigned int _read_index;
     unsigned int _write_index;
     unsigned int _num_items;
     unsigned int _item_size;
     unsigned int _buf_size;
-    cuda_buffer_type _type;
 
     std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and
                            // used scoped lock outside on the caller
-    cuda_buffer_type _buffer_type;
 
 public:
-    typedef std::shared_ptr<cuda_buffer> sptr;
-    cuda_buffer(){};
-    cuda_buffer(size_t num_items,
-                size_t item_size,
-                cuda_buffer_type type = cuda_buffer_type::D2D);
-    ~cuda_buffer();
+    typedef std::shared_ptr<cuda_buffer_pinned> sptr;
+    cuda_buffer_pinned(){
+        set_type("cuda_buffer_pinned");
+    };
+    cuda_buffer_pinned(size_t num_items,
+                size_t item_size);
+    ~cuda_buffer_pinned();
 
     static buffer_sptr make(size_t num_items,
                             size_t item_size,
@@ -77,9 +69,6 @@ public:
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 };
 
-
 } // namespace gr
 
-#define CUDA_BUFFER_ARGS_H2D cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::H2D)
-#define CUDA_BUFFER_ARGS_D2H cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::D2H)
-#define CUDA_BUFFER_ARGS_D2D cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::D2D)
+#define CUDA_BUFFER_PINNED_ARGS cuda_buffer_pinned::make, cuda_buffer_pinned_properties::make()
