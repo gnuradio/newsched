@@ -9,7 +9,7 @@
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
 #include <gnuradio/domain_adapter_shm.hpp>
 #include <gnuradio/flowgraph.hpp>
-#include <gnuradio/schedulers/simplestream/scheduler_simplestream.hpp>
+#include <gnuradio/schedulers/st/scheduler_st.hpp>
 #include <gnuradio/realtime.hpp>
 #include <iostream>
 
@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
         fg->connect(head, 0, mult, 0);
         fg->connect(mult, 0, snk, 0);
 
-        std::shared_ptr<schedulers::scheduler_simplestream> sched1(
-            new schedulers::scheduler_simplestream("sched1"));
+        std::shared_ptr<schedulers::scheduler_st> sched1(
+            new schedulers::scheduler_st("sched1"));
 
         fg->add_scheduler(sched1);
 
