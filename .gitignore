@@ -133,3 +133,4 @@ tags
 
 # End of https://www.gitignore.io/api/emacs,vim,cmake,c++
 build
+builddir
