@@ -22,7 +22,7 @@ subdir('runtime')
 subdir('blocklib')
 subdir('schedulers')
 # subdir('bench')
-# subdir('docs')
+subdir('docs')
 
 # pkg_mod = import('pkgconfig')
 # pkg_mod.generate(libraries : newsched,
