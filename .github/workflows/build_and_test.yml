@@ -10,12 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: build
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: test
     # install dependencies
     - name: dependencies
       run: sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev libzmq3-dev python3-mako doxygen libspdlog-dev libyaml-cpp-dev
