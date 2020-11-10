@@ -30,6 +30,8 @@ vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size)
     _buf_size = _num_items * _item_size;
     _read_index = 0;
     _write_index = 0;
+    
+    set_type("vmcirc_buffer");
 
 #if !defined(HAVE_SYS_SHM_H)
     GR_LOG_ERROR(d_logger, "sysv shared memory is not available");

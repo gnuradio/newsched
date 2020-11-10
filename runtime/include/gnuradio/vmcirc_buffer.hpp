@@ -168,3 +168,5 @@ public:
 };
 
 } // namespace gr
+
+#define VMCIRC_BUFFER_ARGS vmcirc_buffer::make

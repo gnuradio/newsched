@@ -1,4 +1,5 @@
 blocks_sources = [
+    'copy.cpp',
     'fanout.cpp',
     'head.cpp',
     'multiply_const.cpp',
