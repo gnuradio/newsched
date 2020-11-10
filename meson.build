@@ -11,6 +11,7 @@ volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 spdlog_dep = dependency('spdlog')
 threads_dep = dependency('threads')
+catch_dep = declare_dependency(include_directories : [join_paths('deps','catch','include')])
 
 ## Not sure yet how to search for ZMQ as dependency (header only, no pkgconfig)
 # zmq_dep = dependency('cppzmq')

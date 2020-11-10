@@ -26,7 +26,7 @@ public:
                                     port_type_t::STREAM));
 
         // TODO : do this with multiplicity
-        for (auto i = 0; i < nports; i++) {
+        for (size_t i = 0; i < nports; i++) {
             ptr->add_port(untyped_port::make("out" + std::to_string(i),
                                         port_direction_t::OUTPUT,
                                         itemsize,
@@ -46,7 +46,7 @@ public:
                                     std::vector<block_work_output>& work_output)
     {
         auto* iptr = (uint8_t*)work_input[0].items;
-        for (auto n = 0; n < _nports; n++) {
+        for (size_t n = 0; n < _nports; n++) {
             int size = work_output[0].n_items * _itemsize;
             auto* optr = (uint8_t*)work_output[n].items;
             std::copy(iptr, iptr+size, optr);

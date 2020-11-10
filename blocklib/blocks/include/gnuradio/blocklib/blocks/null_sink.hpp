@@ -25,7 +25,7 @@ public:
     {
         auto ptr = std::make_shared<null_sink>(itemsize, nports);
 
-        for (int i = 0; i < nports; i++) {
+        for (size_t i = 0; i < nports; i++) {
             ptr->add_port(untyped_port::make("input" + std::to_string(i),
                                              port_direction_t::INPUT,
                                              itemsize,

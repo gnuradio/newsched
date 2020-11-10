@@ -21,8 +21,8 @@ public:
     scheduler_sync* sched_sync;
     const int s_fixed_buf_size;
     static const int s_min_items_to_process = 1;
-    const int s_max_buf_items; // = s_fixed_buf_size / 2;
-    const int s_min_buf_items = 1;
+    const size_t s_max_buf_items; // = s_fixed_buf_size / 2;
+    const size_t s_min_buf_items = 1;
 
     typedef std::shared_ptr<scheduler_st> sptr;
 
@@ -40,12 +40,12 @@ public:
 
     int get_buffer_num_items(edge e, flat_graph_sptr fg)
     {
-        int item_size = e.itemsize();
+        size_t item_size = e.itemsize();
 
         // *2 because we're now only filling them 1/2 way in order to
         // increase the available parallelism when using the TPB scheduler.
         // (We're double buffering, where we used to single buffer)
-        int nitems = s_fixed_buf_size * 2 / item_size;
+        size_t nitems = s_fixed_buf_size * 2 / item_size;
 
         auto grblock = std::dynamic_pointer_cast<block>(e.src().node());
         if (grblock == nullptr) // might be a domain adapter, not a block
@@ -206,9 +206,6 @@ public:
             port_vector_t input_ports = b->input_stream_ports();
             port_vector_t output_ports = b->output_stream_ports();
 
-            unsigned int num_input_ports = input_ports.size();
-            unsigned int num_output_ports = output_ports.size();
-
             for (auto p : input_ports) {
                 d_block_buffers[p] = std::vector<buffer_sptr>{};
                 edge_vector_t ed = d_fg->find_edge(p);
@@ -307,7 +304,7 @@ public:
                 // that the work call can only produce the minimum available across
                 // the buffers.
 
-                int max_output_buffer = std::numeric_limits<int>::max();
+                size_t max_output_buffer = std::numeric_limits<int>::max();
 
                 void* write_ptr = nullptr;
                 uint64_t nitems_written;
@@ -323,7 +320,7 @@ public:
                     if (!ready)
                         break;
 
-                    int tmp_buf_size = write_info.n_items;
+                    size_t tmp_buf_size = write_info.n_items;
                     if (tmp_buf_size < s_min_buf_items) {
                         ready = false;
                         break;
@@ -598,8 +595,6 @@ private:
 
     static void thread_body(scheduler_st* top)
     {
-        int num_empty = 0;
-        bool work_done = false;
         top->set_state(scheduler_state::WORKING);
         gr_log_info(top->_logger, "starting thread");
         while (!top->d_thread_stopped) {
@@ -737,7 +732,8 @@ private:
                         }
 
                     }
-
+                    default:
+                        break;
                     break;
                     }
                     break;
@@ -752,6 +748,8 @@ private:
                     top->handle_parameter_change(
                         std::static_pointer_cast<param_change_action>(msg));
                 } break;
+                default:
+                    break;
                 }
             }
         }

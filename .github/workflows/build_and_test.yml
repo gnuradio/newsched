@@ -9,25 +9,27 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: build, test
     # install dependencies
     - name: dependencies
       run: sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev libzmq3-dev python3-mako doxygen libspdlog-dev libyaml-cpp-dev
     # build volk
     - name: build_volk
       run: mkdir -p volk && curl -Lo volk.tar.gz https://github.com/gnuradio/volk/archive/v2.1.0.tar.gz && tar xzf volk.tar.gz -C volk --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./volk/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
-    # build project
-    - name: mkdir
-      run: mkdir build 
-    - name: cmake
-      working-directory: build
-      run: cmake ..
-    - name: cmake make
-      working-directory: build
-      run: make -j
-    # run tests
-    - name: run tests verbose
-      working-directory: build
-      run: ctest -VV
-    - name: run tests
-      working-directory: build
-      run: make test
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: build
+        directory: build
+        options: --verbose
+        meson-version: 0.55
+        ninja-version: 1.10.0
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: test
+        directory: build
+        options: --verbose
+        meson-version: 0.55
+        ninja-version: 1.10.0

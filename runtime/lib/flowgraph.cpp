@@ -75,10 +75,6 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                     // domain_crossings.push_back(std::make_tuple(g,e));
                     domain_crossings.push_back(e);
                     crossing_confs.push_back(conf);
-
-                    // Is this block connected to anything else in our current
-                    // partition
-                    bool connected = false; // TODO - handle orphan nodes
                 }
             }
         }
@@ -213,7 +209,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     }
 
     d_flat_subgraphs.clear();
-    for (auto i = 0; i < partition_scheds.size(); i++) {
+    for (size_t i = 0; i < partition_scheds.size(); i++) {
         d_flat_subgraphs.push_back(flat_graph::make_flat(d_subgraphs[i]));
         partition_scheds[i]->initialize(d_flat_subgraphs[i],
                                         d_fgmon,
