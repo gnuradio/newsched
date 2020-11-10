@@ -27,18 +27,16 @@ int main(int argc, char* argv[])
     int veclen;
     int buffer_type;
     bool rt_prio = false;
+    int domain_adapt;
 
     po::options_description desc("Basic Test Flow Graph");
-    desc.add_options()("help,h", "display help")(
-        "samples",
-        po::value<uint64_t>(&samples)->default_value(15000000),
-        "Number of samples")(
-        "veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")(
-        "nblocks", po::value<int>(&nblocks)->default_value(1), "Number of copy blocks")(
-        "buffer",
-        po::value<int>(&buffer_type)->default_value(0),
-        "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")(
-        "rt_prio", "Enable Real-time priority");
+    desc.add_options()("help,h", "display help")
+        ("samples", po::value<uint64_t>(&samples)->default_value(15000000),"Number of samples")
+        ("veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")
+        ("nblocks", po::value<int>(&nblocks)->default_value(1), "Number of copy blocks")
+        ("buffer", po::value<int>(&buffer_type)->default_value(0), "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")
+        ("domain_adapt", po::value<int>(&domain_adapt)->default_value(0), "Domain Adapter Types")
+        ("rt_prio", "Enable Real-time priority");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -53,35 +51,76 @@ int main(int argc, char* argv[])
         rt_prio = true;
     }
 
+
     if (rt_prio && gr::enable_realtime_scheduling() != RT_OK) {
         std::cout << "Error: failed to enable real-time scheduling." << std::endl;
     }
 
     {
         // auto src = blocks::vector_source_f::make(input_data, false);
-        auto src = blocks::null_source::make(sizeof(float));
-        auto head = blocks::head::make(sizeof(float), samples);
-        auto copy = blocks::copy::make(sizeof(float));
-        auto snk = blocks::null_sink::make(sizeof(float));
-
+        auto src = blocks::null_source::make(sizeof(gr_complex) * veclen);
+        auto head = blocks::head::make(sizeof(gr_complex) * veclen, samples / veclen);
+        // auto copy = blocks::copy::make(sizeof(gr_complex));
+        auto snk = blocks::null_sink::make(sizeof(gr_complex) * veclen);
+        std::vector<blocks::copy::sptr> copy_blks(nblocks);
+        for (int i = 0; i < nblocks; i++) {
+            copy_blks[i] = blocks::copy::make(sizeof(gr_complex) * veclen);
+        }
         flowgraph_sptr fg(new flowgraph());
 
         if (buffer_type == 0) {
             fg->connect(src, 0, head, 0);
-            fg->connect(head, 0, copy, 0);
-            fg->connect(copy, 0, snk, 0);
+            fg->connect(head, 0, copy_blks[0], 0);
+            for (int i = 0; i < nblocks - 1; i++) {
+                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0);
+            }
+            fg->connect(copy_blks[nblocks - 1], 0, snk, 0);
+
         } else {
-            fg->connect(src, 0, head, 0, VMCIRC_BUFFER_ARGS);
-            fg->connect(head, 0, copy, 0, VMCIRC_BUFFER_ARGS);
-            fg->connect(copy, 0, snk, 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(src, 0, head, 0);
+            fg->connect(head, 0, copy_blks[0], 0, VMCIRC_BUFFER_ARGS);
+            for (int i = 0; i < nblocks - 1; i++) {
+                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0, VMCIRC_BUFFER_ARGS);
+            }
+            fg->connect(copy_blks[nblocks - 1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
         }
 
-        std::shared_ptr<schedulers::scheduler_st> sched1(
-            new schedulers::scheduler_st("sched1"));
+        if (domain_adapt == 0)
+        {
+            std::cout << "no domain adapters" << std::endl;
+            std::shared_ptr<schedulers::scheduler_st> sched1(
+                new schedulers::scheduler_st("sched1"));
+            fg->add_scheduler(sched1);
+            fg->validate();
+        }
+        else
+        {
+            auto da_conf = domain_adapter_direct_conf::make(buffer_preference_t::DOWNSTREAM);
+            std::vector<std::shared_ptr<schedulers::scheduler_st>> scheds(nblocks+3);
+            for (int i = 0; i < nblocks; i++) {
+                scheds[i] = std::make_shared<schedulers::scheduler_st>("sched1", 32768);
+                scheds[i]->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
+                fg->add_scheduler(scheds[i]);
+            }
 
-        fg->add_scheduler(sched1);
+            for (int i=0; i<3; i++) // for the src, head, snk
+            {
+                scheds[nblocks+i] = std::make_shared<schedulers::scheduler_st>("sched1_blk", 32768);
+                scheds[nblocks+i]->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
+                fg->add_scheduler(scheds[nblocks+i]);
+            }
 
-        fg->validate();
+            domain_conf_vec dconf;
+            for (int i=0; i<nblocks; i++)
+            {
+                dconf.push_back(domain_conf(scheds[i], { copy_blks[i] }, da_conf));
+            }
+            dconf.push_back(domain_conf(scheds[nblocks+0], { src }, da_conf));
+            dconf.push_back(domain_conf(scheds[nblocks+1], { head }, da_conf));
+            dconf.push_back(domain_conf(scheds[nblocks+2], { snk }, da_conf));
+            
+            fg->partition(dconf);
+        }
 
         if (gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
             std::cout << "Unable to enable realtime scheduling " << std::endl;
