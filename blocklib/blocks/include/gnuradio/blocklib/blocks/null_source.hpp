@@ -26,7 +26,7 @@ public:
 
 
         // TODO : do this with multiplicity
-        for (auto i = 0; i < nports; i++) {
+        for (size_t i = 0; i < nports; i++) {
             ptr->add_port(untyped_port::make("out" + std::to_string(i),
                                         port_direction_t::OUTPUT,
                                         itemsize,
