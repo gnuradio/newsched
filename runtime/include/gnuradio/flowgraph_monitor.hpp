@@ -41,6 +41,7 @@ public:
     {
 
     } // TODO: bound the queue size
+    virtual ~flowgraph_monitor() {}
 
     virtual void push_message(fg_monitor_message msg) { msgq.push(msg); }
     void start();

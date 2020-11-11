@@ -156,7 +156,7 @@ public:
     {
         auto pred = [index, type, direction](port_sptr p) {
             return (p->type() == type && p->direction() == direction &&
-                    p->index() == index);
+                    p->index() == (int)index);
         };
         std::vector<port_sptr>::iterator it =
             std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);

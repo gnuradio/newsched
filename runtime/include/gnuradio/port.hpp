@@ -84,8 +84,8 @@ public:
           _data_type(param_type_t::UNTYPED),
           _port_type(port_type),
           _multiplicity(multiplicity),
-          _itemsize(itemsize),
-          _datasize(itemsize)
+          _datasize(itemsize),
+          _itemsize(itemsize)
     {
 
     }

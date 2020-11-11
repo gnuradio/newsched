@@ -33,11 +33,12 @@ class buffer
 protected:
     std::string _name;
     std::string _type;
-    int _total_read = 0;
-    int _total_written = 0;
+    uint64_t _total_read = 0;
+    uint64_t _total_written = 0;
 
     void set_type(const std::string& type) { _type = type; }
-    
+    virtual ~buffer() {}
+
 public:
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
