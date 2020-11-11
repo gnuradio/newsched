@@ -1,4 +1,5 @@
 blocks_headers = [
+    'copy.hpp',
     'fanout.hpp',
     'head.hpp',
     'multiply_const.hpp',
