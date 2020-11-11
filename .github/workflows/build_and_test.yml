@@ -15,19 +15,3 @@ jobs:
     # build volk
     - name: build_volk
       run: mkdir -p volk && curl -Lo volk.tar.gz https://github.com/gnuradio/volk/archive/v2.1.0.tar.gz && tar xzf volk.tar.gz -C volk --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./volk/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
-    # build project
-    - name: mkdir
-      run: mkdir build 
-    - name: cmake
-      working-directory: build
-      run: cmake ..
-    - name: cmake make
-      working-directory: build
-      run: make -j
-    # run tests
-    - name: run tests verbose
-      working-directory: build
-      run: ctest -VV
-    - name: run tests
-      working-directory: build
-      run: make test
