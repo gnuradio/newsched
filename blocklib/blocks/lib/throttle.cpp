@@ -54,8 +54,8 @@ work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
 {
     // check for updated rx_rate tag
-    if (!d_ignore_tags) {
-        uint64_t abs_N = work_input[0].n_items_read;
+    // if (!d_ignore_tags) {
+        // uint64_t abs_N = work_input[0].n_items_read;
         // std::vector<tag_t> all_tags;
         // get_tags_in_range(all_tags, 0, abs_N, abs_N + noutput_items);
         // for (const auto& tag : all_tags) {
@@ -64,7 +64,7 @@ work_return_code_t throttle::work(std::vector<block_work_input>& work_input,
         //         set_sample_rate(new_rate);
         //     }
         // }
-    }
+    // }
 
     // copy all samples output[i] <= input[i]
     const char* in = (const char*)work_input[0].items;
