@@ -8,7 +8,9 @@ runtime_sources = [
   'flowgraph.cpp',
   'logging.cpp',
   'scheduler.cpp',
-  'realtime.cpp'
+  'realtime.cpp',
+  'pagesize.cpp',
+  'vmcirc_buffer.cpp'
 ]
 
 incdir = [
