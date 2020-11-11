@@ -16,7 +16,7 @@ enum class scheduler_message_t {
 class scheduler_message
 {
 public:
-    scheduler_message(scheduler_message_t type) : _type(type) {}
+    scheduler_message(scheduler_message_t type, int64_t blkid = -1) : _type(type), _blkid(blkid) {}
     scheduler_message_t type() { return _type; }
     int64_t blkid() { return _blkid; }
 
@@ -37,8 +37,8 @@ typedef std::shared_ptr<scheduler_message> scheduler_message_sptr;
 class scheduler_action : public scheduler_message
 {
 public:
-    scheduler_action(scheduler_action_t action)
-        : scheduler_message(scheduler_message_t::SCHEDULER_ACTION), _action(action)
+    scheduler_action(scheduler_action_t action, int64_t blkid = -1)
+        : scheduler_message(scheduler_message_t::SCHEDULER_ACTION, blkid), _action(action)
     {
     }
     scheduler_action_t action() { return _action; }

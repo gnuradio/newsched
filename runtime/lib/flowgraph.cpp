@@ -211,6 +211,10 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     d_flat_subgraphs.clear();
     for (size_t i = 0; i < partition_scheds.size(); i++) {
         d_flat_subgraphs.push_back(flat_graph::make_flat(d_subgraphs[i]));
+        gr_log_debug(_debug_logger,
+                     "ID: {}, NAME: {}",
+                     partition_scheds[i]->id(),
+                     partition_scheds[i]->name());
         partition_scheds[i]->initialize(d_flat_subgraphs[i],
                                         d_fgmon,
                                         neighbor_map_per_scheduler[partition_scheds[i]]);

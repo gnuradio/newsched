@@ -98,14 +98,14 @@ int main(int argc, char* argv[])
             auto da_conf = domain_adapter_direct_conf::make(buffer_preference_t::DOWNSTREAM);
             std::vector<std::shared_ptr<schedulers::scheduler_st>> scheds(nblocks+3);
             for (int i = 0; i < nblocks; i++) {
-                scheds[i] = std::make_shared<schedulers::scheduler_st>("sched1", 32768);
+                scheds[i] = std::make_shared<schedulers::scheduler_st>("sched"+std::to_string(i+1), 32768);
                 scheds[i]->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
                 fg->add_scheduler(scheds[i]);
             }
 
             for (int i=0; i<3; i++) // for the src, head, snk
             {
-                scheds[nblocks+i] = std::make_shared<schedulers::scheduler_st>("sched1_blk", 32768);
+                scheds[nblocks+i] = std::make_shared<schedulers::scheduler_st>("sched"+std::to_string(i+nblocks+1), 32768);
                 scheds[nblocks+i]->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
                 fg->add_scheduler(scheds[nblocks+i]);
             }
