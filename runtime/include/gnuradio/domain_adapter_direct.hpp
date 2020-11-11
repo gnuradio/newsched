@@ -43,13 +43,12 @@ public:
     typedef std::shared_ptr<domain_adapter_direct_svr> sptr;
     static sptr make(direct_sync_sptr sync, port_sptr other_port)
     {
-        auto ptr =
-            std::make_shared<domain_adapter_direct_svr>(sync);
+        auto ptr = std::make_shared<domain_adapter_direct_svr>(sync);
 
         ptr->add_port(untyped_port::make("output",
-                                      port_direction_t::OUTPUT,
-                                      other_port->itemsize(),
-                                      port_type_t::STREAM));
+                                         port_direction_t::OUTPUT,
+                                         other_port->itemsize(),
+                                         port_type_t::STREAM));
 
         ptr->start_thread(ptr); // start thread with reference to shared pointer
 
@@ -79,7 +78,11 @@ public:
 
                     top->p_sync->buffer = top->buffer();
                     top->p_sync->response = da_response_t::OK;
+                    break;
+                default:
+                    break;
                 }
+
 
                 // std::cout << "svr out of switch" << std::endl;
                 // l.unlock();
@@ -115,15 +118,14 @@ public:
     typedef std::shared_ptr<domain_adapter_direct_cli> sptr;
     static sptr make(direct_sync_sptr sync, port_sptr other_port)
     {
-        auto ptr =
-            std::make_shared<domain_adapter_direct_cli>(sync);
+        auto ptr = std::make_shared<domain_adapter_direct_cli>(sync);
 
         // Type of port is not known at compile time
         ptr->add_port(untyped_port::make("input",
-                                      port_direction_t::INPUT,
-                                      other_port->itemsize(),
-                                      port_type_t::STREAM));
-                    
+                                         port_direction_t::INPUT,
+                                         other_port->itemsize(),
+                                         port_type_t::STREAM));
+
 
         return ptr;
     }
@@ -216,8 +218,8 @@ public:
     {
     }
 
-    virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
-    make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
+    virtual std::pair<domain_adapter_sptr, domain_adapter_sptr> make_domain_adapter_pair(
+        port_sptr upstream_port, port_sptr downstream_port, const std::string& name = "")
     {
         auto direct_sync = direct_sync::make();
 
