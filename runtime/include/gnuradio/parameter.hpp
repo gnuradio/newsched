@@ -67,7 +67,7 @@ public:
         : _id(id), _name(name), _type(type), _dims(dims), _any_value(any_value)
     {
     }
-
+    virtual ~param_base() {}
     std::string to_string() { return ""; };
     // std::any to_any() { return std::make_any<T>(value()); }
     const uint32_t id() { return _id; }
@@ -134,8 +134,8 @@ public:
     T value() { return *_value_ptr; };
 
 protected:
-    T* _value_ptr; // TODO: use smart pointer
     T _default_value;
+    T* _value_ptr; // TODO: use smart pointer    
     T _value;
     value_check _range;
 };
