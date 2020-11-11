@@ -47,6 +47,7 @@ protected:
     }
 
 public:
+    virtual ~domain_adapter() {}
     void set_buffer(buffer_sptr buf) { _buffer = buf; }
     buffer_sptr buffer() { return _buffer; }
 
@@ -65,6 +66,7 @@ protected:
     buffer_preference_t _buf_pref;
 
 public:
+    virtual ~domain_adapter_conf() {}
     virtual std::pair<domain_adapter_sptr, domain_adapter_sptr>
     make_domain_adapter_pair(port_sptr upstream_port, port_sptr downstream_port, const std::string& name="")
     {

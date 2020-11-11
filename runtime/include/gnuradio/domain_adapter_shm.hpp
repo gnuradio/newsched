@@ -118,6 +118,8 @@ public:
                     top->buffer()->post_read(top->p_sync->num_items);
                     top->p_sync->response = da_response_t::OK;
                     break;
+                default:
+                    break;
                 }
 
                 // std::cout << "svr out of switch" << std::endl;
