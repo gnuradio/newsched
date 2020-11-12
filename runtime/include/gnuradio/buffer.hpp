@@ -7,16 +7,6 @@
 
 namespace gr {
 
-
-/**
- * @brief Buffer position defines where the buffer sits relative to the sub-graph
- *
- * If it is as the edge, it should be INGRESS or EGRESS, if that is a necessary
- * consideration for the domain scheduler
- */
-enum class buffer_position_t { NORMAL, INGRESS, EGRESS };
-
-
 struct buffer_info_t {
     void* ptr;
     int n_items; // number of items available to be read or written
