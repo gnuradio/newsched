@@ -15,8 +15,7 @@ enum class buffer_preference_t { UPSTREAM, DOWNSTREAM };
 
 
 enum class da_request_t : uint32_t {
-    CANCEL = 0,
-    WRITE_INFO,
+    WRITE_INFO=0,
     READ_INFO,
     POST_WRITE,
     POST_READ,

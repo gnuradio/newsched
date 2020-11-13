@@ -224,12 +224,6 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
             }
 
             if (!ready) {
-                //     // clean up the buffers that we now won't be using
-                //     gr_log_debug(top->_debug_logger, "cancel");
-                //     for (auto buf : bufs) {
-                //         buf->cancel();
-                //     }
-                //     std::this_thread::yield();
                 continue;
             }
 
@@ -281,11 +275,6 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
             }
 
             if (!ready) {
-                //     // clean up the buffers that we now won't be using
-                //     gr_log_debug(top->_debug_logger, "cancel");
-                //     for (auto buf : bufs) {
-                //         buf->cancel();
-                //     }
                 continue;
             }
 
@@ -390,10 +379,6 @@ void scheduler_simplestream::thread_body(scheduler_simplestream* top)
                     if (ret != work_return_code_t::WORK_DONE)
                         did_work = true;
                 } else {
-                    //     gr_log_debug(top->_debug_logger, "cancel");
-                    //     for (auto buf : bufs) {
-                    //         buf->cancel();
-                    //     }
                     std::this_thread::yield();
                 }
             }
