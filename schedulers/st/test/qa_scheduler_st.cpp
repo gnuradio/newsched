@@ -1,7 +1,4 @@
-// #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-// #include <doctest.h>
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <gtest/gtest.h>
 
 #include <chrono>
 #include <iostream>
@@ -19,7 +16,7 @@
 using namespace gr;
 
 
-TEST_CASE("block outputs one output to 2 input blocks")
+TEST(SchedulerSTTest, TwoSinks)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
     auto src = blocks::vector_source_f::make(input_data, false);
@@ -40,12 +37,12 @@ TEST_CASE("block outputs one output to 2 input blocks")
     fg->start();
     fg->wait();
 
-    REQUIRE_THAT(snk1->data(), Catch::Equals(input_data));
-    REQUIRE_THAT(snk2->data(), Catch::Equals(input_data));
+    EXPECT_EQ(snk1->data(), input_data);
+    EXPECT_EQ(snk2->data(), input_data);
 }
 
-#if 1
-TEST_CASE("Two schedulers connected by domain adapters internally")
+
+TEST(SchedulerSTTest, DomainAdapterBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
 
@@ -84,12 +81,10 @@ TEST_CASE("Two schedulers connected by domain adapters internally")
     fg->start();
     fg->wait();
 
-    REQUIRE_THAT(snk->data(), Catch::Equals(expected_data));
+    EXPECT_EQ(snk->data(), expected_data);
 }
-#endif
 
-#if 1
-TEST_CASE("2 sinks, query and set parameters while FG is running")
+TEST(SchedulerSTTest, ParameterBasic)
 {
     auto src = blocks::vector_source_f::make(
         std::vector<float>{ 1.0, 2.0, 3.0, 4.0, 5.0 }, true);
@@ -136,10 +131,9 @@ TEST_CASE("2 sinks, query and set parameters while FG is running")
     std::cout << "fg stopped" << std::endl;
 
     // now look at the data
-    REQUIRE(snk1->data().size() > 5);
-    REQUIRE(snk2->data().size() > 5);
+    EXPECT_GT(snk1->data().size(), 5);
+    EXPECT_GT(snk2->data().size(), 5);
 
     // TODO - check for query
     // TODO - set changes at specific sample numbers
 }
-#endif
