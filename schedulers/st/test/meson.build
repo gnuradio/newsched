@@ -31,7 +31,7 @@ if get_option('enable_testing')
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
                     newsched_scheduler_st_dep,
-                    catch_dep], 
+                    gtest_dep], 
         install : false)
     test('Single Threaded Scheduler Tests', e)
 endif

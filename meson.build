@@ -12,6 +12,8 @@ yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 spdlog_dep = dependency('spdlog')
 threads_dep = dependency('threads')
 catch_dep = declare_dependency(include_directories : [join_paths('deps','catch','include')])
+gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
+# gmock_dep = dependency('gmock', main : true, version : '>=1.10', required : get_option('enable_testing'))
 
 ## Not sure yet how to search for ZMQ as dependency (header only, no pkgconfig)
 # zmq_dep = dependency('cppzmq')
