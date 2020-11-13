@@ -107,9 +107,6 @@ bool cuda_buffer::write_info(buffer_info_t& info)
     return true;
 }
 
-void cuda_buffer::cancel() {}
-// { _buf_mutex.unlock(); }
-
 void cuda_buffer::post_read(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);

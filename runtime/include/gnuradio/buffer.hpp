@@ -53,7 +53,6 @@ public:
      * @return false if info is not valid (e.g. could not acquire mutex)
      */
     virtual bool write_info(buffer_info_t& info) = 0;
-    virtual void cancel() = 0;
 
     /**
      * @brief Return the tags associated with this buffer

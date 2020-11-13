@@ -82,12 +82,6 @@ public:
 
 
                 switch (top->p_sync->request) {
-                case da_request_t::CANCEL:
-                    // std::cout << "svr CANCEL" << std::endl;
-                    gr_log_trace(top->_debug_logger, "svr CANCEL");
-                    top->buffer()->cancel();
-                    top->p_sync->response = da_response_t::OK;
-                    break;
                 case da_request_t::WRITE_INFO:
                     // std::cout << "svr WRITE_INFO" << std::endl;
                     gr_log_trace(top->_debug_logger, "svr WRITE_INFO");
@@ -138,7 +132,6 @@ public:
 
     virtual bool read_info(buffer_info_t& info) { return _buffer->read_info(info); }
     virtual bool write_info(buffer_info_t& info) { return _buffer->write_info(info); }
-    virtual void cancel() { _buffer->cancel(); }
 
     virtual void post_read(int num_items) { return _buffer->post_read(num_items); }
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
@@ -249,37 +242,6 @@ public:
                 } else {
                     gr_log_warn(_logger,
                                 "Domain Adapter condition variable timeout on wait write_info");
-                    continue;
-                }
-            }
-        }
-    }
-    virtual void cancel()
-    {
-        {
-            // std::lock_guard<std::mutex> l(p_sync->mtx);
-            // std::cout << "cancel unlock" << std::endl;
-            gr_log_trace(_debug_logger, "cancel unlock");
-            p_sync->request = da_request_t::CANCEL;
-            p_sync->ready = 1;
-        }
-        // std::cout << "cancel notify_all" << std::endl;
-        gr_log_trace(_debug_logger, "cancel notify_all");
-        p_sync->cv.notify_all();
-        while (true) {
-            p_sync->cv.notify_all();
-            {
-                std::unique_lock<std::mutex> l(p_sync->mtx);
-                // std::cout << "read_info wait" << std::endl;
-                gr_log_trace(_debug_logger, "cancel wait");
-                if (p_sync->cv.wait_for(
-                        l, 100ms, [this] { return p_sync->ready == 2; })) {
-
-                    p_sync->ready = 0;
-                    gr_log_trace(_debug_logger, "cancel ready");
-                } else {
-                    gr_log_warn(_logger,
-                                "Domain Adapter condition variable timeout on wait cancel");
                     continue;
                 }
             }

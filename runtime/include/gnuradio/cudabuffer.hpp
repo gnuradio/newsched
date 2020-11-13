@@ -67,7 +67,6 @@ public:
     virtual bool read_info(buffer_info_t& info);
 
     virtual bool write_info(buffer_info_t& info);
-    virtual void cancel();
 
     // virtual std::vector<tag_t> get_tags(unsigned int num_items);
     // virtual void add_tags(uint64_t offset, std::vector<tag_t>& tags);

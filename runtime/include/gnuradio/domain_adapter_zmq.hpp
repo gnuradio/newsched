@@ -56,7 +56,6 @@ public:
         // throw std::runtime_error("write_info not valid for da_svr block"); // TODO
         // logging buffer_info_t ret; return ret;
     }
-    virtual void cancel() { _buffer->cancel(); }
 
     virtual void post_read(int num_items) { return _buffer->post_read(num_items); }
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
@@ -97,7 +96,6 @@ public:
 
     virtual bool read_info(buffer_info_t& info);
     virtual bool write_info(buffer_info_t& info);
-    virtual void cancel();
 
     virtual void post_read(int num_items);
     virtual void post_write(int num_items);

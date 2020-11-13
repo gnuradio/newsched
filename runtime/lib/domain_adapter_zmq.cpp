@@ -32,11 +32,6 @@ void domain_adapter_zmq_rep_svr::run_thread(sptr top) // zmq::socket_t* sock)
         // Parse the message
         auto action = *((da_request_t*)request.data());
         switch (action) {
-        case da_request_t::CANCEL: {
-            top->buffer()->cancel();
-            zmq::message_t msg(0);
-            sock->send(msg);
-        } break;
         case da_request_t::WRITE_INFO: {
             buffer_info_t info;
             zmq::message_t msg(4 + sizeof(buffer_info_t));
@@ -142,17 +137,6 @@ bool domain_adapter_zmq_req_cli::write_info(buffer_info_t& info)
     } else {
         return false;
     }
-}
-void domain_adapter_zmq_req_cli::cancel()
-{
-
-    zmq::message_t msg(4);
-    auto action = da_request_t::CANCEL;
-    memcpy(msg.data(), &action, 4);
-
-    zmq::message_t response(4);
-    d_socket->send(msg);
-    d_socket->recv(&response);
 }
 
 void domain_adapter_zmq_req_cli::post_read(int num_items)

@@ -98,7 +98,6 @@ public:
 
     virtual bool read_info(buffer_info_t& info) { return _buffer->read_info(info); }
     virtual bool write_info(buffer_info_t& info) { return _buffer->write_info(info); }
-    virtual void cancel() { _buffer->cancel(); }
 
     virtual void post_read(int num_items) { return _buffer->post_read(num_items); }
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
@@ -175,12 +174,6 @@ public:
             get_remote_buffer();
 
         return remote_buffer->write_info(info);
-    }
-    virtual void cancel()
-    {
-        if (!remote_buffer)
-            get_remote_buffer();
-        return remote_buffer->cancel();
     }
 
     virtual void post_read(int num_items)

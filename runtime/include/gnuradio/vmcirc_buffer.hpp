@@ -97,9 +97,6 @@ public:
         return true;
     }
 
-    virtual void cancel() {}
-    // { _buf_mutex.unlock(); }
-
     virtual void post_read(int num_items)
     {
         std::scoped_lock guard(_buf_mutex);
