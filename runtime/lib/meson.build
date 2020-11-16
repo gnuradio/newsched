@@ -23,7 +23,7 @@ incdir = [
 newsched_runtime_lib = library('newsched-runtime', 
     runtime_sources, 
     install : true, 
-    dependencies : [yaml_dep, spdlog_dep],
+    dependencies : [yaml_dep, spdlog_dep, threads_dep],
     include_directories : incdir)
 
 newsched_runtime_dep = declare_dependency(include_directories : incdir,
