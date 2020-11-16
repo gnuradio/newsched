@@ -1,4 +1,9 @@
-scheduler_st_sources = ['scheduler_st.cpp']
+scheduler_st_sources = [
+    'buffer_management.cpp',
+    'graph_executor.cpp',
+    'scheduler_st.cpp',
+    'thread_wrapper.cpp'
+]
 scheduler_st_deps = [newsched_runtime_dep, threads_dep]
 
 incdir = include_directories('../include', '../include/gnuradio/schedulers/st')
