@@ -16,6 +16,7 @@ runtime_headers = [
     'flowgraph.hpp',
     'flowgraph_monitor.hpp',
     'graph.hpp',
+    'graph_utils.hpp',
     'io_signature.hpp',
     'logging.hpp',
     'node.hpp',
