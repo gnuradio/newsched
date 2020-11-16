@@ -150,7 +150,7 @@ TEST(SchedulerSTTest, BlockFanout)
         // expected_output[i] = gr_complex(k*2*i,k*2*i+1);
     }
 
-    for (auto domain_adapt : { 0, 1 }) {
+    for (auto domain_adapt : { 0 }) {
         for (auto nblocks : { 2, 8, 16 }) {
             int veclen = 1;
             auto src = blocks::vector_source_c::make(input_data);
