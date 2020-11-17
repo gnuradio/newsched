@@ -1,5 +1,5 @@
 scheduler_st_sources = ['scheduler_st.cpp']
-scheduler_st_deps = [newsched_runtime_dep, threads_dep]
+scheduler_st_deps = [newsched_runtime_dep, threads_dep, fmt_dep]
 
 incdir = include_directories('../include', '../include/gnuradio/schedulers/st')
 newsched_scheduler_st_lib = library('newsched-scheduler-st', 
