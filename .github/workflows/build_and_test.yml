@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: "3.x"
-      - run: sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev libzmq3-dev doxygen libspdlog-dev libyaml-cpp-dev libgtest-dev
+      - run: sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev libzmq3-dev doxygen libspdlog-dev libyaml-cpp-dev libgtest-dev libfmt-dev
       - run: pip install meson ninja mako six
       - name: build_volk
         run: mkdir -p volk && curl -Lo volk.tar.gz https://github.com/gnuradio/volk/archive/v2.2.1.tar.gz && tar xzf volk.tar.gz -C volk --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./volk/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
