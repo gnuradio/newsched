@@ -1,0 +1,296 @@
+#include "thread_wrapper.hpp"
+
+
+#include <gnuradio/concurrent_queue.hpp>
+#include <gnuradio/flowgraph_monitor.hpp>
+#include <gnuradio/scheduler_message.hpp>
+#include <thread>
+
+namespace gr {
+namespace schedulers {
+
+thread_wrapper::thread_wrapper(const std::string& name,
+                               int id,
+                               std::vector<block_sptr> blocks,
+                               neighbor_interface_map block_sched_map,
+                               buffer_manager::sptr bufman,
+                               flowgraph_monitor_sptr fgmon)
+    : _name(name), _id(id)
+{
+    _logger = logging::get_logger(name, "default");
+    _debug_logger = logging::get_logger(name + "_dbg", "debug");
+
+    d_blocks = blocks;
+    d_block_sched_map = block_sched_map;
+    for (auto b : d_blocks) {
+        d_block_id_to_block_map[b->id()] = b;
+    }
+
+    d_fgmon = fgmon;
+    _exec = std::make_unique<graph_executor>(name);
+    _exec->initialize(bufman, d_blocks);
+    d_thread = std::thread(thread_body, this);
+}
+
+void thread_wrapper::start()
+{
+    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL));
+}
+void thread_wrapper::stop()
+{
+    d_thread_stopped = true;
+    d_thread.join();
+    for (auto& b : d_blocks) {
+        b->stop();
+    }
+}
+void thread_wrapper::wait()
+{
+    d_thread.join();
+    for (auto& b : d_blocks) {
+        b->done();
+    }
+}
+void thread_wrapper::run()
+{
+    start();
+    wait();
+}
+
+void thread_wrapper::notify_self()
+{
+    gr_log_debug(_debug_logger, "notify_self");
+    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL));
+}
+
+std::vector<neighbor_interface_sptr>
+thread_wrapper::get_neighbors_upstream(nodeid_t blkid)
+{
+    std::vector<neighbor_interface_sptr> ret;
+    // Find whether this block has an upstream neighbor
+    auto search = d_block_sched_map.find(blkid);
+    if (search != d_block_sched_map.end()) {
+        // Entry in the map exists, is the ptr real?
+        if (search->second.upstream_neighbor_intf) {
+            // Notify upstream neighbor
+            ret.push_back(search->second.upstream_neighbor_intf);
+        }
+    }
+
+    return ret;
+}
+
+std::vector<neighbor_interface_sptr>
+thread_wrapper::get_neighbors_downstream(nodeid_t blkid)
+{
+    std::vector<neighbor_interface_sptr> ret;
+    // Find whether this block has any downstream neighbors
+    auto search = d_block_sched_map.find(blkid);
+    if (search != d_block_sched_map.end()) {
+        // Entry in the map exists, are there any entries
+        if (!search->second.downstream_neighbor_intf.empty()) {
+
+            for (auto sched : search->second.downstream_neighbor_intf) {
+                ret.push_back(sched);
+            }
+        }
+    }
+
+    return ret;
+}
+
+std::vector<neighbor_interface_sptr> thread_wrapper::get_neighbors(nodeid_t blkid)
+{
+    std::vector ret = get_neighbors_upstream(blkid);
+    std::vector ds = get_neighbors_downstream(blkid);
+
+    ret.insert(ret.end(), ds.begin(), ds.end());
+    return ret;
+}
+
+void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched)
+{
+    gr_log_debug(_debug_logger, "notify_upstream");
+
+    upstream_sched->push_message(
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT));
+}
+void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched)
+{
+    gr_log_debug(_debug_logger, "notify_downstream");
+    downstream_sched->push_message(
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
+}
+
+void thread_wrapper::handle_parameter_query(std::shared_ptr<param_query_action> item)
+{
+    auto b = d_block_id_to_block_map[item->block_id()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter query {} - {}", item->block_id(), b->alias());
+
+    b->on_parameter_query(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
+}
+
+void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action> item)
+{
+    auto b = d_block_id_to_block_map[item->block_id()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter change {} - {}", item->block_id(), b->alias());
+
+    b->on_parameter_change(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
+}
+
+
+void thread_wrapper::handle_work_notification()
+{
+    auto s = _exec->run_one_iteration(d_blocks);
+    std::string dbg_work_done;
+    for (auto elem : s) {
+        dbg_work_done += "[" + std::to_string(elem.first) + "," +
+                         std::to_string((int)elem.second) + "]" + ",";
+    }
+    gr_log_debug(_debug_logger, dbg_work_done);
+
+    // Based on state of the run_one_iteration, do things
+    // If any of the blocks are done, notify the flowgraph monitor
+    for (auto elem : s) {
+        if (elem.second == executor_iteration_status::DONE) {
+            gr_log_debug(
+                _debug_logger, "Signalling DONE to FGM from block {}", elem.first);
+            d_fgmon->push_message(
+                fg_monitor_message(fg_monitor_message_t::DONE, id(), elem.first));
+            break; // only notify the fgmon once
+        }
+    }
+
+    bool notify_self_ = false;
+
+    std::vector<neighbor_interface_sptr> sched_to_notify_upstream,
+        sched_to_notify_downstream;
+
+    for (auto elem : s) {
+
+        if (elem.second == executor_iteration_status::READY) {
+            // top->notify_neighbors(elem.first);
+            auto tmp_us = get_neighbors_upstream(elem.first);
+            auto tmp_ds = get_neighbors_downstream(elem.first);
+
+            if (!tmp_us.empty()) {
+                sched_to_notify_upstream.insert(
+                    sched_to_notify_upstream.end(), tmp_us.begin(), tmp_us.end());
+            }
+            if (!tmp_ds.empty()) {
+                sched_to_notify_downstream.insert(
+                    sched_to_notify_downstream.end(), tmp_ds.begin(), tmp_ds.end());
+            }
+            notify_self_ = true;
+        }
+    }
+
+    if (notify_self_) {
+        gr_log_debug(_debug_logger, "notifying self");
+        notify_self();
+    }
+
+    if (!sched_to_notify_upstream.empty()) {
+        // Reduce to the unique schedulers to notify
+        std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
+        auto last =
+            std::unique(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
+        sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
+        for (auto sched : sched_to_notify_upstream) {
+            notify_upstream(sched);
+        }
+    }
+
+    if (!sched_to_notify_downstream.empty()) {
+        // Reduce to the unique schedulers to notify
+        std::sort(sched_to_notify_downstream.begin(), sched_to_notify_downstream.end());
+        auto last = std::unique(sched_to_notify_downstream.begin(),
+                                sched_to_notify_downstream.end());
+        sched_to_notify_downstream.erase(last, sched_to_notify_downstream.end());
+        for (auto sched : sched_to_notify_downstream) {
+            notify_downstream(sched);
+        }
+    }
+}
+
+void thread_wrapper::thread_body(thread_wrapper* top)
+{
+    gr_log_info(top->_logger, "starting thread");
+    while (!top->d_thread_stopped) {
+
+        // try to pop messages off the queue
+        scheduler_message_sptr msg;
+        if (top->pop_message(msg)) // this blocks
+        {
+            switch (msg->type()) {
+            case scheduler_message_t::SCHEDULER_ACTION: {
+                // Notification that work needs to be done
+                // either from runtime or upstream or downstream or from self
+
+                auto action = std::static_pointer_cast<scheduler_action>(msg);
+                switch (action->action()) {
+                case scheduler_action_t::DONE:
+                    // fgmon says that we need to be done, wrap it up
+                    // each scheduler could handle this in a different way
+                    gr_log_debug(top->_debug_logger,
+                                 "fgm signaled DONE, pushing flushed");
+                    top->d_fgmon->push_message(
+                        fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
+                    break;
+                case scheduler_action_t::EXIT:
+                    gr_log_debug(top->_debug_logger, "fgm signaled EXIT, exiting thread");
+                    // fgmon says that we need to be done, wrap it up
+                    // each scheduler could handle this in a different way
+                    top->d_thread_stopped = true;
+                    break;
+                case scheduler_action_t::NOTIFY_OUTPUT:
+                    gr_log_debug(
+                        top->_debug_logger, "got NOTIFY_OUTPUT from {}", msg->blkid());
+                    top->handle_work_notification();
+                    break;
+                case scheduler_action_t::NOTIFY_INPUT:
+                    gr_log_debug(
+                        top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
+                    top->handle_work_notification();
+                    break;
+                case scheduler_action_t::NOTIFY_ALL: {
+                    gr_log_debug(
+                        top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
+                    top->handle_work_notification();
+                    break;
+                }
+                default:
+                    break;
+                    break;
+                }
+                break;
+            }
+            case scheduler_message_t::PARAMETER_QUERY: {
+                // Query the state of a parameter on a block
+                top->handle_parameter_query(
+                    std::static_pointer_cast<param_query_action>(msg));
+            } break;
+            case scheduler_message_t::PARAMETER_CHANGE: {
+                // Query the state of a parameter on a block
+                top->handle_parameter_change(
+                    std::static_pointer_cast<param_change_action>(msg));
+            } break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+} // namespace schedulers
+} // namespace gr

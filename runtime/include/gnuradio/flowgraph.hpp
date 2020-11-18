@@ -38,7 +38,6 @@ private:
     std::vector<graph_sptr> d_subgraphs;
     std::vector<flat_graph_sptr> d_flat_subgraphs;
 
-    scheduler_sync _sched_sync;
     bool _monitor_thread_stopped = false;
     flowgraph_monitor_sptr d_fgmon;
 
