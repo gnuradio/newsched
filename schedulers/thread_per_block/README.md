@@ -1,1 +1,0 @@
-Thread per block scheduler
