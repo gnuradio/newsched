@@ -42,7 +42,6 @@ TEST(SchedulerSTTest, TwoSinks)
     EXPECT_EQ(snk2->data(), input_data);
 }
 
-
 TEST(SchedulerSTTest, DomainAdapterBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
@@ -83,6 +82,7 @@ TEST(SchedulerSTTest, DomainAdapterBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
+
 
 TEST(SchedulerSTTest, ParameterBasic)
 {
