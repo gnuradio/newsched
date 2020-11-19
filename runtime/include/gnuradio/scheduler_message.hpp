@@ -18,11 +18,12 @@ class scheduler_message
 public:
     scheduler_message(scheduler_message_t type) : _type(type) {}
     scheduler_message_t type() { return _type; }
+    void set_blkid(int64_t blkid_) { _blkid = blkid_; }
     int64_t blkid() { return _blkid; }
 
 private:
     scheduler_message_t _type;
-    int64_t _blkid;
+    int64_t _blkid = -1;
 
     // scheduler message can be of type:
     //   parameter_query
@@ -37,9 +38,10 @@ typedef std::shared_ptr<scheduler_message> scheduler_message_sptr;
 class scheduler_action : public scheduler_message
 {
 public:
-    scheduler_action(scheduler_action_t action)
+    scheduler_action(scheduler_action_t action, uint32_t blkid)
         : scheduler_message(scheduler_message_t::SCHEDULER_ACTION), _action(action)
     {
+        set_blkid(int64_t{blkid});
     }
     scheduler_action_t action() { return _action; }
 

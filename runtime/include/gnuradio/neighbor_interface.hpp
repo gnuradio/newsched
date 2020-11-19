@@ -15,10 +15,11 @@ struct neighbor_interface
     virtual bool pop_message(scheduler_message_sptr& msg) = 0;
 };
 typedef std::shared_ptr<neighbor_interface> neighbor_interface_sptr;
+
 /**
  * @brief Keep track of upstream and downstream neighbors for a block
  *
- * A block can only have one upstream neighbor
+ * A block can only have one upstream neighbor - FIXME - not true - a port can only have one upstream neighbor
  *
  */
 struct neighbor_interface_info {

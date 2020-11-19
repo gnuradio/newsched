@@ -1,17 +1,7 @@
 incdir = include_directories('../include')
 
-srcs = ['test_scheduler_st.cpp']
-executable('test_scheduler_st', 
-    srcs, 
-    include_directories : incdir, 
-    dependencies: [newsched_runtime_dep,
-                   newsched_blocklib_blocks_dep,
-                   newsched_scheduler_st_dep], 
-    install : true)
-
-
-srcs = ['test_buffers.cpp']
-executable('test_buffers', 
+srcs = ['test_scheduler_mt.cpp']
+executable('test_scheduler_mt', 
     srcs, 
     include_directories : incdir, 
     dependencies: [newsched_runtime_dep,
@@ -24,14 +14,14 @@ executable('test_buffers',
 ###################################################
 
 if get_option('enable_testing')
-    srcs = ['qa_scheduler_st.cpp']
-    e = executable('qa_scheduler_st', 
+    srcs = ['qa_scheduler_mt.cpp']
+    e = executable('qa_scheduler_mt', 
         srcs, 
         include_directories : incdir, 
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
-                    newsched_scheduler_st_dep,
+                    newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
-    test('Single Threaded Scheduler Tests', e)
+    test('Multi Threaded Scheduler Tests', e)
 endif

@@ -85,7 +85,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 // }
                 // if (!ready) { break; }
 
-                if (tmp_buf_size < max_output_buffer - 1)
+                if (tmp_buf_size < max_output_buffer)
                     max_output_buffer = tmp_buf_size;
 
                 // store the first buffer
@@ -95,9 +95,16 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 }
             }
 
-            max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
+            if (!ready)
+                break;
+
+            // This check probably needs to happen, but this is the wrong comparison
+            //   -- or, rely on the buffers to keep themselves full to the right degree
+            // max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
+
             std::vector<tag_t> tags; // needs to be associated with edge buffers
 
+            #if 0 // Revisit output multiple logic.  Something is wrong currently
             if (b->output_multiple_set()) {
                 // quantize to the output multiple
                 if (max_output_buffer < b->output_multiple()) {
@@ -111,6 +118,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 }
             }
+            #endif
 
             work_output.push_back(
                 block_work_output(max_output_buffer, nitems_written, write_ptr, tags));
@@ -125,18 +133,19 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             work_return_code_t ret;
             while (true) {
 
-                if (work_output.size() > 0)
+                if (work_output.size() > 0) {
                     gr_log_debug(_debug_logger,
                                  "do_work for {}, {}",
                                  b->alias(),
                                  work_output[0].n_items);
-                else
+                } else {
                     gr_log_debug(_debug_logger, "do_work for {}", b->alias());
+                }
 
 
                 ret = b->do_work(work_input, work_output);
                 gr_log_debug(_debug_logger, "do_work returned {}", ret);
-
+                // ret = work_return_code_t::WORK_OK;
 
                 if (ret == work_return_code_t::WORK_DONE) {
                     per_block_status[b->id()] = executor_iteration_status::DONE;
