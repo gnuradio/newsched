@@ -27,7 +27,8 @@ void graph::connect(const node_endpoint& src,
         } else {
             cnt = name_count[b->name()];
         }
-        b->set_alias(b->name() + std::to_string(cnt));
+        //b->set_alias(b->name() + std::to_string(cnt));
+        b->set_alias(b->name() + std::to_string(b->id()));
         name_count[b->name()] = cnt + 1;
     }
 }

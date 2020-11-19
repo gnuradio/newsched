@@ -1,10 +1,10 @@
 
-#include <gnuradio/concurrent_queue.hpp>
-#include <gnuradio/flowgraph_monitor.hpp>
-#include <gnuradio/scheduler_message.hpp>
 #include "graph_executor.hpp"
 #include <gnuradio/block.hpp>
+#include <gnuradio/concurrent_queue.hpp>
+#include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/neighbor_interface.hpp>
+#include <gnuradio/scheduler_message.hpp>
 #include <thread>
 
 namespace gr {
@@ -67,14 +67,12 @@ public:
 
     void notify_self();
 
-    std::vector<neighbor_interface_sptr> get_neighbors_upstream(nodeid_t blkid);
+    bool get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info);
+    bool get_neighbors_downstream(nodeid_t blkid, neighbor_interface_info& info);
+    // bool get_neighbors(nodeid_t blkid);
 
-    std::vector<neighbor_interface_sptr> get_neighbors_downstream(nodeid_t blkid);
-
-    std::vector<neighbor_interface_sptr> get_neighbors(nodeid_t blkid);
-
-    void notify_upstream(neighbor_interface_sptr upstream_sched);
-    void notify_downstream(neighbor_interface_sptr downstream_sched);
+    void notify_upstream(neighbor_interface_sptr upstream_sched, nodeid_t blkid);
+    void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
     void handle_parameter_query(std::shared_ptr<param_query_action> item);
     void handle_parameter_change(std::shared_ptr<param_change_action> item);
     void handle_work_notification();

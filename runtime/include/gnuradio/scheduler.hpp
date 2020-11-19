@@ -4,11 +4,9 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <queue>
 
 #include <gnuradio/buffer.hpp>
 #include <gnuradio/callback.hpp>
-#include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flat_graph.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/logging.hpp>
@@ -42,8 +40,7 @@ public:
                                          param_action_complete_fcn cb_when_complete)
     {
         gr_log_debug(_debug_logger, "request_parameter_query: {}", blkid);
-        // param_query_queue.emplace(param_action_base_with_callback{
-        //     block_alias, param_action, cb_when_complete });
+
         push_message(
             std::make_shared<param_query_action>(blkid, param_action, cb_when_complete));
     }
@@ -52,9 +49,6 @@ public:
                                           param_action_sptr param_action,
                                           param_action_complete_fcn cb_when_complete)
     {
-        // param_change_queue.emplace(param_action_base_with_callback{
-        //     block_alias, param_action, cb_when_complete });
-
         push_message(
             std::make_shared<param_change_action>(blkid, param_action, cb_when_complete));
     }
@@ -63,17 +57,10 @@ public:
                                   const callback_args& args,
                                   block_callback_complete_fcn cb_when_complete)
     {
-        // callback_queue.emplace(
-        //     callback_args_with_callback{ block_alias, args, cb_when_complete });
-
         push_message(std::make_shared<callback_args_with_callback>(
             block_alias, args, cb_when_complete));
     }
 
-    // std::queue<std::tuple<std::string, param_action_base>> param_action_queue()
-    // {
-    //     return _param_action_queue;
-    // }
     std::string name() { return _name; }
     int id() { return _id; }
     void set_id(int id) { _id = id; }

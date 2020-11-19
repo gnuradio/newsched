@@ -8,11 +8,14 @@
 namespace gr {
 
 
-graph_partition_info graph_utils::partition(graph_sptr input_graph,
-                                               std::vector<scheduler_sptr> scheds,
-                                               std::vector<domain_conf>& confs)
+graph_partition_info_vec
+graph_utils::partition(graph_sptr input_graph,
+                       std::vector<scheduler_sptr> scheds,
+                       std::vector<domain_conf>& confs,
+                       neighbor_interface_map neighbor_intf_map)
 {
-    graph_partition_info ret;
+    graph_partition_info_vec ret;
+    std::map<scheduler_sptr, size_t> sched_index_map;
 
     std::vector<edge> domain_crossings;
     std::vector<domain_conf> crossing_confs;
@@ -26,6 +29,7 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
         // Go through the blocks assigned to this scheduler
         // See whether they connect to the same graph or account for a domain crossing
 
+        graph_partition_info part_info;
         auto sched = conf.sched();   // std::get<0>(conf);
         auto blocks = conf.blocks(); // std::get<1>(conf);
         for (auto b : blocks)        // for each of the blocks in the tuple
@@ -51,15 +55,25 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
                     crossing_confs.push_back(conf);
                 }
             }
+
+            // carry forward the previously specified neighbor map
+            if (neighbor_intf_map.count(b->id()) > 0)
+            {
+                part_info.neighbor_map = neighbor_intf_map;
+            }
         }
 
-        ret.subgraphs.push_back(g);
-        ret.partition_scheds.push_back(sched);
+        sched_index_map[sched] = ret.size();
+
+        part_info.subgraph = g;
+        part_info.scheduler = sched;
+        // neighbor_map is populated below
+        ret.push_back(part_info);
     }
 
     int idx = 0;
     for (auto& conf : confs) {
-        auto g = ret.subgraphs[idx];
+        auto g = ret[idx].subgraph;
 
         // see that all the blocks in conf->blocks() are in g, and if not, add them as
         // orphan nodes
@@ -89,7 +103,6 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
     //   3.  Fixed client/server relationship - limited configuration of DA
 
 
-
     int crossing_index = 0;
     for (auto c : domain_crossings) {
         // Attach a domain adapter to the src and dst ports of the edge
@@ -98,7 +111,8 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
 
         // Find the subgraph that holds src block
         graph_sptr src_block_graph = nullptr;
-        for (auto g : ret.subgraphs) {
+        for (auto info : ret) {
+            auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
             if (std::find(blocks.begin(), blocks.end(), c.src().node()) != blocks.end()) {
                 src_block_graph = g;
@@ -108,7 +122,8 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
 
         // Find the subgraph that holds dst block
         graph_sptr dst_block_graph = nullptr;
-        for (auto g : ret.subgraphs) {
+        for (auto info : ret) {
+            auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
             if (std::find(blocks.begin(), blocks.end(), c.dst().node()) != blocks.end()) {
                 dst_block_graph = g;
@@ -172,11 +187,20 @@ graph_partition_info graph_utils::partition(graph_sptr input_graph,
         auto dst_block_id = c.dst().node()->id();
         auto src_block_id = c.src().node()->id();
 
-        ret.neighbor_map_per_scheduler[block_to_scheduler_map[dst_block_id]][dst_block_id]
+        // ret.neighbor_map_per_scheduler[block_to_scheduler_map[dst_block_id]][dst_block_id]
+        //     .set_upstream(block_to_scheduler_map[src_block_id], src_block_id);
+
+        ret[sched_index_map[block_to_scheduler_map[dst_block_id]]]
+            .neighbor_map[dst_block_id]
             .set_upstream(block_to_scheduler_map[src_block_id], src_block_id);
 
-        ret.neighbor_map_per_scheduler[block_to_scheduler_map[src_block_id]][src_block_id]
+        // ret.neighbor_map_per_scheduler[block_to_scheduler_map[src_block_id]][src_block_id]
+        //     .add_downstream(block_to_scheduler_map[dst_block_id], dst_block_id);
+
+        ret[sched_index_map[block_to_scheduler_map[src_block_id]]]
+            .neighbor_map[src_block_id]
             .add_downstream(block_to_scheduler_map[dst_block_id], dst_block_id);
+
 
         crossing_index++;
     }

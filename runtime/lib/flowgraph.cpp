@@ -41,13 +41,10 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     auto graph_part_info = graph_utils::partition(base(), d_schedulers, confs);
 
     d_flat_subgraphs.clear();
-    for (size_t i = 0; i < graph_part_info.subgraphs.size(); i++) {
-        d_flat_subgraphs.push_back(flat_graph::make_flat(graph_part_info.subgraphs[i]));
-        graph_part_info.partition_scheds[i]->initialize(
-            d_flat_subgraphs[i],
-            d_fgmon,
-            graph_part_info
-                .neighbor_map_per_scheduler[graph_part_info.partition_scheds[i]]);
+    for (auto& info : graph_part_info) {
+        d_flat_subgraphs.push_back(flat_graph::make_flat(info.subgraph));
+        info.scheduler->initialize(
+            d_flat_subgraphs[d_flat_subgraphs.size() - 1], d_fgmon, info.neighbor_map);
     }
 }
 
