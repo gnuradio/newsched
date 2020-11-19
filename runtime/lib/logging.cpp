@@ -115,6 +115,8 @@ logger_sptr logging::get_logger(const std::string& logger_name,
         case logger_type_t::console:
             requested_logger = logger_console_config::make(logger_name, *it);
             break;
+        default:
+            break;
         }
         if (requested_logger) {
             requested_logger->set_level((*it)->level);

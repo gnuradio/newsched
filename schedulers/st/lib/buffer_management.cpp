@@ -116,7 +116,7 @@ int buffer_manager::get_buffer_num_items(edge e, flat_graph_sptr fg)
     // *2 because we're now only filling them 1/2 way in order to
     // increase the available parallelism when using the TPB scheduler.
     // (We're double buffering, where we used to single buffer)
-    size_t nitems = s_fixed_buf_size * 2 / item_size;
+    size_t nitems = (s_fixed_buf_size * 2) / item_size;
 
     auto grblock = std::dynamic_pointer_cast<block>(e.src().node());
     if (grblock == nullptr) // might be a domain adapter, not a block

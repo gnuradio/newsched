@@ -25,6 +25,11 @@ public:
 
     typedef std::shared_ptr<scheduler_st> sptr;
 
+    static sptr make(const std::string name = "single_threaded",
+                      const unsigned int fixed_buf_size = 8192)
+    {
+        return std::make_shared<scheduler_st>(name, fixed_buf_size);
+    }
     scheduler_st(const std::string name = "single_threaded",
                  const unsigned int fixed_buf_size = 8192);
     ~scheduler_st(){};
@@ -43,7 +48,6 @@ public:
 
 private:
     flat_graph_sptr d_fg;
-
 };
 } // namespace schedulers
 } // namespace gr

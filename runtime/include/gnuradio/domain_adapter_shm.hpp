@@ -136,8 +136,22 @@ public:
     virtual void post_read(int num_items) { return _buffer->post_read(num_items); }
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
 
-    // This is not valid for all buffers, e.g. domain adapters
-    virtual void copy_items(buffer_sptr from, int nitems) {}
+    virtual void copy_items(buffer_sptr from, int nitems)
+    {
+        buffer_info_t wi1;
+        from->write_info(wi1);
+
+        buffer_info_t wi2;
+        this->write_info(wi2);
+
+        // perform some checks
+        if (wi1.n_items >= nitems && wi2.n_items >= nitems) {
+            memcpy(wi2.ptr, wi1.ptr, nitems * wi1.item_size);
+        } else {
+            throw std::runtime_error(
+                "Domain_adapter_shm: Requested copy with insufficient write space");
+        }
+    }
 };
 
 
@@ -325,10 +339,22 @@ public:
         }
     }
 
-    // This is not valid for all buffers, e.g. domain adapters
-    // Currently domain adapters require fanout, and cannot copy from a shared output
-    // across multiple domains
-    virtual void copy_items(buffer_sptr from, int nitems) {}
+    virtual void copy_items(buffer_sptr from, int nitems)
+    {
+        buffer_info_t wi1;
+        from->write_info(wi1);
+
+        buffer_info_t wi2;
+        this->write_info(wi2);
+
+        // perform some checks
+        if (wi1.n_items >= nitems && wi2.n_items >= nitems) {
+            memcpy(wi2.ptr, wi1.ptr, nitems * wi1.item_size);
+        } else {
+            throw std::runtime_error(
+                "Domain_adapter_shm: Requested copy with insufficient write space");
+        }
+    }
 };
 
 
@@ -357,14 +383,16 @@ public:
             auto downstream_adapter =
                 domain_adapter_shm_svr::make(shm_sync, downstream_port, name + "_svr");
 
-            return std::make_pair(upstream_adapter, downstream_adapter);
+            //return std::make_pair(upstream_adapter, downstream_adapter);
+            return std::make_pair(downstream_adapter, upstream_adapter);
         } else {
             auto downstream_adapter =
                 domain_adapter_shm_cli::make(shm_sync, upstream_port, name + "_cli");
             auto upstream_adapter =
                 domain_adapter_shm_svr::make(shm_sync, downstream_port, name + "_svr");
 
-            return std::make_pair(upstream_adapter, downstream_adapter);
+            //return std::make_pair(upstream_adapter, downstream_adapter);
+            return std::make_pair(downstream_adapter, upstream_adapter);
         }
     }
 };

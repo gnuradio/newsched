@@ -45,10 +45,17 @@ public:
     {
         auto ptr = std::make_shared<domain_adapter_direct_svr>(sync);
 
-        ptr->add_port(untyped_port::make("output",
-                                         port_direction_t::OUTPUT,
-                                         other_port->itemsize(),
-                                         port_type_t::STREAM));
+        if (other_port->direction() == port_direction_t::INPUT) {
+            ptr->add_port(untyped_port::make("output",
+                                             port_direction_t::OUTPUT,
+                                             other_port->itemsize(),
+                                             port_type_t::STREAM));
+        } else {
+            ptr->add_port(untyped_port::make("input",
+                                             port_direction_t::INPUT,
+                                             other_port->itemsize(),
+                                             port_type_t::STREAM));
+        }
 
         ptr->start_thread(ptr); // start thread with reference to shared pointer
 
@@ -62,6 +69,7 @@ public:
 
     void start_thread(sptr ptr) { d_thread = std::thread(run_thread, ptr); }
 
+    // TODO: bag out of thread when remote buffer ptr has been acquired
     static void run_thread(sptr top)
     {
         while (true) {
@@ -103,7 +111,22 @@ public:
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
 
     // This is not valid for all buffers, e.g. domain adapters
-    virtual void copy_items(buffer_sptr from, int nitems) {}
+    virtual void copy_items(buffer_sptr from, int nitems)
+    {
+        buffer_info_t wi1;
+        from->write_info(wi1);
+
+        buffer_info_t wi2;
+        this->write_info(wi2);
+
+        // perform some checks
+        if (wi1.n_items >= nitems && wi2.n_items >= nitems) {
+            memcpy(wi2.ptr, wi1.ptr, nitems * wi1.item_size);
+        } else {
+            throw std::runtime_error(
+                "Domain_adapter_direct: Requested copy with insufficient write space");
+        }
+    }
 };
 
 
@@ -120,11 +143,17 @@ public:
         auto ptr = std::make_shared<domain_adapter_direct_cli>(sync);
 
         // Type of port is not known at compile time
-        ptr->add_port(untyped_port::make("input",
-                                         port_direction_t::INPUT,
-                                         other_port->itemsize(),
-                                         port_type_t::STREAM));
-
+        if (other_port->direction() == port_direction_t::INPUT) {
+            ptr->add_port(untyped_port::make("output",
+                                             port_direction_t::OUTPUT,
+                                             other_port->itemsize(),
+                                             port_type_t::STREAM));
+        } else {
+            ptr->add_port(untyped_port::make("input",
+                                             port_direction_t::INPUT,
+                                             other_port->itemsize(),
+                                             port_type_t::STREAM));
+        }
 
         return ptr;
     }
@@ -189,10 +218,22 @@ public:
         return remote_buffer->post_write(num_items);
     }
 
-    // This is not valid for all buffers, e.g. domain adapters
-    // Currently domain adapters require fanout, and cannot copy from a shared output
-    // across multiple domains
-    virtual void copy_items(buffer_sptr from, int nitems) {}
+    virtual void copy_items(buffer_sptr from, int nitems)
+    {
+        buffer_info_t wi1;
+        from->write_info(wi1);
+
+        buffer_info_t wi2;
+        this->write_info(wi2);
+
+        // perform some checks
+        if (wi1.n_items >= nitems && wi2.n_items >= nitems) {
+            memcpy(wi2.ptr, wi1.ptr, nitems * wi1.item_size);
+        } else {
+            throw std::runtime_error(
+                "Domain_adapter_direct: Requested copy with insufficient write space");
+        }
+    }
 };
 
 
@@ -222,14 +263,16 @@ public:
             auto downstream_adapter =
                 domain_adapter_direct_svr::make(direct_sync, downstream_port);
 
-            return std::make_pair(upstream_adapter, downstream_adapter);
+            //return std::make_pair(upstream_adapter, downstream_adapter);
+            return std::make_pair(downstream_adapter, upstream_adapter);
         } else {
             auto downstream_adapter =
                 domain_adapter_direct_cli::make(direct_sync, upstream_port);
             auto upstream_adapter =
                 domain_adapter_direct_svr::make(direct_sync, downstream_port);
 
-            return std::make_pair(upstream_adapter, downstream_adapter);
+            //return std::make_pair(upstream_adapter, downstream_adapter);
+            return std::make_pair(downstream_adapter, upstream_adapter);
         }
     }
 };

@@ -15,7 +15,7 @@ class domain_conf
 {
 public:
     domain_conf(scheduler_sptr sched,
-                std::vector<block_sptr> blocks,
+                std::vector<node_sptr> blocks,
                 domain_adapter_conf_sptr da_conf = nullptr, // nullptr assumes default domain adapter conf
                 domain_adapter_conf_per_edge da_edge_confs =
                     domain_adapter_conf_per_edge())
@@ -30,7 +30,7 @@ public:
 
 private:
     scheduler_sptr _sched;
-    std::vector<block_sptr> _blocks;
+    std::vector<node_sptr> _blocks;
     domain_adapter_conf_sptr _da_conf;
     domain_adapter_conf_per_edge _da_edge_confs;
 };
