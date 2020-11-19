@@ -16,9 +16,8 @@ catch_dep = declare_dependency(include_directories : [join_paths('deps','catch',
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 # gmock_dep = dependency('gmock', main : true, version : '>=1.10', required : get_option('enable_testing'))
 
-## Not sure yet how to search for ZMQ as dependency (header only, no pkgconfig)
-# zmq_dep = dependency('cppzmq')
-# zmq_dep = dependency('ZeroMQ', method : 'cmake')
+## Not sure yet how to search for zmq.hpp as dependency (header only, no pkgconfig)
+zmq_dep = dependency('libzmq')
 
 # subdir('deps/catch/include')
 subdir('pmt')
