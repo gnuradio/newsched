@@ -70,6 +70,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 if (!ready)
                     break;
 
+                // only fill the buffers half way
+                // write_info.n_items = std::min(write_info.n_items, p_buf->capacity()/2);
+
                 size_t tmp_buf_size = write_info.n_items;
                 if (tmp_buf_size < s_min_buf_items) {
                     ready = false;
