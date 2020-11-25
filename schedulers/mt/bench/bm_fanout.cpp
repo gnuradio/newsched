@@ -27,7 +27,6 @@ int main(int argc, char* argv[])
     int veclen;
     int buffer_type;
     bool rt_prio = false;
-    int domain_adapt;
 
     po::options_description desc("Basic Test Flow Graph");
     desc.add_options()("help,h", "display help")
@@ -56,10 +55,9 @@ int main(int argc, char* argv[])
     }
 
     {
-        // auto src = blocks::vector_source_f::make(input_data, false);
         auto src = blocks::null_source::make(sizeof(gr_complex) * veclen);
         auto head = blocks::head::make(sizeof(gr_complex) * veclen, samples / veclen);
-        // auto copy = blocks::copy::make(sizeof(gr_complex));
+
         std::vector<blocks::null_sink::sptr> sink_blks(nblocks);
         std::vector<blocks::copy::sptr> copy_blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
@@ -86,8 +84,7 @@ int main(int argc, char* argv[])
         }
 
         std::cout << "no domain adapters" << std::endl;
-        std::shared_ptr<schedulers::scheduler_mt> sched1(
-            new schedulers::scheduler_mt("sched1"));
+        auto sched1 = schedulers::scheduler_mt::make("sched1");
         fg->add_scheduler(sched1);
         fg->validate();
 

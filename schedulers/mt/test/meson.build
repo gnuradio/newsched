@@ -24,4 +24,16 @@ if get_option('enable_testing')
                     gtest_dep], 
         install : true)
     test('Multi Threaded Scheduler Tests', e)
+
+    srcs = ['qa_block_grouping.cpp']
+    e = executable('qa_block_grouping', 
+        srcs, 
+        include_directories : incdir, 
+        dependencies: [newsched_runtime_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    gtest_dep], 
+        install : true)
+    test('MT Block Grouping Tests', e)
+
 endif
