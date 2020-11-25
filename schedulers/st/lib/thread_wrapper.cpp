@@ -1,6 +1,6 @@
 #include "thread_wrapper.hpp"
 
-
+#include <gnuradio/thread.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/scheduler_message.hpp>
@@ -229,6 +229,10 @@ void thread_wrapper::handle_work_notification()
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
     gr_log_info(top->_logger, "starting thread");
+    thread::set_thread_name(
+        pthread_self(),
+        boost::str(boost::format("%s") % top->name())); // % top->id()));
+
     while (!top->d_thread_stopped) {
 
         // try to pop messages off the queue

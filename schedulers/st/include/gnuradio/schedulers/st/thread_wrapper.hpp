@@ -55,6 +55,8 @@ public:
                    flowgraph_monitor_sptr fgmon);
     int id() { return _id; }
     void set_id(int id) { _id = id; }
+    const std::string& name() { return _name; }
+    void set_name(int name) { _name = name; }
 
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
 
