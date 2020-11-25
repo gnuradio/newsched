@@ -24,18 +24,25 @@ int main(int argc, char* argv[])
 {
     uint64_t samples;
     int nblocks;
+    int nthreads;
     int veclen;
     int buffer_type;
     bool rt_prio = false;
-    int domain_adapt;
 
     po::options_description desc("Basic Test Flow Graph");
-    desc.add_options()("help,h", "display help")
-        ("samples", po::value<uint64_t>(&samples)->default_value(15000000),"Number of samples")
-        ("veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")
-        ("nblocks", po::value<int>(&nblocks)->default_value(1), "Number of copy blocks")
-        ("buffer", po::value<int>(&buffer_type)->default_value(0), "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")
-        ("rt_prio", "Enable Real-time priority");
+    desc.add_options()("help,h", "display help")(
+        "samples",
+        po::value<uint64_t>(&samples)->default_value(15000000),
+        "Number of samples")(
+        "veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")(
+        "nblocks", po::value<int>(&nblocks)->default_value(1), "Number of copy blocks")(
+        "nthreads",
+        po::value<int>(&nthreads)->default_value(0),
+        "Number of threads (0: tpb")(
+        "buffer",
+        po::value<int>(&buffer_type)->default_value(1),
+        "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")(
+        "rt_prio", "Enable Real-time priority");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -56,10 +63,8 @@ int main(int argc, char* argv[])
     }
 
     {
-        // auto src = blocks::vector_source_f::make(input_data, false);
         auto src = blocks::null_source::make(sizeof(gr_complex) * veclen);
         auto head = blocks::head::make(sizeof(gr_complex) * veclen, samples / veclen);
-        // auto copy = blocks::copy::make(sizeof(gr_complex));
         auto snk = blocks::null_sink::make(sizeof(gr_complex) * veclen);
         std::vector<blocks::copy::sptr> copy_blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
@@ -84,10 +89,33 @@ int main(int argc, char* argv[])
             fg->connect(copy_blks[nblocks - 1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
         }
 
-
-        std::cout << "no domain adapters" << std::endl;
         auto sched = schedulers::scheduler_mt::make("mt", 32768);
         fg->add_scheduler(sched);
+
+        if (nthreads > 0) {
+            int blks_per_thread = nblocks / nthreads;
+
+            for (int i = 0; i < nthreads; i++) {
+                std::vector<block_sptr> block_group;
+                if (i == 0) {
+                    block_group.push_back(src);
+                    block_group.push_back(head);
+                }
+
+                for (int j = 0; j < blks_per_thread; j++) {
+                    block_group.push_back(copy_blks[i * blks_per_thread + j]);
+                }
+
+                if (i == nthreads - 1) {
+                    for (int j = 0; j < (nblocks - nthreads * blks_per_thread); j++) {
+                        block_group.push_back(copy_blks[(i + 1) * blks_per_thread + j]);
+                    }
+                    block_group.push_back(snk);
+                }
+                sched->add_block_group(block_group);
+            }
+        }
+
         fg->validate();
 
         auto t1 = std::chrono::steady_clock::now();
@@ -100,6 +128,5 @@ int main(int argc, char* argv[])
             std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e9;
 
         std::cout << "[PROFILE_TIME]" << time << "[PROFILE_TIME]" << std::endl;
-
     }
 }
