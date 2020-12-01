@@ -37,3 +37,7 @@ if get_option('enable_testing')
     test('MT Block Grouping Tests', e)
 
 endif
+
+if cuda_dep.found() and get_option('enable_cuda')
+    subdir('cuda')
+endif
