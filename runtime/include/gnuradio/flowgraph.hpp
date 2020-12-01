@@ -42,8 +42,10 @@ private:
     flowgraph_monitor_sptr d_fgmon;
 
 public:
-    flowgraph() { set_alias("flowgraph"); };
+    
     typedef std::shared_ptr<flowgraph> sptr;
+    static sptr make() { return std::make_shared<flowgraph>(); }
+    flowgraph() { set_alias("flowgraph"); };
     virtual ~flowgraph() { _monitor_thread_stopped = true; };
     void set_scheduler(scheduler_sptr sched);
     void set_schedulers(std::vector<scheduler_sptr> sched);
