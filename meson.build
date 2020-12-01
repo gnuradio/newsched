@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2020 Josh Morman 
 #
 
-project('newsched', 'cpp',
+project('newsched', 'cpp', 'cuda',
   version : '0.0.0',
   license : 'GPLv3',
   default_options : ['cpp_std=c++17'])
@@ -15,10 +15,14 @@ fmt_dep = dependency('fmt')
 catch_dep = declare_dependency(include_directories : [join_paths('deps','catch','include')])
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 # gmock_dep = dependency('gmock', main : true, version : '>=1.10', required : get_option('enable_testing'))
+cuda_dep = dependency('cuda', version : '>=11', modules : ['cufft'], required : get_option('enable_cuda'))
 
 ## Not sure yet how to search for zmq.hpp as dependency (header only, no pkgconfig)
 zmq_dep = dependency('libzmq')
 
+message(get_option('enable_testing'))
+message(get_option('enable_cuda'))
+  
 # subdir('deps/catch/include')
 subdir('pmt')
 subdir('runtime')
