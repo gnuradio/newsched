@@ -37,12 +37,14 @@ int main(int argc, char* argv[])
     bool rt_prio = false;
     bool machine_readable = false;
 
-    po::options_description desc("CUDA FFT Benchmarking Flowgraph");
-    desc.add_options()("help,h", "display help")
-        ("samples,N",po::value<uint64_t>(&samples)->default_value(15000000),"Number of samples")
-        ("nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")
-        ("memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")
-        ("batchsize,s", po::value<int>(&batch_size)->default_value(1024), "Batch Size");
+    po::options_description desc("CUDA Copy Benchmarking Flowgraph");
+    desc.add_options()("help,h", "display help")(
+        "samples,N",
+        po::value<uint64_t>(&samples)->default_value(15000000),
+        "Number of samples")(
+        "nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")(
+        "memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")(
+        "veclen,s", po::value<int>(&batch_size)->default_value(1024), "Batch Size");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -70,10 +72,13 @@ int main(int argc, char* argv[])
     auto snk = blocks::null_sink::make(sizeof(gr_complex) * batch_size);
     auto head = blocks::head::make(sizeof(gr_complex) * batch_size, samples / batch_size);
 
-    auto fg(std::make_shared<flowgraph>());
+    auto fg = flowgraph::make();
 
     fg->connect(src, 0, head, 0, VMCIRC_BUFFER_ARGS);
-    auto sched = schedulers::scheduler_mt::make();
+    auto sched = schedulers::scheduler_mt::make(
+        "sched",
+        sizeof(gr_complex) * batch_size *
+            2); // This sizing should be handled in buffer_managment but it is not yet
     sched->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
     fg->set_scheduler(sched);
     if (mem_model == 0) {
@@ -90,7 +95,7 @@ int main(int argc, char* argv[])
         }
         fg->connect(copy_blks[nblocks - 1], 0, snk, 0, CUDA_BUFFER_PINNED_ARGS);
     }
-    
+
     fg->validate();
 
     if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
