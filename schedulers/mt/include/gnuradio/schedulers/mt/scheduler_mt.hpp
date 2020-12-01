@@ -18,12 +18,12 @@ private:
 public:
     typedef std::shared_ptr<scheduler_mt> sptr;
     static sptr make(const std::string name = "multi_threaded",
-                     const unsigned int fixed_buf_size = 8192)
+                     const unsigned int fixed_buf_size = 32768)
     {
         return std::make_shared<scheduler_mt>(name, fixed_buf_size);
     }
     scheduler_mt(const std::string name = "multi_threaded",
-                 const unsigned int fixed_buf_size = 8192)
+                 const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
         _default_buf_factory = simplebuffer::make;

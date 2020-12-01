@@ -19,3 +19,7 @@ executable('bm_mt_fanout',
                    newsched_scheduler_st_dep,
                    boost_dep], 
     install : true)
+
+if cuda_dep.found() and get_option('enable_cuda')
+    subdir('cuda')
+endif

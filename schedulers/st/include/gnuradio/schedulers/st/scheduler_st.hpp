@@ -26,12 +26,12 @@ public:
     typedef std::shared_ptr<scheduler_st> sptr;
 
     static sptr make(const std::string name = "single_threaded",
-                      const unsigned int fixed_buf_size = 8192)
+                      const unsigned int fixed_buf_size = 32768)
     {
         return std::make_shared<scheduler_st>(name, fixed_buf_size);
     }
     scheduler_st(const std::string name = "single_threaded",
-                 const unsigned int fixed_buf_size = 8192);
+                 const unsigned int fixed_buf_size = 32768);
     ~scheduler_st(){};
 
     void push_message(scheduler_message_sptr msg) { _thread->push_message(msg); }

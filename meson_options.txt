@@ -1,1 +1,2 @@
 option('enable_testing', type : 'boolean', value : true)
+option('enable_cuda', type : 'boolean', value : true)
