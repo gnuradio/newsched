@@ -90,7 +90,7 @@ public:
         info.n_items = capacity() - size() -
                        1; // always keep the write pointer 1 behind the read ptr
         // only fill the buffer half way (this should really be a scheduler not a buffer decision FIXME)
-        // info.n_items = std::min(info.n_items, capacity() / 2);
+        info.n_items = std::min(info.n_items, capacity() / 2);
         
         if (info.n_items < 0)
             info.n_items = 0;

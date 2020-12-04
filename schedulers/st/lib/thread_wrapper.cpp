@@ -150,12 +150,12 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
 void thread_wrapper::handle_work_notification()
 {
     auto s = _exec->run_one_iteration(d_blocks);
-    std::string dbg_work_done;
-    for (auto elem : s) {
-        dbg_work_done += "[" + std::to_string(elem.first) + "," +
-                         std::to_string((int)elem.second) + "]" + ",";
-    }
-    gr_log_debug(_debug_logger, dbg_work_done);
+    // std::string dbg_work_done;
+    // for (auto elem : s) {
+    //     dbg_work_done += "[" + std::to_string(elem.first) + "," +
+    //                      std::to_string((int)elem.second) + "]" + ",";
+    // }
+    // gr_log_debug(_debug_logger, dbg_work_done);
 
     // Based on state of the run_one_iteration, do things
     // If any of the blocks are done, notify the flowgraph monitor
