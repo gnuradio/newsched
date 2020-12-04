@@ -2,10 +2,10 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocklib/blocks/copy.hpp>
-#include <gnuradio/blocklib/blocks/head.hpp>
+#include <gnuradio/blocklib/blocks/nop.hpp>
+#include <gnuradio/blocklib/blocks/nop_head.hpp>
 #include <gnuradio/blocklib/blocks/null_sink.hpp>
-#include <gnuradio/blocklib/blocks/null_source.hpp>
+#include <gnuradio/blocklib/blocks/nop_source.hpp>
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/realtime.hpp>
@@ -63,30 +63,30 @@ int main(int argc, char* argv[])
     }
 
     {
-        auto src = blocks::null_source::make(sizeof(gr_complex) * veclen);
-        auto head = blocks::head::make(sizeof(gr_complex) * veclen, samples / veclen);
+        auto src = blocks::nop_source::make(sizeof(gr_complex) * veclen);
+        auto head = blocks::nop_head::make(sizeof(gr_complex) * veclen, samples / veclen);
         auto snk = blocks::null_sink::make(sizeof(gr_complex) * veclen);
-        std::vector<blocks::copy::sptr> copy_blks(nblocks);
+        std::vector<blocks::nop::sptr> blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
-            copy_blks[i] = blocks::copy::make(sizeof(gr_complex) * veclen);
+            blks[i] = blocks::nop::make(sizeof(gr_complex) * veclen);
         }
         flowgraph_sptr fg(new flowgraph());
 
         if (buffer_type == 0) {
             fg->connect(src, 0, head, 0);
-            fg->connect(head, 0, copy_blks[0], 0);
+            fg->connect(head, 0, blks[0], 0);
             for (int i = 0; i < nblocks - 1; i++) {
-                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0);
+                fg->connect(blks[i], 0, blks[i + 1], 0);
             }
-            fg->connect(copy_blks[nblocks - 1], 0, snk, 0);
+            fg->connect(blks[nblocks - 1], 0, snk, 0);
 
         } else {
             fg->connect(src, 0, head, 0, VMCIRC_BUFFER_ARGS);
-            fg->connect(head, 0, copy_blks[0], 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(head, 0, blks[0], 0, VMCIRC_BUFFER_ARGS);
             for (int i = 0; i < nblocks - 1; i++) {
-                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0, VMCIRC_BUFFER_ARGS);
+                fg->connect(blks[i], 0, blks[i + 1], 0, VMCIRC_BUFFER_ARGS);
             }
-            fg->connect(copy_blks[nblocks - 1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(blks[nblocks - 1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
         }
 
         auto sched = schedulers::scheduler_mt::make("mt", 32768);
@@ -107,12 +107,12 @@ int main(int argc, char* argv[])
                 }
 
                 for (int j = 0; j < blks_per_thread; j++) {
-                    block_group.push_back(copy_blks[i * blks_per_thread + j]);
+                    block_group.push_back(blks[i * blks_per_thread + j]);
                 }
 
                 if (i == nthreads - 1) {
                     for (int j = 0; j < (nblocks - nthreads * blks_per_thread); j++) {
-                        block_group.push_back(copy_blks[(i + 1) * blks_per_thread + j]);
+                        block_group.push_back(blks[(i + 1) * blks_per_thread + j]);
                     }
                     block_group.push_back(snk);
                 }
