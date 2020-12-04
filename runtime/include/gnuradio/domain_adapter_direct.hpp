@@ -97,6 +97,8 @@ public:
                 // std::cout << "svr notify_one" << std::endl;
                 top->p_sync->ready = 2;
                 top->p_sync->cv.notify_one();
+
+                break;
             }
         }
     }

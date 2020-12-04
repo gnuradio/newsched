@@ -1,5 +1,7 @@
 #include "buffer_management.hpp"
 #include "scheduler_st.hpp"
+#include <gnuradio/vmcirc_buffer.hpp>
+
 namespace gr {
 
 namespace schedulers {
@@ -8,6 +10,7 @@ namespace schedulers {
 scheduler_st::scheduler_st(const std::string name, const unsigned int fixed_buf_size)
     : scheduler(name), s_fixed_buf_size(fixed_buf_size)
 {
+    // _default_buf_factory = vmcirc_buffer::make; //simplebuffer::make;
     _default_buf_factory = simplebuffer::make;
 }
 

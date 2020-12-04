@@ -3,6 +3,7 @@
 #include <gnuradio/graph_utils.hpp>
 #include <gnuradio/scheduler.hpp>
 #include <gnuradio/schedulers/st/scheduler_st.hpp>
+#include <gnuradio/vmcirc_buffer.hpp>
 
 namespace gr {
 namespace schedulers {
@@ -26,6 +27,7 @@ public:
                  const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
+        // _default_buf_factory = vmcirc_buffer::make; //simplebuffer::make;
         _default_buf_factory = simplebuffer::make;
     }
     ~scheduler_mt(){};
@@ -91,7 +93,7 @@ public:
 
         // For the remaining blocks that weren't in block groups
         for (auto& b : blocks) {
-            auto st_sched = scheduler_st::make(b->name(), s_fixed_buf_size);
+            auto st_sched = scheduler_st::make(b->alias(), s_fixed_buf_size);
             scheds.push_back(st_sched);
             std::vector<node_sptr> node_vec;
 
