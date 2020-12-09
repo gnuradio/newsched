@@ -21,7 +21,9 @@ cuda_dep = dependency('cuda', version : '>=11', modules : ['cufft'], required : 
 
 ## Not sure yet how to search for zmq.hpp as dependency (header only, no pkgconfig)
 zmq_dep = dependency('libzmq')
-  
+
+flatc = find_program('flatc', version : '>=1.12')
+
 # subdir('deps/catch/include')
 subdir('pmt')
 subdir('runtime')

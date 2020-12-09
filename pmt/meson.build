@@ -1,3 +1,5 @@
 subdir('include/pmt')
+subdir('schema')
 subdir('lib')
 subdir('test')
+subdir('bench')
