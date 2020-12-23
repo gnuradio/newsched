@@ -18,7 +18,7 @@ private:
 
     // make these two go away
     std::map<std::string, buffer_sptr> d_edge_buffers;
-    std::map<std::string, edge> d_edge_catalog;
+    std::map<std::string, edge_sptr> d_edge_catalog;
 
     std::string _name = "buffer_manager";
     logger_sptr _logger;
@@ -48,7 +48,7 @@ public:
     void initialize_buffers(flat_graph_sptr fg, buffer_factory_function buf_factory, std::shared_ptr<buffer_properties> buf_props );
     
 private:
-    int get_buffer_num_items(edge e, flat_graph_sptr fg);
+    int get_buffer_num_items(edge_sptr e, flat_graph_sptr fg);
 };
 
 

@@ -105,7 +105,7 @@ void flat_graph::check_valid_port(block_sptr block, port_sptr port)
 void flat_graph::check_dst_not_used(const block_endpoint& dst)
 {
     // A destination is in use if it is already on the edge list
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++)
+    for (auto& p : edges())
         if (p->dst() == dst) {
             std::stringstream msg;
             msg << "destination already in use by edge " << (*p);
@@ -147,7 +147,7 @@ port_vector_t flat_graph::calc_used_ports(block_sptr block, bool check_inputs)
 
     // Collect all seen ports
     edge_vector_t edges = calc_connections(block, check_inputs);
-    for (edge_viter_t p = edges.begin(); p != edges.end(); p++) {
+    for (auto& p : edges) {
         if (check_inputs == true)
             tmp.push_back(p->dst().port());
         else
@@ -161,13 +161,13 @@ edge_vector_t flat_graph::calc_connections(block_sptr block, bool check_inputs)
 {
     edge_vector_t result;
 
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
+    for (auto p : edges()) {
         if (check_inputs) {
             if (static_cast<block_endpoint>(p->dst()).block() == block)
-                result.push_back(*p);
+                result.push_back(p);
         } else {
             if (static_cast<block_endpoint>(p->src()).block() == block)
-                result.push_back(*p);
+                result.push_back(p);
         }
     }
 
@@ -227,7 +227,7 @@ block_vector_t flat_graph::calc_downstream_blocks(block_sptr block, port_sptr po
 {
     block_vector_t tmp;
 
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++)
+    for (auto& p : edges())
         if (static_cast<block_endpoint>(p->src()) == block_endpoint(block, port))
             tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
 
@@ -238,7 +238,7 @@ block_vector_t flat_graph::calc_downstream_blocks(block_sptr block)
 {
     block_vector_t tmp;
 
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++)
+    for (auto& p : edges())
         if (static_cast<block_endpoint>(p->src()).block() == block)
             tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
 
@@ -249,9 +249,9 @@ edge_vector_t flat_graph::calc_upstream_edges(block_sptr block)
 {
     edge_vector_t result;
 
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++)
+    for (auto p : edges())
         if (static_cast<block_endpoint>(p->dst()).block() == block)
-            result.push_back(*p);
+            result.push_back(p);
 
     return result; // Assume no duplicates
 }
@@ -321,7 +321,7 @@ block_vector_t flat_graph::calc_adjacent_blocks(block_sptr block, block_vector_t
     block_vector_t tmp;
 
     // Find any blocks that are inputs or outputs
-    for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
+    for (auto& p : edges()) {
         if (p->src().node() == block)
             tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
         if (p->dst().node() == block)

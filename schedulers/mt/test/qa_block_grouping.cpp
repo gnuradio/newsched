@@ -43,20 +43,20 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             flowgraph_sptr fg(new flowgraph());
 
             auto sch = schedulers::scheduler_mt::make("mtsched");
-            fg->connect(src, 0, mult_blks[0], 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(src, 0, mult_blks[0], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             for (int n = 0; n < ngroups; n++) {
                 std::vector<block_sptr> bg;
                 for (int i = 0; i < nblocks; i++) {
                     int idx = n*nblocks +i;
                     if (idx > 0)
                     {
-                        fg->connect(mult_blks[idx-1], 0, mult_blks[idx], 0, VMCIRC_BUFFER_ARGS);
+                        fg->connect(mult_blks[idx-1], 0, mult_blks[idx], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
                     }
                     bg.push_back(mult_blks[idx]);
                 }
                 sch->add_block_group(bg);
             }
-            fg->connect(mult_blks[nblocks*ngroups-1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(mult_blks[nblocks*ngroups-1], 0, snk, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             
             fg->add_scheduler(sch);
             fg->validate();

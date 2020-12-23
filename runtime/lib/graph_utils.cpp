@@ -17,7 +17,7 @@ graph_utils::partition(graph_sptr input_graph,
     graph_partition_info_vec ret;
     std::map<scheduler_sptr, size_t> sched_index_map;
 
-    std::vector<edge> domain_crossings;
+    edge_vector_t domain_crossings;
     std::vector<domain_conf> crossing_confs;
     std::vector<scheduler_sptr> crossing_scheds;
 
@@ -42,12 +42,12 @@ graph_utils::partition(graph_sptr input_graph,
                 // There should only be one edge connected to an input port
                 // Crossings associated with the downstream port
                 auto e = edges[0];
-                auto other_block = e.src().node();
+                auto other_block = e->src().node();
 
                 // Is the other block in our current partition
                 if (std::find(blocks.begin(), blocks.end(), other_block) !=
                     blocks.end()) {
-                    g->connect(e.src(), e.dst(), e.buffer_factory(), e.buf_properties());
+                    g->connect(e->src(), e->dst());
                 } else {
                     // add this edge to the list of domain crossings
                     // domain_crossings.push_back(std::make_tuple(g,e));
@@ -82,7 +82,7 @@ graph_utils::partition(graph_sptr input_graph,
         {
             bool connected = false;
             for (auto e : g->edges()) {
-                if (e.src().node() == b || e.dst().node() == b) {
+                if (e->src().node() == b || e->dst().node() == b) {
                     connected = true;
                     break;
                 }
@@ -114,7 +114,7 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c.src().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->src().node()) != blocks.end()) {
                 src_block_graph = g;
                 break;
             }
@@ -125,7 +125,7 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c.dst().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->dst().node()) != blocks.end()) {
                 dst_block_graph = g;
                 break;
             }
@@ -144,7 +144,7 @@ graph_utils::partition(graph_sptr input_graph,
         domain_adapter_conf_sptr da_conf = nullptr;
         for (auto ec : conf.da_edge_confs()) {
             auto conf_edge = std::get<0>(ec);
-            if (c == conf_edge) {
+            if (*c == *conf_edge) {
                 da_conf = std::get<1>(ec);
                 break;
             }
@@ -160,9 +160,9 @@ graph_utils::partition(graph_sptr input_graph,
 
         // use the conf to produce the domain adapters
         auto da_pair = da_conf->make_domain_adapter_pair(
-            c.src().port(),
-            c.dst().port(),
-            "da_" + c.src().node()->alias() + "->" + c.dst().node()->alias());
+            c->src().port(),
+            c->dst().port(),
+            "da_" + c->src().node()->alias() + "->" + c->dst().node()->alias());
         auto da_src = std::get<0>(da_pair);
         auto da_dst = std::get<1>(da_pair);
 
@@ -171,21 +171,17 @@ graph_utils::partition(graph_sptr input_graph,
 
         // Attach domain adapters to the src and dest blocks
         // domain adapters only have one port
-        src_block_graph->connect(c.src(),
-                                 node_endpoint(da_src, da_src->all_ports()[0]),
-                                 c.buffer_factory(),
-                                 c.buf_properties());
+        src_block_graph->connect(c->src(),
+                                 node_endpoint(da_src, da_src->all_ports()[0]));
         dst_block_graph->connect(node_endpoint(da_dst, da_dst->all_ports()[0]),
-                                 c.dst(),
-                                 c.buffer_factory(),
-                                 c.buf_properties());
+                                 c->dst());
 
 
         // Set the block id to "other scheduler" maps
         // This can/should be scheduler adapters, but use direct scheduler sptrs for now
 
-        auto dst_block_id = c.dst().node()->id();
-        auto src_block_id = c.src().node()->id();
+        auto dst_block_id = c->dst().node()->id();
+        auto src_block_id = c->src().node()->id();
 
         // ret.neighbor_map_per_scheduler[block_to_scheduler_map[dst_block_id]][dst_block_id]
         //     .set_upstream(block_to_scheduler_map[src_block_id], src_block_id);

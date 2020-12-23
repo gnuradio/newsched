@@ -40,7 +40,7 @@ public:
         block_vector_t tmp;
 
         // Collect all blocks in the edge list
-        for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
+        for (auto& p : edges()) {
             auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
             auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
             if (src_ptr != nullptr)
@@ -59,7 +59,7 @@ public:
         // for now assume it is already flat, and just cast things
         std::shared_ptr<flat_graph> fg = std::shared_ptr<flat_graph>(new flat_graph());
         for (auto e : g->edges()) {
-            fg->connect(e.src(), e.dst(), e.buffer_factory(), e.buf_properties());
+            fg->connect(e->src(), e->dst());
         }
 
         return fg;
