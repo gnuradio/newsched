@@ -36,12 +36,11 @@ int main(int argc, char* argv[])
         auto snk = blocks::vector_sink_f::make();
 
         auto fg(std::make_shared<flowgraph>());
-        fg->connect(src, 0, mult, 0, VMCIRC_BUFFER_ARGS);
-        fg->connect(mult, 0, head, 0, VMCIRC_BUFFER_ARGS);
-        fg->connect(head, 0, snk, 0, VMCIRC_BUFFER_ARGS);
+        fg->connect(src, 0, mult, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+        fg->connect(mult, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+        fg->connect(head, 0, snk, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
 
-        std::shared_ptr<schedulers::scheduler_st> sched(
-            new schedulers::scheduler_st());
+        std::shared_ptr<schedulers::scheduler_st> sched(new schedulers::scheduler_st());
         fg->set_scheduler(sched);
 
         fg->validate();
@@ -52,5 +51,4 @@ int main(int argc, char* argv[])
         gr_log_info(
             logger, "valid output: {}, {}", snk_data == expected_output, snk_data.size());
     }
-
 }

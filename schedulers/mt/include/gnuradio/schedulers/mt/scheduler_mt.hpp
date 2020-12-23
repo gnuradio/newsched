@@ -166,17 +166,17 @@ private:
         // If b has connections to any domain adapters, include them in this scheduler
         for (auto& p : b->input_ports()) {
             for (auto& ed : fg->find_edge(p)) {
-                auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed.src().node());
+                auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed->src().node());
                 if (da_cast != nullptr) {
-                    node_vec.push_back(ed.src().node());
+                    node_vec.push_back(ed->src().node());
                 }
             }
         }
         for (auto& p : b->output_ports()) {
             for (auto& ed : fg->find_edge(p)) {
-                auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed.dst().node());
+                auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed->dst().node());
                 if (da_cast != nullptr) {
-                    node_vec.push_back(ed.dst().node());
+                    node_vec.push_back(ed->dst().node());
                 }
             }
         }

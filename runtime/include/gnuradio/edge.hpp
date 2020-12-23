@@ -39,8 +39,8 @@ public:
     node_sptr node() const;
     port_sptr port() const;
     std::string identifier() const;
-
 };
+
 inline bool operator==(const node_endpoint& n1, const node_endpoint& n2)
 {
     return (n1.node() == n2.node() && n1.port() == n2.port());
@@ -60,17 +60,18 @@ protected:
     std::shared_ptr<buffer_properties> _buffer_properties = nullptr;
 
 public:
-    edge();
-    edge(const node_endpoint& src,
-         const node_endpoint& dst,
-         buffer_factory_function buffer_factory_ = nullptr,
-         std::shared_ptr<buffer_properties> buffer_properties_ = nullptr);
-    edge(node_sptr src_blk,
-         port_sptr src_port,
-         node_sptr dst_blk,
-         port_sptr dst_port,
-         buffer_factory_function buffer_factory_ = nullptr,
-         std::shared_ptr<buffer_properties> buffer_properties_ = nullptr);
+    typedef std::shared_ptr<edge> sptr;
+    static sptr make(const node_endpoint& src, const node_endpoint& dst)
+    {
+        return std::make_shared<edge>(src, dst);
+    }
+    static sptr
+    make(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port)
+    {
+        return std::make_shared<edge>(src_blk, src_port, dst_blk, dst_port);
+    }
+    edge(const node_endpoint& src, const node_endpoint& dst);
+    edge(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port);
     virtual ~edge(){};
     node_endpoint src() const;
     node_endpoint dst() const;
@@ -79,10 +80,16 @@ public:
 
     size_t itemsize() const;
 
+    void set_custom_buffer(buffer_factory_function buffer_factory,
+                           std::shared_ptr<buffer_properties> buffer_properties = nullptr)
+    {
+        _buffer_factory = buffer_factory;
+        _buffer_properties = buffer_properties;
+    }
+
     bool has_custom_buffer();
     buffer_factory_function buffer_factory();
     std::shared_ptr<buffer_properties> buf_properties();
-    
 };
 
 inline std::ostream& operator<<(std::ostream& os, const edge edge)
@@ -96,7 +103,7 @@ inline bool operator==(const edge& e1, const edge& e2)
     return (e1.src() == e2.src() && e1.dst() == e2.dst());
 }
 
-typedef std::vector<edge> edge_vector_t;
-typedef std::vector<edge>::iterator edge_viter_t;
+typedef edge::sptr edge_sptr;
+typedef std::vector<edge_sptr> edge_vector_t;
 
 } // namespace gr
