@@ -22,27 +22,18 @@ std::string node_endpoint::identifier() const
     return d_node->alias() + ":" + d_port->alias();
 };
 
-edge::edge(){};
 edge::edge(const node_endpoint& src,
-           const node_endpoint& dst,
-           buffer_factory_function buffer_factory_,
-           std::shared_ptr<buffer_properties> buffer_properties_)
+           const node_endpoint& dst)
     : _src(src),
-      _dst(dst),
-      _buffer_factory(buffer_factory_),
-      _buffer_properties(buffer_properties_)
+      _dst(dst)
 {
 }
 edge::edge(node_sptr src_blk,
            port_sptr src_port,
            node_sptr dst_blk,
-           port_sptr dst_port,
-           buffer_factory_function buffer_factory_,
-           std::shared_ptr<buffer_properties> buffer_properties_)
+           port_sptr dst_port)
     : _src(node_endpoint(src_blk, src_port)),
-      _dst(node_endpoint(dst_blk, dst_port)),
-      _buffer_factory(buffer_factory_),
-      _buffer_properties(buffer_properties_)
+      _dst(node_endpoint(dst_blk, dst_port))
 {
 }
 

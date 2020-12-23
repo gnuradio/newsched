@@ -165,8 +165,8 @@ TEST(SchedulerMTTest, BlockFanout)
 
         } else {
             for (int i = 0; i < nblocks; i++) {
-                fg->connect(src, 0, mult_blks[i], 0, VMCIRC_BUFFER_ARGS);
-                fg->connect(mult_blks[i], 0, sink_blks[i], 0, VMCIRC_BUFFER_ARGS);
+                fg->connect(src, 0, mult_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                fg->connect(mult_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             }
         }
 

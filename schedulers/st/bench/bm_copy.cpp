@@ -78,11 +78,11 @@ int main(int argc, char* argv[])
 
         } else {
             fg->connect(src, 0, head, 0);
-            fg->connect(head, 0, copy_blks[0], 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             for (int i = 0; i < nblocks - 1; i++) {
-                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0, VMCIRC_BUFFER_ARGS);
+                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             }
-            fg->connect(copy_blks[nblocks - 1], 0, snk, 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(copy_blks[nblocks - 1], 0, snk, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
         }
 
         if (domain_adapt == 0)

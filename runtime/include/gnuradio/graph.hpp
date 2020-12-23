@@ -37,21 +37,19 @@ public:
     graph() : node() {}
     ~graph() {}
     std::shared_ptr<graph> base() { return shared_from_this(); }
-    std::vector<edge>& edges() { return _edges; }
-    void connect(const node_endpoint& src,
-                 const node_endpoint& dst,
-                 buffer_factory_function buffer_factory = nullptr,
-                 std::shared_ptr<buffer_properties> buf_properties = nullptr);
-    void connect(node_sptr src_node,
+    edge_vector_t& edges() { return _edges; }
+    edge_sptr connect(const node_endpoint& src,
+                 const node_endpoint& dst);
+    edge_sptr connect(node_sptr src_node,
                  unsigned int src_port_index,
                  node_sptr dst_node,
-                 unsigned int dst_port_index,
-                 buffer_factory_function buffer_factory = nullptr,
-                 std::shared_ptr<buffer_properties> buf_properties = nullptr);
-    void connect(node_sptr src_node,
-                 std::string& src_port_name,
-                 node_sptr dst_node,
-                 std::string& dst_port_name){};
+                 unsigned int dst_port_index);
+
+    // TODO: hook up by port name
+    // edge_sptr connect(node_sptr src_node,
+    //              std::string& src_port_name,
+    //              node_sptr dst_node,
+    //              std::string& dst_port_name){};
     void disconnect(const node_endpoint& src, const node_endpoint& dst){};
     virtual void validate(){};
     virtual void clear(){};
@@ -59,7 +57,7 @@ public:
 
     // }
     node_vector_t calc_used_nodes();
-    std::vector<edge> find_edge(port_sptr port);
+    edge_vector_t find_edge(port_sptr port);
 };
 
 typedef std::shared_ptr<graph> graph_sptr;

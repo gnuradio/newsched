@@ -75,11 +75,11 @@ int main(int argc, char* argv[])
             }
 
         } else {
-            fg->connect(src, 0, head, 0, VMCIRC_BUFFER_ARGS);
+            fg->connect(src, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
 
             for (int i = 0; i < nblocks; i++) {
-                fg->connect(head, 0, copy_blks[i], 0, VMCIRC_BUFFER_ARGS);
-                fg->connect(copy_blks[i], 0, sink_blks[i], 0, VMCIRC_BUFFER_ARGS);
+                fg->connect(head, 0, copy_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                fg->connect(copy_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
             }
         }
 

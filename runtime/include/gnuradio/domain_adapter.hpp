@@ -74,7 +74,7 @@ public:
 };
 
 typedef std::shared_ptr<domain_adapter_conf> domain_adapter_conf_sptr;
-typedef std::vector<std::tuple<edge, domain_adapter_conf_sptr>>
+typedef std::vector<std::tuple<edge_sptr, domain_adapter_conf_sptr>>
     domain_adapter_conf_per_edge;
 
 
