@@ -17,7 +17,8 @@ jobs:
       - name: build_volk
         run: mkdir -p volk && curl -Lo volk.tar.gz https://github.com/gnuradio/volk/archive/v2.2.1.tar.gz && tar xzf volk.tar.gz -C volk --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./volk/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
       - name: build_flatc
-        run: mkdir -p fb && curl -Lo fb.tar.gz https://github.com/google/flatbuffers/archive/v1.12.0.tar.gz && tar xzf fb.tar.gz -C fb --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./fb/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
+        # run: mkdir -p fb && curl -Lo fb.tar.gz https://github.com/google/flatbuffers/archive/v1.12.0.tar.gz && tar xzf fb.tar.gz -C fb --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./fb/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
+        run: git clone https://github.com/google/flatbuffers.git && cd flatbuffers && git checkout aafc5dc9500f01c64 && mkdir build && cd build && cmake ../ && make install -j 
       - run: meson setup build --buildtype=debugoptimized -Denable_testing=true
         env:
           CC: gcc
