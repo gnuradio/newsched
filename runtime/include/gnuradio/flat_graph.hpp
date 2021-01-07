@@ -59,7 +59,7 @@ public:
         // for now assume it is already flat, and just cast things
         std::shared_ptr<flat_graph> fg = std::shared_ptr<flat_graph>(new flat_graph());
         for (auto e : g->edges()) {
-            fg->connect(e->src(), e->dst());
+            fg->connect(e->src(), e->dst())->set_custom_buffer(e->buffer_factory(), e->buf_properties());
         }
 
         return fg;
