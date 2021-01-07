@@ -47,7 +47,7 @@ graph_utils::partition(graph_sptr input_graph,
                 // Is the other block in our current partition
                 if (std::find(blocks.begin(), blocks.end(), other_block) !=
                     blocks.end()) {
-                    g->connect(e->src(), e->dst());
+                    g->connect(e->src(), e->dst())->set_custom_buffer(e->buffer_factory(), e->buf_properties());
                 } else {
                     // add this edge to the list of domain crossings
                     // domain_crossings.push_back(std::make_tuple(g,e));
@@ -172,9 +172,9 @@ graph_utils::partition(graph_sptr input_graph,
         // Attach domain adapters to the src and dest blocks
         // domain adapters only have one port
         src_block_graph->connect(c->src(),
-                                 node_endpoint(da_src, da_src->all_ports()[0]));
+                                 node_endpoint(da_src, da_src->all_ports()[0]))->set_custom_buffer(c->buffer_factory(), c->buf_properties());
         dst_block_graph->connect(node_endpoint(da_dst, da_dst->all_ports()[0]),
-                                 c->dst());
+                                 c->dst())->set_custom_buffer(c->buffer_factory(), c->buf_properties());
 
 
         // Set the block id to "other scheduler" maps
