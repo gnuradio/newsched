@@ -44,12 +44,12 @@ public:
     {
         void* optr;
 
-        // for (size_t n = 0; n < work_output.size(); n++) {
+        for (size_t n = 0; n < work_output.size(); n++) {
         //     optr = work_output[n].items;
-        //     auto noutput_items = work_output[n].n_items;
+            auto noutput_items = work_output[n].n_items;
         //     memset(optr, 0, noutput_items * _itemsize);
-        //     work_output[n].n_produced = noutput_items;
-        // }
+            work_output[n].n_produced = noutput_items;
+        }
 
         return work_return_code_t::WORK_OK;
     }
