@@ -26,6 +26,12 @@ thread_wrapper::thread_wrapper(const std::string& name,
         d_block_id_to_block_map[b->id()] = b;
     }
 
+    canned_notify_all =
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0);
+
+    sched_to_notify_upstream.reserve(20);
+    sched_to_notify_downstream.reserve(20);
+
     d_fgmon = fgmon;
     _exec = std::make_unique<graph_executor>(name);
     _exec->initialize(bufman, d_blocks);
@@ -34,7 +40,9 @@ thread_wrapper::thread_wrapper(const std::string& name,
 
 void thread_wrapper::start()
 {
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    // push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL,
+    // 0));
+    push_message(canned_notify_all);
 }
 void thread_wrapper::stop()
 {
@@ -61,7 +69,9 @@ void thread_wrapper::run()
 void thread_wrapper::notify_self()
 {
     gr_log_debug(_debug_logger, "notify_self");
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    // push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL,
+    // 0));
+    push_message(canned_notify_all);
 }
 
 bool thread_wrapper::get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info)
@@ -171,10 +181,10 @@ void thread_wrapper::handle_work_notification()
 
     bool notify_self_ = false;
 
-    std::vector<neighbor_interface_info> sched_to_notify_upstream,
-        sched_to_notify_downstream;
+    sched_to_notify_upstream.clear();
+    sched_to_notify_downstream.clear();
 
-    for (auto elem : s) {
+    for (auto& elem : s) {
 
         if (elem.second == executor_iteration_status::READY) {
             // top->notify_neighbors(elem.first);

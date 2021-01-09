@@ -33,6 +33,10 @@ private:
     std::string _name;
     int _id;
 
+    scheduler_action_sptr canned_notify_all;
+    std::vector<neighbor_interface_info> sched_to_notify_upstream,
+        sched_to_notify_downstream;
+
 public:
     typedef std::unique_ptr<thread_wrapper> ptr;
 
