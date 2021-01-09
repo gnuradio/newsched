@@ -53,7 +53,7 @@ public:
             std::make_shared<param_change_action>(blkid, param_action, cb_when_complete));
     }
 
-    virtual void request_callback(const std::string& block_alias,
+    virtual void request_callback(const std::string& block_alias,  // FIXME: change to nodeid
                                   const callback_args& args,
                                   block_callback_complete_fcn cb_when_complete)
     {

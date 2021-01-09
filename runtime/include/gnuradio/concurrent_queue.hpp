@@ -1,10 +1,10 @@
 #pragma once
 
 #include <condition_variable>
-#include <mutex>
-#include <deque>
 #include <atomic>
+#include <deque>
 #include <iostream>
+#include <mutex>
 
 #include <gnuradio/scheduler_message.hpp>
 
@@ -27,10 +27,23 @@ public:
     bool pop(T& msg)
     {
         std::unique_lock<std::mutex> l(_mutex);
-        _cond.wait(l, [this] { return !_queue.empty(); }); // TODO - replace with a waitfor
-        msg = _queue.front();
-        _queue.pop_front();
-        return true;
+
+        if (_num_pop < 5) { // use the condition variable at the beginning
+            _cond.wait(
+                l, [this] { return !_queue.empty(); }); // TODO - replace with a waitfor
+            msg = _queue.front();
+            _queue.pop_front();
+            _num_pop++;
+            return true;
+        }
+
+        if (_queue.size() > 0) {
+            msg = _queue.front();
+            _queue.pop_front();
+            return true;
+        } else {
+            return false;
+        }
     }
     void clear()
     {
@@ -40,10 +53,18 @@ public:
         // _cond.notify_all();
     }
 
+    size_t size()
+    {
+        std::unique_lock<std::mutex> l(_mutex);
+        return _queue.size();
+    }
+
 private:
     std::deque<T> _queue;
     std::mutex _mutex;
     std::condition_variable _cond;
     std::atomic<bool> _ready;
+
+    int _num_pop = 0;
 };
 } // namespace gr

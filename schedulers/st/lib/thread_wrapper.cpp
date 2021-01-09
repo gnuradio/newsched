@@ -237,7 +237,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
         // try to pop messages off the queue
         scheduler_message_sptr msg;
-        if (top->pop_message(msg)) // this blocks
+        auto valid = top->pop_message(msg);
+        if (valid) // this blocks
         {
             switch (msg->type()) {
             case scheduler_message_t::SCHEDULER_ACTION: {
@@ -295,6 +296,10 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             default:
                 break;
             }
+        } else {
+            std::this_thread::yield();
+            gr_log_debug(top->_debug_logger, "No message, do work anyway");
+            top->handle_work_notification();
         }
     }
 }
