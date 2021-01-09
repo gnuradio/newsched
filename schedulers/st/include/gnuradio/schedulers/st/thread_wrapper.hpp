@@ -37,6 +37,10 @@ private:
     std::vector<neighbor_interface_info> sched_to_notify_upstream,
         sched_to_notify_downstream;
 
+    static const uint8_t flag_blkd_in = 0x01;
+    static const uint8_t flag_blkd_out = 0x02;
+    uint8_t _flags = 0x00;
+
 public:
     typedef std::unique_ptr<thread_wrapper> ptr;
 
