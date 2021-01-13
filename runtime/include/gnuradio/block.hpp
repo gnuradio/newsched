@@ -7,7 +7,7 @@
 
 #include <gnuradio/block_work_io.hpp>
 #include <gnuradio/node.hpp>
-
+#include <gnuradio/gpdict.hpp>
 
 namespace gr {
 
@@ -96,9 +96,12 @@ public:
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 
 typedef block::sptr block_sptr;
 typedef std::vector<block_sptr> block_vector_t;
+typedef std::vector<block_sptr>::iterator block_viter_t;
 
 } // namespace gr
