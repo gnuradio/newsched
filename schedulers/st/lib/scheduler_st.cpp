@@ -13,7 +13,8 @@ scheduler_st::scheduler_st(const std::string name, const unsigned int fixed_buf_
 }
 
 void scheduler_st::initialize(flat_graph_sptr fg,
-                              flowgraph_monitor_sptr fgmon)
+                              flowgraph_monitor_sptr fgmon,
+                              neighbor_interface_map block_sched_map)
 {
     for (auto& b : fg->calc_used_blocks()) {
         b->set_scheduler(base());
@@ -25,6 +26,7 @@ void scheduler_st::initialize(flat_graph_sptr fg,
 
     _thread = thread_wrapper::make(name(), id(),
              fg->calc_used_blocks(),
+             block_sched_map,
              bufman,
              fgmon);
 }

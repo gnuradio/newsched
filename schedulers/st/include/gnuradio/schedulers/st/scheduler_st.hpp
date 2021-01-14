@@ -39,7 +39,8 @@ public:
 
 
     void initialize(flat_graph_sptr fg,
-                    flowgraph_monitor_sptr fgmon);
+                    flowgraph_monitor_sptr fgmon,
+                    neighbor_interface_map block_sched_map);
     void start();
     void stop();
     void wait();

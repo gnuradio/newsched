@@ -7,6 +7,7 @@ namespace schedulers {
 thread_wrapper::thread_wrapper(const std::string& name,
                                int id,
                                std::vector<block_sptr> blocks,
+                               neighbor_interface_map block_sched_map,
                                buffer_manager::sptr bufman,
                                flowgraph_monitor_sptr fgmon)
     : _name(name), _id(id)
@@ -15,6 +16,7 @@ thread_wrapper::thread_wrapper(const std::string& name,
     _debug_logger = logging::get_logger(name + "_dbg", "debug");
 
     d_blocks = blocks;
+    d_block_sched_map = block_sched_map;
     for (auto b : d_blocks) {
         d_block_id_to_block_map[b->id()] = b;
     }
@@ -57,6 +59,53 @@ void thread_wrapper::notify_self()
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
 }
 
+bool thread_wrapper::get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info)
+{
+    bool ret = false;
+    // Find whether this block has an upstream neighbor
+    auto search = d_block_sched_map.find(blkid);
+    if (search != d_block_sched_map.end()) {
+        if (search->second.upstream_neighbor_intf != nullptr) {
+            info = search->second;
+            return true;
+        }
+    }
+
+    return ret;
+}
+
+bool thread_wrapper::get_neighbors_downstream(nodeid_t blkid,
+                                              neighbor_interface_info& info)
+{
+    // Find whether this block has any downstream neighbors
+    auto search = d_block_sched_map.find(blkid);
+    if (search != d_block_sched_map.end()) {
+        // Entry in the map exists, are there any entries
+        if (!search->second.downstream_neighbor_intf.empty()) {
+            info = search->second;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched,
+                                     nodeid_t blkid)
+{
+    gr_log_debug(_debug_logger, "notify_upstream");
+
+    upstream_sched->push_message(
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT, blkid));
+}
+void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched,
+                                       nodeid_t blkid)
+{
+    gr_log_debug(_debug_logger, "notify_downstream");
+    downstream_sched->push_message(
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, blkid));
+}
+
 void thread_wrapper::handle_work_notification()
 {
     auto s = _exec->run_one_iteration(d_blocks);
@@ -74,9 +123,24 @@ void thread_wrapper::handle_work_notification()
     }
 
     bool notify_self_ = false;
+
+    std::vector<neighbor_interface_info> sched_to_notify_upstream,
+        sched_to_notify_downstream;
+
     for (auto elem : s) {
 
         if (elem.second == executor_iteration_status::READY) {
+            // top->notify_neighbors(elem.first);
+            neighbor_interface_info info_us, info_ds;
+            auto has_us = get_neighbors_upstream(elem.first, info_us);
+            auto has_ds = get_neighbors_downstream(elem.first, info_ds);
+
+            if (has_us) {
+                sched_to_notify_upstream.push_back(info_us);
+            }
+            if (has_ds) {
+                sched_to_notify_downstream.push_back(info_ds);
+            }
             notify_self_ = true;
         }
     }
@@ -84,6 +148,34 @@ void thread_wrapper::handle_work_notification()
     if (notify_self_) {
         gr_log_debug(_debug_logger, "notifying self");
         notify_self();
+    }
+
+    if (!sched_to_notify_upstream.empty()) {
+        // Reduce to the unique schedulers to notify
+        // std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
+        // auto last =
+        //     std::unique(sched_to_notify_upstream.begin(),
+        //     sched_to_notify_upstream.end());
+        // sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
+        for (auto& info : sched_to_notify_upstream) {
+            notify_upstream(info.upstream_neighbor_intf, info.upstream_neighbor_blkid);
+        }
+    }
+
+    if (!sched_to_notify_downstream.empty()) {
+        // // Reduce to the unique schedulers to notify
+        // std::sort(sched_to_notify_downstream.begin(),
+        // sched_to_notify_downstream.end()); auto last =
+        // std::unique(sched_to_notify_downstream.begin(),
+        //                         sched_to_notify_downstream.end());
+        // sched_to_notify_downstream.erase(last, sched_to_notify_downstream.end());
+        for (auto& info : sched_to_notify_downstream) {
+            int idx = 0;
+            for (auto& intf : info.downstream_neighbor_intf) {
+                notify_downstream(intf, info.downstream_neighbor_blkids[idx]);
+                idx++;
+            }
+        }
     }
 }
 
