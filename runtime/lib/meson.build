@@ -8,6 +8,7 @@ runtime_sources = [
   'parameter_types.cpp',
   'edge.cpp',
   'graph.cpp',
+  'graph_utils.cpp',
   'flat_graph.cpp',
   'flowgraph_monitor.cpp',
   'flowgraph.cpp',
