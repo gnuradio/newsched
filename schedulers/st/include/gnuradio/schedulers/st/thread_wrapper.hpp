@@ -33,6 +33,14 @@ private:
     std::string _name;
     int _id;
 
+    scheduler_action_sptr canned_notify_all;
+    std::vector<neighbor_interface_info> sched_to_notify_upstream,
+        sched_to_notify_downstream;
+
+    static const uint8_t flag_blkd_in = 0x01;
+    static const uint8_t flag_blkd_out = 0x02;
+    uint8_t _flags = 0x00;
+
 public:
     typedef std::unique_ptr<thread_wrapper> ptr;
 
@@ -61,6 +69,7 @@ public:
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
 
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
+    bool pop_message_nonblocking(scheduler_message_sptr& msg) { return msgq.try_pop(msg); }
 
     void start();
     void stop();
@@ -77,7 +86,7 @@ public:
     void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
     void handle_parameter_query(std::shared_ptr<param_query_action> item);
     void handle_parameter_change(std::shared_ptr<param_change_action> item);
-    void handle_work_notification();
+    bool handle_work_notification();
     static void thread_body(thread_wrapper* top);
 };
 } // namespace schedulers

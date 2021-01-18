@@ -65,7 +65,17 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             fg->start();
             fg->wait();
 
+            EXPECT_EQ(snk->data().size(), input_data.size());
             EXPECT_EQ(snk->data(), input_data);
+
+            // for (int i=0; i<input_data.size(); i++)
+            // {
+            //     if (input_data[i] != snk->data()[i])
+            //     {
+            //         std::cout << input_data[i] << " / " << snk->data()[i] << std::endl;
+            //     }
+            // }
+
         }
     }
 }

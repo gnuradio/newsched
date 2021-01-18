@@ -1,9 +1,9 @@
 #include "thread_wrapper.hpp"
 
-#include <gnuradio/thread.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/scheduler_message.hpp>
+#include <gnuradio/thread.hpp>
 #include <thread>
 
 namespace gr {
@@ -22,9 +22,15 @@ thread_wrapper::thread_wrapper(const std::string& name,
 
     d_blocks = blocks;
     d_block_sched_map = block_sched_map;
-    for (auto b : d_blocks) {
+    for (auto& b : d_blocks) {
         d_block_id_to_block_map[b->id()] = b;
     }
+
+    canned_notify_all =
+        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0);
+
+    sched_to_notify_upstream.reserve(20);
+    sched_to_notify_downstream.reserve(20);
 
     d_fgmon = fgmon;
     _exec = std::make_unique<graph_executor>(name);
@@ -34,7 +40,9 @@ thread_wrapper::thread_wrapper(const std::string& name,
 
 void thread_wrapper::start()
 {
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    // push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL,
+    // 0));
+    push_message(canned_notify_all);
 }
 void thread_wrapper::stop()
 {
@@ -61,7 +69,9 @@ void thread_wrapper::run()
 void thread_wrapper::notify_self()
 {
     gr_log_debug(_debug_logger, "notify_self");
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    // push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL,
+    // 0));
+    push_message(canned_notify_all);
 }
 
 bool thread_wrapper::get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info)
@@ -146,12 +156,13 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
         item->cb_fcn()(item->param_action());
 }
 
-
-void thread_wrapper::handle_work_notification()
+//
+bool thread_wrapper::handle_work_notification()
 {
+    _flags = 0;
     auto s = _exec->run_one_iteration(d_blocks);
     // std::string dbg_work_done;
-    // for (auto elem : s) {
+    // for (auto& elem : s) {
     //     dbg_work_done += "[" + std::to_string(elem.first) + "," +
     //                      std::to_string((int)elem.second) + "]" + ",";
     // }
@@ -159,7 +170,7 @@ void thread_wrapper::handle_work_notification()
 
     // Based on state of the run_one_iteration, do things
     // If any of the blocks are done, notify the flowgraph monitor
-    for (auto elem : s) {
+    for (auto& elem : s) {
         if (elem.second == executor_iteration_status::DONE) {
             gr_log_debug(
                 _debug_logger, "Signalling DONE to FGM from block {}", elem.first);
@@ -171,10 +182,10 @@ void thread_wrapper::handle_work_notification()
 
     bool notify_self_ = false;
 
-    std::vector<neighbor_interface_info> sched_to_notify_upstream,
-        sched_to_notify_downstream;
+    sched_to_notify_upstream.resize(0);
+    sched_to_notify_downstream.resize(0);
 
-    for (auto elem : s) {
+    for (auto& elem : s) {
 
         if (elem.second == executor_iteration_status::READY) {
             // top->notify_neighbors(elem.first);
@@ -184,23 +195,30 @@ void thread_wrapper::handle_work_notification()
 
             if (has_us) {
                 sched_to_notify_upstream.push_back(info_us);
+                _flags |= flag_blkd_in;
             }
             if (has_ds) {
                 sched_to_notify_downstream.push_back(info_ds);
+                _flags |= flag_blkd_out;
             }
             notify_self_ = true;
+
+        } else if (elem.second == executor_iteration_status::BLKD_IN) {
+            _flags |= flag_blkd_in;
+        } else if (elem.second == executor_iteration_status::BLKD_OUT) {
+            _flags |= flag_blkd_out;
         }
     }
 
-    if (notify_self_) {
-        gr_log_debug(_debug_logger, "notifying self");
-        notify_self();
-    }
+    // if (notify_self_) {
+    //     gr_log_debug(_debug_logger, "notifying self");
+    //     notify_self();
+    // }
 
     if (!sched_to_notify_upstream.empty()) {
         // Reduce to the unique schedulers to notify
-        // std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
-        // auto last =
+        // std::sort(sched_to_notify_upstream.begin(),
+        // sched_to_notify_upstream.end()); auto last =
         //     std::unique(sched_to_notify_upstream.begin(),
         //     sched_to_notify_upstream.end());
         // sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
@@ -224,6 +242,8 @@ void thread_wrapper::handle_work_notification()
             }
         }
     }
+
+    return notify_self_;
 }
 
 void thread_wrapper::thread_body(thread_wrapper* top)
@@ -233,11 +253,20 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         pthread_self(),
         boost::str(boost::format("%s") % top->name())); // % top->id()));
 
+    bool nonblocking_queue = false;
     while (!top->d_thread_stopped) {
 
-        // try to pop messages off the queue
         scheduler_message_sptr msg;
-        if (top->pop_message(msg)) // this blocks
+
+        // try to pop messages off the queue
+        bool valid = false;
+        if (nonblocking_queue) {
+            valid = top->pop_message_nonblocking(msg);
+        } else {
+            valid = top->pop_message(msg);
+        }
+
+        if (valid) // this blocks
         {
             switch (msg->type()) {
             case scheduler_message_t::SCHEDULER_ACTION: {
@@ -247,6 +276,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                 auto action = std::static_pointer_cast<scheduler_action>(msg);
                 switch (action->action()) {
                 case scheduler_action_t::DONE:
+                    top->notify_self();
                     // fgmon says that we need to be done, wrap it up
                     // each scheduler could handle this in a different way
                     gr_log_debug(top->_debug_logger,
@@ -261,23 +291,34 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     top->d_thread_stopped = true;
                     break;
                 case scheduler_action_t::NOTIFY_OUTPUT:
+                    top->_flags &= ~flag_blkd_out;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_OUTPUT from {}", msg->blkid());
-                    top->handle_work_notification();
+                    if (!(top->_flags & flag_blkd_in)) {
+                        nonblocking_queue = top->handle_work_notification();
+                    } else {
+                        gr_log_debug(top->_debug_logger, "Still blocked on the input");
+                    }
                     break;
                 case scheduler_action_t::NOTIFY_INPUT:
+                    top->_flags &= ~flag_blkd_in;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
-                    top->handle_work_notification();
+
+                    if (!(top->_flags & flag_blkd_out)) {
+                        nonblocking_queue = top->handle_work_notification();
+                    } else {
+                        gr_log_debug(top->_debug_logger, "Still blocked on the output");
+                    }
                     break;
                 case scheduler_action_t::NOTIFY_ALL: {
+                    top->_flags = 0x00;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
-                    top->handle_work_notification();
+                    nonblocking_queue = top->handle_work_notification();
                     break;
                 }
                 default:
-                    break;
                     break;
                 }
                 break;
@@ -295,7 +336,12 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             default:
                 break;
             }
+        } else {
+            nonblocking_queue = top->handle_work_notification();
+            std::this_thread::yield();
         }
+
+        nonblocking_queue = true; // thrash all the time
     }
 }
 
