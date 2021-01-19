@@ -159,7 +159,6 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
 //
 bool thread_wrapper::handle_work_notification()
 {
-    _flags = 0;
     auto s = _exec->run_one_iteration(d_blocks);
     // std::string dbg_work_done;
     // for (auto& elem : s) {
@@ -195,25 +194,13 @@ bool thread_wrapper::handle_work_notification()
 
             if (has_us) {
                 sched_to_notify_upstream.push_back(info_us);
-                _flags |= flag_blkd_in;
             }
             if (has_ds) {
                 sched_to_notify_downstream.push_back(info_ds);
-                _flags |= flag_blkd_out;
             }
             notify_self_ = true;
-
-        } else if (elem.second == executor_iteration_status::BLKD_IN) {
-            _flags |= flag_blkd_in;
-        } else if (elem.second == executor_iteration_status::BLKD_OUT) {
-            _flags |= flag_blkd_out;
         }
     }
-
-    // if (notify_self_) {
-    //     gr_log_debug(_debug_logger, "notifying self");
-    //     notify_self();
-    // }
 
     if (!sched_to_notify_upstream.empty()) {
         // Reduce to the unique schedulers to notify
@@ -291,28 +278,17 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     top->d_thread_stopped = true;
                     break;
                 case scheduler_action_t::NOTIFY_OUTPUT:
-                    top->_flags &= ~flag_blkd_out;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_OUTPUT from {}", msg->blkid());
-                    // if (!(top->_flags & flag_blkd_in)) {
-                        nonblocking_queue = top->handle_work_notification();
-                    // } else {
-                        // gr_log_debug(top->_debug_logger, "Still blocked on the input");
-                    // }
+                    nonblocking_queue = top->handle_work_notification();
                     break;
                 case scheduler_action_t::NOTIFY_INPUT:
-                    top->_flags &= ~flag_blkd_in;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
 
-                    // if (!(top->_flags & flag_blkd_out)) {
-                        nonblocking_queue = top->handle_work_notification();
-                    // } else {
-                        // gr_log_debug(top->_debug_logger, "Still blocked on the output");
-                    // }
+                    nonblocking_queue = top->handle_work_notification();
                     break;
                 case scheduler_action_t::NOTIFY_ALL: {
-                    top->_flags = 0x00;
                     gr_log_debug(
                         top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
                     nonblocking_queue = top->handle_work_notification();
