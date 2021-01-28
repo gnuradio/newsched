@@ -1,6 +1,3 @@
-#include <cuda.h>
-#include <cuda_runtime.h>
-
 __global__ 
 void multiply_const_kernel(int n, float a, const float* in, float* out)
 {

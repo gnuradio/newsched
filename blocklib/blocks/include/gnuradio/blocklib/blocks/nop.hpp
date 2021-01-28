@@ -15,9 +15,6 @@ public:
     {
         auto ptr = std::make_shared<nop>(itemsize);
 
-        ptr->add_param(param<size_t>::make(
-            nop::params::id_itemsize, "itemsize", itemsize, &(ptr->_itemsize)));
-
         ptr->add_port(untyped_port::make(
             "input", port_direction_t::INPUT, itemsize, port_type_t::STREAM));
 

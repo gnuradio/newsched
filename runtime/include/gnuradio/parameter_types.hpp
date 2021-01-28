@@ -1,5 +1,4 @@
-#ifndef GR_PARAMETER_TYPES_HPP
-#define GR_PARAMETER_TYPES_HPP
+#pragma once
 
 #include <gnuradio/types.hpp>
 #include <map>
@@ -9,6 +8,10 @@
 
 namespace gr {
 
+/**
+ * @brief Definition of supported types used for port parameters and port data types
+ *
+ */
 enum class param_type_t {
     UNTYPED,
     FLOAT,
@@ -29,21 +32,16 @@ enum class param_type_t {
     VOID
 };
 
-
+/**
+ * @brief Utility Functions for converting param type enums to other datatypes
+ *
+ */
 class parameter_functions
 {
 private:
     static std::map<param_type_t, std::type_index> param_type_index_map;
-
     static std::map<param_type_t, size_t> param_type_size_map;
-
     static std::map<std::type_index, param_type_t> param_index_type_map;
-
-    // static const std::type_index
-    // param_type_info(param_type_t p)
-    // {
-    //     return param_type_index_map[p];
-    // }
 
 public:
     static size_t param_size_info(param_type_t p);
@@ -52,5 +50,3 @@ public:
 
 
 } // namespace gr
-
-#endif

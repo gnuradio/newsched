@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright 2020
+#pragma once
 
-#ifndef INCLUDED_BLOCK_WORK_IO_HPP
-#define INCLUDED_BLOCK_WORK_IO_HPP
-
-#include "tag.hpp"
+#include <gnuradio/tag.hpp>
 #include <cstdint>
-#include <functional>
 #include <vector>
 
 namespace gr {
@@ -17,7 +12,7 @@ namespace gr {
  */
 struct block_work_input {
     int n_items;
-    uint64_t n_items_read; // Name TBD. Replacement for _read and _written because I/O
+    uint64_t n_items_read = 0; // Name TBD. Replacement for _read and _written because I/O
     void* items;           // cannot be const for output items
     std::vector<tag_t> tags;
     int n_consumed; // output the number of items that were consumed on the work() call
@@ -49,7 +44,7 @@ struct block_work_input {
  */
 struct block_work_output {
     int n_items;
-    uint64_t n_items_written; // Name TBD. Replacement for _read and _written because I/O
+    uint64_t n_items_written = 0; // Name TBD. Replacement for _read and _written because I/O
     void* items;              // cannot be const for output items
     std::vector<tag_t> tags;
     int n_produced; // output the number of items that were consumed on the work() call
@@ -67,6 +62,20 @@ struct block_work_output {
     }
 };
 
-} // namespace gr
 
-#endif
+/**
+ * @brief Enum for return codes from calls to block::work
+ *
+ */
+enum class work_return_code_t {
+    WORK_ERROR = -100, /// error occurred in the work function
+    WORK_INSUFFICIENT_OUTPUT_ITEMS =
+        -3, /// work requires a larger output buffer to produce output
+    WORK_INSUFFICIENT_INPUT_ITEMS =
+        -2, /// work requires a larger input buffer to produce output
+    WORK_DONE =
+        -1, /// this block has completed its processing and the flowgraph should be done
+    WORK_OK = 0, /// work call was successful and return values in i/o structs are valid
+};
+
+} // namespace gr

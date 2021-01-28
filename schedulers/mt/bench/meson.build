@@ -6,7 +6,7 @@ executable('bm_mt_copy',
     include_directories : incdir, 
     dependencies: [newsched_runtime_dep,
                    newsched_blocklib_blocks_dep,
-                   newsched_scheduler_st_dep,
+                   newsched_scheduler_mt_dep,
                    boost_dep], 
     install : true)
 
@@ -16,7 +16,7 @@ executable('bm_mt_fanout',
     include_directories : incdir, 
     dependencies: [newsched_runtime_dep,
                    newsched_blocklib_blocks_dep,
-                   newsched_scheduler_st_dep,
+                   newsched_scheduler_mt_dep,
                    boost_dep], 
     install : true)
 
@@ -26,7 +26,7 @@ executable('bm_mt_nop',
     include_directories : incdir, 
     dependencies: [newsched_runtime_dep,
                    newsched_blocklib_blocks_dep,
-                   newsched_scheduler_st_dep,
+                   newsched_scheduler_mt_dep,
                    boost_dep], 
     install : true)
 

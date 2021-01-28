@@ -1,13 +1,5 @@
-/* -*- c++ -*- */
-/*
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
+#pragma once
 
-#ifndef INCLUDED_GR_TYPES_HPP
-#define INCLUDED_GR_TYPES_HPP
-
-// #include <gnuradio/api.h>
 #include <stddef.h> // size_t
 #include <stdint.h>
 #include <complex>
@@ -22,5 +14,3 @@ typedef std::vector<void*> gr_vector_void_star;
 typedef std::vector<const void*> gr_vector_const_void_star;
 typedef std::complex<float> gr_complex;
 typedef std::complex<double> gr_complexd;
-
-#endif /* INCLUDED_GR_TYPES_HPP */

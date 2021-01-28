@@ -3,7 +3,6 @@ blocks_sources = [
     'fanout.cpp',
     'head.cpp',
     'multiply_const.cpp',
-    'throttle.cpp',
     'vector_sink.cpp',
     'vector_source.cpp'
 ]

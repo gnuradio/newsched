@@ -1,3 +1,4 @@
+#pragma once
 
 #include "graph_executor.hpp"
 #include <gnuradio/block.hpp>
@@ -9,6 +10,14 @@
 
 namespace gr {
 namespace schedulers {
+
+/**
+ * @brief Wrapper for scheduler thread
+ *
+ * Creates the worker thread that will process work for all blocks in the graph assigned
+ * to this scheduler.  This is the core of the single threaded scheduler.
+ *
+ */
 class thread_wrapper
 {
 private:
@@ -59,7 +68,6 @@ public:
     void set_name(int name) { _name = name; }
 
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
-
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
 
     void start();
@@ -71,12 +79,9 @@ public:
 
     bool get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info);
     bool get_neighbors_downstream(nodeid_t blkid, neighbor_interface_info& info);
-    // bool get_neighbors(nodeid_t blkid);
 
     void notify_upstream(neighbor_interface_sptr upstream_sched, nodeid_t blkid);
     void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
-    void handle_parameter_query(std::shared_ptr<param_query_action> item);
-    void handle_parameter_change(std::shared_ptr<param_change_action> item);
     void handle_work_notification();
     static void thread_body(thread_wrapper* top);
 };

@@ -57,7 +57,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
             void* write_ptr = nullptr;
-            uint64_t nitems_written;
+            uint64_t nitems_written = 0;
             for (auto p_buf : _bufman->get_output_buffers(p)) {
                 buffer_info_t write_info;
                 ready = p_buf->write_info(write_info);
@@ -70,23 +70,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 if (!ready)
                     break;
 
-                // only fill the buffers half way
-                // write_info.n_items = std::min(write_info.n_items, p_buf->capacity()/2);
-
                 size_t tmp_buf_size = write_info.n_items;
                 if (tmp_buf_size < s_min_buf_items) {
                     ready = false;
                     break;
                 }
-                // while (tmp_buf_size > p_buf->) {
-                //     tmp_buf_size >>= 1;
-                //     if (tmp_buf_size < s_min_buf_items)
-                //     {
-                //         ready = false;
-                //         break;
-                //     }
-                // }
-                // if (!ready) { break; }
 
                 if (tmp_buf_size < max_output_buffer)
                     max_output_buffer = tmp_buf_size;
@@ -101,27 +89,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             if (!ready)
                 break;
 
-            // This check probably needs to happen, but this is the wrong comparison
-            //   -- or, rely on the buffers to keep themselves full to the right degree
-            // max_output_buffer = std::min(max_output_buffer, s_max_buf_items);
 
             std::vector<tag_t> tags; // needs to be associated with edge buffers
-
-            #if 0 // Revisit output multiple logic.  Something is wrong currently
-            if (b->output_multiple_set()) {
-                // quantize to the output multiple
-                if (max_output_buffer < b->output_multiple()) {
-                    max_output_buffer = b->output_multiple();
-                }
-
-                max_output_buffer =
-                    b->output_multiple() * (max_output_buffer / b->output_multiple());
-                if (max_output_buffer == 0) {
-                    ready = false;
-                    break;
-                }
-            }
-            #endif
 
             work_output.push_back(
                 block_work_output(max_output_buffer, nitems_written, write_ptr, tags));

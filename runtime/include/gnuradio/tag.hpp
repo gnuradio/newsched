@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright 2020
+#pragma once
 
-#ifndef INCLUDED_TAG_HPP
-#define INCLUDED_TAG_HPP
-
-#include <cstdint>
 #include <string>
-#include <vector>
 
 namespace gr {
 
@@ -26,7 +20,7 @@ class tag_t
 public:
     uint64_t offset;
     std::string key;
-    // .... value  -- do without pmts for now
+    // .... value  -- do without pmts for now - string is just a placeholder
     std::string value;
     std::string srcid;
     tag_t(uint64_t offset, std::string key, std::string value, std::string srcid = "")
@@ -43,13 +37,5 @@ public:
     }
 };
 
-// tag_t(uint64_t offset,
-//       const std::string& key,
-//       const std::string& value,
-//       const std::string& srcid)
-//     : offset(offset), key(key), value(value), srcid(srcid)
-// {
-// }
 } // namespace gr
 
-#endif

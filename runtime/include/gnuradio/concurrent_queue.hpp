@@ -1,22 +1,23 @@
 #pragma once
 
 #include <condition_variable>
-#include <mutex>
 #include <deque>
-#include <atomic>
 #include <iostream>
-
-#include <gnuradio/scheduler_message.hpp>
+#include <mutex>
 
 namespace gr {
 
+/**
+ * @brief Blocking Multi-producer Single-consumer Queue class
+ *
+ * @tparam T Data type of items in queue
+ */
 template <typename T>
 class concurrent_queue
 {
 public:
     bool push(const T& msg)
     {
-        // std::cout << "**push" << std::endl;
         std::unique_lock<std::mutex> l(_mutex);
         _queue.push_back(msg);
         l.unlock();
@@ -27,7 +28,8 @@ public:
     bool pop(T& msg)
     {
         std::unique_lock<std::mutex> l(_mutex);
-        _cond.wait(l, [this] { return !_queue.empty(); }); // TODO - replace with a waitfor
+        _cond.wait(l,
+                   [this] { return !_queue.empty(); }); // TODO - replace with a waitfor
         msg = _queue.front();
         _queue.pop_front();
         return true;
@@ -36,14 +38,11 @@ public:
     {
         std::unique_lock<std::mutex> l(_mutex);
         _queue.clear();
-        // l.unlock();
-        // _cond.notify_all();
     }
 
 private:
     std::deque<T> _queue;
     std::mutex _mutex;
     std::condition_variable _cond;
-    std::atomic<bool> _ready;
 };
 } // namespace gr
