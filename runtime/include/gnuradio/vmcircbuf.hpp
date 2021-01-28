@@ -10,6 +10,8 @@
 
 namespace gr {
 
+extern std::mutex s_vm_mutex;
+
 // forward declaration of derived classes
 // class vmcircbuf_sysv_shm;
 
@@ -89,3 +91,7 @@ public:
 
 #define VMCIRC_BUFFER_ARGS \
     vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+#define VMCIRC_BUFFER_SYSV_SHM_ARGS \
+    vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::SYSV_SHM)
+#define VMCIRC_BUFFER_MMAP_SHM_ARGS \
+    vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::MMAP_SHM)

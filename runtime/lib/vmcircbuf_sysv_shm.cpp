@@ -18,13 +18,10 @@
 
 #define MAX_SYSV_SHM_ATTEMPTS 3
 
-
-std::mutex s_vm_mutex;
-
 namespace gr {
 vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(size_t num_items, size_t item_size) : vmcirc_buffer(num_items, item_size)
 {
-    set_type("vmcirc_buffer");
+    set_type("vmcircbuf_sysv_shm");
 
 #if !defined(HAVE_SYS_SHM_H)
     GR_LOG_ERROR(d_logger, "sysv shared memory is not available");
