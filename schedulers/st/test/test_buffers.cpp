@@ -12,7 +12,7 @@
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/logging.hpp>
 #include <gnuradio/schedulers/st/scheduler_st.hpp>
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
 

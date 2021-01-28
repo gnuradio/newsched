@@ -1,6 +1,6 @@
 #include "buffer_management.hpp"
 #include "scheduler_st.hpp"
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 namespace gr {
 

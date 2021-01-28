@@ -39,7 +39,8 @@ runtime_sources = [
   'scheduler.cpp',
   'realtime.cpp',
   'pagesize.cpp',
-  'vmcirc_buffer.cpp'
+  'vmcircbuf.cpp',
+  'vmcircbuf_sysv_shm.cpp'
 ]
 
 cpp_args = []
