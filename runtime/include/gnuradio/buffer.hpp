@@ -7,6 +7,14 @@
 
 namespace gr {
 
+/**
+ * @brief Information about the current state of the buffer
+ *
+ * The buffer_info_t class is used to return information about the current state of the
+ * buffer for reading or writing, as in how many items are contained, or how much space is
+ * there to write into, as well as the total items read/written
+ *
+ */
 struct buffer_info_t {
     void* ptr;
     int n_items; // number of items available to be read or written
@@ -33,11 +41,8 @@ public:
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
 
-    // virtual int capacity() = 0;
-    // virtual int size() = 0;
-
     /**
-     * @brief Return current read state of buffer reader
+     * @brief Return current buffer state for reading
      *
      * @param info Reference to \buffer_info_t struct
      * @return true if info is valid
@@ -46,7 +51,7 @@ public:
     virtual bool read_info(buffer_info_t& info) = 0;
 
     /**
-     * @brief Return current read state of buffer writer
+     * @brief Return current buffer state for writing
      *
      * @param info Reference to \buffer_info_t struct
      * @return true if info is valid
@@ -71,47 +76,47 @@ public:
                           std::vector<tag_t>& tags){}; // not virtual just yet = 0;
 
     /**
-     * @brief Updates the read pointers of the buffer 
-     * 
-     * @param num_items 
+     * @brief Updates the read pointers of the buffer
+     *
+     * @param num_items Number of items that were read from the buffer
      */
     virtual void post_read(int num_items) = 0;
 
     /**
      * @brief Updates the write pointers of the buffer
-     * 
-     * @param num_items 
+     *
+     * @param num_items Number of items that were written to the buffer
      */
     virtual void post_write(int num_items) = 0;
 
     /**
      * @brief Copy items from another buffer into this buffer
-     * 
+     *
      * Note: This is not valid for all buffers, e.g. domain adapters
-     * 
-     * @param from 
-     * @param nitems 
+     *
+     * @param from The other buffer that needs to be copied into this buffer
+     * @param nitems The number of items to copy
      */
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems) = 0;
 
     /**
      * @brief Set the name of the buffer
-     * 
-     * @param name 
+     *
+     * @param name
      */
     void set_name(const std::string& name) { _name = name; }
 
     /**
      * @brief Get the name of the buffer
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string name() { return _name; }
 
     /**
      * @brief Get the type of the buffer
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string type() { return _type; }
 };
@@ -126,15 +131,9 @@ typedef std::shared_ptr<buffer> buffer_sptr;
 class buffer_properties
 {
 public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
     buffer_properties() {}
     virtual ~buffer_properties() {}
-    // buffer_factory_function bff() { return _bff; }
-
-    // private:
-    // buffer_factory_function _bff;
 };
-
 
 typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>

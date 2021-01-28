@@ -9,10 +9,9 @@
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
 #include <gnuradio/blocklib/cuda/copy.hpp>
 #include <gnuradio/domain_adapter_direct.hpp>
-#include <gnuradio/domain_adapter_shm.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/logging.hpp>
-#include <gnuradio/realtime.hpp>
+// #include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
 #include <gnuradio/cudabuffer.hpp>
@@ -74,7 +73,7 @@ int main(int argc, char* argv[])
 
     auto fg = flowgraph::make();
 
-    fg->connect(src, 0, head, 0, VMCIRC_BUFFER_ARGS);
+    fg->connect(src, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
     auto sched = schedulers::scheduler_mt::make(
         "sched",
         sizeof(gr_complex) * batch_size *
@@ -82,24 +81,24 @@ int main(int argc, char* argv[])
     sched->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
     fg->set_scheduler(sched);
     if (mem_model == 0) {
-        fg->connect(head, 0, copy_blks[0], 0, CUDA_BUFFER_ARGS_H2D);
+        fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer( CUDA_BUFFER_ARGS_H2D);
         for (int i = 0; i < nblocks - 1; i++) {
-            fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0, CUDA_BUFFER_ARGS_D2D);
+            fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)->set_custom_buffer( CUDA_BUFFER_ARGS_D2D);
         }
-        fg->connect(copy_blks[nblocks - 1], 0, snk, 0, CUDA_BUFFER_ARGS_D2H);
+        fg->connect(copy_blks[nblocks - 1], 0, snk, 0)->set_custom_buffer( CUDA_BUFFER_ARGS_D2H);
 
     } else {
-        fg->connect(head, 0, copy_blks[0], 0, CUDA_BUFFER_PINNED_ARGS);
+        fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer( CUDA_BUFFER_PINNED_ARGS);
         for (int i = 0; i < nblocks - 1; i++) {
-            fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0, CUDA_BUFFER_PINNED_ARGS);
+            fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)->set_custom_buffer( CUDA_BUFFER_PINNED_ARGS);
         }
-        fg->connect(copy_blks[nblocks - 1], 0, snk, 0, CUDA_BUFFER_PINNED_ARGS);
+        fg->connect(copy_blks[nblocks - 1], 0, snk, 0)->set_custom_buffer( CUDA_BUFFER_PINNED_ARGS);
     }
 
     fg->validate();
 
-    if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
-        std::cout << "Unable to enable realtime scheduling " << std::endl;
+    // if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
+    //     std::cout << "Unable to enable realtime scheduling " << std::endl;
 
     auto t1 = std::chrono::steady_clock::now();
     fg->start();

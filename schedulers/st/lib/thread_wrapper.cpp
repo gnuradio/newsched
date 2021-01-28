@@ -1,9 +1,4 @@
 #include "thread_wrapper.hpp"
-
-#include <gnuradio/thread.hpp>
-#include <gnuradio/concurrent_queue.hpp>
-#include <gnuradio/flowgraph_monitor.hpp>
-#include <gnuradio/scheduler_message.hpp>
 #include <thread>
 
 namespace gr {
@@ -95,15 +90,6 @@ bool thread_wrapper::get_neighbors_downstream(nodeid_t blkid,
     return false;
 }
 
-// std::vector<neighbor_interface_info> thread_wrapper::get_neighbors(nodeid_t blkid)
-// {
-//     auto ret = get_neighbors_upstream(blkid);
-//     auto ds = get_neighbors_downstream(blkid);
-
-//     ret.insert(ret.end(), ds.begin(), ds.end());
-//     return ret;
-// }
-
 void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched,
                                      nodeid_t blkid)
 {
@@ -120,42 +106,9 @@ void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched,
         std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, blkid));
 }
 
-void thread_wrapper::handle_parameter_query(std::shared_ptr<param_query_action> item)
-{
-    auto b = d_block_id_to_block_map[item->block_id()];
-
-    gr_log_debug(
-        _debug_logger, "handle parameter query {} - {}", item->block_id(), b->alias());
-
-    b->on_parameter_query(item->param_action());
-
-    if (item->cb_fcn() != nullptr)
-        item->cb_fcn()(item->param_action());
-}
-
-void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action> item)
-{
-    auto b = d_block_id_to_block_map[item->block_id()];
-
-    gr_log_debug(
-        _debug_logger, "handle parameter change {} - {}", item->block_id(), b->alias());
-
-    b->on_parameter_change(item->param_action());
-
-    if (item->cb_fcn() != nullptr)
-        item->cb_fcn()(item->param_action());
-}
-
-
 void thread_wrapper::handle_work_notification()
 {
     auto s = _exec->run_one_iteration(d_blocks);
-    // std::string dbg_work_done;
-    // for (auto elem : s) {
-    //     dbg_work_done += "[" + std::to_string(elem.first) + "," +
-    //                      std::to_string((int)elem.second) + "]" + ",";
-    // }
-    // gr_log_debug(_debug_logger, dbg_work_done);
 
     // Based on state of the run_one_iteration, do things
     // If any of the blocks are done, notify the flowgraph monitor
@@ -229,10 +182,6 @@ void thread_wrapper::handle_work_notification()
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
     gr_log_info(top->_logger, "starting thread");
-    thread::set_thread_name(
-        pthread_self(),
-        boost::str(boost::format("%s") % top->name())); // % top->id()));
-
     while (!top->d_thread_stopped) {
 
         // try to pop messages off the queue
@@ -282,16 +231,6 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                 }
                 break;
             }
-            case scheduler_message_t::PARAMETER_QUERY: {
-                // Query the state of a parameter on a block
-                top->handle_parameter_query(
-                    std::static_pointer_cast<param_query_action>(msg));
-            } break;
-            case scheduler_message_t::PARAMETER_CHANGE: {
-                // Query the state of a parameter on a block
-                top->handle_parameter_change(
-                    std::static_pointer_cast<param_change_action>(msg));
-            } break;
             default:
                 break;
             }

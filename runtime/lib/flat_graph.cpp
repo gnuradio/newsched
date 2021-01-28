@@ -1,18 +1,3 @@
-/* -*- c++ -*- */
-/*
- * Copyright 2007,2011,2013 Free Software Foundation, Inc.
- *
- * This file is part of GNU Radio
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-
 #include <assert.h>
 #include <algorithm>
 #include <iterator>
@@ -24,60 +9,8 @@
 
 namespace gr {
 
-#define FLOWGRAPH_DEBUG 0
-
-// edge::~edge() {}
-
-// flat_graph::flat_graph() {}
-
 flat_graph::~flat_graph() {}
 
-
-// void flat_graph::validate()
-// {
-//     d_blocks = calc_used_blocks();
-
-//     for (auto &b : d_blocks)
-//     {
-//         std::vector<int> used_ports;
-//         int ninputs, noutputs;
-
-//         if (FLOWGRAPH_DEBUG)
-//             std::cout << "Validating block: " << b << std::endl;
-
-//         used_ports = calc_used_ports(b, true); // inputs
-//         ninputs = used_ports.size();
-//         check_contiguity(b, used_ports, true); // inputs
-
-//         used_ports = calc_used_ports(b, false); // outputs
-//         noutputs = used_ports.size();
-//         check_contiguity(b, used_ports, false); // outputs
-
-//         // if (!((*p)->check_topology(ninputs, noutputs))) {
-//         //     std::stringstream msg;
-//         //     msg << "check topology failed on " << (*p) << " using ninputs=" <<
-//         ninputs
-//         //         << ", noutputs=" << noutputs;
-//         //     throw std::runtime_error(msg.str());
-//         // }
-
-//         // update the block alias
-//         std::map<std::string, int> name_count;
-//         // look in the map, see how many of that name exist
-//         // make the alias name + count;
-//         // increment the map
-//         int cnt;
-//         if (name_count.find(b->name()) == name_count.end()) {
-//             name_count[b->name()] = cnt = 0;
-//         } else {
-//             cnt = name_count[b->name()];
-//         }
-//         b->set_alias(b->name() + std::to_string(cnt));
-//         name_count[b->name()] = cnt+1;
-
-
-//     }
-// }
 
 void flat_graph::clear()
 {
@@ -86,60 +19,6 @@ void flat_graph::clear()
 
     graph::clear();
 }
-
-void flat_graph::check_valid_port(block_sptr block, port_sptr port)
-{
-    // std::stringstream msg;
-
-    // if (port < 0) {
-    //     msg << "negative port number " << port << " is invalid";
-    //     throw std::invalid_argument(msg.str());
-    // }
-
-    // if (port >= sig.n_streams()) {
-    //     msg << "port number " << port << " exceeds max of " << sig.n_streams() - 1;
-    //     throw std::invalid_argument(msg.str());
-    // }
-}
-
-void flat_graph::check_dst_not_used(const block_endpoint& dst)
-{
-    // A destination is in use if it is already on the edge list
-    for (auto& p : edges())
-        if (p->dst() == dst) {
-            std::stringstream msg;
-            msg << "destination already in use by edge " << (*p);
-            throw std::invalid_argument(msg.str());
-        }
-}
-
-void flat_graph::check_type_match(const block_endpoint& src, const block_endpoint& dst)
-{
-    int src_size = src.port()->data_size();
-    int dst_size = dst.port()->data_size();
-
-    // TODO: enforce strongly typed checking??
-
-    if (src_size != dst_size) {
-        std::stringstream msg;
-        msg << "itemsize mismatch: " << src << " using " << src_size << ", " << dst
-            << " using " << dst_size;
-        throw std::invalid_argument(msg.str());
-    }
-}
-
-// block_vector_t flat_graph::calc_used_blocks()
-// {
-//     block_vector_t tmp;
-
-//     // Collect all blocks in the edge list
-//     for (edge_viter_t p = _edges.begin(); p != _edges.end(); p++) {
-//         tmp.push_back(static_cast<block_endpoint>(p->src()).block());
-//         tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
-//     }
-
-//     return unique_vector<block_sptr>(tmp);
-// }
 
 port_vector_t flat_graph::calc_used_ports(block_sptr block, bool check_inputs)
 {
@@ -172,55 +51,6 @@ edge_vector_t flat_graph::calc_connections(block_sptr block, bool check_inputs)
     }
 
     return result; // assumes no duplicates
-}
-
-void flat_graph::check_contiguity(block_sptr block,
-                                  const port_vector_t used_ports,
-                                  bool check_inputs)
-{
-
-    // FIXME: make this function do the following:
-    //  look at the block and all its ports
-    //  make sure all the ports that are not optional are in the list of used ports
-
-    // std::stringstream msg;
-
-    // gr::io_signature sig =
-    //     check_inputs ? block->input_signature() : block->output_signature();
-
-    // int nports = used_ports.size();
-
-    // // TODO - make io_signature deal with optional ports -- port class??
-
-    // int min_ports = sig.n_streams();
-    // int max_ports = sig.n_streams();
-
-    // if (nports == 0 && min_ports == 0)
-    //     return;
-
-    // if (nports < min_ports) {
-    //     msg << block << ": insufficient connected "
-    //         << (check_inputs ? "input ports " : "output ports ") << "(" << min_ports
-    //         << " needed, " << nports << " connected)";
-    //     throw std::runtime_error(msg.str());
-    // }
-
-    // if (nports > max_ports && max_ports != io_signature::IO_INFINITE) {
-    //     msg << block << ": too many connected "
-    //         << (check_inputs ? "input ports " : "output ports ") << "(" << max_ports
-    //         << " allowed, " << nports << " connected)";
-    //     throw std::runtime_error(msg.str());
-    // }
-
-    // if (used_ports[nports - 1] + 1 != nports) {
-    //     for (int i = 0; i < nports; i++) {
-    //         if (used_ports[i] != i) {
-    //             msg << block << ": missing connection "
-    //                 << (check_inputs ? "to input port " : "from output port ") << i;
-    //             throw std::runtime_error(msg.str());
-    //         }
-    //     }
-    // }
 }
 
 block_vector_t flat_graph::calc_downstream_blocks(block_sptr block, port_sptr port)

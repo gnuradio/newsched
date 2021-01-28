@@ -8,11 +8,14 @@
 
 namespace gr {
 
-
 enum class fg_monitor_message_t { UNKNOWN, DONE, FLUSHED, KILL };
 
 class scheduler;
 
+/**
+ * @brief Messages received by flowgraph_monitor
+ * 
+ */
 class fg_monitor_message
 {
 public:

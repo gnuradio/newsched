@@ -61,12 +61,6 @@ public:
 
     virtual bool read_info(buffer_info_t& info)
     {
-        // Need to lock the buffer to freeze the current state
-        // if (!_buf_mutex.try_lock())
-        // {
-        //     return false;
-        // }
-        // _buf_mutex.lock();
         std::scoped_lock guard(_buf_mutex);
 
         info.ptr = read_ptr();
@@ -79,11 +73,6 @@ public:
 
     virtual bool write_info(buffer_info_t& info)
     {
-        // if (!_buf_mutex.try_lock())
-        // {
-        //     return false;
-        // }
-        // _buf_mutex.lock();
         std::scoped_lock guard(_buf_mutex);
 
         info.ptr = write_ptr();
@@ -106,7 +95,6 @@ public:
             _read_index -= _buf_size;
         }
         _total_read += num_items;
-        // _buf_mutex.unlock();
     }
     virtual void post_write(int num_items)
     {
@@ -133,7 +121,6 @@ public:
         }
 
         _total_written += num_items;
-        // _buf_mutex.unlock();
     }
 
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems)

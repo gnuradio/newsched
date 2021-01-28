@@ -1,35 +1,16 @@
-/* -*- c++ -*- */
-/*
- * Copyright 2006,2007,2013 Free Software Foundation, Inc.
- *
- * This file is part of GNU Radio
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
-
 #pragma once
 
-#include "api.h"
-#include <iostream>
-#include <memory>
-
-#include <condition_variable>
-#include <mutex>
-#include <queue>
-
-#include <gnuradio/block.hpp>
-#include <gnuradio/domain.hpp>
-#include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/graph.hpp>
 #include <gnuradio/scheduler.hpp>
+#include <gnuradio/domain.hpp>
 
 namespace gr {
 
-// typedef std::tuple<scheduler_sptr, std::vector<block_sptr>> partition_conf;
-// typedef std::vector<partition_conf> partition_conf_vec;
-
+/**
+ * @brief Top level graph representing the flowgraph 
+ * 
+ */
 class flowgraph : public graph
 {
 private:

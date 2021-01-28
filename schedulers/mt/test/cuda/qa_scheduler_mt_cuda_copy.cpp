@@ -10,13 +10,12 @@
 #include <gnuradio/cudabuffer.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
-#include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
 
 /*
  * Test a basic chain of copy blocks, all assigned to the same thread
- * 
+ *
  */
 TEST(SchedulerMTTest, CudaCopyBasic)
 {
@@ -24,7 +23,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
-        input_data[i] = gr_complex(i,-i);
+        input_data[i] = gr_complex(i, -i);
     }
 
     auto src = blocks::vector_source_c::make(input_data, false);
@@ -33,11 +32,11 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     auto copy2 = cuda::copy::make(1024);
 
     auto fg = flowgraph::make();
-    fg->connect(src, 0, copy1, 0, CUDA_BUFFER_ARGS_H2D);
-    fg->connect(copy1, 0, copy2, 0, CUDA_BUFFER_ARGS_D2D);
-    fg->connect(copy2, 0, snk1, 0, CUDA_BUFFER_ARGS_D2H);
+    fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
 
-    auto sched = schedulers::scheduler_mt::make("sched",32768);
+    auto sched = schedulers::scheduler_mt::make("sched", 32768);
     fg->set_scheduler(sched);
     sched->add_block_group({ copy1, copy2 });
 
@@ -51,7 +50,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
 
 /*
  * Test a basic chain of copy blocks, on different threads
- * 
+ *
  */
 TEST(SchedulerMTTest, CudaCopyMultiThreaded)
 {
@@ -59,7 +58,7 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
-        input_data[i] = gr_complex(i,-i);
+        input_data[i] = gr_complex(i, -i);
     }
 
     auto src = blocks::vector_source_c::make(input_data, false);
@@ -68,11 +67,11 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     auto copy2 = cuda::copy::make(1024);
 
     auto fg = flowgraph::make();
-    fg->connect(src, 0, copy1, 0, CUDA_BUFFER_ARGS_H2D);
-    fg->connect(copy1, 0, copy2, 0, CUDA_BUFFER_ARGS_D2D);
-    fg->connect(copy2, 0, snk1, 0, CUDA_BUFFER_ARGS_D2H);
+    fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
 
-    auto sched = schedulers::scheduler_mt::make("sched",32768);
+    auto sched = schedulers::scheduler_mt::make("sched", 32768);
     fg->set_scheduler(sched);
     // by not adding block group, each block in its own thread
 

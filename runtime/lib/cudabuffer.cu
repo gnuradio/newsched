@@ -75,11 +75,6 @@ void* cuda_buffer::write_ptr()
 
 bool cuda_buffer::read_info(buffer_info_t& info)
 {
-    // Need to lock the buffer to freeze the current state
-    // if (!_buf_mutex.try_lock()) {
-    //     return false;
-    // }
-    // _buf_mutex.lock();
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = read_ptr();
@@ -91,10 +86,6 @@ bool cuda_buffer::read_info(buffer_info_t& info)
 
 bool cuda_buffer::write_info(buffer_info_t& info)
 {
-    // if (!_buf_mutex.try_lock()) {
-    //     return false;
-    // }
-    // _buf_mutex.lock();
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = write_ptr();
@@ -115,7 +106,6 @@ void cuda_buffer::post_read(int num_items)
     if (_read_index >= _buf_size) {
         _read_index -= _buf_size;
     }
-    // _buf_mutex.unlock();
 }
 void cuda_buffer::post_write(int num_items)
 {
@@ -155,17 +145,9 @@ void cuda_buffer::post_write(int num_items)
                    cudaMemcpyDeviceToHost);
 
         memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
-        // cudaMemcpy(&_device_buffer[wi2],
-        //            &_device_buffer[wi1],
-        //            num_bytes_1,
-        //            cudaMemcpyDeviceToDevice);
 
         if (num_bytes_2) {
             memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
-            // cudaMemcpy(&_device_buffer[0],
-            //            &_device_buffer[_buf_size],
-            //            num_bytes_2,
-            //            cudaMemcpyDeviceToDevice);
         }
     } else // D2D
     {
@@ -184,10 +166,9 @@ void cuda_buffer::post_write(int num_items)
     if (_write_index >= _buf_size) {
         _write_index -= _buf_size;
     }
-
-    // _buf_mutex.unlock();
 }
 
+// FIXME: This probably won't work as of now
 void cuda_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);

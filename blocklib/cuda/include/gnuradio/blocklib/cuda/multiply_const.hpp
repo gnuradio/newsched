@@ -24,13 +24,6 @@ public:
                                     port_type_t::STREAM,
                                     std::vector<size_t>{ vlen }));
 
-        ptr->add_param(
-            param<T>::make(multiply_const<T>::params::id_k, "k", k, &ptr->d_k));
-
-        // TODO: vlen should be const and unchangeable as a parameter
-        ptr->add_param(param<size_t>::make(
-            multiply_const<T>::params::id_vlen, "vlen", vlen, &ptr->d_vlen));
-
         return ptr;
 
     }
@@ -41,10 +34,6 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output);
 
-    // These methods should be automatically generated or macros
-    // setters/getters/callback wrappers
-    void set_k(T k) {return request_parameter_change<T>(params::id_k, k);}
-    T k() { return request_parameter_query<T>(params::id_k); }
 
 private:
 

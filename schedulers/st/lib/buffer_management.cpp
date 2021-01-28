@@ -1,4 +1,5 @@
 #include "buffer_management.hpp"
+#include <gnuradio/domain_adapter.hpp>
 
 namespace gr {
 namespace schedulers {
@@ -8,12 +9,9 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                                         buffer_factory_function buf_factory,
                                         std::shared_ptr<buffer_properties> buf_props)
 {
-
     // not all edges may be used
     for (auto e : fg->edges()) {
         // every edge needs a buffer
-        d_edge_catalog[e->identifier()] = e;
-
         auto num_items = get_buffer_num_items(e, fg);
 
         // Determine whether the blocks on either side of the edge are domain adapters
@@ -83,6 +81,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buf = buf_factory(num_items, e->itemsize(), buf_props);
             }
 
+        // FIXME: Using a string for edge map lookup is inefficient
             d_edge_buffers[e->identifier()] = buf;
             gr_log_info(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
         }
@@ -108,7 +107,6 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
     }
 }
 
-
 int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
 {
     size_t item_size = e->itemsize();
@@ -123,30 +121,6 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     {
         grblock = std::dynamic_pointer_cast<block>(e->dst().node());
     }
-
-    // Make sure there are at least twice the output_multiple no. of items
-    if (nitems < 2 * grblock->output_multiple()) // Note: this means output_multiple()
-        nitems = 2 * grblock->output_multiple(); // can't be changed by block dynamically
-
-    // // limit buffer size if indicated
-    // if (grblock->max_output_buffer(port) > 0) {
-    //     // std::cout << "constraining output items to " <<
-    //     block->max_output_buffer(port)
-    //     // << "\n";
-    //     nitems = std::min((long)nitems, (long)grblock->max_output_buffer(port));
-    //     nitems -= nitems % grblock->output_multiple();
-    //     if (nitems < 1)
-    //         throw std::runtime_error("problems allocating a buffer with the given
-    //         max "
-    //                                 "output buffer constraint!");
-    // } else if (grblock->min_output_buffer(port) > 0) {
-    //     nitems = std::max((long)nitems, (long)grblock->min_output_buffer(port));
-    //     nitems -= nitems % grblock->output_multiple();
-    //     if (nitems < 1)
-    //         throw std::runtime_error("problems allocating a buffer with the given
-    //         min "
-    //                                 "output buffer constraint!");
-    // }
 
     // FIXME: Downstream block connections get messed up by domain adapters
     //   Need to tag the blocks before they get partitioned

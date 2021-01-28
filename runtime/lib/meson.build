@@ -26,9 +26,6 @@ endif
 
 runtime_sources = [
   'parameter_types.cpp',
-  'block.cpp',
-  'sync_block.cpp',
-#   domain_adapter_zmq.cpp,
   'edge.cpp',
   'graph.cpp',
   'graph_utils.cpp',
@@ -36,8 +33,6 @@ runtime_sources = [
   'flowgraph_monitor.cpp',
   'flowgraph.cpp',
   'logging.cpp',
-  'scheduler.cpp',
-  'realtime.cpp',
   'pagesize.cpp',
   'sys_paths.cpp',
   'vmcircbuf.cpp',

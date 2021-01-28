@@ -1,7 +1,5 @@
 #pragma once
 
-#include "api.h"
-#include <gnuradio/block.hpp>
 #include <gnuradio/buffer.hpp>
 #include <gnuradio/node.hpp>
 #include <iostream>
@@ -10,7 +8,12 @@
 
 namespace gr {
 
-// typedef endpoint std::pair<node_sptr, port_sptr>
+/**
+ * @brief Wrapper of pair for describing general endpoint between two things
+ *
+ * @tparam A
+ * @tparam B
+ */
 template <class A, class B>
 class endpoint : public std::pair<A, B>
 {
@@ -24,6 +27,10 @@ public:
     endpoint(A a, B b) : std::pair<A, B>(a, b) {}
 };
 
+/**
+ * @brief Endpoint between ports associated with nodes
+ *
+ */
 class node_endpoint : public endpoint<node_sptr, port_sptr>
 {
 private:
@@ -52,6 +59,14 @@ inline std::ostream& operator<<(std::ostream& os, const node_endpoint endp)
     return os;
 }
 
+/**
+ * @brief Edge between ports
+ *
+ * The edge class stores the properties describing the logical connection between two
+ * ports.  This includes the buffer used to pass data between the ports, which may be of a
+ * custom type not defined in-tree
+ *
+ */
 class edge
 {
 protected:
@@ -77,7 +92,6 @@ public:
     node_endpoint dst() const;
 
     std::string identifier() const;
-
     size_t itemsize() const;
 
     void set_custom_buffer(buffer_factory_function buffer_factory,

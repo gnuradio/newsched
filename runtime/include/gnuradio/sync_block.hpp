@@ -1,5 +1,4 @@
-#ifndef INCLUDED_SYNC_BLOCK_HPP
-#define INCLUDED_SYNC_BLOCK_HPP
+#pragma once
 
 #include <algorithm>
 #include <limits>
@@ -8,15 +7,14 @@
 
 namespace gr {
 /**
- * @brief synchronous 1:1 input to output with history
+ * @brief synchronous 1:1 input to output
  *
  */
 class sync_block : public block
 {
 public:
-    sync_block(const std::string& name);
+    sync_block(const std::string& name) : block(name) {}
 
-    // ~sync_block() {};
     /**
      * @brief Performs checks on inputs and outputs before and after the call
      * to the derived block's work function
@@ -88,4 +86,3 @@ public:
     };
 };
 } // namespace gr
-#endif

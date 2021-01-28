@@ -69,21 +69,16 @@ public:
 
     void start_thread(sptr ptr) { d_thread = std::thread(run_thread, ptr); }
 
-    // TODO: bag out of thread when remote buffer ptr has been acquired
     static void run_thread(sptr top)
     {
         while (true) {
             {
                 std::unique_lock<std::mutex> l(top->p_sync->mtx);
-                // std::cout << "svr unlock" << std::endl;
                 top->p_sync->cv.wait(l, [top] { return top->p_sync->ready == 1; });
-                // std::cout << "svr out of wait" << std::endl;
 
                 switch (top->p_sync->request) {
 
                 case da_request_t::GET_REMOTE_BUFFER:
-                    // std::cout << "svr WRITE_INFO" << std::endl;
-
                     top->p_sync->buffer = top->buffer();
                     top->p_sync->response = da_response_t::OK;
                     break;
@@ -91,10 +86,6 @@ public:
                     break;
                 }
 
-
-                // std::cout << "svr out of switch" << std::endl;
-                // l.unlock();
-                // std::cout << "svr notify_one" << std::endl;
                 top->p_sync->ready = 2;
                 top->p_sync->cv.notify_one();
 
@@ -112,7 +103,6 @@ public:
     virtual void post_read(int num_items) { return _buffer->post_read(num_items); }
     virtual void post_write(int num_items) { return _buffer->post_write(num_items); }
 
-    // This is not valid for all buffers, e.g. domain adapters
     virtual void copy_items(buffer_sptr from, int nitems)
     {
         buffer_info_t wi1;
@@ -167,24 +157,17 @@ public:
     virtual void* read_ptr() { return nullptr; }
     virtual void* write_ptr() { return nullptr; }
 
-    // virtual int capacity() = 0;
-    // virtual int size() = 0;
-
     void get_remote_buffer()
     {
         {
-            // std::lock_guard<std::mutex> l(p_sync->mtx);
-            // std::cout << "read_info unlock" << std::endl;
             p_sync->request = da_request_t::GET_REMOTE_BUFFER;
             p_sync->ready = 1;
         }
 
-        // std::cout << "read_info notify_one" << std::endl;
         p_sync->cv.notify_one();
 
         {
             std::unique_lock<std::mutex> l(p_sync->mtx);
-            // std::cout << "read_info wait" << std::endl;
             p_sync->cv.wait(l, [this] { return p_sync->ready == 2; });
 
             remote_buffer = p_sync->buffer;
@@ -265,7 +248,6 @@ public:
             auto downstream_adapter =
                 domain_adapter_direct_svr::make(direct_sync, downstream_port);
 
-            //return std::make_pair(upstream_adapter, downstream_adapter);
             return std::make_pair(downstream_adapter, upstream_adapter);
         } else {
             auto downstream_adapter =
@@ -273,7 +255,6 @@ public:
             auto upstream_adapter =
                 domain_adapter_direct_svr::make(direct_sync, downstream_port);
 
-            //return std::make_pair(upstream_adapter, downstream_adapter);
             return std::make_pair(downstream_adapter, upstream_adapter);
         }
     }

@@ -5,14 +5,11 @@ namespace gr {
 edge_sptr graph::connect(const node_endpoint& src,
                     const node_endpoint& dst)
 {
-    // TODO: Do a bunch of checking
-
+    // FIXME: Do a bunch of checking
+    
     auto newedge = edge::make(src, dst);
     _edges.push_back(newedge);
-    auto used_nodes = calc_used_nodes();
-    // used_nodes.insert(used_nodes.end(), _orphan_nodes.begin(),
-    // _orphan_nodes.end());
-    _nodes = used_nodes;
+    _nodes = calc_used_nodes();
 
     std::map<std::string, int> name_count;
     // update the block alias
@@ -27,12 +24,15 @@ edge_sptr graph::connect(const node_endpoint& src,
             cnt = name_count[b->name()];
         }
         //b->set_alias(b->name() + std::to_string(cnt));
-        b->set_alias(b->name() + std::to_string(b->id()));
         name_count[b->name()] = cnt + 1;
+
+        // for now, just use the name+nodeid as the alias
+        b->set_alias(b->name() + std::to_string(b->id()));
     }
 
     return newedge;
 }
+
 edge_sptr graph::connect(node_sptr src_node,
                     unsigned int src_port_index,
                     node_sptr dst_node,

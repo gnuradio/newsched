@@ -4,14 +4,11 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-// #include <boost/thread/mutex.hpp>
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 
 #include <gnuradio/cudabuffer_pinned.hpp>
-
-
-// typedef boost::unique_lock<boost::mutex> scoped_lock;
 
 namespace gr {
 cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size)
@@ -21,15 +18,15 @@ cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size)
       _read_index(0),
       _write_index(0)
 {
-    if (!cudaHostAlloc((void **)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
+    if (!cudaHostAlloc((void**)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
         throw std::runtime_error("Failed to allocate CUDA pinned memory");
     }
 }
 cuda_buffer_pinned::~cuda_buffer_pinned() { cudaFree(_pinned_buffer); }
 
 buffer_sptr cuda_buffer_pinned::make(size_t num_items,
-                             size_t item_size,
-                             std::shared_ptr<buffer_properties> buffer_properties)
+                                     size_t item_size,
+                                     std::shared_ptr<buffer_properties> buffer_properties)
 {
     return buffer_sptr(new cuda_buffer_pinned(num_items, item_size));
 }
@@ -50,11 +47,6 @@ void* cuda_buffer_pinned::write_ptr() { return (void*)&_pinned_buffer[_write_ind
 
 bool cuda_buffer_pinned::read_info(buffer_info_t& info)
 {
-    // Need to lock the buffer to freeze the current state
-    // if (!_buf_mutex.try_lock()) {
-    //     return false;
-    // }
-    // _buf_mutex.lock();
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = read_ptr();
@@ -66,10 +58,6 @@ bool cuda_buffer_pinned::read_info(buffer_info_t& info)
 
 bool cuda_buffer_pinned::write_info(buffer_info_t& info)
 {
-    // if (!_buf_mutex.try_lock()) {
-    //     return false;
-    // }
-    // _buf_mutex.lock();
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     info.ptr = write_ptr();
@@ -90,8 +78,8 @@ void cuda_buffer_pinned::post_read(int num_items)
     if (_read_index >= _buf_size) {
         _read_index -= _buf_size;
     }
-    // _buf_mutex.unlock();
 }
+
 void cuda_buffer_pinned::post_write(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);
@@ -114,8 +102,6 @@ void cuda_buffer_pinned::post_write(int num_items)
     if (_write_index >= _buf_size) {
         _write_index -= _buf_size;
     }
-
-    // _buf_mutex.unlock();
 }
 
 void cuda_buffer_pinned::copy_items(std::shared_ptr<buffer> from, int nitems)

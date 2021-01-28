@@ -17,13 +17,6 @@ public:
     {
 
         auto ptr = std::make_shared<nop_source>(itemsize, nports);
-        ptr->add_param(param<size_t>::make(nop_source::params::id_itemsize,
-                                           "itemsize",
-                                           itemsize,
-                                           &(ptr->_itemsize)));
-        ptr->add_param(param<size_t>::make(
-            nop_source::params::id_nports, "nports", nports, &(ptr->_nports)));
-
 
         // TODO : do this with multiplicity
         for (size_t i = 0; i < nports; i++) {
@@ -42,7 +35,7 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output)
     {
-        void* optr;
+        // void* optr;
 
         for (size_t n = 0; n < work_output.size(); n++) {
         //     optr = work_output[n].items;

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <gnuradio/sync_block.hpp>
-#include <cuda.h>
-#include <cuda_runtime_api.h>
 
 namespace gr {
 namespace cuda {
