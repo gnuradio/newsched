@@ -6,6 +6,9 @@ project('newsched', 'cpp',
   license : 'GPLv3',
   default_options : ['cpp_std=c++17'])
 
+cc = meson.get_compiler('cpp')
+rt_dep = cc.find_library('rt', required : false)
+
 cuda_available = add_languages('cuda', required : false)
 
 boost_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')

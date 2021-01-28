@@ -25,6 +25,7 @@ runtime_headers = [
     'sync_block.hpp',
     'tag.hpp',
     'types.hpp',
+    'vmcircbuf.hpp'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')
