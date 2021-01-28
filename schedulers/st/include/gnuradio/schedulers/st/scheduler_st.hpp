@@ -4,7 +4,6 @@
 #include "graph_executor.hpp"
 #include "thread_wrapper.hpp"
 #include <gnuradio/concurrent_queue.hpp>
-#include <gnuradio/domain_adapter.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <gnuradio/simplebuffer.hpp>
 #include <map>
@@ -20,6 +19,8 @@ private:
     std::string _name;
     thread_wrapper::ptr _thread;
 
+    bool pop_message(scheduler_message_sptr& msg) { return _thread->pop_message(msg); }
+    
 public:
     const int s_fixed_buf_size;
 
@@ -35,7 +36,7 @@ public:
     ~scheduler_st(){};
 
     void push_message(scheduler_message_sptr msg) { _thread->push_message(msg); }
-    bool pop_message(scheduler_message_sptr& msg) { return _thread->pop_message(msg); }
+
 
     void initialize(flat_graph_sptr fg,
                     flowgraph_monitor_sptr fgmon,

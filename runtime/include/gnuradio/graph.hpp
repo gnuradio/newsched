@@ -1,9 +1,6 @@
 #pragma once 
 
-#include "api.h"
 #include <gnuradio/edge.hpp>
-// #include <gnuradio/domain.hpp>
-// #include <gnuradio/domain_adapter.hpp>
 
 namespace gr {
 
@@ -17,7 +14,6 @@ static std::vector<T> unique_vector(std::vector<T> v)
     unique_copy(v.begin(), v.end(), inserter);
     return result;
 }
-
 
 /**
  * @brief Represents a set of ports connected by edges

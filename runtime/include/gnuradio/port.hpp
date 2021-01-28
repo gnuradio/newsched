@@ -7,9 +7,7 @@
 
 namespace gr {
 
-class node; // forward declaration for storing parent pointer
-
-enum class port_type_t { STREAM, PACKET, MESSAGE };
+enum class port_type_t { STREAM, MESSAGE };
 
 enum class port_direction_t {
     INPUT,
@@ -17,18 +15,21 @@ enum class port_direction_t {
     BIDIRECTONAL //?? can it be done
 };
 
+/**
+ * @brief Base class for all ports
+ *
+ * Holds the necessary information to describe the port to the runtime
+ *
+ */
 class port_base
 {
 protected:
     std::string _name;
     std::string _alias;
-    // std::shared_ptr<node> parent = nullptr;
     port_direction_t _direction;
-    std::string _short_name;
     param_type_t _data_type;
     port_type_t _port_type;
-    int _index = -1; // how does this get set??
-    // std::type_index _type_info;
+    int _index = -1;           // how does this get set??
     std::vector<size_t> _dims; // allow for matrices to be sent naturally across ports
     // empty dims refers to a scalar, dims=[n] same as vlen=n
     int _multiplicity; // port can be replicated as in grc
@@ -38,27 +39,23 @@ protected:
 public:
     typedef std::shared_ptr<port_base> sptr;
     static sptr make(const std::string& name,
-              //  std::shared_ptr<node> parent,
-              const port_direction_t direction,
-              const param_type_t data_type = param_type_t::CFLOAT,
-              //  const std::type_index T
-              const port_type_t port_type = port_type_t::STREAM,
-              const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
-              const int multiplicity = 1)
+                     const port_direction_t direction,
+                     const param_type_t data_type = param_type_t::CFLOAT,
+                     const port_type_t port_type = port_type_t::STREAM,
+                     const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+                     const int multiplicity = 1)
     {
-        return std::make_shared<port_base>(name, direction, data_type, port_type, dims, multiplicity);
+        return std::make_shared<port_base>(
+            name, direction, data_type, port_type, dims, multiplicity);
     }
 
     port_base(const std::string& name,
-              //  std::shared_ptr<node> parent,
               const port_direction_t direction,
               const param_type_t data_type = param_type_t::CFLOAT,
-              //  const std::type_index T
               const port_type_t port_type = port_type_t::STREAM,
               const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
               const int multiplicity = 1)
         : _name(name),
-          //   _parent(parent),
           _direction(direction),
           _data_type(data_type),
           _port_type(port_type),
@@ -68,18 +65,20 @@ public:
         // _type_info = param_type_info(_data_type); // might not be needed
         _datasize = parameter_functions::param_size_info(_data_type);
         _itemsize = _datasize;
+
+        // If dims is empty or [1], then the port type is a scalar value
+        // If dims has values, then the total itemsize is the product of the dimensions *
+        // the scalar itemsize
         for (auto d : _dims)
             _itemsize *= d;
     }
 
     port_base(const std::string& name,
-              //  std::shared_ptr<node> parent,
               const port_direction_t direction,
               const size_t itemsize,
               const port_type_t port_type = port_type_t::STREAM,
               const int multiplicity = 1)
         : _name(name),
-          //   _parent(parent),
           _direction(direction),
           _data_type(param_type_t::UNTYPED),
           _port_type(port_type),
@@ -87,7 +86,6 @@ public:
           _datasize(itemsize),
           _itemsize(itemsize)
     {
-
     }
 
     std::string name() { return _name; }
@@ -101,21 +99,26 @@ public:
     size_t data_size() { return _datasize; }
     size_t itemsize() { return _itemsize; }
     std::vector<size_t> dims() { return _dims; }
-
 };
 
 typedef port_base::sptr port_sptr;
+typedef std::vector<port_sptr> port_vector_t;
 
 
-// TODO: how to handle "don't care "
-// Could be problematic due to total permutations of types implemented [TBD]
+/**
+ * @brief Typed port class
+ *
+ * Wraps the port_base class with a type to take care of all the sizing and lower level
+ * properties
+ *
+ * @tparam T datatype to instantiate the base port class
+ */
 template <class T>
 class port : public port_base
 {
 public:
     static std::shared_ptr<port<T>>
     make(const std::string& name,
-         //    std::shared_ptr<node> parent,
          const port_direction_t direction,
          const port_type_t port_type = port_type_t::STREAM,
          const std::vector<size_t>& dims = std::vector<size_t>(),
@@ -125,7 +128,6 @@ public:
             new port<T>(name, direction, port_type, dims, multiplicity));
     }
     port(const std::string& name,
-         //    std::shared_ptr<node> parent,
          const port_direction_t direction,
          const port_type_t port_type = port_type_t::STREAM,
          const std::vector<size_t>& dims = std::vector<size_t>(),
@@ -142,15 +144,19 @@ public:
     }
 };
 
-typedef std::vector<port_sptr> port_vector_t;
 
-
+/**
+ * @brief Untyped port class
+ *
+ * Wraps the port base class but only populates stream size info.  To be used in case of
+ * e.g. head block where the underlying datatype is not used, just copied byte for byte
+ *
+ */
 class untyped_port : public port_base
 {
 public:
     static std::shared_ptr<untyped_port>
     make(const std::string& name,
-         //    std::shared_ptr<node> parent,
          const port_direction_t direction,
          const size_t itemsize,
          const port_type_t port_type = port_type_t::STREAM,
@@ -160,16 +166,11 @@ public:
             new untyped_port(name, direction, itemsize, port_type, multiplicity));
     }
     untyped_port(const std::string& name,
-         //    std::shared_ptr<node> parent,
-         const port_direction_t direction,
-         const size_t itemsize,
-         const port_type_t port_type = port_type_t::STREAM,
-         const int multiplicity = 1)
-        : port_base(name,
-                    direction,
-                    itemsize,
-                    port_type,
-                    multiplicity)
+                 const port_direction_t direction,
+                 const size_t itemsize,
+                 const port_type_t port_type = port_type_t::STREAM,
+                 const int multiplicity = 1)
+        : port_base(name, direction, itemsize, port_type, multiplicity)
     {
     }
 };

@@ -1,96 +1,34 @@
-/* -*- c++ -*- */
-/*
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
 #pragma once
 
-#ifndef INCLUDED_BLOCK_HPP
-#define INCLUDED_BLOCK_HPP
-
-#include <condition_variable>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <gnuradio/block_callbacks.hpp>
 #include <gnuradio/block_work_io.hpp>
-#include <gnuradio/callback.hpp>
-#include <gnuradio/gpdict.hpp>
-#include <gnuradio/io_signature.hpp>
 #include <gnuradio/node.hpp>
-#include <gnuradio/parameter.hpp>
-
+#include <gnuradio/gpdict.hpp>
 
 namespace gr {
 
-class scheduler;
-
-/**
- * @brief Enum for return codes from calls to block::work
- *
- */
-enum class work_return_code_t {
-    WORK_ERROR = -100, /// error occurred in the work function
-    WORK_INSUFFICIENT_OUTPUT_ITEMS =
-        -3, /// work requires a larger output buffer to produce output
-    WORK_INSUFFICIENT_INPUT_ITEMS =
-        -2, /// work requires a larger input buffer to produce output
-    WORK_DONE =
-        -1, /// this block has completed its processing and the flowgraph should be done
-    WORK_OK = 0, /// work call was successful and return values in i/o structs are valid
-};
+class scheduler; // Forward declaration to scheduler class
 
 /**
  * @brief The abstract base class for all signal processing blocks in the GR Block Library
  *
- * Blocks are the bare abstraction of an entity that has a
- * name and a set of inputs and outputs  These
- * are never instantiated directly; rather, this is the abstract
- * parent class of blocks that implement actual signal
- * processing functions.
+ * Blocks are the bare abstraction of an entity that has a name and a set of inputs and
+ * outputs  These are never instantiated directly; rather, this is the abstract parent
+ * class of blocks that implement actual signal processing functions.
  *
  */
-
-
 class block : public gr::node, public std::enable_shared_from_this<block>
 {
-
 private:
-    bool d_output_multiple_set = false;
     bool d_running = false;
-    unsigned int d_output_multiple = 1;
     tag_propagation_policy_t d_tag_propagation_policy;
 
-    std::map<std::string, block_callback_fcn>
-        _callback_function_map; // callback_function_map["mult0"]["do_something"](x,y,z)
-
 protected:
-    // These are overridden by the derived class
-    static const io_signature_capability d_input_signature_capability;
-    static const io_signature_capability d_output_signature_capability;
-
-    virtual int validate() { return 0; }; // ??
-
-
-    void set_relative_rate(double relative_rate){};
-    void set_relative_rate(unsigned int numerator, unsigned int denominator){};
-
-    std::vector<block_callback> d_block_callbacks;
-
-    parameter_config parameters;
-
-    void add_param(param_sptr p) { parameters.add(p); }
-
     std::shared_ptr<scheduler> p_scheduler = nullptr;
-
-    // TODO: register the types
-    void register_callback(const std::string& cb_name, block_callback_fcn fcn)
-    {
-        _callback_function_map[cb_name] = fcn;
-    }
-
 
 public:
     /**
@@ -98,12 +36,11 @@ public:
      *
      * @param name The non-unique name of this block representing the block type
      */
-    block(const std::string& name);
-
-    // just maintain metadata in scheduler mapped to the blocks
-
-
-    gpdict attributes; // this is a hack for storing metadata.  Needs to go.
+    block(const std::string& name)
+        : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
+    {
+    }
+    virtual ~block(){};
 
     virtual bool start()
     {
@@ -122,37 +59,16 @@ public:
         return true;
     }
 
-    virtual ~block(){};
     typedef std::shared_ptr<block> sptr;
     sptr base() { return shared_from_this(); }
-
-    void set_output_multiple(unsigned int multiple)
-    {
-        if (multiple < 1)
-            throw std::invalid_argument("block::set_output_multiple");
-
-        d_output_multiple_set = true;
-        d_output_multiple = multiple;
-    }
-    unsigned int output_multiple() { return d_output_multiple; }
-    unsigned int output_multiple_set() { return d_output_multiple_set; }
-    void set_alignment(unsigned int multiple) { set_output_multiple(multiple); }
-    static const io_signature_capability& input_signature_capability()
-    {
-        return d_input_signature_capability;
-    }
-    static const io_signature_capability& output_signature_capability()
-    {
-        return d_output_signature_capability;
-    }
 
     tag_propagation_policy_t tag_propagation_policy()
     {
         return d_tag_propagation_policy;
     };
-    void set_tag_propagation_policy(tag_propagation_policy_t p)
+    void set_tag_propagation_policy(tag_propagation_policy_t policy)
     {
-        d_tag_propagation_policy = p;
+        d_tag_propagation_policy = policy;
     };
 
     /**
@@ -179,41 +95,9 @@ public:
         return work(work_input, work_output);
     };
 
-    /**
-     * @brief handler called when a parameter is changed:
-     *   1. From a message port (automatically created message ports for callbacks)
-     *   2. From a callback function (e.g. set_k())
-     *   3. RPC call
-     *
-     * @param params
-     */
-
-    virtual void on_parameter_change(param_action_sptr action)
-    {
-        gr_log_debug(_debug_logger, "block: on_parameter_change");
-        auto param = parameters.get(action->id());
-        param->set_value(action->any_value());
-    }
-
-    virtual void on_parameter_query(param_action_sptr action)
-    {
-        gr_log_debug(_debug_logger, "block: on_parameter_query");
-        auto param = parameters.get(action->id());
-        action->set_any_value(param->any_value());
-    }
-
-    std::map<std::string, block_callback_fcn> callbacks()
-    {
-        return _callback_function_map;
-    }
-
-
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
 
-    template <class T>
-    T request_parameter_query(int param_id);
-    template <class T>
-    void request_parameter_change(int param_id, T new_value);
+    gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 
 typedef block::sptr block_sptr;
@@ -221,4 +105,3 @@ typedef std::vector<block_sptr> block_vector_t;
 typedef std::vector<block_sptr>::iterator block_viter_t;
 
 } // namespace gr
-#endif

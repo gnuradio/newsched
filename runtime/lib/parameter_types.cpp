@@ -59,12 +59,6 @@ std::map<param_type_t, size_t> parameter_functions::param_type_size_map = {
     { param_type_t::VOID, sizeof(void*) }
 };
 
-// std::type_index
-// param_type_info(param_type_t p)
-// {
-//     return param_type_index_map[p];
-// }
-
 size_t parameter_functions::param_size_info(param_type_t p)
 {
     return param_type_size_map[p];
@@ -73,6 +67,5 @@ param_type_t parameter_functions::get_param_type_from_typeinfo(std::type_index t
 {
     return param_index_type_map[t];
 }
-
 
 } // namespace gr

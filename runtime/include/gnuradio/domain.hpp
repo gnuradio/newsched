@@ -10,7 +10,16 @@
 
 namespace gr {
 
-
+/**
+ * @brief Domain Configuration
+ * 
+ * A struct to contain all the necessary information about a domain:
+ *  - Scheduer
+ *  - Blocks
+ *  - Domain Adapter Configuration (general)
+ *  - Special Domain Adapter Configuration (per edge)
+ *  
+ */
 class domain_conf
 {
 public:

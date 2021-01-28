@@ -1,14 +1,5 @@
 incdir = include_directories('../include')
 
-srcs = ['test_scheduler_mt.cpp']
-executable('test_scheduler_mt', 
-    srcs, 
-    include_directories : incdir, 
-    dependencies: [newsched_runtime_dep,
-                   newsched_blocklib_blocks_dep,
-                   newsched_scheduler_st_dep], 
-    install : true)
-
 ###################################################
 #    QA
 ###################################################

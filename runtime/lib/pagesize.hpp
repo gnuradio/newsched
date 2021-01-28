@@ -11,14 +11,12 @@
 #ifndef GR_PAGESIZE_H_
 #define GR_PAGESIZE_H_
 
-#include <gnuradio/api.h>
-
 namespace gr {
 
 /*!
  * \brief return the page size in bytes
  */
-GR_RUNTIME_API int pagesize();
+int pagesize();
 
 } /* namespace gr */
 

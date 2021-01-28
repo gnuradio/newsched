@@ -22,18 +22,9 @@ std::string node_endpoint::identifier() const
     return d_node->alias() + ":" + d_port->alias();
 };
 
-edge::edge(const node_endpoint& src,
-           const node_endpoint& dst)
-    : _src(src),
-      _dst(dst)
-{
-}
-edge::edge(node_sptr src_blk,
-           port_sptr src_port,
-           node_sptr dst_blk,
-           port_sptr dst_port)
-    : _src(node_endpoint(src_blk, src_port)),
-      _dst(node_endpoint(dst_blk, dst_port))
+edge::edge(const node_endpoint& src, const node_endpoint& dst) : _src(src), _dst(dst) {}
+edge::edge(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port)
+    : _src(node_endpoint(src_blk, src_port)), _dst(node_endpoint(dst_blk, dst_port))
 {
 }
 
@@ -50,6 +41,5 @@ size_t edge::itemsize() const { return _src.port()->itemsize(); }
 bool edge::has_custom_buffer() { return _buffer_factory != nullptr; }
 buffer_factory_function edge::buffer_factory() { return _buffer_factory; }
 std::shared_ptr<buffer_properties> edge::buf_properties() { return _buffer_properties; }
-
 
 } // namespace gr

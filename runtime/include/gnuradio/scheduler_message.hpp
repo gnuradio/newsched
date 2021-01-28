@@ -4,13 +4,8 @@ namespace gr {
 
 enum class scheduler_action_t { DONE, NOTIFY_OUTPUT, NOTIFY_INPUT, NOTIFY_ALL, EXIT };
 
-
 enum class scheduler_message_t {
     SCHEDULER_ACTION,
-    ASYNC_MESSAGE,
-    PARAMETER_QUERY,
-    PARAMETER_CHANGE,
-    CALLBACK
 };
 
 class scheduler_message
@@ -24,13 +19,6 @@ public:
 private:
     scheduler_message_t _type;
     int64_t _blkid = -1;
-
-    // scheduler message can be of type:
-    //   parameter_query
-    //   parameter_change
-    //   callback
-    //   scheduler_action
-    //   async message (pmt)
 };
 
 typedef std::shared_ptr<scheduler_message> scheduler_message_sptr;

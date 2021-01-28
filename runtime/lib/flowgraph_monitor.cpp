@@ -34,7 +34,6 @@ void flowgraph_monitor::start()
             }
         }
 
-
         std::map<int, bool> sched_done;
         for (auto s : d_schedulers) {
             sched_done[s->id()] = false;

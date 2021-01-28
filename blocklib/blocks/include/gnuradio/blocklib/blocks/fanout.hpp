@@ -15,11 +15,6 @@ public:
     {
         auto ptr = std::make_shared<fanout>(itemsize, nports);
 
-        ptr->add_param(param<size_t>::make(
-            fanout::params::id_nports, "nports", nports, &(ptr->_nports)));
-        ptr->add_param(
-            param<size_t>::make(fanout::params::id_itemsize, "itemsize", itemsize, &(ptr->_itemsize)));
-
         ptr->add_port(untyped_port::make("input",
                                     port_direction_t::INPUT,
                                     itemsize,

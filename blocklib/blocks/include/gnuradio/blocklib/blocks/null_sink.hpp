@@ -32,11 +32,6 @@ public:
                                              port_type_t::STREAM));
         }
 
-        ptr->add_param(param<size_t>::make(
-            null_sink::params::id_itemsize, "itemsize", itemsize, &(ptr->_itemsize)));
-        ptr->add_param(param<size_t>::make(
-            null_sink::params::id_nports, "nports", nports, &(ptr->_nports)));
-
         return ptr;
     }
 

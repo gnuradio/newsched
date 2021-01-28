@@ -17,12 +17,6 @@ public:
     {
         auto ptr = std::make_shared<head>(itemsize, nitems);
 
-        ptr->add_param(param<size_t>::make(
-            head::params::id_nitems, "itemsize", itemsize, &(ptr->_itemsize)));
-
-        ptr->add_param(param<size_t>::make(
-            head::params::id_nitems, "nitems", nitems, &(ptr->_nitems)));
-
         ptr->add_port(untyped_port::make("input",
                                     port_direction_t::INPUT,
                                     itemsize,
