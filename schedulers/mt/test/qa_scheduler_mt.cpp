@@ -10,6 +10,7 @@
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
 
@@ -74,3 +75,62 @@ TEST(SchedulerMTTest, DomainAdapterBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
+
+TEST(SchedulerMTTest, BlockFanout)
+{
+    int nsamples = 1000000;
+    std::vector<gr_complex> input_data(nsamples);
+    std::vector<gr_complex> expected_data(nsamples);
+    int buffer_type = 0;
+    float k = 1.0;
+    for (int i = 0; i < nsamples; i++) {
+        input_data[i] = gr_complex(2 * i, 2 * i + 1);
+        // expected_output[i] = gr_complex(k*2*i,k*2*i+1);
+    }
+
+    for (auto nblocks : { 2, 8, 16 }) {
+    // for (auto nblocks : { 2, }) {
+        int veclen = 1;
+        auto src = blocks::vector_source_c::make(input_data);
+        std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
+        std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
+
+        for (int i = 0; i < nblocks; i++) {
+            mult_blks[i] = blocks::multiply_const_cc::make(k, veclen);
+            sink_blks[i] = blocks::vector_sink_c::make();
+        }
+        flowgraph_sptr fg(new flowgraph());
+
+        if (buffer_type == 0) {
+            for (int i = 0; i < nblocks; i++) {
+                fg->connect(src, 0, mult_blks[i], 0);
+                fg->connect(mult_blks[i], 0, sink_blks[i], 0);
+            }
+
+        } else {
+            for (int i = 0; i < nblocks; i++) {
+                fg->connect(src, 0, mult_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                fg->connect(mult_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+            }
+        }
+
+       auto sched1 = schedulers::scheduler_mt::make("mtsched", 8192);
+       fg->add_scheduler(sched1);
+       fg->validate();
+
+
+       fg->start();
+       fg->wait();
+
+       for (int n = 0; n < nblocks; n++) {
+           for (int i = 0; i < nsamples; i++) {
+               input_data[i] = gr_complex(2 * i, 2 * i + 1);
+               expected_data[i] = gr_complex(k * 2 * i, k * (2 * i + 1));
+           }
+
+           EXPECT_EQ(sink_blks[n]->data(), expected_data);
+           EXPECT_EQ(sink_blks[n]->data().size(), expected_data.size());
+       }
+    }
+}
+
