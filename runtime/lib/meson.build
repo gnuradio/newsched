@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
@@ -39,8 +39,11 @@ runtime_sources = [
   'scheduler.cpp',
   'realtime.cpp',
   'pagesize.cpp',
+  'sys_paths.cpp',
   'vmcircbuf.cpp',
-  'vmcircbuf_sysv_shm.cpp'
+  'vmcircbuf_sysv_shm.cpp',
+  # mmap requires librt - FIXME - handle this a conditional dependency
+  'vmcircbuf_mmap_shm_open.cpp'
 ]
 
 cpp_args = []

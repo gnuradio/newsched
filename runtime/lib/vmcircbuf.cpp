@@ -1,6 +1,7 @@
 #include <gnuradio/vmcircbuf.hpp>
 
 #include "vmcircbuf_sysv_shm.hpp"
+#include "vmcircbuf_mmap_shm_open.hpp"
 #include <mutex>
 #include <cstring>
 
@@ -9,6 +10,8 @@
 // expand out with the preferences and the factories later
 
 namespace gr {
+
+std::mutex s_vm_mutex;
 
 buffer_sptr vmcirc_buffer::make(size_t num_items,
                                 size_t item_size,
@@ -20,6 +23,8 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
         case vmcirc_buffer_type::AUTO:
         case vmcirc_buffer_type::SYSV_SHM:
             return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size));
+        case vmcirc_buffer_type::MMAP_SHM:
+            return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size));
         }
 
     } else {

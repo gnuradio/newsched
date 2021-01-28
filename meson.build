@@ -6,6 +6,9 @@ project('newsched', 'cpp',
   license : 'GPLv3',
   default_options : ['cpp_std=c++17'])
 
+cc = meson.get_compiler('cpp')
+rt_dep = cc.find_library('rt', required : false)
+
 cuda_available = add_languages('cuda',required : false)
 
 boost_dep = dependency('boost', modules : ['program_options','system'], version : '>=1.65')
@@ -13,7 +16,6 @@ volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 spdlog_dep = dependency('spdlog')
 threads_dep = dependency('threads')
-rt_dep = dependency('rt', required : false)
 fmt_dep = dependency('fmt')
 catch_dep = declare_dependency(include_directories : [join_paths('deps','catch','include')])
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : cuda_available and get_option('enable_testing'))
