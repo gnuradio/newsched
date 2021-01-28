@@ -5,6 +5,8 @@ runtime_headers = [
     'concurrent_queue.hpp',
     'domain_adapter.hpp',
     'domain_adapter_direct.hpp',
+    'cudabuffer.hpp',
+    'cudabuffer_pinned.hpp',
     'domain.hpp',
     'flat_graph.hpp',
     'flowgraph.hpp',
