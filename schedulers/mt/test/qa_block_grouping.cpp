@@ -12,7 +12,7 @@
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
 

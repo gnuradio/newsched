@@ -11,7 +11,7 @@
 #include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 #include <gnuradio/simplebuffer.hpp>
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 #include <iostream>
 

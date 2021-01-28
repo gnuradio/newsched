@@ -13,10 +13,9 @@
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/st/scheduler_st.hpp>
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
-
 
 TEST(SchedulerSTTest, TwoSinks)
 {
@@ -82,7 +81,6 @@ TEST(SchedulerSTTest, DomainAdapterBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
-
 
 TEST(SchedulerSTTest, ParameterBasic)
 {

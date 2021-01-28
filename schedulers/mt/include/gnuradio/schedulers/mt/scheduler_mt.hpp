@@ -3,7 +3,7 @@
 #include <gnuradio/graph_utils.hpp>
 #include <gnuradio/scheduler.hpp>
 #include <gnuradio/schedulers/st/scheduler_st.hpp>
-#include <gnuradio/vmcirc_buffer.hpp>
+#include <gnuradio/vmcircbuf.hpp>
 
 namespace gr {
 namespace schedulers {
