@@ -98,102 +98,101 @@ inline void set_level(logger_sptr logger, logging_level_t log_level)
 // }
 
 
-template<typename... Args>
-inline void gr_log_debug(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_debug(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->debug(args...);
     }
 }
 
-template<typename... Args>
-inline void gr_log_info(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_info(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->info(args...);
     }
 }
 
-template<typename... Args>
-inline void gr_log_trace(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_trace(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->trace(args...);
     }
 }
 
-template<typename... Args>
-inline void gr_log_warn(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_warn(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->warn(args...);
     }
 }
 
-template<typename... Args>
-inline void gr_log_error(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_error(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->error(args...);
     }
 }
 
-template<typename... Args>
-inline void gr_log_critical(logger_sptr logger, const Args &... args)
+template <typename... Args>
+inline void gr_log_critical(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->critical(args...);
     }
 }
 
-
 // Do we need or want these macros if we have inline functions
 #define GR_LOG_SET_LEVEL(logger, level) logger->set_level(level);
 // #define GR_LOG_GET_LEVEL(logger, level) gr::logger_get_level(logger, level)
-#define GR_LOG_DEBUG(logger, msg) \
-    {                             \
-        logger->debug(msg);       \
+#define GR_LOG_DEBUG(logger, ...)          \
+    {                                      \
+        gr_log_debug(logger, __VA_ARGS__); \
     }
 
-#define GR_LOG_INFO(logger, msg) \
-    {                            \
-        logger->info(msg);       \
-    }
-
-#define GR_LOG_TRACE(logger, msg) \
-    {                             \
-        logger->trace(msg);       \
-    }
-
-#define GR_LOG_WARN(logger, msg) \
-    {                            \
-        logger->warn(msg);       \
-    }
-
-#define GR_LOG_ERROR(logger, msg) \
-    {                             \
-        logger->error(msg);       \
-    }
-
-#define GR_LOG_CRIT(logger, msg) \
-    {                            \
-        logger->critical(msg);   \
-    }
-
-
-#define GR_LOG_ERRORIF(logger, cond, msg) \
+#define GR_LOG_INFO(logger, ...)          \
     {                                     \
-        if ((cond)) {                     \
-            logger->error(msg);           \
-        }                                 \
+        gr_log_info(logger, __VA_ARGS__); \
     }
 
-#define GR_LOG_ASSERT(logger, cond, msg) \
-    {                                    \
-        if (!(cond)) {                   \
-            logger->error(msg);          \
-            assert(0);                   \
-        }                                \
+#define GR_LOG_TRACE(logger, ...)          \
+    {                                      \
+        gr_log_trace(logger, __VA_ARGS__); \
+    }
+
+#define GR_LOG_WARN(logger, ...)          \
+    {                                     \
+        gr_log_warn(logger, __VA_ARGS__); \
+    }
+
+#define GR_LOG_ERROR(logger, ...)          \
+    {                                      \
+        gr_log_error(logger, __VA_ARGS__); \
+    }
+
+#define GR_LOG_CRIT(logger, ...)              \
+    {                                         \
+        gr_log_critical(logger, __VA_ARGS__); \
+    }
+
+
+#define GR_LOG_ERRORIF(logger, cond, ...)      \
+    {                                          \
+        if ((cond)) {                          \
+            gr_log_error(logger, __VA_ARGS__); \
+        }                                      \
+    }
+
+#define GR_LOG_ASSERT(logger, cond, ...)          \
+    {                                             \
+        if (!(cond)) {                            \
+            gr_log_critical(logger, __VA_ARGS__); \
+            assert(0);                            \
+        }                                         \
     }
 
 } // namespace gr
