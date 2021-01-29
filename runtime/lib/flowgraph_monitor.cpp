@@ -17,11 +17,11 @@ void flowgraph_monitor::start()
             if (pop_message(msg)) // this blocks
             {
                 if (msg.type() == fg_monitor_message_t::KILL) {
-                    gr_log_debug(_debug_logger, "KILL");
+                    GR_LOG_DEBUG(_debug_logger, "KILL");
                     _monitor_thread_stopped = true;
                     break;
                 } else if (msg.type() == fg_monitor_message_t::DONE) {
-                    gr_log_debug(_debug_logger, "DONE");
+                    GR_LOG_DEBUG(_debug_logger, "DONE");
                     // One scheduler signaled it is done
                     // Notify the other schedulers that they need to flush
                     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // DEBUG
@@ -45,12 +45,12 @@ void flowgraph_monitor::start()
             if (pop_message(msg)) // this blocks
             {
                 if (msg.type() == fg_monitor_message_t::KILL) {
-                    gr_log_debug(_debug_logger, "KILL2");
+                    GR_LOG_DEBUG(_debug_logger, "KILL2");
                     _monitor_thread_stopped = true;
                     break;
                 } else if (msg.type() == fg_monitor_message_t::FLUSHED) {
                     sched_done[msg.schedid()] = true;
-                    gr_log_debug(_debug_logger, "FLUSHED");
+                    GR_LOG_DEBUG(_debug_logger, "FLUSHED");
 
                     bool all_done = true;
                     for (auto s : d_schedulers) {
@@ -61,7 +61,7 @@ void flowgraph_monitor::start()
 
                     if (all_done) {
                         for (auto s : d_schedulers) {
-                            gr_log_debug(_debug_logger, "Telling Schedulers to Exit()");
+                            GR_LOG_DEBUG(_debug_logger, "Telling Schedulers to Exit()");
                             s->push_message(std::make_shared<scheduler_action>(
                                 scheduler_action_t::EXIT, 0));
                         }

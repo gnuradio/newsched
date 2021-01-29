@@ -50,7 +50,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
 void flowgraph::validate()
 {
-    gr_log_trace(_debug_logger, "validate()");
+    GR_LOG_TRACE(_debug_logger, "validate()");
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
 
     d_flat_graph = flat_graph::make_flat(base());
@@ -60,7 +60,7 @@ void flowgraph::validate()
 void flowgraph::start()
 {
     using namespace std::chrono_literals;
-    gr_log_trace(_debug_logger, "start()");
+    GR_LOG_TRACE(_debug_logger, "start()");
     // Need thread synchronization for the schedulers - to know when they're done and
     // signal the other schedulers that might be connected
 
@@ -71,7 +71,7 @@ void flowgraph::start()
 }
 void flowgraph::stop()
 {
-    gr_log_trace(_debug_logger, "stop()");
+    GR_LOG_TRACE(_debug_logger, "stop()");
     for (auto s : d_schedulers) {
         s->stop();
     }
@@ -79,7 +79,7 @@ void flowgraph::stop()
 }
 void flowgraph::wait()
 {
-    gr_log_trace(_debug_logger, "wait()");
+    GR_LOG_TRACE(_debug_logger, "wait()");
     for (auto s : d_schedulers) {
         s->wait();
     }

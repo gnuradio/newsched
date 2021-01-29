@@ -55,7 +55,7 @@ void thread_wrapper::run()
 
 void thread_wrapper::notify_self()
 {
-    gr_log_debug(_debug_logger, "notify_self");
+    GR_LOG_DEBUG(_debug_logger, "notify_self");
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
 }
 
@@ -93,7 +93,7 @@ bool thread_wrapper::get_neighbors_downstream(nodeid_t blkid,
 void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched,
                                      nodeid_t blkid)
 {
-    gr_log_debug(_debug_logger, "notify_upstream");
+    GR_LOG_DEBUG(_debug_logger, "notify_upstream");
 
     upstream_sched->push_message(
         std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT, blkid));
@@ -101,7 +101,7 @@ void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched,
 void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched,
                                        nodeid_t blkid)
 {
-    gr_log_debug(_debug_logger, "notify_downstream");
+    GR_LOG_DEBUG(_debug_logger, "notify_downstream");
     downstream_sched->push_message(
         std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, blkid));
 }
@@ -114,7 +114,7 @@ void thread_wrapper::handle_work_notification()
     // If any of the blocks are done, notify the flowgraph monitor
     for (auto elem : s) {
         if (elem.second == executor_iteration_status::DONE) {
-            gr_log_debug(
+            GR_LOG_DEBUG(
                 _debug_logger, "Signalling DONE to FGM from block {}", elem.first);
             d_fgmon->push_message(
                 fg_monitor_message(fg_monitor_message_t::DONE, id(), elem.first));
@@ -146,7 +146,7 @@ void thread_wrapper::handle_work_notification()
     }
 
     if (notify_self_) {
-        gr_log_debug(_debug_logger, "notifying self");
+        GR_LOG_DEBUG(_debug_logger, "notifying self");
         notify_self();
     }
 
@@ -181,7 +181,7 @@ void thread_wrapper::handle_work_notification()
 
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
-    gr_log_info(top->_logger, "starting thread");
+    GR_LOG_INFO(top->_logger, "starting thread");
     while (!top->d_thread_stopped) {
 
         // try to pop messages off the queue
@@ -198,29 +198,29 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                 case scheduler_action_t::DONE:
                     // fgmon says that we need to be done, wrap it up
                     // each scheduler could handle this in a different way
-                    gr_log_debug(top->_debug_logger,
+                    GR_LOG_DEBUG(top->_debug_logger,
                                  "fgm signaled DONE, pushing flushed");
                     top->d_fgmon->push_message(
                         fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
                     break;
                 case scheduler_action_t::EXIT:
-                    gr_log_debug(top->_debug_logger, "fgm signaled EXIT, exiting thread");
+                    GR_LOG_DEBUG(top->_debug_logger, "fgm signaled EXIT, exiting thread");
                     // fgmon says that we need to be done, wrap it up
                     // each scheduler could handle this in a different way
                     top->d_thread_stopped = true;
                     break;
                 case scheduler_action_t::NOTIFY_OUTPUT:
-                    gr_log_debug(
+                    GR_LOG_DEBUG(
                         top->_debug_logger, "got NOTIFY_OUTPUT from {}", msg->blkid());
                     top->handle_work_notification();
                     break;
                 case scheduler_action_t::NOTIFY_INPUT:
-                    gr_log_debug(
+                    GR_LOG_DEBUG(
                         top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
                     top->handle_work_notification();
                     break;
                 case scheduler_action_t::NOTIFY_ALL: {
-                    gr_log_debug(
+                    GR_LOG_DEBUG(
                         top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
                     top->handle_work_notification();
                     break;

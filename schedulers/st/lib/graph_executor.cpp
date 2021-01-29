@@ -26,7 +26,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
-            gr_log_debug(
+            GR_LOG_DEBUG(
                 _debug_logger, "read_info {} - {}", b->alias(), read_info.n_items);
 
             if (!ready)
@@ -61,7 +61,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             for (auto p_buf : _bufman->get_output_buffers(p)) {
                 buffer_info_t write_info;
                 ready = p_buf->write_info(write_info);
-                gr_log_debug(_debug_logger,
+                GR_LOG_DEBUG(_debug_logger,
                              "write_info {} - {} @ {} {}",
                              b->alias(),
                              write_info.n_items,
@@ -106,17 +106,17 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             while (true) {
 
                 if (work_output.size() > 0) {
-                    gr_log_debug(_debug_logger,
+                    GR_LOG_DEBUG(_debug_logger,
                                  "do_work for {}, {}",
                                  b->alias(),
                                  work_output[0].n_items);
                 } else {
-                    gr_log_debug(_debug_logger, "do_work for {}", b->alias());
+                    GR_LOG_DEBUG(_debug_logger, "do_work for {}", b->alias());
                 }
 
 
                 ret = b->do_work(work_input, work_output);
-                gr_log_debug(_debug_logger, "do_work returned {}", ret);
+                GR_LOG_DEBUG(_debug_logger, "do_work returned {}", ret);
                 // ret = work_return_code_t::WORK_OK;
 
                 if (ret == work_return_code_t::WORK_DONE) {
@@ -170,13 +170,13 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         }
                     }
 
-                    gr_log_debug(_debug_logger,
+                    GR_LOG_DEBUG(_debug_logger,
                                  "post_read {} - {}",
                                  b->alias(),
                                  work_input[input_port_index].n_consumed);
 
                     p_buf->post_read(work_input[input_port_index].n_consumed);
-                    gr_log_debug(_debug_logger, ".");
+                    GR_LOG_DEBUG(_debug_logger, ".");
                     input_port_index++;
                 }
 
@@ -185,13 +185,13 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     int j = 0;
                     for (auto p_buf : _bufman->get_output_buffers(p)) {
                         if (j > 0) {
-                            gr_log_debug(_debug_logger,
+                            GR_LOG_DEBUG(_debug_logger,
                                          "copy_items {} - {}",
                                          b->alias(),
                                          work_output[output_port_index].n_produced);
                             p_buf->copy_items(_bufman->get_input_buffer(p),
                                               work_output[output_port_index].n_produced);
-                            gr_log_debug(_debug_logger, ".");
+                            GR_LOG_DEBUG(_debug_logger, ".");
                         }
                         j++;
                     }
@@ -202,12 +202,12 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                             work_output[output_port_index].tags);
                         }
 
-                        gr_log_debug(_debug_logger,
+                        GR_LOG_DEBUG(_debug_logger,
                                      "post_write {} - {}",
                                      b->alias(),
                                      work_output[output_port_index].n_produced);
                         p_buf->post_write(work_output[output_port_index].n_produced);
-                        gr_log_debug(_debug_logger, ".");
+                        GR_LOG_DEBUG(_debug_logger, ".");
                     }
                     output_port_index++;
                 }
