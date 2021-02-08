@@ -34,7 +34,7 @@ private:
 class cuda_buffer : public buffer
 {
 private:
-    std::vector<uint8_t> _host_buffer;
+    uint8_t* _host_buffer;
     uint8_t* _device_buffer;
     unsigned int _read_index;
     unsigned int _write_index;
@@ -46,6 +46,8 @@ private:
     std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and
                            // used scoped lock outside on the caller
     cuda_buffer_type _buffer_type;
+
+    cudaStream_t stream;
 
 public:
     typedef std::shared_ptr<cuda_buffer> sptr;

@@ -6,8 +6,12 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-extern void
-apply_copy(cuFloatComplex* in, cuFloatComplex* out, int grid_size, int block_size);
+extern void apply_copy(cuFloatComplex* in,
+                       cuFloatComplex* out,
+                       int grid_size,
+                       int block_size,
+                       int load,
+                       cudaStream_t stream);
 extern void get_block_and_grid(int* minGrid, int* minBlock);
 
 namespace gr {
@@ -15,16 +19,18 @@ namespace cuda {
 /*
  * The private constructor
  */
-copy::copy(const size_t batch_size) : gr::sync_block("copy"), d_batch_size(batch_size)
+copy::copy(const size_t batch_size, const size_t load) : gr::sync_block("copy"), d_batch_size(batch_size), d_load(load)
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
     std::cout << "minGrid: " << d_min_grid_size << ", blockSize: " << d_block_size
               << std::endl;
 
-    if ((int) batch_size < d_block_size) {
-        throw std::runtime_error("batch_size must be a multiple of block size");
-    }
+    // if ((int)batch_size < d_block_size) {
+    //     throw std::runtime_error("batch_size must be a multiple of block size");
+    // }
+
+    cudaStreamCreate(&stream);
 }
 
 /*
@@ -46,10 +52,10 @@ work_return_code_t copy::work(std::vector<block_work_input>& work_input,
             reinterpret_cast<const cuFloatComplex*>(in + s * d_batch_size));
         auto out_data = reinterpret_cast<cuFloatComplex*>(out + s * d_batch_size);
 
-        apply_copy(in_data, out_data, d_batch_size / d_block_size, d_block_size);
+        apply_copy(in_data, out_data, d_batch_size / d_block_size, d_block_size, d_load, stream);
 
-        cudaDeviceSynchronize();
     }
+    cudaStreamSynchronize(stream);
 
     // Tell runtime system how many output items we produced.
     work_output[0].n_produced = noutput_items;
