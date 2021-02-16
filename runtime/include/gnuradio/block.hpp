@@ -6,8 +6,8 @@
 #include <vector>
 
 #include <gnuradio/block_work_io.hpp>
-#include <gnuradio/node.hpp>
 #include <gnuradio/gpdict.hpp>
+#include <gnuradio/node.hpp>
 
 namespace gr {
 
@@ -92,10 +92,17 @@ public:
     virtual work_return_code_t do_work(std::vector<block_work_input>& work_input,
                                        std::vector<block_work_output>& work_output)
     {
-        return work(work_input, work_output);
+        return block_kernel(work_input, work_output);
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    /**
+     * A functor that can take in anything at runtime.
+     * 
+     */
+    work_return_code_t (*block_kernel)(std::vector<block_work_input>& work_input,
+                                       std::vector<block_work_output>& work_output);
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
