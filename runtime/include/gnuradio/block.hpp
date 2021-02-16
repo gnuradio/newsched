@@ -98,8 +98,7 @@ public:
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
 
     /**
-     * A functor that can take in anything at runtime.
-     * 
+     * A function pointer to be swapped at runtime.
      */
     work_return_code_t (*block_kernel)(std::vector<block_work_input>& work_input,
                                        std::vector<block_work_output>& work_output);

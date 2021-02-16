@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
         auto head = blocks::head::make(sizeof(gr_complex) * veclen, samples / veclen);
 
         std::vector<blocks::null_sink::sptr> sink_blks(nblocks);
-        std::vector<blocks::copy::sptr> copy_blks(nblocks);
+        std::vector<blocks::copy<gr_complex>::sptr> copy_blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
-            copy_blks[i] = blocks::copy::make(sizeof(gr_complex) * veclen);
+            copy_blks[i] = blocks::copy<gr_complex>::make();
             sink_blks[i] = blocks::null_sink::make(sizeof(gr_complex) * veclen);
         }
         flowgraph_sptr fg(new flowgraph());
