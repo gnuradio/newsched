@@ -70,6 +70,10 @@ public:
             fg->connect(e->src(), e->dst())
                 ->set_custom_buffer(e->buffer_factory(), e->buf_properties());
         }
+        for (auto o : g->orphan_nodes())
+        {
+            fg->add_orphan_node(o);
+        }
 
         return fg;
     }

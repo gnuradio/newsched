@@ -16,11 +16,9 @@ public:
 
         ptr->add_port(port<T>::make("input",
                                     port_direction_t::INPUT,
-                                    port_type_t::STREAM,
                                     std::vector<size_t>{ vlen }));
         ptr->add_port(port<T>::make("output",
                                     port_direction_t::OUTPUT,
-                                    port_type_t::STREAM,
                                     std::vector<size_t>{ vlen }));
 
         return ptr;

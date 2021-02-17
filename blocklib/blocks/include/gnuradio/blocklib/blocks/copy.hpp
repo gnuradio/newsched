@@ -16,10 +16,10 @@ public:
         auto ptr = std::make_shared<copy>(itemsize);
 
         ptr->add_port(untyped_port::make(
-            "input", port_direction_t::INPUT, itemsize, port_type_t::STREAM));
+            "input", port_direction_t::INPUT, itemsize));
 
         ptr->add_port(untyped_port::make(
-            "out", port_direction_t::OUTPUT, itemsize, port_type_t::STREAM));
+            "out", port_direction_t::OUTPUT, itemsize));
 
 
         return ptr;

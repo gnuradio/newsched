@@ -18,10 +18,10 @@ public:
     {
         auto ptr = std::make_shared<copy>(batch_size, load);
 
-        ptr->add_port(port<gr_complex>::make(
-            "input", port_direction_t::INPUT, port_type_t::STREAM, { batch_size }));
-        ptr->add_port(port<gr_complex>::make(
-            "output", port_direction_t::OUTPUT, port_type_t::STREAM, { batch_size }));
+        ptr->add_port(
+            port<gr_complex>::make("input", port_direction_t::INPUT, { batch_size }));
+        ptr->add_port(
+            port<gr_complex>::make("output", port_direction_t::OUTPUT, { batch_size }));
 
         return ptr;
     }

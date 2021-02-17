@@ -4,7 +4,7 @@
 #include <gnuradio/block.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
-#include <gnuradio/neighbor_interface.hpp>
+#include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <thread>
 
@@ -69,6 +69,7 @@ public:
 
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
+    bool pop_message_nonblocking(scheduler_message_sptr& msg) { return msgq.try_pop(msg); }
 
     void start();
     void stop();
@@ -82,7 +83,7 @@ public:
 
     void notify_upstream(neighbor_interface_sptr upstream_sched, nodeid_t blkid);
     void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
-    void handle_work_notification();
+    bool handle_work_notification();
     static void thread_body(thread_wrapper* top);
 };
 } // namespace schedulers

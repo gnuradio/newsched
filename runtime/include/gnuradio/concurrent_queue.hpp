@@ -25,6 +25,21 @@ public:
 
         return true;
     }
+
+    // Non-blocking
+    bool try_pop(T& msg)
+    {
+        std::unique_lock<std::mutex> l(_mutex);
+        if (!_queue.empty()) {
+            msg = _queue.front();
+            _queue.pop_front();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     bool pop(T& msg)
     {
         std::unique_lock<std::mutex> l(_mutex);
