@@ -1,11 +1,15 @@
 #pragma once
 
+#include <gnuradio/port.hpp>
+#include <pmt/pmtf.hpp>
+
 namespace gr {
 
 enum class scheduler_action_t { DONE, NOTIFY_OUTPUT, NOTIFY_INPUT, NOTIFY_ALL, EXIT };
 
 enum class scheduler_message_t {
     SCHEDULER_ACTION,
+    MSGPORT_MESSAGE,
 };
 
 class scheduler_message
@@ -26,10 +30,10 @@ typedef std::shared_ptr<scheduler_message> scheduler_message_sptr;
 class scheduler_action : public scheduler_message
 {
 public:
-    scheduler_action(scheduler_action_t action, uint32_t blkid)
+    scheduler_action(scheduler_action_t action, uint32_t blkid = 0)
         : scheduler_message(scheduler_message_t::SCHEDULER_ACTION), _action(action)
     {
-        set_blkid(int64_t{blkid});
+        set_blkid(int64_t{ blkid });
     }
     scheduler_action_t action() { return _action; }
 
@@ -38,5 +42,23 @@ private:
 };
 
 typedef std::shared_ptr<scheduler_action> scheduler_action_sptr;
+
+
+typedef std::function<void(pmtf::pmt_sptr)> message_port_callback_fcn;
+class msgport_message : public scheduler_message
+{
+public:
+    msgport_message(pmtf::pmt_sptr msg, message_port_callback_fcn cb)
+        : scheduler_message(scheduler_message_t::MSGPORT_MESSAGE), _msg(msg), _cb(cb)
+    {
+    }
+    void set_callback(message_port_callback_fcn cb) { _cb = cb;}
+    message_port_callback_fcn callback() { return _cb;}
+    pmtf::pmt_sptr message() { return _msg;}
+private:
+    pmtf::pmt_sptr _msg; 
+    message_port_callback_fcn _cb;
+};
+typedef std::shared_ptr<msgport_message> msgport_message_sptr;
 
 } // namespace gr

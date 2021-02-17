@@ -24,29 +24,21 @@ void scheduler_st::initialize(flat_graph_sptr fg,
     auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
     bufman->initialize_buffers(fg, _default_buf_factory, _default_buf_properties);
 
-    _thread = thread_wrapper::make(name(), id(),
-             fg->calc_used_blocks(),
-             block_sched_map,
-             bufman,
-             fgmon);
+    for (auto& b : fg->calc_used_nodes()) {
+
+        for (auto& p : b->all_ports()) {
+            p->set_parent_intf(base()); // give a shared pointer to the scheduler class
+        }
+    }
+
+    _thread = thread_wrapper::make(
+        name(), id(), fg->calc_used_blocks(), block_sched_map, bufman, fgmon);
 }
 
-void scheduler_st::start()
-{
-    _thread->start();
-}
-void scheduler_st::stop()
-{
-    _thread->stop();
-}
-void scheduler_st::wait()
-{
-    _thread->wait();
-}
-void scheduler_st::run()
-{
-    _thread->run();
-}
+void scheduler_st::start() { _thread->start(); }
+void scheduler_st::stop() { _thread->stop(); }
+void scheduler_st::wait() { _thread->wait(); }
+void scheduler_st::run() { _thread->run(); }
 
 
 } // namespace schedulers
