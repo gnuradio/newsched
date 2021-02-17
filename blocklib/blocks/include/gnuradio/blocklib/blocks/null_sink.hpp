@@ -28,8 +28,7 @@ public:
         for (size_t i = 0; i < nports; i++) {
             ptr->add_port(untyped_port::make("input" + std::to_string(i),
                                              port_direction_t::INPUT,
-                                             itemsize,
-                                             port_type_t::STREAM));
+                                             itemsize));
         }
 
         return ptr;

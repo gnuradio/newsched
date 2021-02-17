@@ -1,7 +1,7 @@
 
 #include <gnuradio/domain.hpp>
 #include <gnuradio/graph.hpp>
-#include <gnuradio/neighbor_interface.hpp>
+#include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/scheduler.hpp>
 
 namespace gr {

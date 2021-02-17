@@ -106,7 +106,7 @@ void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched,
         std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, blkid));
 }
 
-void thread_wrapper::handle_work_notification()
+bool thread_wrapper::handle_work_notification()
 {
     auto s = _exec->run_one_iteration(d_blocks);
 
@@ -124,116 +124,156 @@ void thread_wrapper::handle_work_notification()
 
     bool notify_self_ = false;
 
-    std::vector<neighbor_interface_info> sched_to_notify_upstream,
-        sched_to_notify_downstream;
+    // std::vector<neighbor_interface_info> sched_to_notify_upstream,
+    //     sched_to_notify_downstream;
 
     for (auto elem : s) {
 
         if (elem.second == executor_iteration_status::READY) {
-            // top->notify_neighbors(elem.first);
-            neighbor_interface_info info_us, info_ds;
-            auto has_us = get_neighbors_upstream(elem.first, info_us);
-            auto has_ds = get_neighbors_downstream(elem.first, info_ds);
+            //         // top->notify_neighbors(elem.first);
+            //         neighbor_interface_info info_us, info_ds;
+            //         auto has_us = get_neighbors_upstream(elem.first, info_us);
+            //         auto has_ds = get_neighbors_downstream(elem.first, info_ds);
 
-            if (has_us) {
-                sched_to_notify_upstream.push_back(info_us);
-            }
-            if (has_ds) {
-                sched_to_notify_downstream.push_back(info_ds);
-            }
+            //         if (has_us) {
+            //             sched_to_notify_upstream.push_back(info_us);
+            //         }
+            //         if (has_ds) {
+            //             sched_to_notify_downstream.push_back(info_ds);
+            //         }
             notify_self_ = true;
         }
     }
 
-    if (notify_self_) {
-        GR_LOG_DEBUG(_debug_logger, "notifying self");
-        notify_self();
-    }
+    // if (notify_self_) {
+    //     gr_log_debug(_debug_logger, "notifying self");
+    //     notify_self();
+    // }
 
-    if (!sched_to_notify_upstream.empty()) {
-        // Reduce to the unique schedulers to notify
-        // std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
-        // auto last =
-        //     std::unique(sched_to_notify_upstream.begin(),
-        //     sched_to_notify_upstream.end());
-        // sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
-        for (auto& info : sched_to_notify_upstream) {
-            notify_upstream(info.upstream_neighbor_intf, info.upstream_neighbor_blkid);
-        }
-    }
+    // if (!sched_to_notify_upstream.empty()) {
+    //     // Reduce to the unique schedulers to notify
+    //     // std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
+    //     // auto last =
+    //     //     std::unique(sched_to_notify_upstream.begin(),
+    //     //     sched_to_notify_upstream.end());
+    //     // sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
+    //     for (auto& info : sched_to_notify_upstream) {
+    //         notify_upstream(info.upstream_neighbor_intf, info.upstream_neighbor_blkid);
+    //     }
+    // }
 
-    if (!sched_to_notify_downstream.empty()) {
-        // // Reduce to the unique schedulers to notify
-        // std::sort(sched_to_notify_downstream.begin(),
-        // sched_to_notify_downstream.end()); auto last =
-        // std::unique(sched_to_notify_downstream.begin(),
-        //                         sched_to_notify_downstream.end());
-        // sched_to_notify_downstream.erase(last, sched_to_notify_downstream.end());
-        for (auto& info : sched_to_notify_downstream) {
-            int idx = 0;
-            for (auto& intf : info.downstream_neighbor_intf) {
-                notify_downstream(intf, info.downstream_neighbor_blkids[idx]);
-                idx++;
-            }
-        }
-    }
+    // if (!sched_to_notify_downstream.empty()) {
+    //     // // Reduce to the unique schedulers to notify
+    //     // std::sort(sched_to_notify_downstream.begin(),
+    //     // sched_to_notify_downstream.end()); auto last =
+    //     // std::unique(sched_to_notify_downstream.begin(),
+    //     //                         sched_to_notify_downstream.end());
+    //     // sched_to_notify_downstream.erase(last, sched_to_notify_downstream.end());
+    //     for (auto& info : sched_to_notify_downstream) {
+    //         int idx = 0;
+    //         for (auto& intf : info.downstream_neighbor_intf) {
+    //             notify_downstream(intf, info.downstream_neighbor_blkids[idx]);
+    //             idx++;
+    //         }
+    //     }
+    // }
+
+    return notify_self_;
 }
+
 
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
     GR_LOG_INFO(top->_logger, "starting thread");
+
+    bool blocking_queue = true;
     while (!top->d_thread_stopped) {
 
-        // try to pop messages off the queue
         scheduler_message_sptr msg;
-        if (top->pop_message(msg)) // this blocks
-        {
-            switch (msg->type()) {
-            case scheduler_message_t::SCHEDULER_ACTION: {
-                // Notification that work needs to be done
-                // either from runtime or upstream or downstream or from self
 
-                auto action = std::static_pointer_cast<scheduler_action>(msg);
-                switch (action->action()) {
-                case scheduler_action_t::DONE:
-                    // fgmon says that we need to be done, wrap it up
-                    // each scheduler could handle this in a different way
-                    GR_LOG_DEBUG(top->_debug_logger,
-                                 "fgm signaled DONE, pushing flushed");
-                    top->d_fgmon->push_message(
-                        fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
+        // try to pop messages off the queue
+        bool valid = true;
+        bool do_some_work = false;
+        while (valid) {
+            if (blocking_queue)
+            {
+                valid = top->pop_message(msg);
+            } else
+            {
+                valid = top->pop_message_nonblocking(msg);
+            }
+
+            blocking_queue = false;
+            
+            if (valid) // this blocks
+            {
+                switch (msg->type()) {
+                case scheduler_message_t::SCHEDULER_ACTION: {
+                    // Notification that work needs to be done
+                    // either from runtime or upstream or downstream or from self
+
+                    auto action = std::static_pointer_cast<scheduler_action>(msg);
+                    switch (action->action()) {
+                    case scheduler_action_t::DONE:
+                        // fgmon says that we need to be done, wrap it up
+                        // each scheduler could handle this in a different way
+                        gr_log_debug(top->_debug_logger,
+                                     "fgm signaled DONE, pushing flushed");
+                        top->d_fgmon->push_message(
+                            fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
+                        break;
+                    case scheduler_action_t::EXIT:
+                        gr_log_debug(top->_debug_logger,
+                                     "fgm signaled EXIT, exiting thread");
+                        // fgmon says that we need to be done, wrap it up
+                        // each scheduler could handle this in a different way
+                        top->d_thread_stopped = true;
+                        break;
+                    case scheduler_action_t::NOTIFY_OUTPUT:
+                        gr_log_debug(top->_debug_logger,
+                                     "got NOTIFY_OUTPUT from {}",
+                                     msg->blkid());
+                        do_some_work = true;
+                        break;
+                    case scheduler_action_t::NOTIFY_INPUT:
+                        gr_log_debug(
+                            top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
+
+                        do_some_work = true;
+                        break;
+                    case scheduler_action_t::NOTIFY_ALL: {
+                        gr_log_debug(
+                            top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
+                        do_some_work = true;
+                        break;
+                    }
+                    default:
+                        break;
+                    }
                     break;
-                case scheduler_action_t::EXIT:
-                    GR_LOG_DEBUG(top->_debug_logger, "fgm signaled EXIT, exiting thread");
-                    // fgmon says that we need to be done, wrap it up
-                    // each scheduler could handle this in a different way
-                    top->d_thread_stopped = true;
-                    break;
-                case scheduler_action_t::NOTIFY_OUTPUT:
-                    GR_LOG_DEBUG(
-                        top->_debug_logger, "got NOTIFY_OUTPUT from {}", msg->blkid());
-                    top->handle_work_notification();
-                    break;
-                case scheduler_action_t::NOTIFY_INPUT:
-                    GR_LOG_DEBUG(
-                        top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
-                    top->handle_work_notification();
-                    break;
-                case scheduler_action_t::NOTIFY_ALL: {
-                    GR_LOG_DEBUG(
-                        top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
-                    top->handle_work_notification();
+                }
+                case scheduler_message_t::MSGPORT_MESSAGE:
+                {
+                
+                    auto m = std::static_pointer_cast<msgport_message>(msg);
+                    m->callback()(m->message());
+
                     break;
                 }
                 default:
                     break;
-                    break;
                 }
-                break;
             }
-            default:
-                break;
-            }
+        }
+
+        bool work_returned_ready = false;
+        if (do_some_work) {
+            work_returned_ready = top->handle_work_notification();
+        }
+
+        if (!work_returned_ready)
+        {
+            blocking_queue = true;
         }
     }
 }
