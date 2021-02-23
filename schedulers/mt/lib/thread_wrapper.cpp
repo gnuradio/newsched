@@ -123,60 +123,11 @@ bool thread_wrapper::handle_work_notification()
     }
 
     bool notify_self_ = false;
-
-    // std::vector<neighbor_interface_info> sched_to_notify_upstream,
-    //     sched_to_notify_downstream;
-
     for (auto elem : s) {
-
         if (elem.second == executor_iteration_status::READY) {
-            //         // top->notify_neighbors(elem.first);
-            //         neighbor_interface_info info_us, info_ds;
-            //         auto has_us = get_neighbors_upstream(elem.first, info_us);
-            //         auto has_ds = get_neighbors_downstream(elem.first, info_ds);
-
-            //         if (has_us) {
-            //             sched_to_notify_upstream.push_back(info_us);
-            //         }
-            //         if (has_ds) {
-            //             sched_to_notify_downstream.push_back(info_ds);
-            //         }
             notify_self_ = true;
         }
     }
-
-    // if (notify_self_) {
-    //     gr_log_debug(_debug_logger, "notifying self");
-    //     notify_self();
-    // }
-
-    // if (!sched_to_notify_upstream.empty()) {
-    //     // Reduce to the unique schedulers to notify
-    //     // std::sort(sched_to_notify_upstream.begin(), sched_to_notify_upstream.end());
-    //     // auto last =
-    //     //     std::unique(sched_to_notify_upstream.begin(),
-    //     //     sched_to_notify_upstream.end());
-    //     // sched_to_notify_upstream.erase(last, sched_to_notify_upstream.end());
-    //     for (auto& info : sched_to_notify_upstream) {
-    //         notify_upstream(info.upstream_neighbor_intf, info.upstream_neighbor_blkid);
-    //     }
-    // }
-
-    // if (!sched_to_notify_downstream.empty()) {
-    //     // // Reduce to the unique schedulers to notify
-    //     // std::sort(sched_to_notify_downstream.begin(),
-    //     // sched_to_notify_downstream.end()); auto last =
-    //     // std::unique(sched_to_notify_downstream.begin(),
-    //     //                         sched_to_notify_downstream.end());
-    //     // sched_to_notify_downstream.erase(last, sched_to_notify_downstream.end());
-    //     for (auto& info : sched_to_notify_downstream) {
-    //         int idx = 0;
-    //         for (auto& intf : info.downstream_neighbor_intf) {
-    //             notify_downstream(intf, info.downstream_neighbor_blkids[idx]);
-    //             idx++;
-    //         }
-    //     }
-    // }
 
     return notify_self_;
 }

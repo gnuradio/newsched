@@ -1,18 +1,18 @@
 #include <gnuradio/domain.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/graph_utils.hpp>
 #include <gnuradio/scheduler.hpp>
-#include <gnuradio/schedulers/st/scheduler_st.hpp>
+#include <gnuradio/vmcircbuf.hpp>
+
+#include "thread_wrapper.hpp"
 
 namespace gr {
 namespace schedulers {
 class scheduler_mt : public scheduler
 {
 private:
-    // std::vector<thread_wrapper::ptr> _threads;
-    std::vector<scheduler_sptr> _st_scheds;
+    std::vector<thread_wrapper::sptr> _threads;
     const int s_fixed_buf_size;
-    std::map<nodeid_t, scheduler_sptr> _block_thread_map;
+    std::map<nodeid_t, neighbor_interface_sptr> _block_thread_map;
     std::vector<std::vector<block_sptr>> _block_groups;
 
 public:
@@ -26,8 +26,8 @@ public:
                  const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
-        // _default_buf_factory = vmcirc_buffer::make; //simplebuffer::make;
-        _default_buf_factory = simplebuffer::make;
+        _default_buf_factory = vmcirc_buffer::make;
+        _default_buf_properties = vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO);
     }
     ~scheduler_mt(){};
 
