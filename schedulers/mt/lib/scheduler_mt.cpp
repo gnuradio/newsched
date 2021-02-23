@@ -5,7 +5,15 @@ namespace schedulers {
 
 void scheduler_mt::push_message(scheduler_message_sptr msg)
 {
-    _block_thread_map[msg->blkid()]->push_message(msg);
+    // Use 0 for blkid all threads
+    if (msg->blkid() == 0) {
+        for (auto element : _block_thread_map) {
+            auto thd = element.second;
+            thd->push_message(msg);
+        }
+    } else {
+        _block_thread_map[msg->blkid()]->push_message(msg);
+    }
 }
 
 void scheduler_mt::add_block_group(std::vector<block_sptr> blocks)
@@ -17,89 +25,65 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
                               flowgraph_monitor_sptr fgmon,
                               neighbor_interface_map block_sched_map)
 {
-    auto da_conf = domain_adapter_direct_conf::make(buffer_preference_t::UPSTREAM);
+    for (auto& b : fg->calc_used_blocks()) {
+        b->set_scheduler(base());
+    }
+
+    auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
+    bufman->initialize_buffers(fg, _default_buf_factory, _default_buf_properties);
 
 
-    std::vector<scheduler_sptr> scheds;
-    domain_conf_vec dconf;
     //  Partition the flowgraph according to how blocks are specified in groups
-    //  For now, one Thread Per Block
+    //  By default, one Thread Per Block
 
-    // If a block already has a domain adapter attached to it,
-    // leave it in the domain conf
     auto blocks = fg->calc_used_blocks();
 
     // look at our block groups, create confs and remove from blocks
     for (auto& bg : _block_groups) {
+        std::vector<block_sptr> blocks_for_this_thread;
+
         if (bg.size()) {
+            for (auto& b : bg) { // domain adapters don't show up as blocks
+                blocks_for_this_thread.push_back(b);
+            }
+
+            auto t = thread_wrapper::make(
+                name(), id(), blocks_for_this_thread, block_sched_map, bufman, fgmon);
+            _threads.push_back(t);
+
+            
             std::vector<node_sptr> node_vec;
             for (auto& b : bg) { // domain adapters don't show up as blocks
                 auto it = std::find(blocks.begin(), blocks.end(), b);
                 if (it != blocks.end()) {
                     blocks.erase(it);
-                    append_domain_adapters(b, fg, node_vec);
                 }
-            }
 
-            auto st_sched = scheduler_st::make(bg[0]->name(), s_fixed_buf_size);
-            scheds.push_back(st_sched);
-            dconf.push_back(domain_conf(st_sched, node_vec, da_conf));
+                append_domain_adapters(b, fg, node_vec);
+
+                for (auto& p : b->all_ports()) {
+                    p->set_parent_intf(t); // give a shared pointer to the scheduler class
+                }
+                _block_thread_map[b->id()] = t;
+            }
         }
     }
 
     // For the remaining blocks that weren't in block groups
     for (auto& b : blocks) {
-        auto st_sched = scheduler_st::make(b->alias(), s_fixed_buf_size);
-        scheds.push_back(st_sched);
-        std::vector<node_sptr> node_vec;
 
+        std::vector<node_sptr> node_vec;
         append_domain_adapters(b, fg, node_vec);
 
-        dconf.push_back(domain_conf(st_sched, node_vec, da_conf));
-    }
+        auto t =
+            thread_wrapper::make(name(), id(), {b}, block_sched_map, bufman, fgmon);
+        _threads.push_back(t);
 
-    fgmon->replace_scheduler(base(), scheds);
-
-    auto partition_info = graph_utils::partition(fg, scheds, dconf, block_sched_map);
-
-    for (auto& info : partition_info) {
-        auto flattened = flat_graph::make_flat(info.subgraph);
-        info.scheduler->initialize(flattened, fgmon, info.neighbor_map);
-        _st_scheds.push_back(info.scheduler);
-
-        for (auto& b : flattened->calc_used_nodes()) {
-            _block_thread_map[b->id()] = info.scheduler;
+        for (auto& p : b->all_ports()) {
+            p->set_parent_intf(t); // give a shared pointer to the scheduler class
         }
-    }
 
-
-    // if (fg->is_flat())  // flatten
-}
-void scheduler_mt::start()
-{
-    for (const auto& thd : _st_scheds) {
-        thd->start();
-    }
-}
-void scheduler_mt::stop()
-{
-    for (const auto& thd : _st_scheds) {
-        thd->stop();
-    }
-}
-void scheduler_mt::wait()
-{
-    for (const auto& thd : _st_scheds) {
-        thd->wait();
-    }
-}
-void scheduler_mt::run()
-{
-    for (const auto& thd : _st_scheds) {
-        thd->start();
-    }
-    for (const auto& thd : _st_scheds) {
-        thd->wait();
+        _block_thread_map[b->id()] = t;
     }
 }
 
@@ -125,6 +109,34 @@ void scheduler_mt::append_domain_adapters(block_sptr b,
                 node_vec.push_back(ed->dst().node());
             }
         }
+    }
+}
+
+void scheduler_mt::start()
+{
+    for (const auto& thd : _threads) {
+        thd->start();
+    }
+}
+void scheduler_mt::stop()
+{
+    for (const auto& thd : _threads) {
+        thd->stop();
+    }
+}
+void scheduler_mt::wait()
+{
+    for (const auto& thd : _threads) {
+        thd->wait();
+    }
+}
+void scheduler_mt::run()
+{
+    for (const auto& thd : _threads) {
+        thd->start();
+    }
+    for (const auto& thd : _threads) {
+        thd->wait();
     }
 }
 

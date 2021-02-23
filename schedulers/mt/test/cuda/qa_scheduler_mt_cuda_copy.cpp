@@ -19,17 +19,18 @@ using namespace gr;
  */
 TEST(SchedulerMTTest, CudaCopyBasic)
 {
-    int num_samples = 100000;
+    int veclen = 1024;
+    int num_samples = veclen*100;
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make(input_data, false);
-    auto snk1 = blocks::vector_sink_c::make();
-    auto copy1 = cuda::copy::make(1024);
-    auto copy2 = cuda::copy::make(1024);
+    auto src = blocks::vector_source_c::make(input_data, false, veclen);
+    auto snk1 = blocks::vector_sink_c::make(veclen);
+    auto copy1 = cuda::copy::make(veclen);
+    auto copy2 = cuda::copy::make(veclen);
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
@@ -54,17 +55,18 @@ TEST(SchedulerMTTest, CudaCopyBasic)
  */
 TEST(SchedulerMTTest, CudaCopyMultiThreaded)
 {
-    int num_samples = 100000;
+    int veclen = 1024;
+    int num_samples = veclen*100;
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make(input_data, false);
-    auto snk1 = blocks::vector_sink_c::make();
-    auto copy1 = cuda::copy::make(1024);
-    auto copy2 = cuda::copy::make(1024);
+    auto src = blocks::vector_source_c::make(input_data, false, veclen);
+    auto snk1 = blocks::vector_sink_c::make(veclen);
+    auto copy1 = cuda::copy::make(veclen);
+    auto copy2 = cuda::copy::make(veclen);
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
