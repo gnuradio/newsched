@@ -5,6 +5,7 @@
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
 #include <gnuradio/neighbor_interface_info.hpp>
+#include <gnuradio/neighbor_interface.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <thread>
 
@@ -18,7 +19,7 @@ namespace schedulers {
  * to this scheduler.  This is the core of the single threaded scheduler.
  *
  */
-class thread_wrapper
+class thread_wrapper : public neighbor_interface
 {
 private:
     /**
@@ -43,16 +44,16 @@ private:
     int _id;
 
 public:
-    typedef std::unique_ptr<thread_wrapper> ptr;
+    typedef std::shared_ptr<thread_wrapper> sptr;
 
-    static ptr make(const std::string& name,
+    static sptr make(const std::string& name,
                     int id,
                     std::vector<block_sptr> blocks,
                     neighbor_interface_map block_sched_map,
                     buffer_manager::sptr bufman,
                     flowgraph_monitor_sptr fgmon)
     {
-        return std::make_unique<thread_wrapper>(
+        return std::make_shared<thread_wrapper>(
             name, id, blocks, block_sched_map, bufman, fgmon);
     }
 
