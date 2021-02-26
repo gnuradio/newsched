@@ -53,59 +53,6 @@ void thread_wrapper::run()
     wait();
 }
 
-void thread_wrapper::notify_self()
-{
-    GR_LOG_DEBUG(_debug_logger, "notify_self");
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
-}
-
-bool thread_wrapper::get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info)
-{
-    bool ret = false;
-    // Find whether this block has an upstream neighbor
-    auto search = d_block_sched_map.find(blkid);
-    if (search != d_block_sched_map.end()) {
-        if (search->second.upstream_neighbor_intf != nullptr) {
-            info = search->second;
-            return true;
-        }
-    }
-
-    return ret;
-}
-
-bool thread_wrapper::get_neighbors_downstream(nodeid_t blkid,
-                                              neighbor_interface_info& info)
-{
-    // Find whether this block has any downstream neighbors
-    auto search = d_block_sched_map.find(blkid);
-    if (search != d_block_sched_map.end()) {
-        // Entry in the map exists, are there any entries
-        if (!search->second.downstream_neighbor_intf.empty()) {
-            info = search->second;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void thread_wrapper::notify_upstream(neighbor_interface_sptr upstream_sched,
-                                     nodeid_t blkid)
-{
-    GR_LOG_DEBUG(_debug_logger, "notify_upstream");
-
-    upstream_sched->push_message(
-        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT, blkid));
-}
-void thread_wrapper::notify_downstream(neighbor_interface_sptr downstream_sched,
-                                       nodeid_t blkid)
-{
-    GR_LOG_DEBUG(_debug_logger, "notify_downstream");
-    downstream_sched->push_message(
-        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, blkid));
-}
-
 bool thread_wrapper::handle_work_notification()
 {
     auto s = _exec->run_one_iteration(d_blocks);
