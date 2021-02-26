@@ -77,13 +77,6 @@ public:
     void wait();
     void run();
 
-    void notify_self();
-
-    bool get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info);
-    bool get_neighbors_downstream(nodeid_t blkid, neighbor_interface_info& info);
-
-    void notify_upstream(neighbor_interface_sptr upstream_sched, nodeid_t blkid);
-    void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
     bool handle_work_notification();
     static void thread_body(thread_wrapper* top);
 };
