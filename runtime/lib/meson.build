@@ -26,6 +26,7 @@ endif
 
 runtime_sources = [
   'realtime.cpp',
+  'thread.cpp',
   'parameter_types.cpp',
   'edge.cpp',
   'graph.cpp',
