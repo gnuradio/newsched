@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     int nthreads;
     int veclen;
     int buffer_type;
+    int buffer_size;
     bool rt_prio = false;
 
     po::options_description desc("Basic Test Flow Graph");
@@ -42,6 +43,9 @@ int main(int argc, char* argv[])
         "buffer",
         po::value<int>(&buffer_type)->default_value(1),
         "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")(
+        "buffer_size",
+        po::value<int>(&buffer_size)->default_value(32768),
+        "Buffer Size in bytes")(
         "rt_prio", "Enable Real-time priority");
 
     po::variables_map vm;
@@ -89,7 +93,8 @@ int main(int argc, char* argv[])
             fg->connect(copy_blks[nblocks - 1], 0, snk, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
         }
 
-        auto sched = schedulers::scheduler_mt::make("mt", 32768);
+        std::cout << "Initializing MT scheduler with buffer size of " << buffer_size << std::endl;
+        auto sched = schedulers::scheduler_mt::make("mt", buffer_size);
         fg->add_scheduler(sched);
 
         if (buffer_type == 1) {
