@@ -1,11 +1,12 @@
 #pragma once
 
+#include "block_group_properties.hpp"
 #include "graph_executor.hpp"
 #include <gnuradio/block.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
-#include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/neighbor_interface.hpp>
+#include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <thread>
 
@@ -31,46 +32,40 @@ private:
     bool d_thread_stopped = false;
     std::unique_ptr<graph_executor> _exec;
 
+    block_group_properties d_block_group;
     std::vector<block_sptr> d_blocks;
 
     logger_sptr _logger;
     logger_sptr _debug_logger;
-    neighbor_interface_map
-        d_block_sched_map; // map of block ids to scheduler interfaces / adapters
-    std::map<nodeid_t, block_sptr> d_block_id_to_block_map;
 
     flowgraph_monitor_sptr d_fgmon;
-    std::string _name;
+
     int _id;
 
 public:
     typedef std::shared_ptr<thread_wrapper> sptr;
 
-    static sptr make(const std::string& name,
-                    int id,
-                    std::vector<block_sptr> blocks,
-                    neighbor_interface_map block_sched_map,
-                    buffer_manager::sptr bufman,
-                    flowgraph_monitor_sptr fgmon)
+    static sptr make(int id,
+                     block_group_properties bgp,
+                     buffer_manager::sptr bufman,
+                     flowgraph_monitor_sptr fgmon)
     {
-        return std::make_shared<thread_wrapper>(
-            name, id, blocks, block_sched_map, bufman, fgmon);
+        return std::make_shared<thread_wrapper>(id, bgp, bufman, fgmon);
     }
 
-    thread_wrapper(const std::string& name,
-                   int id,
-                   std::vector<block_sptr> blocks,
-                   neighbor_interface_map block_sched_map,
+    thread_wrapper(int id,
+                   block_group_properties bgp,
                    buffer_manager::sptr bufman,
                    flowgraph_monitor_sptr fgmon);
     int id() { return _id; }
-    void set_id(int id) { _id = id; }
-    const std::string& name() { return _name; }
-    void set_name(int name) { _name = name; }
+    const std::string& name() { return d_block_group.name(); }
 
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
-    bool pop_message_nonblocking(scheduler_message_sptr& msg) { return msgq.try_pop(msg); }
+    bool pop_message_nonblocking(scheduler_message_sptr& msg)
+    {
+        return msgq.try_pop(msg);
+    }
 
     void start();
     void stop();

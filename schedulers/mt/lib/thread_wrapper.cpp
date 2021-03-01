@@ -1,28 +1,22 @@
 #include "thread_wrapper.hpp"
+#include <gnuradio/thread.hpp>
+#include <boost/format.hpp>
 #include <thread>
 
 namespace gr {
 namespace schedulers {
 
-thread_wrapper::thread_wrapper(const std::string& name,
-                               int id,
-                               std::vector<block_sptr> blocks,
-                               neighbor_interface_map block_sched_map,
+thread_wrapper::thread_wrapper(int id,
+                               block_group_properties bgp,
                                buffer_manager::sptr bufman,
                                flowgraph_monitor_sptr fgmon)
-    : _name(name), _id(id)
+    : _id(id), d_block_group(bgp), d_blocks(bgp.blocks())
 {
-    _logger = logging::get_logger(name, "default");
-    _debug_logger = logging::get_logger(name + "_dbg", "debug");
-
-    d_blocks = blocks;
-    d_block_sched_map = block_sched_map;
-    for (auto b : d_blocks) {
-        d_block_id_to_block_map[b->id()] = b;
-    }
+    _logger = logging::get_logger(bgp.name(), "default");
+    _debug_logger = logging::get_logger(bgp.name() + "_dbg", "debug");
 
     d_fgmon = fgmon;
-    _exec = std::make_unique<graph_executor>(name);
+    _exec = std::make_unique<graph_executor>(bgp.name());
     _exec->initialize(bufman, d_blocks);
     d_thread = std::thread(thread_body, this);
 }
@@ -84,6 +78,18 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 {
     GR_LOG_INFO(top->_logger, "starting thread");
 
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#include <windows.h>
+    thread::set_thread_name(
+        GetCurrentThread(),
+        boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
+#else
+    thread::set_thread_name(pthread_self(),
+                            str(boost::format("%s%d") % top->d_block_group.name() %
+                                top->d_block_group.blocks()[0]->id()));
+#endif
+
+
     bool blocking_queue = true;
     while (!top->d_thread_stopped) {
 
@@ -93,16 +99,14 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         bool valid = true;
         bool do_some_work = false;
         while (valid) {
-            if (blocking_queue)
-            {
+            if (blocking_queue) {
                 valid = top->pop_message(msg);
-            } else
-            {
+            } else {
                 valid = top->pop_message_nonblocking(msg);
             }
 
             blocking_queue = false;
-            
+
             if (valid) // this blocks
             {
                 switch (msg->type()) {
@@ -150,9 +154,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     }
                     break;
                 }
-                case scheduler_message_t::MSGPORT_MESSAGE:
-                {
-                
+                case scheduler_message_t::MSGPORT_MESSAGE: {
+
                     auto m = std::static_pointer_cast<msgport_message>(msg);
                     m->callback()(m->message());
 
@@ -169,8 +172,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             work_returned_ready = top->handle_work_notification();
         }
 
-        if (!work_returned_ready)
-        {
+        if (!work_returned_ready) {
             blocking_queue = true;
         }
     }
