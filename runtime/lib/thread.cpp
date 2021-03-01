@@ -217,27 +217,27 @@ gr_thread_t get_current_thread_id() { return pthread_self(); }
 
 void thread_bind_to_processor(unsigned int n)
 {
-    std::vector<int> mask(1, n);
+    std::vector<unsigned int> mask(1, n);
     thread_bind_to_processor(get_current_thread_id(), mask);
 }
 
-void thread_bind_to_processor(const std::vector<int>& mask)
+void thread_bind_to_processor(const std::vector<unsigned int>& mask)
 {
     thread_bind_to_processor(get_current_thread_id(), mask);
 }
 
 void thread_bind_to_processor(gr_thread_t thread, unsigned int n)
 {
-    std::vector<int> mask(1, n);
+    std::vector<unsigned int> mask(1, n);
     thread_bind_to_processor(thread, mask);
 }
 
-void thread_bind_to_processor(gr_thread_t thread, const std::vector<int>& mask)
+void thread_bind_to_processor(gr_thread_t thread, const std::vector<unsigned int>& mask)
 {
     cpu_set_t set;
     size_t len = sizeof(cpu_set_t);
-    std::vector<int> _mask = mask;
-    std::vector<int>::iterator itr;
+    std::vector<unsigned int> _mask = mask;
+    std::vector<unsigned int>::iterator itr;
 
     CPU_ZERO(&set);
     for (itr = _mask.begin(); itr != _mask.end(); itr++)
