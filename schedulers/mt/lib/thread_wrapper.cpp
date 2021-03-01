@@ -89,6 +89,18 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                                 top->d_block_group.blocks()[0]->id()));
 #endif
 
+    // Set thread affinity if it was set before fg was started.
+    if (!top->d_block_group.processor_affinity().empty()) {
+        std::cout << "setting affinity of thread " << thread::get_current_thread_id()
+                  << " to " << top->d_block_group.processor_affinity()[0] << std::endl;
+        gr::thread::thread_bind_to_processor(thread::get_current_thread_id(),
+                                             top->d_block_group.processor_affinity());
+    }
+
+    // // Set thread priority if it was set before fg was started
+    // if (block->thread_priority() > 0) {
+    //     gr::thread::set_thread_priority(d->thread, block->thread_priority());
+    // }
 
     bool blocking_queue = true;
     while (!top->d_thread_stopped) {
