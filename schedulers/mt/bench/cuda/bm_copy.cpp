@@ -11,7 +11,7 @@
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/logging.hpp>
-// #include <gnuradio/realtime.hpp>
+#include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
 #include <gnuradio/cudabuffer.hpp>
@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
 
     fg->validate();
 
-    // if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
-    //     std::cout << "Unable to enable realtime scheduling " << std::endl;
+    if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
+        std::cout << "Unable to enable realtime scheduling " << std::endl;
 
     auto t1 = std::chrono::steady_clock::now();
     fg->start();
