@@ -101,6 +101,13 @@ public:
         for (auto& p : _connected_ports) {
             p->push_message(msg);
         }
+
+        // FIXME: To achieve maximum performance, we need to stimulate our own 
+        //  thread by pushing messages into the queue and causing the next
+        //  call to work() to be immediately evaluated
+        // Without this, performance is significantly worse than the GR TPB
+        //  scheduler.  This needs more investigation
+        this->push_message(msg);
     }
     // Inbound messages
     virtual void push_message(scheduler_message_sptr msg)
