@@ -3,6 +3,7 @@
 #include <gnuradio/scheduler.hpp>
 #include <gnuradio/vmcircbuf.hpp>
 
+#include "block_group_properties.hpp"
 #include "thread_wrapper.hpp"
 
 namespace gr {
@@ -13,7 +14,7 @@ private:
     std::vector<thread_wrapper::sptr> _threads;
     const int s_fixed_buf_size;
     std::map<nodeid_t, neighbor_interface_sptr> _block_thread_map;
-    std::vector<std::vector<block_sptr>> _block_groups;
+    std::vector<block_group_properties> _block_groups;
 
 public:
     typedef std::shared_ptr<scheduler_mt> sptr;
@@ -27,12 +28,15 @@ public:
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
         _default_buf_factory = vmcirc_buffer::make;
-        _default_buf_properties = vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO);
+        _default_buf_properties =
+            vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO);
     }
     ~scheduler_mt(){};
 
     void push_message(scheduler_message_sptr msg);
-    void add_block_group(std::vector<block_sptr> blocks);
+    void add_block_group(const std::vector<block_sptr>& blocks,
+                         const std::string& name = "",
+                         const std::vector<unsigned int>& affinity_mask = {});
 
     /**
      * @brief Initialize the multi-threaded scheduler
