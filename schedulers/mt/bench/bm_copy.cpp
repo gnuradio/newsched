@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
     int buffer_type;
     int buffer_size;
     bool rt_prio = false;
+   
+    std::vector<unsigned int> cpu_affinity;
 
     po::options_description desc("Basic Test Flow Graph");
     desc.add_options()("help,h", "display help")(
@@ -46,7 +48,9 @@ int main(int argc, char* argv[])
         "buffer_size",
         po::value<int>(&buffer_size)->default_value(32768),
         "Buffer Size in bytes")(
-        "rt_prio", "Enable Real-time priority");
+        "rt_prio", "Enable Real-time priority")(
+        "cpus", po::value<std::vector<unsigned int>>()->multitoken(), "Pin threads to CPUs (if nthreads > 0, will pin to 0,1,..,N"
+        );
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -61,6 +65,9 @@ int main(int argc, char* argv[])
         rt_prio = true;
     }
 
+    if (vm.count("cpus")) {
+      cpu_affinity = vm["cpus"].as<std::vector<unsigned int>>();
+    }
 
     if (rt_prio && gr::enable_realtime_scheduling() != RT_OK) {
         std::cout << "Error: failed to enable real-time scheduling." << std::endl;
@@ -104,7 +111,7 @@ int main(int argc, char* argv[])
         if (nthreads > 0) {
             int blks_per_thread = nblocks / nthreads;
 
-            for (int i = 0; i < nthreads; i++) {
+            for (unsigned int i = 0; i < nthreads; i++) {
                 std::vector<block_sptr> block_group;
                 if (i == 0) {
                     block_group.push_back(src);
@@ -115,13 +122,21 @@ int main(int argc, char* argv[])
                     block_group.push_back(copy_blks[i * blks_per_thread + j]);
                 }
 
-                if (i == nthreads - 1) {
+                if (i == static_cast<unsigned int>(nthreads - 1)) {
                     for (int j = 0; j < (nblocks - nthreads * blks_per_thread); j++) {
                         block_group.push_back(copy_blks[(i + 1) * blks_per_thread + j]);
                     }
                     block_group.push_back(snk);
                 }
-                sched->add_block_group(block_group);
+                if (cpu_affinity.empty())
+                {
+                    sched->add_block_group(block_group);
+                }
+                else
+                {
+                    sched->add_block_group(block_group, "group" + std::to_string(i), {cpu_affinity[i]} );
+                }
+                
             }
         }
 

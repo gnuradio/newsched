@@ -107,7 +107,7 @@ public:
         //  call to work() to be immediately evaluated
         // Without this, performance is significantly worse than the GR TPB
         //  scheduler.  This needs more investigation
-        this->push_message(msg);
+        // this->push_message(msg);
     }
     // Inbound messages
     virtual void push_message(scheduler_message_sptr msg)
