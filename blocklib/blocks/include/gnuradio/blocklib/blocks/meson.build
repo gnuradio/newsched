@@ -5,6 +5,7 @@ blocks_headers = [
     'multiply_const.hpp',
     'null_sink.hpp',
     'null_source.hpp',
+    'throttle.hpp',
     'vector_sink.hpp',
     'vector_source.hpp',
 ]

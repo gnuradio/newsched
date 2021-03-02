@@ -29,6 +29,9 @@ thread_wrapper::thread_wrapper(const std::string& name,
 
 void thread_wrapper::start()
 {
+    for (auto& b : d_blocks) {
+        b->start();
+    }
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
 }
 void thread_wrapper::stop()
@@ -79,6 +82,32 @@ bool thread_wrapper::handle_work_notification()
     return notify_self_;
 }
 
+void thread_wrapper::handle_parameter_query(std::shared_ptr<param_query_action> item)
+{
+    auto b = d_block_id_to_block_map[item->blkid()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter query {} - {}", item->blkid(), b->alias());
+
+    b->on_parameter_query(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
+}
+
+void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action> item)
+{
+    auto b = d_block_id_to_block_map[item->blkid()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter change {} - {}", item->blkid(), b->alias());
+
+    b->on_parameter_change(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
+}
+
 
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
@@ -93,16 +122,14 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         bool valid = true;
         bool do_some_work = false;
         while (valid) {
-            if (blocking_queue)
-            {
+            if (blocking_queue) {
                 valid = top->pop_message(msg);
-            } else
-            {
+            } else {
                 valid = top->pop_message_nonblocking(msg);
             }
 
             blocking_queue = false;
-            
+
             if (valid) // this blocks
             {
                 switch (msg->type()) {
@@ -150,14 +177,23 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     }
                     break;
                 }
-                case scheduler_message_t::MSGPORT_MESSAGE:
-                {
-                
+                case scheduler_message_t::MSGPORT_MESSAGE: {
+
                     auto m = std::static_pointer_cast<msgport_message>(msg);
                     m->callback()(m->message());
 
                     break;
                 }
+                case scheduler_message_t::PARAMETER_QUERY: {
+                    // Query the state of a parameter on a block
+                    top->handle_parameter_query(
+                        std::static_pointer_cast<param_query_action>(msg));
+                } break;
+                case scheduler_message_t::PARAMETER_CHANGE: {
+                    // Query the state of a parameter on a block
+                    top->handle_parameter_change(
+                        std::static_pointer_cast<param_change_action>(msg));
+                } break;
                 default:
                     break;
                 }
@@ -169,8 +205,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             work_returned_ready = top->handle_work_notification();
         }
 
-        if (!work_returned_ready)
-        {
+        if (!work_returned_ready) {
             blocking_queue = true;
         }
     }

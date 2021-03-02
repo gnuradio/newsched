@@ -22,9 +22,9 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 
     const float* in = (const float*)work_input[0].items;
     float* out = (float*)work_output[0].items;
-    int noi = work_output[0].n_items * d_vlen;
+    int noi = work_output[0].n_items * d_vlen->value();
 
-    volk_32f_s32f_multiply_32f(out, in, d_k, noi);
+    volk_32f_s32f_multiply_32f(out, in, d_k->value(), noi);
 
     work_output[0].n_produced = work_output[0].n_items;
     return work_return_code_t::WORK_OK;
@@ -37,17 +37,29 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 {
     const gr_complex* in = (const gr_complex*)work_input[0].items;
     gr_complex* out = (gr_complex*)work_output[0].items;
-    int noi = work_output[0].n_items * d_vlen;
+    int noi = work_output[0].n_items * d_vlen->value();
 
-    volk_32fc_s32fc_multiply_32fc(out, in, d_k, noi);
+    volk_32fc_s32fc_multiply_32fc(out, in, d_k->value(), noi);
 
     work_output[0].n_produced = work_output[0].n_items;
     return work_return_code_t::WORK_OK;
 }
 
 template <class T>
-multiply_const<T>::multiply_const(T k, size_t vlen) : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
+multiply_const<T>::multiply_const(T k, size_t vlen)
+    : sync_block("multiply_const")
 {
+    d_k = scalar_param<T>::make(multiply_const<T>::params::id_k, "k", k);
+    d_vlen = scalar_param<size_t>::make(multiply_const<T>::params::id_vlen, "vlen", vlen);
+
+    add_param(d_k);
+    add_param(d_vlen);
+
+    add_port(
+        port<T>::make("input", port_direction_t::INPUT, std::vector<size_t>{ vlen }));
+    add_port(
+        port<T>::make("output", port_direction_t::OUTPUT, std::vector<size_t>{ vlen }));
+   
 }
 
 template <class T>
@@ -58,22 +70,22 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
     T* iptr = (T*)work_input[0].items;
     T* optr = (T*)work_output[0].items;
 
-    int size = work_output[0].n_items * d_vlen;
+    int size = work_output[0].n_items * d_vlen->value();
 
     while (size >= 8) {
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
+        *optr++ = *iptr++ * d_k->value();
         size -= 8;
     }
 
     while (size-- > 0)
-        *optr++ = *iptr++ * d_k;
+        *optr++ = *iptr++ * d_k->value();
 
     work_output[0].n_produced = work_output[0].n_items;
     work_input[0].n_consumed = work_input[0].n_items;

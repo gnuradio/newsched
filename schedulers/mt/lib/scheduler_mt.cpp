@@ -132,12 +132,8 @@ void scheduler_mt::wait()
 }
 void scheduler_mt::run()
 {
-    for (const auto& thd : _threads) {
-        thd->start();
-    }
-    for (const auto& thd : _threads) {
-        thd->wait();
-    }
+    start();
+    wait();
 }
 
 } // namespace schedulers

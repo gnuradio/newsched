@@ -79,6 +79,8 @@ public:
 
     bool handle_work_notification();
     static void thread_body(thread_wrapper* top);
+    void handle_parameter_query(std::shared_ptr<param_query_action> item);
+    void handle_parameter_change(std::shared_ptr<param_change_action> item);
 };
 } // namespace schedulers
 } // namespace gr
