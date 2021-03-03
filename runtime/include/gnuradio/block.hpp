@@ -8,6 +8,7 @@
 #include <gnuradio/block_work_io.hpp>
 #include <gnuradio/node.hpp>
 #include <gnuradio/gpdict.hpp>
+#include <gnuradio/parameter.hpp>
 
 namespace gr {
 
@@ -26,9 +27,14 @@ class block : public gr::node, public std::enable_shared_from_this<block>
 private:
     bool d_running = false;
     tag_propagation_policy_t d_tag_propagation_policy;
+    message_port_sptr d_param_port;
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
+    void handle_set_param(pmtf::pmt_sptr msg)
+    {
+        gr_log_info(_logger, "got set_param"); // FIXME
+    }
 
 public:
     /**
@@ -39,6 +45,11 @@ public:
     block(const std::string& name)
         : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
     {
+        // Every block has a message port for setting parameters
+        d_param_port = message_port::make(
+            "set_param", port_direction_t::INPUT);
+        d_param_port->register_callback([this](pmtf::pmt_sptr msg) { this->handle_set_param(msg); });
+        add_port(d_param_port);
     }
     virtual ~block(){};
 
@@ -99,6 +110,26 @@ public:
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    parameter_config d_parameters;
+    void add_param(param_sptr p) { d_parameters.add(p); }
+
+    pmtf::pmt_sptr request_parameter_query(int param_id);
+    void request_parameter_change(int param_id, pmtf::pmt_sptr new_value);
+
+    virtual void on_parameter_change(param_action_sptr action)
+    {
+        gr_log_debug(_debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
+        auto param = d_parameters.get(action->id());
+        param->set_pmt_value(action->pmt_value());
+    }
+
+    virtual void on_parameter_query(param_action_sptr action)
+    {
+        gr_log_debug(_debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
+        auto param = d_parameters.get(action->id());
+        action->set_pmt_value(param->pmt_value());
+    }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

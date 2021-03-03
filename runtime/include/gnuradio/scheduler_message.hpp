@@ -10,6 +10,8 @@ enum class scheduler_action_t { DONE, NOTIFY_OUTPUT, NOTIFY_INPUT, NOTIFY_ALL, E
 enum class scheduler_message_t {
     SCHEDULER_ACTION,
     MSGPORT_MESSAGE,
+    PARAMETER_CHANGE,
+    PARAMETER_QUERY,
 };
 
 class scheduler_message
