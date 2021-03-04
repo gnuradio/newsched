@@ -14,6 +14,7 @@
 
 namespace gr {
     namespace kernels {
-        void copy_kernel(uint8_t* in_buffer, size_t num_input_items, uint8_t* out_buffer, size_t num_output_items);
+        template<class T>
+        void copy_kernel(T* in_buffer, T* out_buffer, size_t num_items);
     }
 }

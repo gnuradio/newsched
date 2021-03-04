@@ -6,7 +6,6 @@
 namespace gr {
     namespace blocks {
 
-    template <typename T>
     class copy : public sync_block
     {
     public:
@@ -18,16 +17,17 @@ namespace gr {
             auto ptr = std::make_shared<copy>(itemsize);
 
             ptr->add_port(untyped_port::make(
-                "input", port_direction_t::INPUT, itemsize));
+                "input", port_direction_t::INPUT, itemsize
+            ));
 
             ptr->add_port(untyped_port::make(
-                "out", port_direction_t::OUTPUT, itemsize));
-
+                "out", port_direction_t::OUTPUT, itemsize
+            ));
 
             return ptr;
         }
 
-        copy() : sync_block("copy")
+        copy(size_t itemsize) : sync_block("copy"), _itemsize(itemsize)
         {
             block_kernel = nullptr;
         }
@@ -35,22 +35,16 @@ namespace gr {
         virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                         std::vector<block_work_output>& work_output)
         {
-            return block_kernel(work_input, work_output);
+            unsigned int batch_size = work_input.size();
+            for (unsigned int idx = 0; idx < batch_size; idx++){
+                block_kernel(work_input[idx].items, work_output[idx].items, work_input[idx].n_items);
+            }
+
+            return work_return_code_t::WORK_OK;
         }
 
     private:
+        size_t _itemsize;
     };
-
-    // Instead of template specializations, we're hoping to pick the kernel based on the port type, block name, and device
-    // However, the port is currently instantiated after the block is and even if it's not
-    // we do not have a way to enforce that the port should be instantiated first.
-    // At the very least, this still allows for the separation of a kernel library
-    // from a block/scheduler library.
-    // template<> copy<gr_complex>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<gr_complex>; };
-    // template<> copy<float>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<float>; };
-    // template<> copy<uint8_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint8_t>; };
-    // template<> copy<uint16_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint16_t>; };
-    // template<> copy<uint32_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint32_t>; };
-
     } // namespace blocks
 } // namespace gr

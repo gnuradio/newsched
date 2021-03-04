@@ -95,7 +95,7 @@ public:
     virtual work_return_code_t do_work(std::vector<block_work_input>& work_input,
                                        std::vector<block_work_output>& work_output)
     {
-        return block_kernel(work_input, work_output);
+        return work(work_input, work_output);
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
@@ -103,8 +103,7 @@ public:
     /**
      * A function pointer to be swapped at runtime.
      */
-    work_return_code_t (*block_kernel)(std::vector<block_work_input>& work_input,
-                                       std::vector<block_work_output>& work_output);
+    void (*block_kernel)(void* in_buffer, void* out_buffer, size_t num_items);
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
