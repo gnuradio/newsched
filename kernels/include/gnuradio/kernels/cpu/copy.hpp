@@ -17,20 +17,18 @@
 namespace gr {
 namespace kernels {
 
-template <class InputType, class OutputType>
-struct copy_kernel : kernel<InputType, OutputType> {
-    void operator()(InputType* in_buffer,
-                    OutputType* out_buffer,
+template <class T>
+struct copy_kernel : kernel_interface {
+    void operator()(void* in_buffer,
+                    void* out_buffer,
                     size_t num_input_items,
                     size_t num_output_items);
 
-    void operator()(InputType* in_buffer, InputType* out_buffer, size_t num_items);
+    void operator()(void* in_buffer, void* out_buffer, size_t num_items);
 
-    void operator()(InputType* buffer, size_t num_items);
+    void operator()(void* buffer, size_t num_items);
 };
 
 
 } // namespace kernels
 } // namespace gr
-
-template struct gr::kernels::copy_kernel<void, void>;

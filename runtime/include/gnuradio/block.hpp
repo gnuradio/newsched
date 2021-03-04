@@ -104,7 +104,7 @@ public:
     /**
      * A kernel to be swapped at run-time
      */
-    gr::kernels::kernel<void, void>* block_kernel;
+    gr::kernels::kernel_interface* block_kernel;
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

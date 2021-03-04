@@ -9,7 +9,7 @@ namespace blocks {
 class copy : public sync_block
 {
 public:
-    enum params : uint32_t { id_nports, num_params };
+    enum params : uint32_t { id_itemsize, id_nports, num_params };
     typedef std::shared_ptr<copy> sptr;
 
     static sptr make(size_t itemsize)
@@ -25,7 +25,15 @@ public:
 
     copy(size_t itemsize) : sync_block("copy"), _itemsize(itemsize)
     {
-        block_kernel = new gr::kernels::copy_kernel<void, void>;
+        if (itemsize == 1) {
+            block_kernel = new gr::kernels::copy_kernel<uint8_t>;
+        } else if (itemsize == 2) {
+            block_kernel = new gr::kernels::copy_kernel<uint16_t>;
+        } else if (itemsize == 4) {
+            block_kernel = new gr::kernels::copy_kernel<uint32_t>;
+        } else {
+            block_kernel = new gr::kernels::copy_kernel<uint64_t>;
+        }
     }
 
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
