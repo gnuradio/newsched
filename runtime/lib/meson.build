@@ -227,10 +227,13 @@ endif
 newsched_runtime_lib = library('newsched-runtime', 
     runtime_sources, 
     install : true, 
-    dependencies : runtime_deps,
+    dependencies : [runtime_deps, newsched_kernels_cpu_dep],
     link_language : 'cpp',
     include_directories : incdir,
-    cpp_args : cpp_args)
+    cpp_args : cpp_args
+  )
 
-newsched_runtime_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_runtime_lib)
+newsched_runtime_dep = declare_dependency(
+  include_directories : incdir,
+  link_with : newsched_runtime_lib
+)

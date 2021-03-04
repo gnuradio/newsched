@@ -28,5 +28,9 @@ struct copy_kernel : kernel<InputType, OutputType> {
 
     void operator()(InputType* buffer, size_t num_items);
 };
+
+
 } // namespace kernels
 } // namespace gr
+
+template struct gr::kernels::copy_kernel<void, void>;

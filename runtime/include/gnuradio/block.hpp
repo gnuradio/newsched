@@ -7,6 +7,7 @@
 
 #include <gnuradio/block_work_io.hpp>
 #include <gnuradio/gpdict.hpp>
+#include <gnuradio/kernels/cpu/kernel.hpp>
 #include <gnuradio/node.hpp>
 
 namespace gr {
@@ -101,9 +102,9 @@ public:
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
 
     /**
-     * A function pointer to be swapped at runtime.
+     * A kernel to be swapped at run-time
      */
-    void (*block_kernel)(void* in_buffer, void* out_buffer, size_t num_items);
+    gr::kernels::kernel<void, void>* block_kernel;
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

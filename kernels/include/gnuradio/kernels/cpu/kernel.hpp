@@ -1,5 +1,9 @@
+#pragma once
 #include <cstddef>
 
+
+namespace gr {
+namespace kernels {
 /**
  * @brief An interface that all "kernels" must implement
  *
@@ -39,4 +43,8 @@ struct kernel {
      * @param num_items
      */
     virtual void operator()(InputType* buffer, size_t num_items) = 0;
+
+    virtual ~kernel() = default;
 };
+} // namespace kernels
+} // namespace gr
