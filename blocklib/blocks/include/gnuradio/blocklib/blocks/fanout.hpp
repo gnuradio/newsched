@@ -11,20 +11,16 @@ public:
     enum params : uint32_t { id_itemsize, id_nports, num_params };
 
     typedef std::shared_ptr<fanout> sptr;
-    static sptr make( size_t itemsize, size_t nports = 2)
+    static sptr make(size_t itemsize, size_t nports = 2)
     {
         auto ptr = std::make_shared<fanout>(itemsize, nports);
 
-        ptr->add_port(untyped_port::make("input",
-                                    port_direction_t::INPUT,
-                                    itemsize));
+        ptr->add_port(untyped_port::make("input", port_direction_t::INPUT, itemsize));
 
         // TODO : do this with multiplicity
         for (size_t i = 0; i < nports; i++) {
-            ptr->add_port(untyped_port::make("out" + std::to_string(i),
-                                        port_direction_t::OUTPUT,
-                                        itemsize));
-
+            ptr->add_port(untyped_port::make(
+                "out" + std::to_string(i), port_direction_t::OUTPUT, itemsize));
         }
 
         return ptr;
@@ -42,7 +38,7 @@ public:
         for (size_t n = 0; n < _nports; n++) {
             int size = work_output[0].n_items * _itemsize;
             auto* optr = (uint8_t*)work_output[n].items;
-            std::copy(iptr, iptr+size, optr);
+            std::copy(iptr, iptr + size, optr);
             work_output[n].n_produced = work_output[n].n_items;
         }
 

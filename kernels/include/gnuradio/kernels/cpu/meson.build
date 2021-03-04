@@ -1,4 +1,5 @@
 headers = [
+    'kernel.hpp',
     'copy.hpp'
 ]
 
