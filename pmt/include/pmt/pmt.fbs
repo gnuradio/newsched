@@ -1,0 +1,157 @@
+
+native_include "<complex>";
+// example IDL file
+
+namespace pmtf;
+
+enum DataType : byte {     
+    UNKNOWN = 0,
+    FLOAT,
+    DOUBLE,
+    CFLOAT,
+    CDOUBLE,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+    UINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    BOOL,
+    ENUM,
+    STRING,
+    PMT,
+    ANY,
+    VOID }
+
+struct Complex64 (native_type:"std::complex<float>") {
+    re:float32;
+    im:float32;
+}
+
+// struct Complex64 {
+//     re:float32;
+//     im:float32;
+// }
+
+struct Complex128 (native_type:"std::complex<double>") {
+    re:float64;
+    im:float64;
+}
+
+// enum ContainerType : int8 { NONE = 0, VECTOR, MAP, DICT, PAIR, TUPLE }
+
+table PmtString {
+    value:string;
+}
+
+table ScalarFloat32 {
+    value:float32;
+}
+table ScalarFloat64 {
+    value:float64;
+}
+table ScalarComplex64 {
+    value:Complex64 (native_inline) ;
+}
+table ScalarComplex128 {
+    value:Complex128 (native_inline);
+}
+table ScalarInt8 {
+    value:int8;
+}
+table ScalarInt16 {
+    value:int16;
+}
+table ScalarInt32 {
+    value:int32;
+}
+table ScalarInt64 {
+    value:int64;
+}
+table ScalarUInt8 {
+    value:uint8;
+}
+table ScalarUInt16 {
+    value:uint16;
+}
+table ScalarUInt32 {
+    value:uint32;
+}
+table ScalarUInt64 {
+    value:uint64;
+}
+table ScalarBool {
+    value:bool;
+}
+
+table VectorFloat32 {
+    value:[float32];
+}
+table VectorFloat64 {
+    value:[float64];
+}
+table VectorComplex64 {
+    value:[Complex64];
+}
+table VectorComplex128 {
+    value:[Complex128];
+}
+table VectorInt8 {
+    value:[int8];
+}
+table VectorInt16 {
+    value:[int16];
+}
+table VectorInt32 {
+    value:[int32];
+}
+table VectorInt64 {
+    value:[int64];
+}
+table VectorUInt8 {
+    value:[uint8];
+}
+table VectorUInt16 {
+    value:[uint16];
+}
+table VectorUInt32 {
+    value:[uint32];
+}
+table VectorUInt64 {
+    value:[uint64];
+}
+table VectorBool {
+    value:[bool];
+}
+table VectorPmt {
+    value:[Pmt];
+}
+table MapEntryString {
+    key:string (key);
+    value:Pmt;
+}
+
+table MapString {
+    entries:[MapEntryString];
+}
+
+union Data { PmtString, ScalarFloat32, ScalarFloat64, ScalarComplex64, ScalarComplex128, 
+ScalarInt8, ScalarInt16, ScalarInt32, ScalarInt64, 
+ScalarUInt8, ScalarUInt16, ScalarUInt32, ScalarUInt64,
+ScalarBool,
+VectorFloat32, VectorFloat64, VectorComplex64, VectorComplex128, 
+VectorInt8, VectorInt16, VectorInt32, VectorInt64, 
+VectorUInt8, VectorUInt16, VectorUInt32, VectorUInt64,
+VectorBool, VectorPmt,
+MapString
+}
+
+
+table Pmt {
+    // data_type:DataType;
+    data:Data;
+}
+
+root_type Pmt;

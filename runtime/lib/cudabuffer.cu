@@ -23,12 +23,18 @@ cuda_buffer::cuda_buffer(size_t num_items, size_t item_size, cuda_buffer_type ty
       _write_index(0),
       _type(type)
 {
-    _host_buffer.resize(_buf_size * 2); // double circular buffer
+    // _host_buffer.resize(_buf_size * 2); // double circular buffer
+    cudaMallocHost(
+        &_host_buffer,
+        _buf_size *
+            2); // double circular buffer - should do something more intelligent here
     cudaMalloc(
         &_device_buffer,
         _buf_size *
             2); // double circular buffer - should do something more intelligent here
     set_type("cuda_buffer_" + std::to_string((int)_type));
+
+    cudaStreamCreate(&stream);
 }
 cuda_buffer::~cuda_buffer() { cudaFree(_device_buffer); }
 
@@ -121,28 +127,28 @@ void cuda_buffer::post_write(int num_items)
     int num_bytes_2 = bytes_written - num_bytes_1;
 
     if (_buffer_type == cuda_buffer_type::H2D) {
-        cudaMemcpy(&_device_buffer[wi1],
+        cudaMemcpyAsync(&_device_buffer[wi1],
                    &_host_buffer[wi1],
                    bytes_written,
-                   cudaMemcpyHostToDevice);
+                   cudaMemcpyHostToDevice, stream);
 
         // memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
-        cudaMemcpy(&_device_buffer[wi2],
+        cudaMemcpyAsync(&_device_buffer[wi2],
                    &_device_buffer[wi1],
                    num_bytes_1,
-                   cudaMemcpyDeviceToDevice);
+                   cudaMemcpyDeviceToDevice, stream);
         if (num_bytes_2) {
             // memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
-            cudaMemcpy(&_device_buffer[0],
+            cudaMemcpyAsync(&_device_buffer[0],
                        &_device_buffer[_buf_size],
                        num_bytes_2,
-                       cudaMemcpyDeviceToDevice);
+                       cudaMemcpyDeviceToDevice, stream);
         }
     } else if (_buffer_type == cuda_buffer_type::D2H) {
-        cudaMemcpy(&_host_buffer[wi1],
+        cudaMemcpyAsync(&_host_buffer[wi1],
                    &_device_buffer[wi1],
                    bytes_written,
-                   cudaMemcpyDeviceToHost);
+                   cudaMemcpyDeviceToHost, stream);
 
         memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
 
@@ -151,21 +157,22 @@ void cuda_buffer::post_write(int num_items)
         }
     } else // D2D
     {
-        cudaMemcpy(&_device_buffer[wi2],
+        cudaMemcpyAsync(&_device_buffer[wi2],
                    &_device_buffer[wi1],
                    num_bytes_1,
                    cudaMemcpyDeviceToDevice);
         if (num_bytes_2)
-            cudaMemcpy(&_device_buffer[0],
+        cudaMemcpyAsync(&_device_buffer[0],
                        &_device_buffer[_buf_size],
                        num_bytes_2,
-                       cudaMemcpyDeviceToDevice);
+                       cudaMemcpyDeviceToDevice, stream);
     }
     // advance the write pointer
     _write_index += bytes_written;
     if (_write_index >= _buf_size) {
         _write_index -= _buf_size;
     }
+    cudaStreamSynchronize(stream);
 }
 
 // FIXME: This probably won't work as of now

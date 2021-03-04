@@ -37,7 +37,7 @@ TEST(SchedulerMTTest, TwoSinks)
     EXPECT_EQ(snk1->data(), input_data);
     EXPECT_EQ(snk2->data(), input_data);
 }
-
+#if 0
 TEST(SchedulerMTTest, DomainAdapterBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
@@ -75,7 +75,7 @@ TEST(SchedulerMTTest, DomainAdapterBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
-
+#endif
 TEST(SchedulerMTTest, BlockFanout)
 {
     int nsamples = 1000000;

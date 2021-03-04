@@ -35,19 +35,18 @@ namespace gr {
         enum params : uint32_t { id_nports, num_params };
         typedef std::shared_ptr<copy> sptr;
 
-        static sptr make()
+        static sptr make(size_t itemsize)
         {
-            auto smart_pointer = std::make_shared<copy<T>>();
+            auto ptr = std::make_shared<copy>(itemsize);
 
-            smart_pointer->add_port(untyped_port::make(
-                "input", port_direction_t::INPUT, sizeof(T), port_type_t::STREAM
-            ));
+            ptr->add_port(untyped_port::make(
+                "input", port_direction_t::INPUT, itemsize));
 
-            smart_pointer->add_port(untyped_port::make(
-                "out", port_direction_t::OUTPUT, sizeof(T), port_type_t::STREAM
-            ));
+            ptr->add_port(untyped_port::make(
+                "out", port_direction_t::OUTPUT, itemsize));
 
-            return smart_pointer;
+
+            return ptr;
         }
 
         copy() : sync_block("copy")

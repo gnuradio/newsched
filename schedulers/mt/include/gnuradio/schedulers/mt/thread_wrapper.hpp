@@ -4,6 +4,7 @@
 #include <gnuradio/block.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
+#include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/neighbor_interface.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <thread>
@@ -18,7 +19,7 @@ namespace schedulers {
  * to this scheduler.  This is the core of the single threaded scheduler.
  *
  */
-class thread_wrapper
+class thread_wrapper : public neighbor_interface
 {
 private:
     /**
@@ -43,16 +44,16 @@ private:
     int _id;
 
 public:
-    typedef std::unique_ptr<thread_wrapper> ptr;
+    typedef std::shared_ptr<thread_wrapper> sptr;
 
-    static ptr make(const std::string& name,
+    static sptr make(const std::string& name,
                     int id,
                     std::vector<block_sptr> blocks,
                     neighbor_interface_map block_sched_map,
                     buffer_manager::sptr bufman,
                     flowgraph_monitor_sptr fgmon)
     {
-        return std::make_unique<thread_wrapper>(
+        return std::make_shared<thread_wrapper>(
             name, id, blocks, block_sched_map, bufman, fgmon);
     }
 
@@ -69,20 +70,14 @@ public:
 
     void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
+    bool pop_message_nonblocking(scheduler_message_sptr& msg) { return msgq.try_pop(msg); }
 
     void start();
     void stop();
     void wait();
     void run();
 
-    void notify_self();
-
-    bool get_neighbors_upstream(nodeid_t blkid, neighbor_interface_info& info);
-    bool get_neighbors_downstream(nodeid_t blkid, neighbor_interface_info& info);
-
-    void notify_upstream(neighbor_interface_sptr upstream_sched, nodeid_t blkid);
-    void notify_downstream(neighbor_interface_sptr downstream_sched, nodeid_t blkid);
-    void handle_work_notification();
+    bool handle_work_notification();
     static void thread_body(thread_wrapper* top);
 };
 } // namespace schedulers

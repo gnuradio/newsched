@@ -25,7 +25,7 @@ newsched_blocklib_cuda_lib = library('newsched-blocklib-cuda',
     include_directories : incdir,
     link_language : 'cpp',
     install : true, 
-    dependencies : [newsched_runtime_dep, newsched_blocklib_cuda_cu_dep, cuda_dep])
+    dependencies : [newsched_runtime_dep, newsched_blocklib_cuda_cu_dep, cuda_dep, pmtf_dep])
 
 newsched_blocklib_cuda_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_cuda_lib)

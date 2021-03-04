@@ -79,7 +79,10 @@ public:
      * @return work_return_code_t
      */
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) = 0;
+                                    std::vector<block_work_output>& work_output)
+    {
+        throw std::runtime_error("work function has been called but not implemented");
+    }
 
     /**
      * @brief Wrapper for work to perform special checks and take care of special

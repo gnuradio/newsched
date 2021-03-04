@@ -48,13 +48,11 @@ public:
         if (other_port->direction() == port_direction_t::INPUT) {
             ptr->add_port(untyped_port::make("output",
                                              port_direction_t::OUTPUT,
-                                             other_port->itemsize(),
-                                             port_type_t::STREAM));
+                                             other_port->itemsize()));
         } else {
             ptr->add_port(untyped_port::make("input",
                                              port_direction_t::INPUT,
-                                             other_port->itemsize(),
-                                             port_type_t::STREAM));
+                                             other_port->itemsize()));
         }
 
         ptr->start_thread(ptr); // start thread with reference to shared pointer
@@ -138,13 +136,11 @@ public:
         if (other_port->direction() == port_direction_t::INPUT) {
             ptr->add_port(untyped_port::make("output",
                                              port_direction_t::OUTPUT,
-                                             other_port->itemsize(),
-                                             port_type_t::STREAM));
+                                             other_port->itemsize()));
         } else {
             ptr->add_port(untyped_port::make("input",
                                              port_direction_t::INPUT,
-                                             other_port->itemsize(),
-                                             port_type_t::STREAM));
+                                             other_port->itemsize()));
         }
 
         return ptr;

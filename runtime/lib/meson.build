@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
@@ -25,6 +25,7 @@ if cuda_dep.found() and get_option('enable_cuda')
 endif
 
 runtime_sources = [
+  'realtime.cpp',
   'parameter_types.cpp',
   'edge.cpp',
   'graph.cpp',
@@ -201,6 +202,27 @@ if compiler.compiles(code, name : 'HAVE_MMAP')
   cpp_args += '-DHAVE_MMAP'
 endif
 
+code = '''#include <pthread.h>
+          int main(){
+            pthread_t pthread;
+            pthread_setschedparam(pthread,  0, 0);
+            return 0;
+        }
+'''
+if compiler.compiles(code, name : 'HAVE_PTHREAD_SETSCHEDPARAM', dependencies : [threads_dep])
+  cpp_args += '-DHAVE_PTHREAD_SETSCHEDPARAM'
+endif
+
+code = '''#include <sched.h>
+            int main(){
+            pid_t pid;
+            sched_setscheduler(pid, 0, 0);
+            return 0;
+        }
+'''
+if compiler.compiles(code, name : 'HAVE_SCHED_SETSCHEDULER', dependencies : [threads_dep])
+  cpp_args += '-DHAVE_SCHED_SETSCHEDULER'
+endif
 
 newsched_runtime_lib = library('newsched-runtime', 
     runtime_sources, 

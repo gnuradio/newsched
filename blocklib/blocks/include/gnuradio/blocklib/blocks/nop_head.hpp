@@ -19,14 +19,12 @@ public:
 
         ptr->add_port(untyped_port::make("input",
                                     port_direction_t::INPUT,
-                                    itemsize,
-                                    port_type_t::STREAM));
+                                    itemsize));
 
 
         ptr->add_port(untyped_port::make("output",
                                     port_direction_t::OUTPUT,
-                                    itemsize,
-                                    port_type_t::STREAM));
+                                    itemsize));
 
 
         return ptr;
