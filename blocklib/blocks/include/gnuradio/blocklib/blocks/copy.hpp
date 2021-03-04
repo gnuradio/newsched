@@ -1,29 +1,7 @@
 #pragma once
 
 #include <gnuradio/sync_block.hpp>
-
-// This should live in some other folder as its dependencies should be 
-// quite different. In fact, it should not depend on almost anything that's currently 
-// in this code-base so that it can be easily included in an external library.
-// That implies that kernels cannot use the std::vector<block_work_input> and std::vector<block_work_output> 
-// as its function signature. It should be something like (int *in, int *out).
-
-// Kernels must have information about its type, device, and name (functionality) so that it 
-// can be matched with the correct block/port. It seems to me that the block class serves only the purpose
-// of glue between ports and kernels.
-namespace gr {
-    namespace kernels {
-        
-        template<typename T>
-        work_return_code_t copy_kernel(std::vector<block_work_input>& work_input, std::vector<block_work_output>& work_output){
-                auto* iptr = (uint8_t*)work_input[0].items;
-                auto* optr = (uint8_t*)work_output[0].items;
-                memcpy(optr, iptr, sizeof(T)*work_output[0].n_items);
-                work_output[0].n_produced = work_output[0].n_items;
-                return work_return_code_t::WORK_OK;
-        };
-    }
-}
+#include <gnuradio/kernels/cpu/copy.hpp>
                                     
 namespace gr {
     namespace blocks {
@@ -68,11 +46,11 @@ namespace gr {
     // we do not have a way to enforce that the port should be instantiated first.
     // At the very least, this still allows for the separation of a kernel library
     // from a block/scheduler library.
-    template<> copy<gr_complex>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<gr_complex>; };
-    template<> copy<float>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<float>; };
-    template<> copy<uint8_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint8_t>; };
-    template<> copy<uint16_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint16_t>; };
-    template<> copy<uint32_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint32_t>; };
+    // template<> copy<gr_complex>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<gr_complex>; };
+    // template<> copy<float>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<float>; };
+    // template<> copy<uint8_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint8_t>; };
+    // template<> copy<uint16_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint16_t>; };
+    // template<> copy<uint32_t>::copy() : sync_block("copy") { block_kernel = &gr::kernels::copy_kernel<uint32_t>; };
 
     } // namespace blocks
 } // namespace gr
