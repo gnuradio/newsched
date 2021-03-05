@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <gnuradio/buffer.hpp>
+
 namespace gr {
 
 /**
@@ -12,28 +14,11 @@ namespace gr {
  */
 struct block_work_input {
     int n_items;
-    uint64_t n_items_read = 0; // Name TBD. Replacement for _read and _written because I/O
-    void* items;           // cannot be const for output items
-    std::vector<tag_t> tags;
+    buffer_sptr buffer;
     int n_consumed; // output the number of items that were consumed on the work() call
 
-    /**
-     * @brief Construct a new block work input object
-     *
-     * @param _n_items
-     * @param _n_items_read
-     * @param _items
-     * @param _tags
-     */
-    block_work_input(int _n_items,
-                     uint64_t _n_items_read,
-                     void* _items,
-                     std::vector<tag_t>& _tags)
-        : n_items(_n_items),
-          n_items_read(_n_items_read),
-          items(_items),
-          tags(_tags),
-          n_consumed(-1)
+    block_work_input(int n_items_, buffer_sptr p_buf_)
+        : n_items(n_items_), buffer(p_buf_), n_consumed(-1)
     {
     }
 };
@@ -44,24 +29,14 @@ struct block_work_input {
  */
 struct block_work_output {
     int n_items;
-    uint64_t n_items_written = 0; // Name TBD. Replacement for _read and _written because I/O
-    void* items;              // cannot be const for output items
-    std::vector<tag_t> tags;
+    buffer_sptr buffer;
     int n_produced; // output the number of items that were consumed on the work() call
 
-    block_work_output(int _n_items,
-                      uint64_t _n_items_written,
-                      void* _items,
-                      std::vector<tag_t>& _tags)
-        : n_items(_n_items),
-          n_items_written(_n_items_written),
-          items(_items),
-          tags(_tags),
-          n_produced(-1)
+    block_work_output(int _n_items, buffer_sptr p_buf_)
+        : n_items(_n_items), buffer(p_buf_), n_produced(-1)
     {
     }
 };
-
 
 /**
  * @brief Enum for return codes from calls to block::work
