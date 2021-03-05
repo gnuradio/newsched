@@ -19,7 +19,7 @@ node_sptr node_endpoint::node() const { return d_node; }
 port_sptr node_endpoint::port() const { return d_port; }
 std::string node_endpoint::identifier() const
 {
-    return d_node->alias() + ":" + d_port->alias();
+    return d_node->alias() + ":" + d_port->name();
 };
 
 edge::edge(const node_endpoint& src, const node_endpoint& dst) : _src(src), _dst(dst) {}
