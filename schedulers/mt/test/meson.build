@@ -38,6 +38,17 @@ if get_option('enable_testing')
         install : true)
     # test('MT Message Port Tests', e)
 
+    srcs = ['qa_tags.cpp']
+    e = executable('qa_tags', 
+        srcs, 
+        include_directories : incdir, 
+        dependencies: [newsched_runtime_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    gtest_dep], 
+        install : true)
+    test('MT Tags Tests', e)
+
 endif
 
 if cuda_dep.found() and get_option('enable_cuda')
