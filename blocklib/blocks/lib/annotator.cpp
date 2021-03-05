@@ -65,8 +65,9 @@ work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
     for (unsigned i = 0; i < d_num_inputs; i++) {
         abs_N = work_input[i].buffer->total_read();
 
+        auto tags = work_input[i].buffer->tags_in_window(0,noutput_items);
         d_stored_tags.insert(
-            d_stored_tags.end(), work_input[i].buffer->tags().begin(), work_input[i].buffer->tags().end());
+            d_stored_tags.end(), tags.begin(), tags.end());
     }
 
     // Storing the current noutput_items as the value to the "noutput_items" key

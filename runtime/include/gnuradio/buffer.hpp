@@ -100,6 +100,20 @@ public:
     }
 
     const std::vector<tag_t>& tags() const { return _tags; }
+
+    std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
+    {
+        std::scoped_lock guard(_buf_mutex);
+        std::vector<tag_t> ret;
+        for (auto& t : _tags) {
+            if (t.offset >= total_read() + item_start &&
+                t.offset < total_read() + item_end) {
+                ret.push_back(t);
+            }
+        }
+        return ret;
+    }
+
     void add_tag(tag_t tag)
     {
         std::scoped_lock guard(_buf_mutex);
@@ -119,8 +133,7 @@ public:
         std::scoped_lock guard(_buf_mutex);
         for (auto& t : p_in_buf->tags()) {
             // Propagate the tags that occurred in the processed window
-            if (t.offset >= p_in_buf->total_read() &&
-                t.offset < p_in_buf->total_read() + n_consumed) {
+            if (t.offset >= total_written() && t.offset < total_written() + n_consumed) {
                 // std::cout << "adding tag" << std::endl;
                 _tags.push_back(t);
             }
