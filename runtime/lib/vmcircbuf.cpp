@@ -25,6 +25,8 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
             return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size));
         case vmcirc_buffer_type::MMAP_SHM:
             return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size));
+        default:
+            throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
 
     } else {
