@@ -41,8 +41,8 @@ copy::~copy() {}
 work_return_code_t copy::work(std::vector<block_work_input>& work_input,
                               std::vector<block_work_output>& work_output)
 {
-    const gr_complex* in = reinterpret_cast<const gr_complex*>(work_input[0].items);
-    gr_complex* out = reinterpret_cast<gr_complex*>(work_output[0].items);
+    const gr_complex* in = reinterpret_cast<const gr_complex*>(work_input[0].buffer->read_ptr());
+    gr_complex* out = reinterpret_cast<gr_complex*>(work_output[0].buffer->write_ptr());
 
     auto noutput_items = work_output[0].n_items;
 
