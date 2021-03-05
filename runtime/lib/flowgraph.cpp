@@ -59,10 +59,12 @@ void flowgraph::validate()
 }
 void flowgraph::start()
 {
-    using namespace std::chrono_literals;
     GR_LOG_TRACE(_debug_logger, "start()");
-    // Need thread synchronization for the schedulers - to know when they're done and
-    // signal the other schedulers that might be connected
+
+    if (d_schedulers.empty())
+    {
+        GR_LOG_ERROR(_logger, "No Scheduler Specified.");
+    }
 
     d_fgmon->start();
     for (auto s : d_schedulers) {
@@ -83,6 +85,11 @@ void flowgraph::wait()
     for (auto s : d_schedulers) {
         s->wait();
     }
+}
+void flowgraph::run()
+{
+    start();
+    wait();
 }
 
 } // namespace gr
