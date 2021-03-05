@@ -1,4 +1,5 @@
 blocks_sources = [
+    'annotator.cpp',
     'copy.cpp',
     'fanout.cpp',
     'head.cpp',
