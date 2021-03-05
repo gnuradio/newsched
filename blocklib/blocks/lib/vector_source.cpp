@@ -42,8 +42,7 @@ work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_in
 
     // size_t noutput_ports = work_output.size(); // is 1 for this block
     int noutput_items = work_output[0].n_items;
-    void* output_items = work_output[0].items;
-    std::vector<tag_t> outputd_tags = work_output[0].tags;
+    void* output_items = work_output[0].buffer->write_ptr();
 
     T* optr = (T*)output_items;
 

@@ -37,7 +37,7 @@ public:
         // void* optr;
 
         for (size_t n = 0; n < work_output.size(); n++) {
-        //     optr = work_output[n].items;
+        //     optr = work_output[n].buffer->write_ptr();
             auto noutput_items = work_output[n].n_items;
         //     memset(optr, 0, noutput_items * _itemsize);
             work_output[n].n_produced = noutput_items;
