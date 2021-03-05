@@ -122,33 +122,4 @@ void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
 }
 
-std::vector<tag_t> vmcirc_buffer::get_tags(unsigned int num_items)
-{
-    std::scoped_lock guard(_buf_mutex);
-
-    // Find all the tags from total_read to total_read+offset
-    std::vector<tag_t> ret;
-    for (auto& tag : _tags) {
-        if (tag.offset >= _total_read && tag.offset < _total_read + num_items) {
-            ret.push_back(tag);
-        }
-    }
-
-    return ret;
-}
-void vmcirc_buffer::add_tags(
-    unsigned int num_items,
-    std::vector<tag_t>& tags) // overload with convenience functions later
-{
-    std::scoped_lock guard(_buf_mutex);
-
-    for (auto tag : tags) {
-        if (tag.offset < _total_written || tag.offset >= _total_written + _num_items) {
-
-        } else {
-            _tags.push_back(tag);
-        }
-    }
-}
-
 } // namespace gr

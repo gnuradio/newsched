@@ -48,8 +48,7 @@ protected:
     unsigned int _item_size;
     unsigned int _buf_size;
 
-    std::mutex _buf_mutex;
-    std::vector<tag_t> _tags;
+
 
 public:
     typedef std::shared_ptr<vmcirc_buffer> sptr;
@@ -79,12 +78,6 @@ public:
 
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::vector<tag_t> get_tags(unsigned int num_items) override;
-    ;
-    virtual void
-    add_tags(unsigned int num_items,
-             std::vector<tag_t>& tags) // overload with convenience functions later
-        override;
 };
 
 } // namespace gr
