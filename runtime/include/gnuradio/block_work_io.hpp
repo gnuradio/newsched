@@ -21,6 +21,8 @@ struct block_work_input {
         : n_items(n_items_), buffer(p_buf_), n_consumed(-1)
     {
     }
+
+    void* items() { return buffer->read_ptr(); }
 };
 
 /**
@@ -36,6 +38,8 @@ struct block_work_output {
         : n_items(_n_items), buffer(p_buf_), n_produced(-1)
     {
     }
+
+    void* items() { return buffer->write_ptr(); }
 };
 
 /**

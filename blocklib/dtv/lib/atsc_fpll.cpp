@@ -37,8 +37,8 @@ work_return_code_t atsc_fpll::work(std::vector<block_work_input>& work_input,
     constexpr float alpha = 0.01;
     constexpr float beta = alpha * alpha / 4.0;
 
-    auto in = static_cast<const gr_complex*>(work_input[0].buffer->read_ptr());
-    auto out = static_cast<float*>(work_output[0].buffer->write_ptr());
+    auto in = static_cast<const gr_complex*>(work_input[0].items());
+    auto out = static_cast<float*>(work_output[0].items());
     auto noutput_items = work_output[0].n_items;
 
     float a_cos, a_sin;

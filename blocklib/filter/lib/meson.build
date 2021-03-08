@@ -1,4 +1,5 @@
 sources = [
+    'dc_blocker.cpp'
 ]
 
 incdir = include_directories(['../include/gnuradio/blocklib/filter','../include'])

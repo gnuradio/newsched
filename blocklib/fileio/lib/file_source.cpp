@@ -256,7 +256,7 @@ void file_source::set_begin_tag(pmtf::pmt_sptr val) { d_add_begin_tag = val; }
 work_return_code_t file_source::work(std::vector<block_work_input>& work_input,
                                      std::vector<block_work_output>& work_output)
 {
-    auto o = static_cast<uint8_t*>(work_output[0].buffer->write_ptr());
+    auto o = static_cast<uint8_t*>(work_output[0].items());
     auto noutput_items = work_output[0].n_items;
     uint64_t size = noutput_items;
 

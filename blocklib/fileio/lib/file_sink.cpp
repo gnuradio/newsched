@@ -31,7 +31,7 @@ file_sink::~file_sink() {}
 work_return_code_t file_sink::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
-    auto inbuf = static_cast<const char*>(work_input[0].buffer->read_ptr());
+    auto inbuf = static_cast<const char*>(work_input[0].items());
     auto noutput_items = work_input[0].n_items;
 
     int nwritten = 0;

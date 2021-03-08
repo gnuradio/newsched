@@ -36,8 +36,8 @@ work_return_code_t
 interleaved_short_to_complex::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
-    auto in = static_cast<const short*>(work_input[0].buffer->read_ptr());
-    auto out = static_cast<float*>(work_output[0].buffer->write_ptr());
+    auto in = static_cast<const short*>(work_input[0].items());
+    auto out = static_cast<float*>(work_output[0].items());
 
     auto noutput_items = work_output[0].n_items;
 

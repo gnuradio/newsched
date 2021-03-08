@@ -55,8 +55,8 @@ annotator::annotator(uint64_t when,
 work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
-    auto in = (const float*)work_input[0].buffer->read_ptr();
-    auto out = (float*)work_output[0].buffer->write_ptr();
+    auto in = (const float*)work_input[0].items();
+    auto out = (float*)work_output[0].items();
 
     auto noutput_items = work_output[0].n_items;
 
