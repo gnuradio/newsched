@@ -1,6 +1,9 @@
 subdir('blocks')
 subdir('fileio')
 subdir('streamops')
+subdir('math')
+subdir('filter')
+subdir('dtv')
 if cuda_dep.found() and get_option('enable_cuda')
     subdir('cuda')
 endif
