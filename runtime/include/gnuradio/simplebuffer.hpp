@@ -72,7 +72,8 @@ public:
         std::scoped_lock guard(_buf_mutex);
 
         info.ptr = write_ptr();
-        info.n_items = capacity() - size() - 1; // always keep the write pointer 1 behind the read ptr
+        info.n_items = capacity() - size() -
+                       1; // always keep the write pointer 1 behind the read ptr
         if (info.n_items < 0)
             info.n_items = 0;
         info.item_size = _item_size;
@@ -83,6 +84,9 @@ public:
 
     virtual void post_read(int num_items)
     {
+        if (num_items < 0) {
+            return;
+        }
         std::scoped_lock guard(_buf_mutex);
 
         // advance the read pointer
@@ -94,6 +98,9 @@ public:
     }
     virtual void post_write(int num_items)
     {
+        if (num_items < 0) {
+            return;
+        }
         std::scoped_lock guard(_buf_mutex);
 
         unsigned int bytes_written = num_items * _item_size;

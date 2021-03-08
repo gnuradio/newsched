@@ -23,6 +23,9 @@ thread_wrapper::thread_wrapper(int id,
 
 void thread_wrapper::start()
 {
+    for (auto& b : d_blocks) {
+        b->start();
+    }
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
 }
 void thread_wrapper::stop()
@@ -103,6 +106,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
     // }
 
     bool blocking_queue = true;
+    bool stop_blocks = true;
     while (!top->d_thread_stopped) {
 
         scheduler_message_sptr msg;
@@ -186,6 +190,12 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
         if (!work_returned_ready) {
             blocking_queue = true;
+        }
+    }
+
+    if (stop_blocks) {  // should this always be done?
+        for (auto& b : top->d_blocks) {
+            b->stop();
         }
     }
 }

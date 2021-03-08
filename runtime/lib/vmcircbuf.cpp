@@ -1,9 +1,9 @@
 #include <gnuradio/vmcircbuf.hpp>
 
-#include "vmcircbuf_sysv_shm.hpp"
 #include "vmcircbuf_mmap_shm_open.hpp"
-#include <mutex>
+#include "vmcircbuf_sysv_shm.hpp"
 #include <cstring>
+#include <mutex>
 
 // Doubly mapped circular buffer class
 // For now, just do this as the sysv_shm flavor
@@ -92,6 +92,10 @@ bool vmcirc_buffer::write_info(buffer_info_t& info)
 
 void vmcirc_buffer::post_read(int num_items)
 {
+    if (num_items < 0) {
+        return;
+    }
+
     std::scoped_lock guard(_buf_mutex);
 
     // advance the read pointer
@@ -104,6 +108,10 @@ void vmcirc_buffer::post_read(int num_items)
 }
 void vmcirc_buffer::post_write(int num_items)
 {
+    if (num_items < 0) {
+        return;
+    }
+
     std::scoped_lock guard(_buf_mutex);
 
     unsigned int bytes_written = num_items * _item_size;
