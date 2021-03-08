@@ -32,6 +32,7 @@ private:
     bool d_thread_stopped = false;
     std::unique_ptr<graph_executor> _exec;
 
+    int _id;
     block_group_properties d_block_group;
     std::vector<block_sptr> d_blocks;
 
@@ -39,8 +40,7 @@ private:
     logger_sptr _debug_logger;
 
     flowgraph_monitor_sptr d_fgmon;
-
-    int _id;
+   
 
 public:
     typedef std::shared_ptr<thread_wrapper> sptr;
