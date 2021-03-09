@@ -51,7 +51,6 @@ public:
     static sptr make(float rate);
 
     atsc_fpll(float rate);
-    ~atsc_fpll() override;
 
     work_return_code_t work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output) override;

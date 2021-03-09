@@ -12,6 +12,7 @@
 #include "atsc_viterbi_mux.hpp"
 
 #include <gnuradio/dtv/atsc_viterbi_decoder.hpp>
+#include "atsc_single_viterbi.hpp"
 
 namespace gr {
 namespace dtv {

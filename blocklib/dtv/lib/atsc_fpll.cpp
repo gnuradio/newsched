@@ -29,8 +29,6 @@ atsc_fpll::atsc_fpll(float rate)
     d_nco.set_phase(0.0);
 }
 
-atsc_fpll::~atsc_fpll() {}
-
 work_return_code_t atsc_fpll::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
@@ -57,6 +55,8 @@ work_return_code_t atsc_fpll::work(std::vector<block_work_input>& work_input,
         // Update phase/freq error
         filtered = d_afc.filter(result);
         x = gr::fast_atan2f(filtered.imag(), filtered.real());
+
+        // std::cout << out[k] << "/" << x << std::endl;
 
         // avoid slamming filter with big transitions
         if (x > M_PI_2)

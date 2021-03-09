@@ -9,6 +9,7 @@
  */
 
 #include <gnuradio/block.hpp>
+#include "atsc_syminfo.hpp"
 
 namespace gr {
 namespace dtv {
