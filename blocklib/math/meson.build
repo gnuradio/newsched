@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/math')
+subdir('include/gnuradio/math')
 subdir('lib')

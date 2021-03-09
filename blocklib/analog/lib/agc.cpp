@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/analog/agc.hpp>
+#include <gnuradio/analog/agc.hpp>
 
 namespace gr {
 namespace analog {

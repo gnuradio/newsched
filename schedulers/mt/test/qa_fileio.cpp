@@ -4,8 +4,8 @@
 #include <thread>
 
 #include <gnuradio/flowgraph.hpp>
-#include <gnuradio/blocklib/fileio/file_source.hpp>
-#include <gnuradio/blocklib/fileio/file_sink.hpp>
+#include <gnuradio/fileio/file_source.hpp>
+#include <gnuradio/fileio/file_sink.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
 #include <cstdio>

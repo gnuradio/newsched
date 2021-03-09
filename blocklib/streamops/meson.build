@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/streamops')
+subdir('include/gnuradio/streamops')
 subdir('lib')

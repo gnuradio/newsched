@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/dtv/atsc_fpll.hpp>
+#include <gnuradio/dtv/atsc_fpll.hpp>
 
 namespace gr {
 namespace dtv {

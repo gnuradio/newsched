@@ -4,7 +4,7 @@ sources = [
     'file_sink.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/fileio','../include'])
+incdir = include_directories(['../include/gnuradio/fileio','../include'])
 newsched_blocklib_fileio_lib = library('newsched-blocklib-fileio', 
     sources, 
     include_directories : incdir, 

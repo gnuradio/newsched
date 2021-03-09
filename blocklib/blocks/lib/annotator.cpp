@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/blocks/annotator.hpp>
+#include <gnuradio/blocks/annotator.hpp>
 #include <pmt/pmtf.hpp>
 #include <pmt/pmtf_scalar.hpp>
 #include <pmt/pmtf_string.hpp>

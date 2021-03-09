@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/cuda/copy.hpp>
+#include <gnuradio/cuda/copy.hpp>
 
 #include "helper_cuda.h"
 

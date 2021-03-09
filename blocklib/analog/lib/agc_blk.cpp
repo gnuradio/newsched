@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/analog/agc_blk.hpp>
+#include <gnuradio/analog/agc_blk.hpp>
 
 namespace gr {
 namespace analog {

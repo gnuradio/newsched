@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/math/math.hpp> // declaration is in here
+#include <gnuradio/math/math.hpp> // declaration is in here
 #include <cmath>
 
 namespace gr {

@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/fileio/file_sink.hpp>
+#include <gnuradio/fileio/file_sink.hpp>
 #include <stdexcept>
 
 namespace gr {

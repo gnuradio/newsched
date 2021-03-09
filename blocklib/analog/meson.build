@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/analog')
+subdir('include/gnuradio/analog')
 subdir('lib')

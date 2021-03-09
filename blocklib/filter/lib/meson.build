@@ -1,8 +1,11 @@
 sources = [
-    'dc_blocker.cpp'
+    'dc_blocker.cpp',
+    'fir_filter.cpp',
+    'mmse_fir_interpolator_ff.cpp',
+    'mmse_interpolator_ff.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/filter','../include'])
+incdir = include_directories(['../include/gnuradio/filter','../include'])
 newsched_blocklib_filter_lib = library('newsched-blocklib-filter', 
     sources, 
     include_directories : incdir, 

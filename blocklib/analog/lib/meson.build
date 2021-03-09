@@ -3,7 +3,7 @@ sources = [
     'agc_blk.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/analog','../include'])
+incdir = include_directories(['../include/gnuradio/analog','../include'])
 newsched_blocklib_analog_lib = library('newsched-blocklib-analog', 
     sources, 
     include_directories : incdir, 

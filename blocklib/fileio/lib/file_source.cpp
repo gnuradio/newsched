@@ -9,7 +9,7 @@
  */
 
 
-#include <gnuradio/blocklib/fileio/file_source.hpp>
+#include <gnuradio/fileio/file_source.hpp>
 #include <fcntl.h>
 #include <pmt/pmtf_scalar.hpp>
 #include <pmt/pmtf_string.hpp>

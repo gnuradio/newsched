@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/filter/dc_blocker.hpp>
+#include <gnuradio/filter/dc_blocker.hpp>
 
 #include <cstdio>
 #include <memory>

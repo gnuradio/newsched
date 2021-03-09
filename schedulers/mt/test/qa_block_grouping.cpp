@@ -3,9 +3,9 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocklib/blocks/multiply_const.hpp>
-#include <gnuradio/blocklib/blocks/vector_sink.hpp>
-#include <gnuradio/blocklib/blocks/vector_source.hpp>
+#include <gnuradio/blocks/multiply_const.hpp>
+#include <gnuradio/blocks/vector_sink.hpp>
+#include <gnuradio/blocks/vector_source.hpp>
 #include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>

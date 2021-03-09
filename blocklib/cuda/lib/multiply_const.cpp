@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/cuda/multiply_const.hpp>
+#include <gnuradio/cuda/multiply_const.hpp>
 
 namespace gr {
 namespace cuda {

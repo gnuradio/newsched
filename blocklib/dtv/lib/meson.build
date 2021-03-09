@@ -1,8 +1,9 @@
 sources = [
     'atsc_fpll.cpp',
+    'atsc_sync.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/dtv','../include'])
+incdir = include_directories(['../include/gnuradio/dtv','../include'])
 newsched_blocklib_dtv_lib = library('newsched-blocklib-dtv', 
     sources, 
     include_directories : incdir, 

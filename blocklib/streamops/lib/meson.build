@@ -2,7 +2,7 @@ sources = [
     'interleaved_short_to_complex.cpp',
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/streamops','../include'])
+incdir = include_directories(['../include/gnuradio/streamops','../include'])
 newsched_blocklib_streamops_lib = library('newsched-blocklib-streamops', 
     sources, 
     include_directories : incdir, 

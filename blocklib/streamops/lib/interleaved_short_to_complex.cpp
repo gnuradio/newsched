@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocklib/streamops/interleaved_short_to_complex.hpp>
+#include <gnuradio/streamops/interleaved_short_to_complex.hpp>
 #include <volk/volk.h>
 
 namespace gr {

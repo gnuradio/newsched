@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/dtv')
+subdir('include/gnuradio/dtv')
 subdir('lib')

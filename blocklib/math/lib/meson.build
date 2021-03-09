@@ -2,7 +2,7 @@ sources = [
     'fast_atan2f.cc'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/math','../include'])
+incdir = include_directories(['../include/gnuradio/math','../include'])
 newsched_blocklib_math_lib = library('newsched-blocklib-math', 
     sources, 
     include_directories : incdir, 
