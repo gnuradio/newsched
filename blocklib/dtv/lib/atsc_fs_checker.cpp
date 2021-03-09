@@ -36,6 +36,8 @@ atsc_fs_checker::atsc_fs_checker() : gr::block("dtv_atsc_fs_checker")
         port<float>::make("in", port_direction_t::INPUT, { ATSC_DATA_SEGMENT_LENGTH }));
     add_port(
         port<float>::make("out", port_direction_t::OUTPUT, { ATSC_DATA_SEGMENT_LENGTH }));
+    add_port(
+        untyped_port::make("plinfo", port_direction_t::OUTPUT, sizeof(plinfo)));
 
     reset();
 }
@@ -53,8 +55,9 @@ void atsc_fs_checker::reset()
 work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_input,
                                          std::vector<block_work_output>& work_output)
 {
-    const float* in = static_cast<const float*>(work_input[0].items());
-    float* out = static_cast<float*>(work_output[0].items());
+    auto in = static_cast<const float*>(work_input[0].items());
+    auto out = static_cast<float*>(work_output[0].items());
+    auto plout = static_cast<plinfo*>(work_output[1].items());
     auto noutput_items = work_output[0].n_items;
 
     int output_produced = 0;
@@ -109,10 +112,11 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
                 d_field_num = 0;
                 d_segment_num = 0;
             } else {
-                work_output[0].add_tag(
-                    work_output[0].nitems_written() + output_produced,
-                    tag_pmt,
-                    pmtf::pmt_scalar<uint32_t>::make(pli_out.get_tag_value()));
+                // work_output[0].add_tag(
+                //     work_output[0].nitems_written() + output_produced,
+                //     tag_pmt,
+                //     pmtf::pmt_scalar<uint32_t>::make(pli_out.get_tag_value()));
+                plout[output_produced] = pli_out;                
 
                 output_produced++;
             }

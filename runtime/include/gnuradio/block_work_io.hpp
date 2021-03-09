@@ -25,16 +25,20 @@ struct block_work_input {
     void* items() { return buffer->read_ptr(); }
     uint64_t nitems_read() { return buffer->total_read(); }
 
-    void add_tag(tag_t& tag)
-    {
-        buffer->add_tag(tag);
-    }
+    void consume(int num) { n_consumed = num; }
+
+    void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void add_tag(uint64_t offset,
                  pmtf::pmt_sptr key,
                  pmtf::pmt_sptr value,
                  pmtf::pmt_sptr srcid = nullptr)
     {
         buffer->add_tag(offset, key, value, srcid);
+    }
+
+    std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
+    {
+        return buffer->tags_in_window(item_start, item_end);
     }
 };
 
@@ -54,11 +58,9 @@ struct block_work_output {
 
     void* items() { return buffer->write_ptr(); }
     uint64_t nitems_written() { return buffer->total_written(); }
+    void produce(int num) { n_produced = num; }
 
-    void add_tag(tag_t& tag)
-    {
-        buffer->add_tag(tag);
-    }
+    void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void add_tag(uint64_t offset,
                  pmtf::pmt_sptr key,
                  pmtf::pmt_sptr value,

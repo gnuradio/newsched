@@ -6,8 +6,8 @@
 #include <vector>
 
 #include <gnuradio/block_work_io.hpp>
-#include <gnuradio/node.hpp>
 #include <gnuradio/gpdict.hpp>
+#include <gnuradio/node.hpp>
 
 namespace gr {
 
@@ -99,6 +99,20 @@ public:
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    void consume_each(int num, std::vector<block_work_input>& work_input)
+    {
+        for (auto& input : work_input) {
+            input.consume(num);
+        }
+    }
+
+    void produce_each(int num, std::vector<block_work_output>& work_output)
+    {
+        for (auto& output : work_output) {
+            output.produce(num);
+        }
+    }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

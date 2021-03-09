@@ -2,7 +2,8 @@ sources = [
     'atsc_plinfo.cpp',
     'atsc_fpll.cpp',
     'atsc_sync.cpp',
-    'atsc_fs_checker.cpp'
+    'atsc_fs_checker.cpp',
+    'atsc_equalizer.cpp'
 ]
 
 incdir = include_directories(['../include/gnuradio/dtv','../include'])
