@@ -99,9 +99,9 @@ public:
         }
     }
 
-    const std::vector<tag_t>& tags() const { return _tags; }
+    virtual const std::vector<tag_t>& tags() const { return _tags; }
 
-    std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
+    virtual std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
     {
         std::scoped_lock guard(_buf_mutex);
         std::vector<tag_t> ret;
@@ -114,12 +114,12 @@ public:
         return ret;
     }
 
-    void add_tag(tag_t tag)
+    virtual void add_tag(tag_t tag)
     {
         std::scoped_lock guard(_buf_mutex);
         _tags.push_back(tag);
     }
-    void add_tag(uint64_t offset,
+    virtual void add_tag(uint64_t offset,
                  pmtf::pmt_sptr key,
                  pmtf::pmt_sptr value,
                  pmtf::pmt_sptr srcid = nullptr)

@@ -41,7 +41,7 @@ public:
         auto* iptr = (uint8_t*)work_input[0].items();
         for (size_t n = 0; n < _nports; n++) {
             int size = work_output[0].n_items * _itemsize;
-            auto optr = (uint8_t*)work_output[n].buffer->write_ptr();
+            auto optr = (uint8_t*)work_output[n].items();
             std::copy(iptr, iptr+size, optr);
             work_output[n].n_produced = work_output[n].n_items;
         }

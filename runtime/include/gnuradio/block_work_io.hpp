@@ -23,6 +23,19 @@ struct block_work_input {
     }
 
     void* items() { return buffer->read_ptr(); }
+    uint64_t nitems_read() { return buffer->total_read(); }
+
+    void add_tag(tag_t& tag)
+    {
+        buffer->add_tag(tag);
+    }
+    void add_tag(uint64_t offset,
+                 pmtf::pmt_sptr key,
+                 pmtf::pmt_sptr value,
+                 pmtf::pmt_sptr srcid = nullptr)
+    {
+        buffer->add_tag(offset, key, value, srcid);
+    }
 };
 
 /**
@@ -40,6 +53,19 @@ struct block_work_output {
     }
 
     void* items() { return buffer->write_ptr(); }
+    uint64_t nitems_written() { return buffer->total_written(); }
+
+    void add_tag(tag_t& tag)
+    {
+        buffer->add_tag(tag);
+    }
+    void add_tag(uint64_t offset,
+                 pmtf::pmt_sptr key,
+                 pmtf::pmt_sptr value,
+                 pmtf::pmt_sptr srcid = nullptr)
+    {
+        buffer->add_tag(offset, key, value, srcid);
+    }
 };
 
 /**
