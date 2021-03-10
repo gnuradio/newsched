@@ -176,7 +176,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                     p_buf->prune_tags(work_input[input_port_index].n_consumed);
                     p_buf->post_read(work_input[input_port_index].n_consumed);
-                    GR_LOG_DEBUG(_debug_logger, ".");
                     
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_OUTPUT));
@@ -195,7 +194,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                          work_output[output_port_index].n_produced);
                             p_buf->copy_items(_bufman->get_input_buffer(p),
                                               work_output[output_port_index].n_produced);
-                            GR_LOG_DEBUG(_debug_logger, ".");
                         }
                         j++;
                     }
@@ -206,7 +204,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                      b->alias(),
                                      work_output[output_port_index].n_produced);
                         p_buf->post_write(work_output[output_port_index].n_produced);
-                        GR_LOG_DEBUG(_debug_logger, ".");
                     }
 
                     p->notify_connected_ports(std::make_shared<scheduler_action>(

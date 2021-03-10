@@ -4,6 +4,7 @@
 #include "vmcircbuf_sysv_shm.hpp"
 #include <cstring>
 #include <mutex>
+#include <numeric>
 
 // Doubly mapped circular buffer class
 // For now, just do this as the sysv_shm flavor
@@ -37,6 +38,14 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
 
 vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, size_t granularity)
 {
+
+    auto min_buffer_items = granularity / std::gcd(item_size, granularity);
+
+    if (num_items % min_buffer_items != 0)
+        num_items = ((num_items / min_buffer_items) + 1) * min_buffer_items;
+
+    // Add warning
+
     // Ensure that the instantiated buffer is a multiple of the granularity
     auto requested_size = num_items * item_size;
     auto npages = requested_size / granularity;

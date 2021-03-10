@@ -10,6 +10,9 @@
 #include <gnuradio/dtv/atsc_equalizer.hpp>
 #include <gnuradio/dtv/atsc_viterbi_decoder.hpp>
 
+#include <gnuradio/blocks/null_sink.hpp>
+
+#include <gnuradio/simplebuffer.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
@@ -22,11 +25,15 @@ int main(int argc, char* argv[])
     double oversampled_rate = atsc_sym_rate * sps;
 
     auto src = fileio::file_source::make(2*sizeof(uint16_t), argv[1], false);
+    // auto src = fileio::file_source::make(sizeof(float)*1, argv[1], false);
+    // auto src = fileio::file_source::make(sizeof(float)*832, argv[1], false);
     auto is2c = streamops::interleaved_short_to_complex::make(false, 32768.0);
     auto fpll = dtv::atsc_fpll::make(oversampled_rate);
     auto dcb = filter::dc_blocker<float>::make(4096, true);
     auto agc = analog::agc_blk<float>::make(1e-5, 4.0, 1.0);
     auto sync = dtv::atsc_sync::make(oversampled_rate);
+    auto fschk = dtv::atsc_fs_checker::make();
+    auto null = blocks::null_sink::make(4); // plinfo
 
     char filename_out[1024];
     auto fn = tmpnam(filename_out);
@@ -40,7 +47,12 @@ int main(int argc, char* argv[])
     fg->connect(fpll, 0, dcb, 0);
     fg->connect(dcb, 0, agc, 0);
     fg->connect(agc, 0, sync, 0);
-    fg->connect(sync, 0, snk, 0);
+    
+    // fg->connect(src, 0, sync, 0);
+    // fg->connect(sync, 0, snk, 0);
+    fg->connect(sync, 0, fschk, 0); //->set_custom_buffer(simplebuffer::make);
+    fg->connect(fschk, 0, snk, 0);
+    fg->connect(fschk, 1, null, 0);
 
     std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
     fg->set_scheduler(sched);

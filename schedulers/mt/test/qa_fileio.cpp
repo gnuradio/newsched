@@ -6,6 +6,7 @@
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/fileio/file_source.hpp>
 #include <gnuradio/fileio/file_sink.hpp>
+#include <gnuradio/blocks/copy.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
 #include <cstdio>
@@ -49,20 +50,23 @@ TEST(SchedulerMTTest, FileTest)
     std::cout << filename_out << std::endl;
     
     auto tmpf = fopen(filename_in, "wb");
-    for (int i = 0; i<10; i++)
+    for (int i = 0; i<832*100000; i++)
     {
-        // fwrite(&i, 1, 1, tmpf);
-        fprintf(tmpf, "%d,", i);
+        float f = i;
+        fwrite(&f, sizeof(float), 1, tmpf);
+        // fprintf(tmpf, "%d,", i);
     }
 
     // std::fputs("Hello, world", tmpf);
     fclose(tmpf);
 
-    auto src = fileio::file_source::make(sizeof(uint8_t), filename_in);
-    auto snk = fileio::file_sink::make(sizeof(uint8_t), filename_out);
+    auto src = fileio::file_source::make(sizeof(float)*832, filename_in);
+    auto snk = fileio::file_sink::make(sizeof(float)*832, filename_out);
+    auto op = blocks::copy::make(sizeof(float)*832);
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src, 0, snk, 0);
+    fg->connect(src, 0, op, 0);
+    fg->connect(op, 0, snk, 0);
 
     auto sched = schedulers::scheduler_mt::make();
     fg->set_scheduler(sched);

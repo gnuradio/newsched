@@ -59,6 +59,17 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
     auto out = static_cast<float*>(work_output[0].items());
     auto plout = static_cast<plinfo*>(work_output[1].items());
     auto noutput_items = work_output[0].n_items;
+    auto ninput_items = work_input[0].n_items;
+
+    // Need to figure out how to handle this more gracefully
+    // The scheduler (currently) has no information about what the block
+    // is doing and doesn't know to give ninput >= noutput
+    if (ninput_items < noutput_items)
+    {
+        return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
+    }
+
+    // std::cout << noutput_items << "/" << ninput_items << std::endl;
 
     int output_produced = 0;
 
@@ -123,8 +134,8 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
         }
     }
 
-    work_input[0].n_consumed = noutput_items;
-    work_output[0].n_produced = output_produced;
+    consume_each(noutput_items,work_input);
+    produce_each(output_produced,work_output);
     return work_return_code_t::WORK_OK;
 }
 
