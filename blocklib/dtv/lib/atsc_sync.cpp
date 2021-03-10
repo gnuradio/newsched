@@ -78,19 +78,21 @@ work_return_code_t atsc_sync::work(std::vector<block_work_input>& work_input,
     auto noutput_items = work_output[0].n_items;
     auto ninput_items = work_input[0].n_items;
 
+    // amount actually consumed
+    d_si = 0;
+
     // Because this is a general block, we must do some forecasting
     auto min_items = static_cast<int>(noutput_items * d_rx_clock_to_symbol_freq *
                                       ATSC_DATA_SEGMENT_LENGTH) +
                      1500 - 1;
     if (work_input[0].n_items < min_items) {
+        consume_each(0,work_input);
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
 
     float interp_sample;
 
-    // amount actually consumed
-    d_si = 0;
 
     for (d_output_produced = 0; d_output_produced < noutput_items &&
                                 (d_si + (int)d_interp.ntaps()) < ninput_items;) {

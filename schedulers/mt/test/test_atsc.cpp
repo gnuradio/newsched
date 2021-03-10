@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     auto fn = tmpnam(filename_out);
     std::cout << fn << std::endl;
     // auto snk = fileio::file_sink::make(sizeof(gr_complex), fn);
-    auto snk = fileio::file_sink::make(sizeof(float), fn);
+    auto snk = fileio::file_sink::make(sizeof(float)*832, fn);
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, is2c, 0);

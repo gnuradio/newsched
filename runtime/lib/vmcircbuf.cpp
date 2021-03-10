@@ -35,11 +35,22 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
     }
 }
 
-vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size)
+vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, size_t granularity)
 {
-    _num_items = num_items;
+    // Ensure that the instantiated buffer is a multiple of the granularity
+    auto requested_size = num_items * item_size;
+    auto npages = requested_size / granularity;
+    if (requested_size != granularity * npages )
+    {
+        npages++;
+    }
+    auto actual_size = granularity * npages;
+
+    // _num_items = num_items;
+    _num_items = actual_size / item_size;
     _item_size = item_size;
-    _buf_size = _num_items * _item_size;
+    // _buf_size = _num_items * _item_size;
+    _buf_size = actual_size;
     _read_index = 0;
     _write_index = 0;
 }

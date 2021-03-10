@@ -5,7 +5,17 @@ namespace gr {
 edge_sptr graph::connect(const node_endpoint& src,
                     const node_endpoint& dst)
 {
-    // FIXME: Do a bunch of checking
+    
+    if (src.port()->itemsize() != dst.port()->itemsize())
+    {
+        std::stringstream msg;
+        msg << "itemsize mismatch: " << src << " using " << src.port()->itemsize() << ", " << dst
+            << " using " << dst.port()->itemsize();
+        throw std::invalid_argument(msg.str());
+    }
+
+    // If not untyped ports, check that data types are the same
+    // TODO
     
     auto newedge = edge::make(src, dst);
     _edges.push_back(newedge);
