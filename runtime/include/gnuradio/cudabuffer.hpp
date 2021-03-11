@@ -36,11 +36,7 @@ class cuda_buffer : public buffer
 private:
     uint8_t* _host_buffer;
     uint8_t* _device_buffer;
-    unsigned int _read_index;
-    unsigned int _write_index;
-    unsigned int _num_items;
-    unsigned int _item_size;
-    unsigned int _buf_size;
+
     cuda_buffer_type _type;
 
     std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and

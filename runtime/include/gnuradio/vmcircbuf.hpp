@@ -42,14 +42,6 @@ class vmcirc_buffer : public buffer
 protected:
     uint8_t* _buffer;
 
-    unsigned int _read_index;
-    unsigned int _write_index;
-    unsigned int _num_items;
-    unsigned int _item_size;
-    unsigned int _buf_size;
-
-
-
 public:
     typedef std::shared_ptr<vmcirc_buffer> sptr;
 

@@ -50,7 +50,7 @@ TEST(SchedulerMTTest, FileTest)
     std::cout << filename_out << std::endl;
     
     auto tmpf = fopen(filename_in, "wb");
-    for (int i = 0; i<832*100000; i++)
+    for (int i = 0; i<832*1000; i++)
     {
         float f = i;
         fwrite(&f, sizeof(float), 1, tmpf);

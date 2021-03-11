@@ -19,9 +19,7 @@
 #include <gnuradio/dtv/atsc_equalizer.hpp>
 #include <volk/volk.h>
 
-#include <pmt/pmtf_scalar.hpp>
-#include <pmt/pmtf_string.hpp>
-
+#include <fstream>
 namespace gr {
 namespace dtv {
 
@@ -68,8 +66,10 @@ atsc_equalizer::atsc_equalizer() : gr::block("dtv_atsc_equalizer")
 
     d_buff_not_filled = true;
 
-    // const int alignment_multiple = volk_get_alignment() / sizeof(float);
+    const int alignment_multiple = volk_get_alignment() / sizeof(float);
     // set_alignment(std::max(1, alignment_multiple));
+    set_output_multiple(std::max(1, alignment_multiple));
+
 
     set_tag_propagation_policy(
         tag_propagation_policy_t::TPP_CUSTOM); // use manual tag propagation
@@ -112,8 +112,16 @@ void atsc_equalizer::adaptN(const float* input_samples,
         // update taps...
         float tmp_taps[NTAPS];
         volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * e, NTAPS);
+
+        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
+        //                        std::ios::app | std::ios::binary);
+        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
+
         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
     }
+
+    // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
+    // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
 }
 
 work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_input,
@@ -125,12 +133,13 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
     auto plout = static_cast<plinfo*>(work_output[1].items());
 
     auto noutput_items = work_output[0].n_items;
+    auto ninput_items = work_input[0].n_items;
+    if (ninput_items < noutput_items) {
+        return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
+    }
 
     int output_produced = 0;
     int i = 0;
-
-    std::vector<tag_t> tags;
-    auto tag_pmt = pmtf::pmt_string::make("plinfo");
 
     plinfo pli_in;
     if (d_buff_not_filled) {
@@ -138,16 +147,6 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
         memcpy(&data_mem[NPRETAPS],
                in + i * ATSC_DATA_SEGMENT_LENGTH,
                ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
-
-        // get_tags_in_window(tags, 0, 0, 1, tag_pmt);
-
-        // if (tags.size() > 0) {
-        //     pli_in.from_tag_value(pmt::to_uint64(tags[0].value));
-        //     d_flags = pli_in.flags();
-        //     d_segno = pli_in.segno();
-        // } else {
-        //     throw std::runtime_error("Atsc Equalizer: Plinfo Tag not found on sample");
-        // }
 
         d_flags = plin[i].flags();
         d_segno = plin[i].segno();
@@ -162,12 +161,39 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
                in + i * ATSC_DATA_SEGMENT_LENGTH,
                (NTAPS - NPRETAPS) * sizeof(float));
 
+        // std::ofstream dbgfile2("/tmp/ns_taps_data2.bin",
+        //                        std::ios::out | std::ios::binary);
+        // dbgfile2.write((char*)data_mem,
+        //                sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH + NTAPS));
+
+
         if (d_segno == -1) {
             if (d_flags & 0x0010) {
                 adaptN(data_mem, training_sequence2, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
-            } else if (!(d_flags & 0x0010)) {
+            } else {
                 adaptN(data_mem, training_sequence1, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
             }
+
+        // std::ofstream dbgfile7("/tmp/ns_taps_data7.bin",
+        //                        std::ios::out | std::ios::binary);
+        // dbgfile7.write((char*)data_mem,
+        //                sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH + NTAPS));
+
+        //     std::ofstream dbgfile("/tmp/ns_taps_data1.bin",
+        //                           std::ios::out | std::ios::binary);
+        //     dbgfile.write((char*)d_taps.data(), d_taps.size() * sizeof(d_taps[0]));
+
+
+        //     std::ofstream dbgfile3("/tmp/ns_taps_data3.bin",
+        //                            std::ios::out | std::ios::binary);
+        //     dbgfile3.write((char*)training_sequence1,
+        //                    sizeof(float) * (KNOWN_FIELD_SYNC_LENGTH));
+
+        //     std::ofstream dbgfile4("/tmp/ns_taps_data4.bin",
+        //                            std::ios::out | std::ios::binary);
+        //     dbgfile4.write((char*)training_sequence2,
+        //                    sizeof(float) * (KNOWN_FIELD_SYNC_LENGTH));
+
         } else {
             filterN(data_mem, data_mem2, ATSC_DATA_SEGMENT_LENGTH);
 
@@ -175,14 +201,7 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
                    data_mem2,
                    ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
 
-            plinfo pli_out(d_flags, d_segno);
-            // add_item_tag(0,
-            //              nitems_written(0) + output_produced,
-            //              tag_pmt,
-            //              pmt::from_uint64(pli_out.get_tag_value()));
-            plout[output_produced] = pli_out;
-
-            output_produced++;
+            plout[output_produced++] = plinfo(d_flags, d_segno);
         }
 
         memcpy(data_mem, &data_mem[ATSC_DATA_SEGMENT_LENGTH], NPRETAPS * sizeof(float));
@@ -190,14 +209,6 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
                in + i * ATSC_DATA_SEGMENT_LENGTH,
                ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
 
-        // get_tags_in_window(tags, 0, i, i + 1, tag_pmt);
-        // if (tags.size() > 0) {
-        //     pli_in.from_tag_value(pmt::to_uint64(tags[0].value));
-        //     d_flags = pli_in.flags();
-        //     d_segno = pli_in.segno();
-        // } else {
-        //     throw std::runtime_error("Atsc Equalizer: Plinfo Tag not found on sample");
-        // }
         d_flags = plin[i].flags();
         d_segno = plin[i].segno();
     }

@@ -1,5 +1,6 @@
 #include "buffer_management.hpp"
 #include <gnuradio/domain_adapter.hpp>
+#include <numeric>
 
 namespace gr {
 namespace schedulers {
@@ -130,19 +131,20 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     // // If any downstream blocks are decimators and/or have a large output_multiple,
     // // ensure we have a buffer at least twice their decimation
     // // factor*output_multiple
-    // auto blocks = fg->calc_downstream_blocks(grblock, port);
 
-    // for (auto&  p : blocks) {
-    //     // block_sptr dgrblock = cast_to_block_sptr(*p);
-    //     // if (!dgrblock)
-    //     //     throw std::runtime_error("allocate_buffer found non-gr::block");
+    auto blocks = fg->calc_downstream_blocks(grblock, e->src().port());
 
-    //     // double decimation = (1.0 / dgrblock->relative_rate());
-    //     int multiple = p->output_multiple();
-    //     nitems =
-    //         std::max(nitems, static_cast<int>(2 * (multiple)));
-    //         // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
-    // }
+    for (auto&  p : blocks) {
+        // block_sptr dgrblock = cast_to_block_sptr(*p);
+        // if (!dgrblock)
+        //     throw std::runtime_error("allocate_buffer found non-gr::block");
+
+        // double decimation = (1.0 / dgrblock->relative_rate());
+        int multiple = p->output_multiple();
+        nitems =
+            std::max(nitems, static_cast<size_t>(2 * (multiple)));
+            // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
+    }
 
     return nitems;
 }

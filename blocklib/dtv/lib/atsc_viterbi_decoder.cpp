@@ -27,14 +27,14 @@ atsc_viterbi_decoder::atsc_viterbi_decoder() : sync_block("dtv_atsc_viterbi_deco
 
     add_port(
         port<float>::make("in", port_direction_t::INPUT, { ATSC_DATA_SEGMENT_LENGTH }));
-    add_port(port<float>::make(
+    add_port(port<uint8_t>::make(
         "out", port_direction_t::OUTPUT, { ATSC_MPEG_RS_ENCODED_LENGTH }));
 
     add_port(untyped_port::make("plinfo", port_direction_t::INPUT, sizeof(plinfo)));
     add_port(untyped_port::make("plinfo", port_direction_t::OUTPUT, sizeof(plinfo)));
 
 
-    // set_output_multiple(NCODERS);  // TODO - how to handle
+    set_output_multiple(NCODERS);  // TODO - how to handle
 
     /*
      * These fifo's handle the alignment problem caused by the
@@ -75,13 +75,13 @@ work_return_code_t atsc_viterbi_decoder::work(std::vector<block_work_input>& wor
                                               std::vector<block_work_output>& work_output)
 {
     auto in = static_cast<const float*>(work_input[0].items());
-    auto out = static_cast<float*>(work_output[0].items());
+    auto out = static_cast<uint8_t*>(work_output[0].items());
     auto plin = static_cast<const plinfo*>(work_input[1].items());
     auto plout = static_cast<plinfo*>(work_output[1].items());
 
     auto noutput_items = work_output[0].n_items;
     // The way the fs_checker works ensures we start getting packets
-    // starting with a field sync, and out input multiple is set to
+    // starting with a field sync, and our input multiple is set to
     // 12, so we should always get a mod 12 numbered first packet
     assert(noutput_items % NCODERS == 0);
 
@@ -96,6 +96,11 @@ work_return_code_t atsc_viterbi_decoder::work(std::vector<block_work_input>& wor
     // std::vector<tag_t> tags;
     // auto tag_pmt = pmt::intern("plinfo");
     for (int i = 0; i < noutput_items; i += NCODERS) {
+
+        // if (i > 0)
+        // {
+        //     std::cout << work_input[0].nitems_read();
+        // }
 
         /* Build a continuous symbol buffer for each encoder */
         for (unsigned int encoder = 0; encoder < NCODERS; encoder++)
@@ -150,7 +155,7 @@ work_return_code_t atsc_viterbi_decoder::work(std::vector<block_work_input>& wor
         }
     }
 
-    work_output[0].produce(noutput_items);
+    produce_each(noutput_items,work_output);
     return work_return_code_t::WORK_OK;
 }
 

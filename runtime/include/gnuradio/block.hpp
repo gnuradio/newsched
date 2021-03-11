@@ -26,6 +26,8 @@ class block : public gr::node, public std::enable_shared_from_this<block>
 private:
     bool d_running = false;
     tag_propagation_policy_t d_tag_propagation_policy;
+    int d_output_multiple = 1;
+    bool d_output_multiple_set = false;
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
@@ -113,6 +115,17 @@ public:
             output.produce(num);
         }
     }
+
+    void set_output_multiple(int multiple)
+    {
+        if (multiple < 1)
+            throw std::invalid_argument("block::set_output_multiple");
+
+        d_output_multiple_set = true;
+        d_output_multiple = multiple;
+    }
+    int output_multiple() const { return d_output_multiple; }
+    bool output_multiple_set() const { return d_output_multiple_set; }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

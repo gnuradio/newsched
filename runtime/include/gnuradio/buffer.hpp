@@ -34,6 +34,12 @@ protected:
     uint64_t _total_read = 0;
     uint64_t _total_written = 0;
 
+    unsigned int _read_index;
+    unsigned int _write_index;
+    unsigned int _num_items;
+    unsigned int _item_size;
+    unsigned int _buf_size;
+
     void set_type(const std::string& type) { _type = type; }
     virtual ~buffer() {}
 

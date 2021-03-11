@@ -29,11 +29,6 @@ class cuda_buffer_pinned : public buffer
 {
 private:
     uint8_t* _pinned_buffer;
-    unsigned int _read_index;
-    unsigned int _write_index;
-    unsigned int _num_items;
-    unsigned int _item_size;
-    unsigned int _buf_size;
 
     std::mutex _buf_mutex; // use raw mutex for now - FIXME - change to return mutex and
                            // used scoped lock outside on the caller

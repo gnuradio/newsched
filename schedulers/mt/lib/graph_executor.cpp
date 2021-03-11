@@ -3,6 +3,11 @@
 namespace gr {
 namespace schedulers {
 
+inline static unsigned int round_down(unsigned int n, unsigned int multiple)
+{
+    return (n / multiple) * multiple;
+}
+
 std::map<nodeid_t, executor_iteration_status>
 graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 {
@@ -75,8 +80,14 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 }
 
+                
+
+
                 if (tmp_buf_size < max_output_buffer)
                     max_output_buffer = tmp_buf_size;
+
+                if (b->output_multiple_set())
+                    max_output_buffer = round_down(max_output_buffer, b->output_multiple());
 
                 // store the first buffer
                 if (!p_buf) {
@@ -128,6 +139,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     {
                         break;
                     }
+                } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
+                    per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
+                    break;
                 }
             }
             // TODO - handle READY_NO_OUTPUT
