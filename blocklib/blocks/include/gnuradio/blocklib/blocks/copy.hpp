@@ -26,13 +26,13 @@ public:
     copy(size_t itemsize) : sync_block("copy"), _itemsize(itemsize)
     {
         if (itemsize == 1) {
-            block_kernel = new gr::kernels::copy_kernel<uint8_t>;
+            block_kernel = new gr::kernels::cpu::copy_kernel<uint8_t>;
         } else if (itemsize == 2) {
-            block_kernel = new gr::kernels::copy_kernel<uint16_t>;
+            block_kernel = new gr::kernels::cpu::copy_kernel<uint16_t>;
         } else if (itemsize == 4) {
-            block_kernel = new gr::kernels::copy_kernel<uint32_t>;
+            block_kernel = new gr::kernels::cpu::copy_kernel<uint32_t>;
         } else {
-            block_kernel = new gr::kernels::copy_kernel<uint64_t>;
+            block_kernel = new gr::kernels::cpu::copy_kernel<uint64_t>;
         }
     }
 

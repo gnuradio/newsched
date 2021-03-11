@@ -16,6 +16,7 @@
 
 namespace gr {
 namespace kernels {
+namespace cpu {
 
 template <class T>
 struct copy_kernel : kernel_interface {
@@ -29,6 +30,6 @@ struct copy_kernel : kernel_interface {
     void operator()(void* buffer, size_t num_items);
 };
 
-
+} // namespace cpu
 } // namespace kernels
 } // namespace gr

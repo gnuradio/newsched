@@ -3,7 +3,7 @@
 
 namespace gr {
 namespace kernels {
-
+namespace cpu {
 // Instead of template specializations, we're hoping to pick the kernel based on the port
 // type, block name, and device However, the port is currently instantiated after the
 // block is and even if it's not we do not have a way to enforce that the port should be
@@ -31,14 +31,14 @@ template <class T>
 void copy_kernel<T>::operator()(void* buffer, size_t num_items)
 {
 }
-
+} // namespace cpu
 } // namespace kernels
 } // namespace gr
 
 // So after I templatize these kernels, I want to register them with a kernel registry.
 // The kernel registry can then be queried by blocks/ports to determine qualification to
 // be used in a given circumstance.
-template class gr::kernels::copy_kernel<uint8_t>;
-template class gr::kernels::copy_kernel<uint16_t>;
-template class gr::kernels::copy_kernel<uint32_t>;
-template class gr::kernels::copy_kernel<uint64_t>;
+template class gr::kernels::cpu::copy_kernel<uint8_t>;
+template class gr::kernels::cpu::copy_kernel<uint16_t>;
+template class gr::kernels::cpu::copy_kernel<uint32_t>;
+template class gr::kernels::cpu::copy_kernel<uint64_t>;
