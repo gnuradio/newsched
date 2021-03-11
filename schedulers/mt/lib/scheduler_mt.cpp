@@ -16,9 +16,9 @@ void scheduler_mt::push_message(scheduler_message_sptr msg)
     }
 }
 
-void scheduler_mt::add_block_group(std::vector<block_sptr> blocks)
+void scheduler_mt::add_block_group(const std::vector<block_sptr>& blocks, const std::string& name, const std::vector<unsigned int>& affinity_mask)
 {
-    _block_groups.push_back(blocks);
+    _block_groups.push_back(std::move(block_group_properties(blocks, name, affinity_mask)));
 }
 
 void scheduler_mt::initialize(flat_graph_sptr fg,
@@ -42,18 +42,14 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
     for (auto& bg : _block_groups) {
         std::vector<block_sptr> blocks_for_this_thread;
 
-        if (bg.size()) {
-            for (auto& b : bg) { // domain adapters don't show up as blocks
-                blocks_for_this_thread.push_back(b);
-            }
-
+        if (bg.blocks().size()) {
             auto t = thread_wrapper::make(
-                name(), id(), blocks_for_this_thread, block_sched_map, bufman, fgmon);
+                 id(), bg, bufman, fgmon);
             _threads.push_back(t);
 
             
             std::vector<node_sptr> node_vec;
-            for (auto& b : bg) { // domain adapters don't show up as blocks
+            for (auto& b : bg.blocks()) { // domain adapters don't show up as blocks
                 auto it = std::find(blocks.begin(), blocks.end(), b);
                 if (it != blocks.end()) {
                     blocks.erase(it);
@@ -76,7 +72,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
         append_domain_adapters(b, fg, node_vec);
 
         auto t =
-            thread_wrapper::make(name(), id(), {b}, block_sched_map, bufman, fgmon);
+            thread_wrapper::make(id(), block_group_properties({b}), bufman, fgmon);
         _threads.push_back(t);
 
         for (auto& p : b->all_ports()) {

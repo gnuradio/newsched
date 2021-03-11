@@ -37,6 +37,7 @@ public:
     void start();
     void stop();
     void wait();
+    void run();
 };
 
 typedef flowgraph::sptr flowgraph_sptr;

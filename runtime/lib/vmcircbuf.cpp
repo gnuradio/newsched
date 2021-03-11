@@ -25,6 +25,8 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
             return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size));
         case vmcirc_buffer_type::MMAP_SHM:
             return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size));
+        default:
+            throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
 
     } else {
@@ -120,35 +122,6 @@ void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
     std::scoped_lock guard(_buf_mutex);
 
     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
-}
-
-std::vector<tag_t> vmcirc_buffer::get_tags(unsigned int num_items)
-{
-    std::scoped_lock guard(_buf_mutex);
-
-    // Find all the tags from total_read to total_read+offset
-    std::vector<tag_t> ret;
-    for (auto& tag : _tags) {
-        if (tag.offset >= _total_read && tag.offset < _total_read + num_items) {
-            ret.push_back(tag);
-        }
-    }
-
-    return ret;
-}
-void vmcirc_buffer::add_tags(
-    unsigned int num_items,
-    std::vector<tag_t>& tags) // overload with convenience functions later
-{
-    std::scoped_lock guard(_buf_mutex);
-
-    for (auto tag : tags) {
-        if (tag.offset < _total_written || tag.offset >= _total_written + _num_items) {
-
-        } else {
-            _tags.push_back(tag);
-        }
-    }
 }
 
 } // namespace gr

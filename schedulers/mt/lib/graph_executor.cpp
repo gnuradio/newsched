@@ -38,8 +38,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             }
 
             auto tags = p_buf->get_tags(read_info.n_items);
-            work_input.push_back(block_work_input(
-                read_info.n_items, read_info.total_items, read_info.ptr, tags));
+            work_input.push_back(block_work_input(read_info.n_items, p_buf));
         }
 
         if (!ready) {
@@ -56,11 +55,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
-            void* write_ptr = nullptr;
+            buffer_sptr p_buf = nullptr;
             uint64_t nitems_written = 0;
-            for (auto p_buf : _bufman->get_output_buffers(p)) {
+            for (auto each_buf : _bufman->get_output_buffers(p)) {
                 buffer_info_t write_info;
-                ready = p_buf->write_info(write_info);
+                ready = each_buf->write_info(write_info);
                 GR_LOG_DEBUG(_debug_logger,
                              "write_info {} - {} @ {} {}",
                              b->alias(),
@@ -80,9 +79,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     max_output_buffer = tmp_buf_size;
 
                 // store the first buffer
-                if (!write_ptr) {
-                    write_ptr = write_info.ptr;
-                    nitems_written = write_info.total_items;
+                if (!p_buf) {
+                    p_buf = each_buf;
                 }
             }
 
@@ -92,8 +90,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             std::vector<tag_t> tags; // needs to be associated with edge buffers
 
-            work_output.push_back(
-                block_work_output(max_output_buffer, nitems_written, write_ptr, tags));
+            work_output.push_back(block_work_output(max_output_buffer, p_buf));
         }
 
         if (!ready) {
@@ -143,30 +140,32 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 for (auto p : b->input_stream_ports()) {
                     auto p_buf = _bufman->get_input_buffer(p);
 
-                    // Pass the tags according to TPP
-                    if (b->tag_propagation_policy() ==
-                        tag_propagation_policy_t::TPP_ALL_TO_ALL) {
-                        int output_port_index = 0;
-                        for (auto op : b->output_stream_ports()) {
-                            for (auto p_out_buf : _bufman->get_output_buffers(op)) {
-                                p_out_buf->add_tags(
-                                    work_output[output_port_index].n_produced,
-                                    work_input[input_port_index].tags);
-                            }
-                            output_port_index++;
-                        }
-                    } else if (b->tag_propagation_policy() ==
-                               tag_propagation_policy_t::TPP_ONE_TO_ONE) {
-                        int output_port_index = 0;
-                        for (auto op : b->output_stream_ports()) {
-                            if (output_port_index == input_port_index) {
+                    if (!p_buf->tags().empty()) {
+                        // Pass the tags according to TPP
+                        if (b->tag_propagation_policy() ==
+                            tag_propagation_policy_t::TPP_ALL_TO_ALL) {
+                            int output_port_index = 0;
+                            for (auto op : b->output_stream_ports()) {
                                 for (auto p_out_buf : _bufman->get_output_buffers(op)) {
-                                    p_out_buf->add_tags(
-                                        work_output[output_port_index].n_produced,
-                                        work_input[input_port_index].tags);
+                                    p_out_buf->propagate_tags(
+                                        p_buf, work_input[input_port_index].n_consumed);
                                 }
+                                output_port_index++;
                             }
-                            output_port_index++;
+                        } else if (b->tag_propagation_policy() ==
+                                   tag_propagation_policy_t::TPP_ONE_TO_ONE) {
+                            int output_port_index = 0;
+                            for (auto op : b->output_stream_ports()) {
+                                if (output_port_index == input_port_index) {
+                                    for (auto p_out_buf :
+                                         _bufman->get_output_buffers(op)) {
+                                        p_out_buf->propagate_tags(
+                                            p_buf,
+                                            work_input[input_port_index].n_consumed);
+                                    }
+                                }
+                                output_port_index++;
+                            }
                         }
                     }
 
@@ -175,6 +174,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                  b->alias(),
                                  work_input[input_port_index].n_consumed);
 
+                    p_buf->prune_tags(work_input[input_port_index].n_consumed);
                     p_buf->post_read(work_input[input_port_index].n_consumed);
                     GR_LOG_DEBUG(_debug_logger, ".");
                     
@@ -200,11 +200,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         j++;
                     }
                     for (auto p_buf : _bufman->get_output_buffers(p)) {
-                        // Add the tags that were collected in the work() call
-                        if (!work_output[output_port_index].tags.empty()) {
-                            p_buf->add_tags(work_output[output_port_index].n_produced,
-                                            work_output[output_port_index].tags);
-                        }
 
                         GR_LOG_DEBUG(_debug_logger,
                                      "post_write {} - {}",

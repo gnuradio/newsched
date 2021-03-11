@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pmt/pmtf.hpp>
 #include <string>
 
 namespace gr {
@@ -19,11 +20,13 @@ class tag_t
 {
 public:
     uint64_t offset;
-    std::string key;
-    // .... value  -- do without pmts for now - string is just a placeholder
-    std::string value;
-    std::string srcid;
-    tag_t(uint64_t offset, std::string key, std::string value, std::string srcid = "")
+    pmtf::pmt_sptr key;
+    pmtf::pmt_sptr value;
+    pmtf::pmt_sptr srcid;
+    tag_t(uint64_t offset,
+          pmtf::pmt_sptr key,
+          pmtf::pmt_sptr value,
+          pmtf::pmt_sptr srcid = nullptr)
         : offset(offset), key(key), value(value), srcid(srcid)
     {
     }

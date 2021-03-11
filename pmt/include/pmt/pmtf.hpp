@@ -44,7 +44,7 @@ public:
 
     void build()
     {
-        std::cout << "fb size: " << _fbb.GetSize() << std::endl;
+        // std::cout << "fb size: " << _fbb.GetSize() << std::endl;
         PmtBuilder pb(_fbb);
         pb.add_data_type(_data_type);
         pb.add_data(_data);
@@ -52,7 +52,7 @@ public:
         _fbb.FinishSizePrefixed(_blob);
         _buf = _fbb.GetBufferPointer();
         _pmt_fb = GetSizePrefixedPmt(_buf);
-        std::cout << "fb size: " << _fbb.GetSize() << std::endl;
+        // std::cout << "fb size: " << _fbb.GetSize() << std::endl;
     }
 
     flatbuffers::Offset<Pmt> build(flatbuffers::FlatBufferBuilder& fbb)

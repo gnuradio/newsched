@@ -39,11 +39,11 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output)
     {
-        unsigned int batch_size = work_input.size();
-        for (unsigned int idx = 0; idx < batch_size; idx++) {
-            (*block_kernel)(
-                work_input[idx].items, work_output[idx].items, work_input[idx].n_items);
-        }
+        auto* iptr = (uint8_t*)work_input[0].buffer->read_ptr();
+        int size = work_output[0].n_items * _itemsize;
+        auto* optr = (uint8_t*)work_output[0].buffer->write_ptr();
+        // std::copy(iptr, iptr + size, optr);
+        memcpy(optr, iptr, size);
 
         return work_return_code_t::WORK_OK;
     }
