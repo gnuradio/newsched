@@ -1,23 +1,9 @@
 #pragma once
+#include <gnuradio/kernels/common/kernel_description.hpp>
 #include <cstddef>
-
 
 namespace gr {
 namespace kernels {
-
-enum DeviceType { CPU, GPU };
-enum DataType {
-    uint8,
-    uint16,
-    uint32,
-    int8,
-    int16,
-    int32,
-    float32,
-    float64,
-    complex64,
-    complex128
-};
 
 /**
  * @brief An interface for all kernels to implement
@@ -30,10 +16,7 @@ struct kernel_interface {
      * run-time, with appropriate blocks/ports.
      *
      */
-    DeviceType device_;
-    DataType input_type_;
-    DataType output_type_;
-
+    kernel_description description_;
 
     /**
      * @brief A signature for when the input and output buffers are of different sizes
