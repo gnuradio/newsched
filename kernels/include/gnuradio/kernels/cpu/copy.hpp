@@ -10,7 +10,7 @@
 // serves only the purpose of glue between ports and kernels.
 
 #pragma once
-#include <gnuradio/kernels/cpu/kernel.hpp>
+#include <gnuradio/kernels/common/kernel.hpp>
 #include <cstddef>
 #include <cstdint>
 

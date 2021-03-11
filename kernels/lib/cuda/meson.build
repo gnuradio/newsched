@@ -1,4 +1,8 @@
-incdir = include_directories(['../../include/gnuradio/kernels/cuda', '../../include'])
+incdir = include_directories([
+    '../../include/gnuradio/kernels/common',
+    '../../include/gnuradio/kernels/cuda', 
+    '../../include'
+])
 
 srcs = []
 

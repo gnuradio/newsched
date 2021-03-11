@@ -1,3 +1,5 @@
+incdir = include_directories(['../include/gnuradio/blocklib/blocks','../include'])
+
 blocks_sources = [
     'annotator.cpp',
     'copy.cpp',
@@ -8,7 +10,6 @@ blocks_sources = [
     'vector_source.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/blocks','../include'])
 newsched_blocklib_blocks_lib = library('newsched-blocklib-blocks', 
     blocks_sources, 
     include_directories : incdir, 

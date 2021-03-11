@@ -1,4 +1,8 @@
-incdir = include_directories(['../../include/gnuradio/kernels/cpu', '../../include'])
+incdir = include_directories([
+    '../../include/gnuradio/kernels/common',
+    '../../include/gnuradio/kernels/cpu', 
+    '../../include'
+])
 
 srcs = [
     'copy.cpp'

@@ -1,6 +1,4 @@
 headers = [
-    'registry.hpp',
-    'kernel.hpp',
     'copy.hpp'
 ]
 

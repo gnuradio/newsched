@@ -132,6 +132,9 @@ tags
 **/.vscode
 **/.devcontainer
 
+# Meson
+clean/
+
 # End of https://www.gitignore.io/api/emacs,vim,cmake,c++
 build
 builddir

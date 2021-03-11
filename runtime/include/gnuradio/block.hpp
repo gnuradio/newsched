@@ -7,7 +7,7 @@
 
 #include <gnuradio/block_work_io.hpp>
 #include <gnuradio/gpdict.hpp>
-#include <gnuradio/kernels/cpu/kernel.hpp>
+#include <gnuradio/kernels/common/kernel.hpp>
 #include <gnuradio/node.hpp>
 
 namespace gr {
