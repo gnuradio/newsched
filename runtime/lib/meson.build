@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, newsched_kernels_cpu_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
@@ -228,7 +228,7 @@ endif
 newsched_runtime_lib = library('newsched-runtime', 
     runtime_sources, 
     install : true, 
-    dependencies : runtime_deps,
+    dependencies : [runtime_deps, newsched_kernels_cpu_dep],
     link_language : 'cpp',
     include_directories : incdir,
     cpp_args : cpp_args
@@ -236,5 +236,6 @@ newsched_runtime_lib = library('newsched-runtime',
 
 newsched_runtime_dep = declare_dependency(
   include_directories : incdir,
+  dependencies: [runtime_deps, newsched_kernels_cpu_dep],
   link_with : newsched_runtime_lib
 )

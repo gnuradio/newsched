@@ -14,10 +14,11 @@ newsched_blocklib_blocks_lib = library('newsched-blocklib-blocks',
     blocks_sources, 
     include_directories : incdir, 
     install : true, 
-    dependencies : [newsched_runtime_dep, newsched_kernels_cpu_dep, volk_dep, fmt_dep, pmtf_dep]
+    dependencies : [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
 )
 
 newsched_blocklib_blocks_dep = declare_dependency(
     include_directories : incdir,
+    dependencies: [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep],
     link_with : newsched_blocklib_blocks_lib
 )

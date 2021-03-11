@@ -4,6 +4,8 @@
 
 #include <gnuradio/buffer.hpp>
 #include <gnuradio/domain_adapter.hpp>
+#include <condition_variable>
+
 namespace gr {
 
 
@@ -46,13 +48,11 @@ public:
         auto ptr = std::make_shared<domain_adapter_direct_svr>(sync);
 
         if (other_port->direction() == port_direction_t::INPUT) {
-            ptr->add_port(untyped_port::make("output",
-                                             port_direction_t::OUTPUT,
-                                             other_port->itemsize()));
+            ptr->add_port(untyped_port::make(
+                "output", port_direction_t::OUTPUT, other_port->itemsize()));
         } else {
-            ptr->add_port(untyped_port::make("input",
-                                             port_direction_t::INPUT,
-                                             other_port->itemsize()));
+            ptr->add_port(untyped_port::make(
+                "input", port_direction_t::INPUT, other_port->itemsize()));
         }
 
         ptr->start_thread(ptr); // start thread with reference to shared pointer
@@ -134,13 +134,11 @@ public:
 
         // Type of port is not known at compile time
         if (other_port->direction() == port_direction_t::INPUT) {
-            ptr->add_port(untyped_port::make("output",
-                                             port_direction_t::OUTPUT,
-                                             other_port->itemsize()));
+            ptr->add_port(untyped_port::make(
+                "output", port_direction_t::OUTPUT, other_port->itemsize()));
         } else {
-            ptr->add_port(untyped_port::make("input",
-                                             port_direction_t::INPUT,
-                                             other_port->itemsize()));
+            ptr->add_port(untyped_port::make(
+                "input", port_direction_t::INPUT, other_port->itemsize()));
         }
 
         return ptr;
