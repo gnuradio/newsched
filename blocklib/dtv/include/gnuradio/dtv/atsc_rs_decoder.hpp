@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "atsc_types.hpp"
 #include <gnuradio/sync_block.hpp>
 
 extern "C" {

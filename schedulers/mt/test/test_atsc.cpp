@@ -9,6 +9,9 @@
 #include <gnuradio/dtv/atsc_fs_checker.hpp>
 #include <gnuradio/dtv/atsc_equalizer.hpp>
 #include <gnuradio/dtv/atsc_viterbi_decoder.hpp>
+#include <gnuradio/dtv/atsc_deinterleaver.hpp>
+#include <gnuradio/dtv/atsc_rs_decoder.hpp>
+#include <gnuradio/dtv/atsc_derandomizer.hpp>
 
 #include <gnuradio/blocks/null_sink.hpp>
 
@@ -29,7 +32,7 @@ int main(int argc, char* argv[])
 
     flowgraph_sptr fg(new flowgraph());
 
-#if 0
+#if 1 // the whole shebang
     auto src = fileio::file_source::make(2*sizeof(uint16_t), argv[1], false);
     // auto src = fileio::file_source::make(sizeof(float)*1, argv[1], false);
     // auto src = fileio::file_source::make(sizeof(float)*832, argv[1], false);
@@ -41,15 +44,19 @@ int main(int argc, char* argv[])
     auto fschk = dtv::atsc_fs_checker::make();
     auto eq = dtv::atsc_equalizer::make();
     auto vit = dtv::atsc_viterbi_decoder::make();
+    auto dei = dtv::atsc_deinterleaver::make();
+    auto rsd = dtv::atsc_rs_decoder::make();
+    auto der = dtv::atsc_derandomizer::make();
 
     // char filename_out[1024];
     // auto fn = tmpnam(filename_out);
     // std::cout << fn << std::endl;
     // auto snk = fileio::file_sink::make(sizeof(gr_complex), fn);
     // auto snk = fileio::file_sink::make(sizeof(float)*832, fn);
-    auto snkeq = fileio::file_sink::make(sizeof(float)*832, "/tmp/ns_eq_out.dat");
-    auto snk = fileio::file_sink::make(sizeof(uint8_t)*207, "/tmp/ns_vit_out.dat");
-    auto null = blocks::null_sink::make(4); // plinfo
+    // auto snkeq = fileio::file_sink::make(sizeof(float)*832, "/tmp/ns_eq_out.dat");
+    // auto snk = fileio::file_sink::make(sizeof(uint8_t)*207, "/tmp/ns_vit_out.dat");
+    auto snk = fileio::file_sink::make(sizeof(uint8_t)*188, "/tmp/ns_atsc_out.dat");
+    // auto null = blocks::null_sink::make(4); // plinfo
 
     fg->connect(src, 0, is2c, 0);
     fg->connect(is2c, 0, fpll, 0);
@@ -63,10 +70,15 @@ int main(int argc, char* argv[])
     fg->connect(fschk, 0, eq, 0);
     fg->connect(fschk, 1, eq, 1);
     fg->connect(eq, 0, vit, 0);
-    fg->connect(eq,0,snkeq,0);
+    // fg->connect(eq,0,snkeq,0);
     fg->connect(eq, 1, vit, 1);
-    fg->connect(vit, 0, snk, 0);
-    fg->connect(vit, 1, null, 0);
+    fg->connect(vit, 0, dei, 0);
+    fg->connect(vit, 1, dei, 1);
+    fg->connect(dei, 0, rsd, 0);
+    fg->connect(dei, 1, rsd, 1);
+    fg->connect(rsd, 0, der, 0);
+    fg->connect(rsd, 1, der, 1);
+    fg->connect(der, 0, snk, 0);
 #elif 1
     auto src1 = fileio::file_source::make(832*sizeof(float), argv[1], false);
     auto src2 = fileio::file_source::make(sizeof(dtv::plinfo), argv[2], false);

@@ -8,6 +8,7 @@
  *
  */
 
+#include "atsc_types.hpp"
 #include <gnuradio/dtv/atsc_consts.hpp>
 #include <gnuradio/dtv/atsc_rs_decoder.hpp>
 
@@ -98,7 +99,7 @@ work_return_code_t atsc_rs_decoder::work(std::vector<block_work_input>& work_inp
     for (int i = 0; i < noutput_items; i++) {
         assert(plin[i].regular_seg_p());
 
-        plout[i] = plinfo();
+        plout[i] = plin[i];
 
         int nerrors_corrected =
             decode(&out[i * ATSC_MPEG_PKT_LENGTH], &in[i * ATSC_MPEG_RS_ENCODED_LENGTH]);

@@ -21,4 +21,5 @@ newsched_blocklib_dtv_lib = library('newsched-blocklib-dtv',
                     newsched_blocklib_math_dep, newsched_blocklib_filter_dep, newsched_blocklib_fec_dep])
 
 newsched_blocklib_dtv_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_dtv_lib)
+					   link_with : newsched_blocklib_dtv_lib,
+                       dependencies : [newsched_blocklib_fec_dep])
