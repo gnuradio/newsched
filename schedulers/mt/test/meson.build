@@ -72,13 +72,15 @@ if get_option('enable_testing')
                     newsched_blocklib_analog_dep,
                     newsched_blocklib_filter_dep,
                     newsched_blocklib_dtv_dep,
+                    newsched_blocklib_dtv_cuda_dep,
                     newsched_blocklib_filter_dep,
                     newsched_blocklib_fileio_dep,
                     newsched_blocklib_streamops_dep,
                     newsched_blocklib_math_dep,
                     threads_dep,
                     volk_dep,
-                    gtest_dep], 
+                    gtest_dep,
+                    cuda_dep], 
         install : true)
     
 

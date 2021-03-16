@@ -21,7 +21,8 @@ newsched_blocklib_dtv_cu = library('newsched-blocklib-cuda-cu',
     dependencies : [newsched_runtime_dep, cuda_dep])
 
 newsched_blocklib_dtv_cu_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_dtv_cu)
+					   link_with : newsched_blocklib_dtv_cu,
+                       dependencies : [cuda_dep])
 
 sources = [
     'atsc_sync_cuda.cpp',
@@ -31,7 +32,7 @@ sources = [
 ]
 
 incdir = include_directories(['../../include/gnuradio/dtv','../../include'])
-newsched_blocklib_dtv_cuda_lib = library('newsched-blocklib-dtv', 
+newsched_blocklib_dtv_cuda_lib = library('newsched-blocklib-dtv-cuda', 
     sources, 
     include_directories : incdir, 
     install : true, 
@@ -40,4 +41,4 @@ newsched_blocklib_dtv_cuda_lib = library('newsched-blocklib-dtv',
 
 newsched_blocklib_dtv_cuda_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_dtv_cuda_lib,
-                       dependencies : [newsched_blocklib_fec_dep])
+                       dependencies : [newsched_blocklib_dtv_cu_dep])
