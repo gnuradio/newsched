@@ -38,11 +38,11 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
 
 vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, size_t granularity)
 {
-
-    auto min_buffer_items = granularity / std::gcd(item_size, granularity);
-
-    if (num_items % min_buffer_items != 0)
-        num_items = ((num_items / min_buffer_items) + 1) * min_buffer_items;
+    // This is the code from gnuradio that forces buffers to align with items
+    
+    // auto min_buffer_items = granularity / std::gcd(item_size, granularity);
+    // if (num_items % min_buffer_items != 0)
+    //     num_items = ((num_items / min_buffer_items) + 1) * min_buffer_items;
 
     // Add warning
 
