@@ -127,9 +127,7 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
                 //     work_output[0].nitems_written() + output_produced,
                 //     tag_pmt,
                 //     pmtf::pmt_scalar<uint32_t>::make(pli_out.get_tag_value()));
-                plout[output_produced] = pli_out;                
-
-                output_produced++;
+                plout[output_produced++] = pli_out;                
             }
         }
     }

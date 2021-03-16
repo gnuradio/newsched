@@ -9,3 +9,7 @@ headers = [
 ]
 
 install_headers(headers, subdir : 'gnuradio/dtv')
+
+if cuda_dep.found() and get_option('enable_cuda')
+    subdir('cuda')
+endif

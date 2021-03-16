@@ -65,6 +65,7 @@ if get_option('enable_testing')
     e = executable('test_atsc', 
         srcs, 
         include_directories : incdir, 
+        link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
                     newsched_scheduler_mt_dep,
@@ -75,6 +76,7 @@ if get_option('enable_testing')
                     newsched_blocklib_fileio_dep,
                     newsched_blocklib_streamops_dep,
                     newsched_blocklib_math_dep,
+                    threads_dep,
                     volk_dep,
                     gtest_dep], 
         install : true)

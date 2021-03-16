@@ -23,3 +23,7 @@ newsched_blocklib_dtv_lib = library('newsched-blocklib-dtv',
 newsched_blocklib_dtv_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_dtv_lib,
                        dependencies : [newsched_blocklib_fec_dep])
+
+if cuda_dep.found() and get_option('enable_cuda')
+    subdir('cuda')
+endif

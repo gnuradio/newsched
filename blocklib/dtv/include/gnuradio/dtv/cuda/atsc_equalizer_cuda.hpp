@@ -13,6 +13,10 @@
 #include <gnuradio/block.hpp>
 #include <gnuradio/dtv/atsc_consts.hpp>
 
+#include <cuda.h>
+#include <cuda_runtime_api.h>
+#include "helper_cuda.h"
+
 namespace gr {
 namespace dtv {
 
@@ -21,21 +25,18 @@ namespace dtv {
  *
  * \ingroup dtv_atsc
  */
-class atsc_equalizer : virtual public gr::block
+class atsc_equalizer_cuda : virtual public gr::block
 {
 public:
     // gr::dtv::atsc_equalizer::sptr
-    typedef std::shared_ptr<atsc_equalizer> sptr;
+    typedef std::shared_ptr<atsc_equalizer_cuda> sptr;
 
     /*!
      * \brief Make a new instance of gr::dtv::atsc_equalizer.
      */
     static sptr make();
 
-    atsc_equalizer();
-
-    std::vector<float> taps() const;
-    std::vector<float> data() const;
+    atsc_equalizer_cuda();
 
     work_return_code_t work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output) override;
@@ -51,12 +52,6 @@ private:
     float training_sequence1[KNOWN_FIELD_SYNC_LENGTH];
     float training_sequence2[KNOWN_FIELD_SYNC_LENGTH];
 
-    void filterN(const float* input_samples, float* output_samples, int nsamples);
-    void adaptN(const float* input_samples,
-                const float* training_pattern,
-                float* output_samples,
-                int nsamples);
-
     std::vector<float> d_taps;
 
     float data_mem[ATSC_DATA_SEGMENT_LENGTH + NTAPS]; // Buffer for previous data packet
@@ -65,6 +60,13 @@ private:
     short d_segno;
 
     bool d_buff_not_filled = true;
+
+    float *d_dev_data;
+    float *d_dev_data_2;
+    float *d_dev_taps;
+    float *d_dev_train1;
+    float *d_dev_train2;
+    cudaStream_t stream;
 
 };
 

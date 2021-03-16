@@ -104,7 +104,11 @@ int main(int argc, char* argv[])
 #endif
 
 
-    std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
+    auto sched = schedulers::scheduler_mt::make();
+    sched->add_block_group({dei,rsd,der});
+    sched->add_block_group({src,is2c});
+    sched->add_block_group({dcb,agc});
+
     fg->set_scheduler(sched);
     fg->validate();
 

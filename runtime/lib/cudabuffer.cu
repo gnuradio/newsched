@@ -15,14 +15,16 @@
 
 namespace gr {
 cuda_buffer::cuda_buffer(size_t num_items, size_t item_size, cuda_buffer_type type)
-    : _num_items(num_items),
-      _item_size(item_size),
-      _buffer_type(type),
-      _buf_size(_num_items * _item_size),
-      _read_index(0),
-      _write_index(0),
+    : _buffer_type(type),
       _type(type)
 {
+    _num_items = num_items;
+    _item_size = item_size;
+    _buf_size = _num_items * _item_size;
+    _read_index = 0;
+    _write_index = 0;
+
+
     // _host_buffer.resize(_buf_size * 2); // double circular buffer
     cudaMallocHost(
         &_host_buffer,

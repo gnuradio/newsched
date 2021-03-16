@@ -12,12 +12,13 @@
 
 namespace gr {
 cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size)
-    : _num_items(num_items),
-      _item_size(item_size),
-      _buf_size(_num_items * _item_size),
-      _read_index(0),
-      _write_index(0)
 {
+    _num_items = num_items;
+    _item_size = item_size;
+    _buf_size = _num_items * _item_size;
+    _read_index = 0;
+    _write_index = 0;
+
     if (!cudaHostAlloc((void**)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
         throw std::runtime_error("Failed to allocate CUDA pinned memory");
     }
