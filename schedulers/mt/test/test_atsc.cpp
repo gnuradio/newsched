@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
     auto dcb = filter::dc_blocker<float>::make(4096, true);
     auto agc = analog::agc_blk<float>::make(1e-5, 4.0, 1.0);
     auto sync = dtv::atsc_sync_cuda::make(oversampled_rate);
-    auto fschk = dtv::atsc_fs_checker::make();
+    auto fschk = dtv::atsc_fs_checker_cuda::make();
     auto eq = dtv::atsc_equalizer::make();
     // auto eq = dtv::atsc_equalizer::make();
     auto vit = dtv::atsc_viterbi_decoder::make();
@@ -188,9 +188,9 @@ int main(int argc, char* argv[])
 
     // fg->connect(src, 0, sync, 0);
     // fg->connect(sync, 0, snk, 0);
-    fg->connect(sync, 0, fschk, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H); //->set_custom_buffer(CUDA_BUFFER_ARGS_D2D); 
+    fg->connect(sync, 0, fschk, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D); //->set_custom_buffer(CUDA_BUFFER_ARGS_D2D); 
     
-    fg->connect(fschk, 0, eq, 0); //->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+    fg->connect(fschk, 0, eq, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
     fg->connect(fschk, 1, eq, 1);
 
     fg->connect(eq, 0, vit, 0); //->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);

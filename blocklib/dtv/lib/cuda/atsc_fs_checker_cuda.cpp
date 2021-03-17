@@ -5,18 +5,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#include <gnuradio/dtv/cuda/atsc_fs_checker_cuda.hpp>
 #include "../atsc_pnXXX.hpp"
-#include <gnuradio/dtv/atsc_syminfo.hpp>
 #include <gnuradio/dtv/atsc_consts.hpp>
 #include <gnuradio/dtv/atsc_plinfo.hpp>
+#include <gnuradio/dtv/atsc_syminfo.hpp>
+#include <gnuradio/dtv/cuda/atsc_fs_checker_cuda.hpp>
 #include <string>
 
 #define ATSC_SEGMENTS_PER_DATA_FIELD 313
 
 static const int PN511_ERROR_LIMIT = 20; // max number of bits wrong
 static const int PN63_ERROR_LIMIT = 5;
-void exec_atsc_fs_checker(float* in,
+void exec_atsc_fs_checker(const float* in,
                           uint8_t* pn_seq,
                           int pn_len,
                           int offset,
@@ -34,17 +34,15 @@ atsc_fs_checker_cuda::sptr atsc_fs_checker_cuda::make()
     return std::make_shared<atsc_fs_checker_cuda>();
 }
 
-atsc_fs_checker_cuda::atsc_fs_checker_cuda()
-    : gr::block("dtv_atsc_fs_checker")
+atsc_fs_checker_cuda::atsc_fs_checker_cuda() : gr::block("dtv_atsc_fs_checker")
 {
     add_port(
         port<float>::make("in", port_direction_t::INPUT, { ATSC_DATA_SEGMENT_LENGTH }));
     add_port(
         port<float>::make("out", port_direction_t::OUTPUT, { ATSC_DATA_SEGMENT_LENGTH }));
-    add_port(
-        untyped_port::make("plinfo", port_direction_t::OUTPUT, sizeof(plinfo)));
+    add_port(untyped_port::make("plinfo", port_direction_t::OUTPUT, sizeof(plinfo)));
 
-    
+
     reset();
 
     checkCudaErrors(
@@ -91,7 +89,7 @@ void atsc_fs_checker_cuda::reset()
 }
 
 work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& work_input,
-                                   std::vector<block_work_output>& work_output)
+                                              std::vector<block_work_output>& work_output)
 {
     auto in = static_cast<const float*>(work_input[0].items());
     auto out = static_cast<float*>(work_output[0].items());
@@ -102,8 +100,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
     // Need to figure out how to handle this more gracefully
     // The scheduler (currently) has no information about what the block
     // is doing and doesn't know to give ninput >= noutput
-    if (ninput_items < noutput_items)
-    {
+    if (ninput_items < noutput_items) {
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
@@ -115,18 +112,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                                       ? (noutput_items - i)
                                       : d_max_output_items;
 
-        memcpy(d_host_in,
-               in + i * ATSC_DATA_SEGMENT_LENGTH,
-               items_to_process * sizeof(float) * ATSC_DATA_SEGMENT_LENGTH);
-
-        checkCudaErrors(
-            cudaMemcpyAsync(d_dev_in,
-                            d_host_in,
-                            items_to_process * sizeof(float) * ATSC_DATA_SEGMENT_LENGTH,
-                            cudaMemcpyHostToDevice,
-                            stream1));
-
-        exec_atsc_fs_checker(d_dev_in,
+        exec_atsc_fs_checker(in + i * ATSC_DATA_SEGMENT_LENGTH,
                              d_dev_atsc_pn511,
                              LENGTH_511,
                              OFFSET_511,
@@ -134,7 +120,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                              d_dev_nerrors511,
                              stream1);
 
-        exec_atsc_fs_checker(d_dev_in,
+        exec_atsc_fs_checker(in + i * ATSC_DATA_SEGMENT_LENGTH,
                              d_dev_atsc_pn63,
                              LENGTH_2ND_63,
                              OFFSET_2ND_63,
@@ -184,9 +170,18 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                 // So we copy out current packet data to an output packet and fill its
                 // plinfo
 
-                memcpy(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
-                       &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
-                       ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
+                // memcpy(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
+                //        &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
+                //        ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
+
+                checkCudaErrors(
+                    cudaMemcpyAsync(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
+                                    &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
+                                    ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
+                                    cudaMemcpyDeviceToDevice,
+                                    stream1));
+
+                cudaStreamSynchronize(stream1);
 
                 plinfo pli_out;
                 pli_out.set_regular_seg((d_field_num == 2), d_segment_num);
@@ -204,8 +199,8 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
         }
     }
 
-    consume_each(noutput_items,work_input);
-    produce_each(output_produced,work_output);
+    consume_each(noutput_items, work_input);
+    produce_each(output_produced, work_output);
     return work_return_code_t::WORK_OK;
 }
 

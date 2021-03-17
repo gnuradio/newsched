@@ -5,7 +5,7 @@
 // const int atsc_fs_checker_nstreams = 2;
 // cudaStream_t atsc_fs_checker_streams[atsc_fs_checker_nstreams];
 
-__global__ void atsc_fs_checker(float* in,
+__global__ void atsc_fs_checker(const float* in,
                                 uint8_t* pn_seq,
                                 int pn_len,
                                 int offset,
@@ -33,7 +33,7 @@ __global__ void atsc_fs_checker(float* in,
     }
 }
 
-void exec_atsc_fs_checker(float* in,
+void exec_atsc_fs_checker(const float* in,
                           uint8_t* pn_seq,
                           int pn_len,
                           int offset,
