@@ -19,7 +19,7 @@
 #include <gnuradio/dtv/atsc_consts.hpp>
 #include <gnuradio/dtv/atsc_plinfo.hpp>
 
-extern void exec_deinterleave_kernel(float* in, float* out, cudaStream_t stream);
+extern void exec_deinterleave_kernel(const float* in, float* out, cudaStream_t stream);
 extern void exec_viterbi_kernel(float* in,
                                 unsigned char* out,
                                 float* path_metrics,
@@ -145,25 +145,7 @@ work_return_code_t atsc_viterbi_decoder_cuda::work(std::vector<block_work_input>
 
     for (int i = 0; i < noutput_items; i += NCODERS) {
 
-        memcpy(d_host_in, in + i * ATSC_DATA_SEGMENT_LENGTH, sizeof(float) * NCODERS * ATSC_DATA_SEGMENT_LENGTH);
-
-        checkCudaErrors(cudaMemcpyAsync(d_data,
-                                   d_host_in,
-                                   sizeof(float) * NCODERS * ATSC_DATA_SEGMENT_LENGTH,
-                                   cudaMemcpyHostToDevice, streams[0]));
-
-
-#if 0
-        /* Build a continuous symbol buffer for each encoder */
-        for (unsigned int encoder = 0; encoder < NCODERS; encoder++)
-            for (unsigned int k = 0; k < enco_which_max; k++)
-                symbols[encoder][k] =
-                    in[i * ATSC_DATA_SEGMENT_LENGTH + enco_which_syms[encoder][k]];
-#endif
-
-
-        exec_deinterleave_kernel(d_data, d_data, streams[0]);
-        
+        exec_deinterleave_kernel(in + i * ATSC_DATA_SEGMENT_LENGTH, d_data, streams[0]);      
 
         exec_viterbi_kernel(d_data,
                             d_dibits,
@@ -171,49 +153,12 @@ work_return_code_t atsc_viterbi_decoder_cuda::work(std::vector<block_work_input>
                             d_traceback,
                             d_post_coder_state, streams[0]);
         
-        // cudaDeviceSynchronize();
+        exec_interleave_kernel(d_dibits, &out[i * ATSC_MPEG_RS_ENCODED_LENGTH], streams[0]);
 
-        // for (int e = 0; e < NCODERS; e++) {
-        //     checkCudaErrors(cudaMemcpy(&dibits[e][0],
-        //                                &d_dibits[e * (enco_which_max + 797) + 797],
-        //                                sizeof(unsigned char) * enco_which_max,
-        //                                cudaMemcpyDeviceToHost));
-
-        // }
-
-
-#if 0
-        /* Now run each of the 12 Viterbi decoders over their subset of
-           the input symbols */
-        for (unsigned int encoder = 0; encoder < NCODERS; encoder++)
-            for (unsigned int k = 0; k < enco_which_max; k++)
-                dibits[encoder][k] =
-                    viterbi[encoder].decode(symbols[encoder][k], &best_state[encoder][k]);
-#endif
-
-        // cudaDeviceSynchronize();
-
-        exec_interleave_kernel(d_dibits, d_out_copy, streams[0]);
-
-        // cudaDeviceSynchronize();
-
-        // //progress the fifo
-        // for (int e = 0; e < NCODERS; e++) {
-        //     checkCudaErrors(cudaMemcpy(&d_dibits[e * (enco_which_max + 797)],
-        //                                &d_dibits[e * (enco_which_max + 797) + 828],
-        //                                sizeof(unsigned char) * 797,
-        //                                cudaMemcpyDeviceToDevice));
-        // }
-
-        // checkCudaErrors(cudaMemcpy(&out_copy[0],
+        // checkCudaErrors(cudaMemcpyAsync(d_host_out,
         //                            &d_out_copy[0],
-        //                            sizeof(unsigned char) * OUTPUT_SIZE,
-        //                            cudaMemcpyDeviceToHost));
-        checkCudaErrors(cudaMemcpyAsync(d_host_out,
-                                   &d_out_copy[0],
-                                   sizeof(unsigned char) * ATSC_MPEG_RS_ENCODED_LENGTH * NCODERS,
-                                   cudaMemcpyDeviceToHost, streams[0]));
-
+        //                            sizeof(unsigned char) * ATSC_MPEG_RS_ENCODED_LENGTH * NCODERS,
+        //                            cudaMemcpyDeviceToHost, streams[0]));
 
 
         // copy output from contiguous temp buffer into final output
@@ -221,8 +166,8 @@ work_return_code_t atsc_viterbi_decoder_cuda::work(std::vector<block_work_input>
             plinfo::delay(plout[i + j], plin[i + j], NCODERS);
         }
 
-        cudaStreamSynchronize(streams[0]);
-        memcpy(&out[i * ATSC_MPEG_RS_ENCODED_LENGTH], d_host_out, OUTPUT_SIZE);
+        // cudaStreamSynchronize(streams[0]);
+        // memcpy(&out[i * ATSC_MPEG_RS_ENCODED_LENGTH], d_host_out, OUTPUT_SIZE);
 
     }
 

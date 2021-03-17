@@ -1,6 +1,6 @@
 #include <cuda.h>
 
-__global__ void deinterleave_kernel(float* in, float* out)
+__global__ void deinterleave_kernel(const float* in, float* out)
 {
 
     __shared__ float tmp[828 * 12];
@@ -23,7 +23,7 @@ __global__ void deinterleave_kernel(float* in, float* out)
     }
 }
 
-void exec_deinterleave_kernel(float* in, float* out, cudaStream_t stream)
+void exec_deinterleave_kernel(const float* in, float* out, cudaStream_t stream)
 {
     deinterleave_kernel<<<10, 1024, 0, stream>>>(in, out);
 }
