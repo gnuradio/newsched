@@ -5,7 +5,7 @@
 #define NTAPS 8
 
 __global__ void atsc_sync_and_integrate_kernel(
-    float* in, float* interp, float* interp_taps, int8_t* integrator_accum, float* params)
+    const float* in, float* interp, float* interp_taps, int8_t* integrator_accum, float* params)
 {
     float ADJUSTMENT_GAIN = 1.0e-5 / (10 * 832);
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
@@ -136,7 +136,7 @@ __global__ void atsc_sync_and_integrate_kernel(
     // params[0] = n;
 }
 
-void exec_atsc_sync_and_integrate(float* in,
+void exec_atsc_sync_and_integrate(const float* in,
                                   float* interp,
                                   float* interp_taps,
                                   int8_t* integrator_accum,

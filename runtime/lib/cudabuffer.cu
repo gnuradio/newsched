@@ -151,7 +151,7 @@ void cuda_buffer::post_write(int num_items)
                    &_device_buffer[wi1],
                    bytes_written,
                    cudaMemcpyDeviceToHost, stream);
-
+        cudaStreamSynchronize(stream);
         memcpy(&_host_buffer[wi2], &_host_buffer[wi1], num_bytes_1);
 
         if (num_bytes_2) {

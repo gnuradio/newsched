@@ -8,16 +8,7 @@
 #include <gnuradio/dtv/cuda/atsc_sync_cuda.hpp>
 #include <gnuradio/filter/interpolator_taps.hpp>
 
-extern void exec_atsc_sync(
-    float* in, float* out, float* interp_taps, float* params, cudaStream_t stream);
-extern void exec_atsc_integrator_kernel(float* interp,
-                                        int8_t* integrator_accum,
-                                        uint16_t* out_idx,
-                                        int16_t* out_val,
-                                        float* timing_adjust,
-                                        cudaStream_t stream);
-
-extern void exec_atsc_sync_and_integrate(float* in,
+extern void exec_atsc_sync_and_integrate(const float* in,
                                          float* interp,
                                          float* interp_taps,
                                          int8_t* integrator_accum,
@@ -72,7 +63,7 @@ atsc_sync_cuda::atsc_sync_cuda(float rate)
     checkCudaErrors(cudaMalloc((void**)&d_dev_params, 6 * sizeof(float)));
     checkCudaErrors(cudaMallocHost((void**)&d_host_params, 6 * sizeof(float)));
 
-    checkCudaErrors(cudaMallocHost(
+    checkCudaErrors(cudaMalloc(
         (void**)&d_data_mem, OUTPUT_MULTIPLE * ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
 
     // Copy the interpolation filter taps into device memory
@@ -114,18 +105,19 @@ void atsc_sync_cuda::reset()
     d_seg_locked = false;
 
     d_sr = 0;
-
-    memset(d_data_mem,
-           0,
-           OUTPUT_MULTIPLE * ATSC_DATA_SEGMENT_LENGTH *
-               sizeof(*d_data_mem)); // (float)0 = 0x00000000
+    
+    cudaMemset(d_data_mem,
+    // memset(d_data_mem,
+               0,
+               OUTPUT_MULTIPLE * ATSC_DATA_SEGMENT_LENGTH *
+                   sizeof(*d_data_mem)); // (float)0 = 0x00000000
 
     checkCudaErrors(
         cudaMemset(d_dev_integrator_accum, SSI_MIN, ATSC_DATA_SEGMENT_LENGTH));
 }
 
 work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_input,
-                                   std::vector<block_work_output>& work_output)
+                                        std::vector<block_work_output>& work_output)
 {
     auto in = static_cast<const float*>(work_input[0].items());
     auto out = static_cast<float*>(work_output[0].items());
@@ -153,15 +145,13 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
     assert(work_output[0].n_items % OUTPUT_MULTIPLE == 0);
     // assert(noutput_items <= OUTPUT_MULTIPLE);
 
-    if (work_output[0].nitems_written() >= 1312 )
-    {
+    if (work_output[0].nitems_written() >= 1312) {
         volatile int x = 7;
     }
 
     // noutput items are in vectors of ATSC_DATA_SEGMENT_LENGTH
     int no = 0;
     for (int n = 0; n < noutput_items; n += OUTPUT_MULTIPLE) {
-        // std::cout << "atsc_sync: " << work_output[0].nitems_written() + no << std::endl;
         int d_si_start = d_si;
         double d_mu_start = d_mu;
 
@@ -171,16 +161,6 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
             break;
         }
 
-        memcpy(d_host_in,
-               in + d_si_start,
-               OUTPUT_MULTIPLE * sizeof(float) * input_mem_items);
-
-        checkCudaErrors(cudaMemcpyAsync(d_dev_in,
-                                        d_host_in,
-                                        OUTPUT_MULTIPLE * sizeof(float) * input_mem_items,
-                                        cudaMemcpyHostToDevice,
-                                        streams[0]));
-        cudaStreamSynchronize(streams[0]);
         // Launch 832 threads to do interpolation
         // The kernel will do 8 tap dot products, so total threads / 8
 
@@ -196,11 +176,9 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
                                         streams[0]));
 
         cudaStreamSynchronize(streams[0]);
-        // cudaDeviceSynchronize();
-
 
         for (int oo = 0; oo < OUTPUT_MULTIPLE; oo++) {
-            exec_atsc_sync_and_integrate(d_dev_in,
+            exec_atsc_sync_and_integrate(in + d_si_start,
                                          d_dev_out + oo * ATSC_DATA_SEGMENT_LENGTH,
                                          d_dev_taps,
                                          d_dev_integrator_accum,
@@ -225,13 +203,6 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
         uint16_t tmp_idx = (uint16_t)d_host_params[4];
         int16_t tmp_val = (int16_t)d_host_params[5];
 
-        // std::cout << d_cntr << ": "
-        // << (int)rint(d_host_params[3]) << ","
-        // << d_mu << ","
-        // << d_host_params[0] << ","
-        // << d_host_params[4] << ","
-        // << d_host_params[5] << std::endl;
-
         d_seg_locked = tmp_val >= MIN_SEG_LOCK_CORRELATION_VALUE;
 
 
@@ -252,32 +223,28 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
                 d_dev_out,
                 sizeof(float) *
                     ((OUTPUT_MULTIPLE - 1) * ATSC_DATA_SEGMENT_LENGTH + idx_start),
-                cudaMemcpyDeviceToHost,
+                cudaMemcpyDeviceToDevice,
                 streams[0]));
             cudaStreamSynchronize(streams[0]);
-            memcpy(&out[no * ATSC_DATA_SEGMENT_LENGTH],
-                   d_data_mem,
-                   OUTPUT_MULTIPLE * ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
+
+            checkCudaErrors(cudaMemcpyAsync(&out[no * ATSC_DATA_SEGMENT_LENGTH],
+                                            d_data_mem,
+                                            sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH) * OUTPUT_MULTIPLE,
+                                            cudaMemcpyDeviceToDevice,
+                                            streams[0]));
+            cudaStreamSynchronize(streams[0]);
 
             checkCudaErrors(cudaMemcpyAsync(
                 d_data_mem,
                 d_dev_out + ATSC_DATA_SEGMENT_LENGTH * (OUTPUT_MULTIPLE - 1) + idx_start,
                 sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH - idx_start),
-                cudaMemcpyDeviceToHost,
+                cudaMemcpyDeviceToDevice,
                 streams[0]));
             cudaStreamSynchronize(streams[0]);
 
-            // std::cout << "   " << in[d_si_start] << " " << out[no] << " " << d_mu << " " << d_timing_adjust << " " << idx_start << std::endl;
-            // std::cout << "   " << no << std::endl;
             no += OUTPUT_MULTIPLE;
-
         }
     }
-
-    // if (no > 0 || d_si > 0) {
-        
-
-    // }
 
     consume_each(d_si, work_input);
     produce_each(no, work_output);
@@ -286,3 +253,4 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
 
 } /* namespace dtv */
 } /* namespace gr */
+

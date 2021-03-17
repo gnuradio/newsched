@@ -37,7 +37,7 @@ edge_sptr graph::connect(const node_endpoint& src,
         name_count[b->name()] = cnt + 1;
 
         // for now, just use the name+nodeid as the alias
-        b->set_alias(b->name() + std::to_string(b->id()));
+        b->set_alias(b->name() + "(" + std::to_string(b->id()) + ")");
     }
 
     // Give the underlying port objects information about the connected ports
