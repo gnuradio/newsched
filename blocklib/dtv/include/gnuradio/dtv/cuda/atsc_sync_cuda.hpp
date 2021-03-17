@@ -90,7 +90,7 @@ private:
     float* d_dev_params;
     float* d_host_params;
 
-    static const int OUTPUT_MULTIPLE = 16;
+    static const int OUTPUT_MULTIPLE = 1;
 
     static const int nstreams = 1;
     cudaStream_t streams[nstreams];

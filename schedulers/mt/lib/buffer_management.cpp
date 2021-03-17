@@ -45,7 +45,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 src_da_cast->set_buffer(buf);
                 auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
                 d_edge_buffers[e->identifier()] = tmp;
-                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
             } else {
                 d_edge_buffers[e->identifier()] =
                     std::dynamic_pointer_cast<buffer>(src_da_cast);
@@ -64,7 +64,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 dst_da_cast->set_buffer(buf);
                 auto tmp = std::dynamic_pointer_cast<buffer>(dst_da_cast);
                 d_edge_buffers[e->identifier()] = tmp;
-                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
             } else {
                 d_edge_buffers[e->identifier()] =
                     std::dynamic_pointer_cast<buffer>(dst_da_cast);
@@ -84,7 +84,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
 
         // FIXME: Using a string for edge map lookup is inefficient
             d_edge_buffers[e->identifier()] = buf;
-            GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+            GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
         }
     }
 

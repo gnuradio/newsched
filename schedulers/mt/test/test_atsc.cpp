@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 
 
     flowgraph_sptr fg(new flowgraph());
+    auto sched = schedulers::scheduler_mt::make();
 
 #if 0   // the whole shebang
     auto src = fileio::file_source::make(2*sizeof(uint16_t), argv[1], false);
@@ -93,16 +94,11 @@ int main(int argc, char* argv[])
     auto sync = dtv::atsc_sync_cuda::make(oversampled_rate);
     auto fschk = dtv::atsc_fs_checker_cuda::make();
     auto eq = dtv::atsc_equalizer_cuda::make();
+    // auto eq = dtv::atsc_equalizer::make();
     auto vit = dtv::atsc_viterbi_decoder_cuda::make();
     auto dei = dtv::atsc_deinterleaver::make();
     auto rsd = dtv::atsc_rs_decoder::make();
     auto der = dtv::atsc_derandomizer::make();
-
-    auto dbg_snk1 = fileio::file_sink::make(sizeof(float), "/tmp/ns_agc_out.dat", false);
-    auto dbg_snk2 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_sync_out.dat", false);
-    auto dbg_snk3 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_fs_out.dat", false);
-    auto dbg_snk4 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_eq_out.dat", false);
-    auto dbg_snk5 = fileio::file_sink::make(207*sizeof(uint8_t), "/tmp/ns_vit_out.dat", false);
 
     // char filename_out[1024];
     // auto fn = tmpnam(filename_out);
@@ -127,7 +123,7 @@ int main(int argc, char* argv[])
     
     fg->connect(fschk, 0, eq, 0);
     fg->connect(fschk, 1, eq, 1);
-    
+
     fg->connect(eq, 0, vit, 0);
     // fg->connect(eq,0,snkeq,0);
     fg->connect(eq, 1, vit, 1);
@@ -141,11 +137,53 @@ int main(int argc, char* argv[])
     fg->connect(rsd, 1, der, 1);
     fg->connect(der, 0, snk, 0);
 
-    fg->connect(agc, 0, dbg_snk1, 0);
-    fg->connect(sync, 0, dbg_snk2, 0);
-    fg->connect(fschk, 0, dbg_snk3, 0);
-    fg->connect(eq, 0, dbg_snk4, 0);
-    fg->connect(vit, 0, dbg_snk5, 0);
+    sched->add_block_group({dei,rsd,der,snk});
+    sched->add_block_group({src,is2c});
+    sched->add_block_group({dcb,agc});
+    // sched->add_block_group({sync, fschk, eq, vit});
+    // sched->add_block_group(
+        // { src, is2c, fpll, dcb, agc, sync, fschk, eq, vit, dei, rsd, der, snk });
+
+    // auto dbg_snk1 = fileio::file_sink::make(sizeof(float), "/tmp/ns_agc_out.dat", false);
+    // auto dbg_snk2 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_sync_out.dat", false);
+    // auto dbg_snk3 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_fs_out.dat", false);
+    // auto dbg_snk4 = fileio::file_sink::make(832*sizeof(float), "/tmp/ns_eq_out.dat", false);
+    // auto dbg_snk5 = fileio::file_sink::make(207*sizeof(uint8_t), "/tmp/ns_vit_out.dat", false);
+    // auto dbg_snk6 = fileio::file_sink::make(sizeof(dtv::plinfo), "/tmp/fs_plout.dat", false);
+    // auto dbg_snk7 = fileio::file_sink::make(sizeof(dtv::plinfo), "/tmp/eq_plout.dat", false);
+
+    // fg->connect(agc, 0, dbg_snk1, 0);
+    // fg->connect(sync, 0, dbg_snk2, 0);
+    // fg->connect(fschk, 0, dbg_snk3, 0);
+    // fg->connect(fschk, 1, dbg_snk6, 0);
+    // fg->connect(eq, 0, dbg_snk4, 0);
+    // fg->connect(eq, 1, dbg_snk7, 0);
+    // fg->connect(vit, 0, dbg_snk5, 0);
+#elif 1 // debug the equalizer block
+    auto src = fileio::file_source::make(832 * sizeof(float), "/tmp/ns_fs_out.dat", false);
+    auto plsrc = fileio::file_source::make(sizeof(dtv::plinfo), "/tmp/fs_plout.dat", false);
+
+    auto eqc = dtv::atsc_equalizer_cuda::make();
+    // auto eq = dtv::atsc_equalizer::make();
+
+    auto dbg_snk1 = fileio::file_sink::make(832*sizeof(float), "/tmp/dbg_eqc.dat", false);
+    // auto dbg_snk2 = fileio::file_sink::make(832*sizeof(float), "/tmp/dbg_eq.dat", false);
+
+    auto null1 = blocks::null_sink::make(sizeof(dtv::plinfo)); // plinfo
+    auto null2 = blocks::null_sink::make(sizeof(dtv::plinfo)); // plinfo
+
+    // fg->connect(src, 0, eq, 0);
+    fg->connect(src, 0, eqc, 0);
+    // fg->connect(plsrc, 0, eq, 1);
+    fg->connect(plsrc, 0, eqc, 1);
+
+
+    fg->connect(eqc, 0, dbg_snk1, 0);
+    // fg->connect(eq, 0, dbg_snk2, 0);
+    fg->connect(eqc, 1, null1, 0);
+    // fg->connect(eq, 1, null2, 0);
+
+    sched->add_block_group({src,eqc,dbg_snk1});
 
 #elif 1
     auto src1 = fileio::file_source::make(832 * sizeof(float), argv[1], false);
@@ -170,14 +208,12 @@ int main(int argc, char* argv[])
     fg->connect(vit, 0, snk1, 0);
     fg->connect(vit, 1, null, 0);
 #endif
-
-
-    auto sched = schedulers::scheduler_mt::make();
+    
     // sched->add_block_group({dei,rsd,der});
     // sched->add_block_group({src,is2c});
     // sched->add_block_group({dcb,agc});
-    sched->add_block_group(
-        { src, is2c, fpll, dcb, agc, sync, fschk, eq, vit, dei, rsd, der, snk });
+    // sched->add_block_group(
+    //     { src, is2c, fpll, dcb, agc, sync, fschk, eq, vit, dei, rsd, der, snk });
 
     fg->set_scheduler(sched);
     fg->validate();

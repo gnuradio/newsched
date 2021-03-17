@@ -150,11 +150,18 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
         // consume_each(0,work_input);
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
+    assert(work_output[0].n_items % OUTPUT_MULTIPLE == 0);
+    // assert(noutput_items <= OUTPUT_MULTIPLE);
 
+    if (work_output[0].nitems_written() >= 1312 )
+    {
+        volatile int x = 7;
+    }
 
     // noutput items are in vectors of ATSC_DATA_SEGMENT_LENGTH
     int no = 0;
     for (int n = 0; n < noutput_items; n += OUTPUT_MULTIPLE) {
+        // std::cout << "atsc_sync: " << work_output[0].nitems_written() + no << std::endl;
         int d_si_start = d_si;
         double d_mu_start = d_mu;
 
@@ -260,10 +267,17 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
                 streams[0]));
             cudaStreamSynchronize(streams[0]);
 
-
+            // std::cout << "   " << in[d_si_start] << " " << out[no] << " " << d_mu << " " << d_timing_adjust << " " << idx_start << std::endl;
+            // std::cout << "   " << no << std::endl;
             no += OUTPUT_MULTIPLE;
+
         }
     }
+
+    // if (no > 0 || d_si > 0) {
+        
+
+    // }
 
     consume_each(d_si, work_input);
     produce_each(no, work_output);

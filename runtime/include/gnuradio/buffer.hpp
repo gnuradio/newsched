@@ -47,6 +47,9 @@ protected:
     std::vector<tag_t> _tags;
 
 public:
+    unsigned int size() { return _buf_size; }
+    unsigned int num_items() { return _num_items; }
+    unsigned int item_size() { return _item_size; }
     virtual void* read_ptr() = 0;
     virtual void* write_ptr() = 0;
 

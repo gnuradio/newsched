@@ -147,6 +147,10 @@ void vmcirc_buffer::post_write(int num_items)
 
 void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
 {
+    if (nitems < 0) {
+        return;
+    }
+    
     std::scoped_lock guard(_buf_mutex);
 
     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);

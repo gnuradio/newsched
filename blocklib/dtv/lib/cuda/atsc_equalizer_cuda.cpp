@@ -155,6 +155,14 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
             }
             cudaStreamSynchronize(stream);
 
+            float host_taps[NTAPS];
+            checkCudaErrors(cudaMemcpy(
+                host_taps, d_dev_taps, sizeof(float) * NTAPS, cudaMemcpyDeviceToHost));
+            std::ofstream dbgfile7("/tmp/ns_taps.bin",
+                                std::ios::out | std::ios::binary);
+            dbgfile7.write((char*)host_taps,
+                        sizeof(float) * (NTAPS));
+
             // d_nsamples = d_filter.set_taps(d_taps);
 
         } else {
@@ -164,7 +172,7 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
             //     d_dev_taps, &d_taps[0], sizeof(float) * NTAPS, cudaMemcpyHostToDevice));
 
             exec_filterN(d_dev_data,
-                         d_dev_data,
+                         d_dev_data_2,
                          d_dev_taps,
                          NTAPS,
                          ATSC_DATA_SEGMENT_LENGTH,
@@ -174,7 +182,7 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
             // float tmp[ATSC_DATA_SEGMENT_LENGTH];
 
             checkCudaErrors(cudaMemcpy(data_mem2,
-                                       d_dev_data,
+                                       d_dev_data_2,
                                        sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH),
                                        cudaMemcpyDeviceToHost));
 
