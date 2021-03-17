@@ -5,15 +5,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#include <gnuradio/dtv/cuda/atsc_equalizer_cuda.hpp>
 #include "../atsc_pnXXX.hpp"
 #include <gnuradio/dtv/atsc_plinfo.hpp>
+#include <gnuradio/dtv/cuda/atsc_equalizer_cuda.hpp>
 #include <volk/volk.h>
 
 extern void exec_filterN(
     float* in, float* out, float* taps, int ntaps, int nsamps, cudaStream_t stream);
-void exec_adaptN(
-    float* in, float* out, float* taps, float* train, int ntaps, int nsamps, cudaStream_t stream);
+void exec_adaptN(float* in,
+                 float* out,
+                 float* taps,
+                 float* train,
+                 int ntaps,
+                 int nsamps,
+                 cudaStream_t stream);
 
 namespace gr {
 namespace dtv {
@@ -47,8 +52,7 @@ static void init_field_sync_common(float* p, int mask)
         p[i++] = bin_map(atsc_pn63[j]);
 }
 
-atsc_equalizer_cuda::atsc_equalizer_cuda()
-    : gr::block("dtv_atsc_equalizer")
+atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
 {
     add_port(
         port<float>::make("in", port_direction_t::INPUT, { ATSC_DATA_SEGMENT_LENGTH }));
@@ -70,24 +74,34 @@ atsc_equalizer_cuda::atsc_equalizer_cuda()
 
     checkCudaErrors(cudaMalloc((void**)&d_dev_data,
                                2 * (ATSC_DATA_SEGMENT_LENGTH + NTAPS) * sizeof(float)));
-    checkCudaErrors(cudaMalloc((void**)&d_dev_data_2,
-                               ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
+    checkCudaErrors(
+        cudaMalloc((void**)&d_dev_data_2, ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
     checkCudaErrors(cudaMalloc((void**)&d_dev_taps, NTAPS * sizeof(float)));
 
+    checkCudaErrors(cudaMalloc((void**)&data_mem,
+                               (ATSC_DATA_SEGMENT_LENGTH + NTAPS) * sizeof(float)));
+    checkCudaErrors(
+        cudaMalloc((void**)&data_mem2, ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
 
-    checkCudaErrors(cudaMalloc((void**)&d_dev_train1, KNOWN_FIELD_SYNC_LENGTH * sizeof(float)));
-    checkCudaErrors(cudaMalloc((void**)&d_dev_train2, KNOWN_FIELD_SYNC_LENGTH * sizeof(float)));
+    checkCudaErrors(
+        cudaMalloc((void**)&d_dev_train1, KNOWN_FIELD_SYNC_LENGTH * sizeof(float)));
+    checkCudaErrors(
+        cudaMalloc((void**)&d_dev_train2, KNOWN_FIELD_SYNC_LENGTH * sizeof(float)));
 
-    checkCudaErrors(cudaMemcpy(
-        d_dev_train1, training_sequence1, sizeof(float) * KNOWN_FIELD_SYNC_LENGTH, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(
-        d_dev_train2, training_sequence2, sizeof(float) * KNOWN_FIELD_SYNC_LENGTH, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(d_dev_train1,
+                               training_sequence1,
+                               sizeof(float) * KNOWN_FIELD_SYNC_LENGTH,
+                               cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(d_dev_train2,
+                               training_sequence2,
+                               sizeof(float) * KNOWN_FIELD_SYNC_LENGTH,
+                               cudaMemcpyHostToDevice));
 
     cudaStreamCreate(&stream);
 }
 
 work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work_input,
-                                   std::vector<block_work_output>& work_output)
+                                             std::vector<block_work_output>& work_output)
 {
     auto in = static_cast<const float*>(work_input[0].items());
     auto out = static_cast<float*>(work_output[0].items());
@@ -104,10 +118,12 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
     int i = 0;
 
     if (d_buff_not_filled) {
-        memset(&data_mem[0], 0, NPRETAPS * sizeof(float));
-        memcpy(&data_mem[NPRETAPS],
-               in + i * ATSC_DATA_SEGMENT_LENGTH,
-               ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
+        checkCudaErrors(cudaMemset(&data_mem[0], 0, NPRETAPS * sizeof(float)));
+        checkCudaErrors(cudaMemcpyAsync(&data_mem[NPRETAPS],
+                                        in + i * ATSC_DATA_SEGMENT_LENGTH,
+                                        ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
+                                        cudaMemcpyDeviceToDevice,
+                                        stream));
 
         d_flags = plin[i].flags();
         d_segno = plin[i].segno();
@@ -119,89 +135,63 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
 
     for (; i < noutput_items; i++) {
 
-        memcpy(&data_mem[ATSC_DATA_SEGMENT_LENGTH + NPRETAPS],
-               in + i * ATSC_DATA_SEGMENT_LENGTH,
-               (NTAPS - NPRETAPS) * sizeof(float));
+        checkCudaErrors(cudaMemcpyAsync(&data_mem[ATSC_DATA_SEGMENT_LENGTH + NPRETAPS],
+                                        in + i * ATSC_DATA_SEGMENT_LENGTH,
+                                        (NTAPS - NPRETAPS) * sizeof(float),
+                                        cudaMemcpyDeviceToDevice,
+                                        stream));
 
         cudaStreamSynchronize(stream);
-        // std::cout << d_dev_data << " " << data_mem << std::endl;
-        checkCudaErrors(cudaMemcpy(d_dev_data,
-                                   &data_mem[0],
-                                   sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH + NTAPS),
-                                   cudaMemcpyHostToDevice));
 
         if (d_segno == -1) {
             if (d_flags & 0x0010) {
-                // adaptN(data_mem, training_sequence2, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
-
-                exec_adaptN(d_dev_data,
+                exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
                             d_dev_train2,
                             NTAPS,
                             KNOWN_FIELD_SYNC_LENGTH,
                             stream);
-            } else { 
-                // adaptN(data_mem, training_sequence1, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
-                
-                exec_adaptN(d_dev_data,
+                            
+            } else {
+                exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
                             d_dev_train1,
                             NTAPS,
                             KNOWN_FIELD_SYNC_LENGTH,
                             stream);
-                
             }
+            checkCudaErrors(cudaPeekAtLastError());
             cudaStreamSynchronize(stream);
 
-            float host_taps[NTAPS];
-            checkCudaErrors(cudaMemcpy(
-                host_taps, d_dev_taps, sizeof(float) * NTAPS, cudaMemcpyDeviceToHost));
-            std::ofstream dbgfile7("/tmp/ns_taps.bin",
-                                std::ios::out | std::ios::binary);
-            dbgfile7.write((char*)host_taps,
-                        sizeof(float) * (NTAPS));
-
-            // d_nsamples = d_filter.set_taps(d_taps);
-
         } else {
-            // filterN(data_mem, data_mem2, ATSC_DATA_SEGMENT_LENGTH);
 
-            // checkCudaErrors(cudaMemcpy(
-            //     d_dev_taps, &d_taps[0], sizeof(float) * NTAPS, cudaMemcpyHostToDevice));
-
-            exec_filterN(d_dev_data,
-                         d_dev_data_2,
+            exec_filterN(data_mem,
+                         &out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
                          d_dev_taps,
                          NTAPS,
                          ATSC_DATA_SEGMENT_LENGTH,
                          stream);
+            checkCudaErrors(cudaPeekAtLastError());
             cudaStreamSynchronize(stream);
-
-            // float tmp[ATSC_DATA_SEGMENT_LENGTH];
-
-            checkCudaErrors(cudaMemcpy(data_mem2,
-                                       d_dev_data_2,
-                                       sizeof(float) * (ATSC_DATA_SEGMENT_LENGTH),
-                                       cudaMemcpyDeviceToHost));
-
-
-            // d_filter.filter(ATSC_DATA_SEGMENT_LENGTH, data_mem + NPRETAPS,
-            // data_mem2);
-
-
-            memcpy(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
-                   data_mem2,
-                   ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
 
             plout[output_produced++] = plinfo(d_flags, d_segno);
         }
 
-        memcpy(data_mem, &data_mem[ATSC_DATA_SEGMENT_LENGTH], NPRETAPS * sizeof(float));
-        memcpy(&data_mem[NPRETAPS],
-               in + i * ATSC_DATA_SEGMENT_LENGTH,
-               ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
+        checkCudaErrors(cudaMemcpyAsync(&data_mem[0],
+                                        &data_mem[ATSC_DATA_SEGMENT_LENGTH],
+                                        NPRETAPS * sizeof(float),
+                                        cudaMemcpyDeviceToDevice,
+                                        stream));
+                                        
+        checkCudaErrors(cudaMemcpyAsync(&data_mem[NPRETAPS],
+                                        in + i * ATSC_DATA_SEGMENT_LENGTH,
+                                        ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
+                                        cudaMemcpyDeviceToDevice,
+                                        stream));
+
+        cudaStreamSynchronize(stream);
 
         d_flags = plin[i].flags();
         d_segno = plin[i].segno();

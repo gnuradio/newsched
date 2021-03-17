@@ -54,12 +54,14 @@ private:
 
     std::vector<float> d_taps;
 
-    float data_mem[ATSC_DATA_SEGMENT_LENGTH + NTAPS]; // Buffer for previous data packet
-    float data_mem2[ATSC_DATA_SEGMENT_LENGTH];
+
     unsigned short d_flags;
     short d_segno;
 
     bool d_buff_not_filled = true;
+
+    float *data_mem;
+    float *data_mem2;
 
     float *d_dev_data;
     float *d_dev_data_2;
