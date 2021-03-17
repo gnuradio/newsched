@@ -123,6 +123,12 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         grblock = std::dynamic_pointer_cast<block>(e->dst().node());
     }
 
+    if (grblock->output_multiple_set())
+    {
+        nitems =
+            std::max(nitems, static_cast<size_t>(2 * (grblock->output_multiple())));
+    }
+
     // FIXME: Downstream block connections get messed up by domain adapters
     //   Need to tag the blocks before they get partitioned
     //   and store the information in the edge objects
@@ -140,9 +146,10 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         //     throw std::runtime_error("allocate_buffer found non-gr::block");
 
         // double decimation = (1.0 / dgrblock->relative_rate());
+        double decimation = (1.0 / p->relative_rate());
         int multiple = p->output_multiple();
         nitems =
-            std::max(nitems, static_cast<size_t>(2 * (multiple)));
+            std::max(nitems, static_cast<size_t>(2 * (decimation * multiple)));
             // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
     }
 

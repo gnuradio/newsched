@@ -28,6 +28,7 @@ private:
     tag_propagation_policy_t d_tag_propagation_policy;
     int d_output_multiple = 1;
     bool d_output_multiple_set = false;
+    double d_relative_rate = 1.0;
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
@@ -126,6 +127,9 @@ public:
     }
     int output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }
+
+    void set_relative_rate(double relative_rate) { d_relative_rate = relative_rate; }
+    double relative_rate() const { return d_relative_rate; }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };

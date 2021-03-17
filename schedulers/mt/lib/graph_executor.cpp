@@ -135,8 +135,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
                     work_output[0].n_items >>= 1;
-                    if (work_output[0].n_items < 4) // min block size
+                    if (work_output[0].n_items < b->output_multiple()) // min block size
                     {
+                        per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
                         break;
                     }
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {

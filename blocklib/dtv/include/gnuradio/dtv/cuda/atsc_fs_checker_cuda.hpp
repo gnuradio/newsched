@@ -62,7 +62,7 @@ private:
     inline static int decr(int index) { return wrap(index - 1); }
     static const int OUTPUT_MULTIPLE = 1;
 
-    size_t d_max_output_items =  64; // 32768 / 4 / 828
+    size_t d_max_output_items =  8; // 32768 / 4 / 828 // TODO - handle larger max_output items - limitation is in calculating downstream block sizes
     float* d_host_in;
     float* d_dev_in;
     uint8_t* d_dev_tmp;

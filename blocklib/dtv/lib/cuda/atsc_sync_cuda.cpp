@@ -99,6 +99,7 @@ atsc_sync_cuda::atsc_sync_cuda(float rate)
 
     reset();
 
+    set_relative_rate(1.0 / ((int)(ATSC_DATA_SEGMENT_LENGTH * d_w) + 1));
     set_output_multiple(OUTPUT_MULTIPLE);
 }
 
@@ -146,7 +147,7 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
                                       ATSC_DATA_SEGMENT_LENGTH) +
                      1500 - 1;
     if (work_input[0].n_items < min_items) {
-        consume_each(0,work_input);
+        // consume_each(0,work_input);
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
