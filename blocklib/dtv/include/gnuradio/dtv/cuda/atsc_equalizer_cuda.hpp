@@ -70,6 +70,11 @@ private:
     float *d_dev_train2;
     cudaStream_t stream;
 
+    void adaptN(const float* input_samples,
+                const float* training_pattern,
+                float* output_samples,
+                int nsamples);
+
 };
 
 } /* namespace dtv */

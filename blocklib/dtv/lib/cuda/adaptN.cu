@@ -11,7 +11,7 @@ __global__ void adaptN_kernel(float* in, float *out, float* taps, float *train, 
 
     // Filters one output sample across N taps
     int tap_idx =  threadIdx.x;
-    if (tap_idx >= 64)
+    if (tap_idx >= ntaps)
         return;
 
     for (int j=0; j<nsamps; j++)
@@ -34,8 +34,8 @@ __global__ void adaptN_kernel(float* in, float *out, float* taps, float *train, 
 
         __syncthreads();
 
-        taps[tap_idx] = taps[tap_idx] - in[j+tap_idx] * BETA * e;
-
+        // FIXME/FML why doesn't this line work - is there something CUDA I'm missing
+        taps[tap_idx] -= in[j+tap_idx] * BETA * e;
     }
 }
 

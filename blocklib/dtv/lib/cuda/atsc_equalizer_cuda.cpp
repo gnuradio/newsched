@@ -77,7 +77,8 @@ atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
     checkCudaErrors(
         cudaMalloc((void**)&d_dev_data_2, ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
     checkCudaErrors(cudaMalloc((void**)&d_dev_taps, NTAPS * sizeof(float)));
-
+    checkCudaErrors(cudaMemset(d_dev_taps, 0, NTAPS * sizeof(float)));
+    
     checkCudaErrors(cudaMalloc((void**)&data_mem,
                                (ATSC_DATA_SEGMENT_LENGTH + NTAPS) * sizeof(float)));
     checkCudaErrors(
@@ -98,6 +99,36 @@ atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
                                cudaMemcpyHostToDevice));
 
     cudaStreamCreate(&stream);
+}
+
+void atsc_equalizer_cuda::adaptN(const float* input_samples,
+                            const float* training_pattern,
+                            float* output_samples,
+                            int nsamples)
+{
+    static const double BETA = 0.00005; // FIXME figure out what this ought to be
+                                        // FIXME add gear-shifting
+
+    for (int j = 0; j < nsamples; j++) {
+        output_samples[j] = 0;
+        volk_32f_x2_dot_prod_32f(
+            &output_samples[j], &input_samples[j], &d_taps[0], NTAPS);
+
+        float e = output_samples[j] - training_pattern[j];
+
+        // update taps...
+        float tmp_taps[NTAPS];
+        volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * e, NTAPS);
+
+        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
+        //                        std::ios::app | std::ios::binary);
+        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
+
+        volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
+    }
+
+    // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
+    // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
 }
 
 work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work_input,
@@ -141,10 +172,21 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                                         cudaMemcpyDeviceToDevice,
                                         stream));
 
-        cudaStreamSynchronize(stream);
+        // cudaStreamSynchronize(stream);
 
         if (d_segno == -1) {
             if (d_flags & 0x0010) {
+                // float tmp_in[ATSC_DATA_SEGMENT_LENGTH + NTAPS];
+                // float tmp_out[ATSC_DATA_SEGMENT_LENGTH];
+                // float train[KNOWN_FIELD_SYNC_LENGTH];
+
+                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(train, d_dev_train2, KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
+
+                // adaptN(tmp_in, train, tmp_out, KNOWN_FIELD_SYNC_LENGTH);
+
+                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(), NTAPS*sizeof(float), cudaMemcpyHostToDevice));
+
                 exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
@@ -154,6 +196,18 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                             stream);
                             
             } else {
+
+                // float tmp_in[ATSC_DATA_SEGMENT_LENGTH + NTAPS];
+                // float tmp_out[ATSC_DATA_SEGMENT_LENGTH];
+                // float train[KNOWN_FIELD_SYNC_LENGTH];
+
+                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(train, d_dev_train1, KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
+
+                // adaptN(tmp_in, train, tmp_out, KNOWN_FIELD_SYNC_LENGTH);
+
+                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(), NTAPS*sizeof(float), cudaMemcpyHostToDevice));
+
                 exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
@@ -163,7 +217,7 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                             stream);
             }
             checkCudaErrors(cudaPeekAtLastError());
-            cudaStreamSynchronize(stream);
+            // cudaStreamSynchronize(stream);
 
         } else {
 
@@ -174,10 +228,12 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                          ATSC_DATA_SEGMENT_LENGTH,
                          stream);
             checkCudaErrors(cudaPeekAtLastError());
-            cudaStreamSynchronize(stream);
+            // cudaStreamSynchronize(stream);
 
             plout[output_produced++] = plinfo(d_flags, d_segno);
         }
+
+        // cudaStreamSynchronize(stream);
 
         checkCudaErrors(cudaMemcpyAsync(&data_mem[0],
                                         &data_mem[ATSC_DATA_SEGMENT_LENGTH],
@@ -191,12 +247,13 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                                         cudaMemcpyDeviceToDevice,
                                         stream));
 
-        cudaStreamSynchronize(stream);
+        // cudaStreamSynchronize(stream);
 
         d_flags = plin[i].flags();
         d_segno = plin[i].segno();
     }
 
+    cudaStreamSynchronize(stream);
     consume_each(noutput_items, work_input);
     produce_each(output_produced, work_output);
     return work_return_code_t::WORK_OK;
