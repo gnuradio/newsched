@@ -5,7 +5,10 @@ blocks_sources = [
     'head.cpp',
     'multiply_const.cpp',
     'vector_sink.cpp',
-    'vector_source.cpp'
+    'vector_source.cpp',
+    'impl/foo_impl.cpp',
+    'cpu/foo_cpu.cpp',
+    'cuda/foo_cuda.cpp',
 ]
 
 incdir = include_directories(['../include/gnuradio/blocklib/blocks','../include'])

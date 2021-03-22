@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <gnuradio/block_interface.hpp>
 #include <gnuradio/block_work_io.hpp>
 #include <gnuradio/node.hpp>
 #include <gnuradio/gpdict.hpp>
@@ -21,7 +22,7 @@ class scheduler; // Forward declaration to scheduler class
  * class of blocks that implement actual signal processing functions.
  *
  */
-class block : public gr::node, public std::enable_shared_from_this<block>
+class block : public gr::node, public block_interface
 {
 private:
     bool d_running = false;
@@ -60,8 +61,6 @@ public:
     }
 
     typedef std::shared_ptr<block> sptr;
-    sptr base() { return shared_from_this(); }
-
     tag_propagation_policy_t tag_propagation_policy()
     {
         return d_tag_propagation_policy;
