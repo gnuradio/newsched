@@ -46,6 +46,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     fg->start();
     fg->wait();
 
+    EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);
 }
 
@@ -82,5 +83,7 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     fg->start();
     fg->wait();
 
+    EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);
+    
 }
