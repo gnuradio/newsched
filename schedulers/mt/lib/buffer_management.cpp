@@ -1,5 +1,5 @@
 #include "buffer_management.hpp"
-#include <gnuradio/domain_adapter.hpp>
+// #include <gnuradio/domain_adapter.hpp>
 
 namespace gr {
 namespace schedulers {
@@ -27,7 +27,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
         //     +-----------+                   +-----------+       +---
         //        DOMAIN1                               DOMAIN2
 
-
+#if 0 // FIXME - domain adapters disabled for now
         auto src_da_cast = std::dynamic_pointer_cast<domain_adapter>(e->src().node());
         auto dst_da_cast = std::dynamic_pointer_cast<domain_adapter>(e->dst().node());
 
@@ -36,7 +36,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buffer_sptr buf;
 
                 if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(num_items, e->itemsize(), e->buf_properties());
+                    buf = e->buffer_factory()(
+                        num_items, e->itemsize(), e->buf_properties());
                 } else {
                     buf = buf_factory(num_items, e->itemsize(), buf_props);
                 }
@@ -55,7 +56,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buffer_sptr buf;
 
                 if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(num_items, e->itemsize(), e->buf_properties());
+                    buf = e->buffer_factory()(
+                        num_items, e->itemsize(), e->buf_properties());
                 } else {
                     buf = buf_factory(num_items, e->itemsize(), buf_props);
                 }
@@ -73,17 +75,26 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
         }
         // If there are no domain adapter involved, then simply give this edge a
         // buffer
-        else {
-            buffer_sptr buf;
-            if (e->has_custom_buffer()) {
-                buf = e->buffer_factory()(num_items, e->itemsize(), e->buf_properties());
-            } else {
-                buf = buf_factory(num_items, e->itemsize(), buf_props);
-            }
+        else
+#endif
+        {
+            if (d_block_buffers.find(e->src().port()) == d_block_buffers.end()) {
+                buffer_sptr buf;
+                if (e->has_custom_buffer()) {
+                    buf = e->buffer_factory()(
+                        num_items, e->itemsize(), e->buf_properties());
+                } else {
+                    buf = buf_factory(num_items, e->itemsize(), buf_props);
+                }
+                d_block_buffers[e->src().port()] = buf;
+                d_edge_buffers[e->identifier()] = buf;
 
-        // FIXME: Using a string for edge map lookup is inefficient
-            d_edge_buffers[e->identifier()] = buf;
-            GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+            } else {
+                auto buf = d_block_buffers[e->src().port()];
+                d_edge_buffers[e->identifier()] = buf;
+                GR_LOG_INFO(_logger, "Edge: {}, Buf(copy): {}", e->identifier(), buf->type());
+            }
         }
     }
 
@@ -92,18 +103,20 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
         port_vector_t output_ports = b->output_stream_ports();
 
         for (auto p : input_ports) {
-            d_block_buffers[p] = std::vector<buffer_sptr>{};
             edge_vector_t ed = fg->find_edge(p);
-            for (auto e : ed)
-                d_block_buffers[p].push_back(d_edge_buffers[e->identifier()]);
+            if (ed.size() == 0) {
+                throw std::runtime_error("Edge associated with input port not found");
+            }
+            d_block_readers[p] = d_edge_buffers[ed[0]->identifier()]->add_reader();
         }
 
-        for (auto p : output_ports) {
-            d_block_buffers[p] = std::vector<buffer_sptr>{};
-            edge_vector_t ed = fg->find_edge(p);
-            for (auto e : ed)
-                d_block_buffers[p].push_back(d_edge_buffers[e->identifier()]);
-        }
+        // for (auto p : output_ports) {
+        //     edge_vector_t ed = fg->find_edge(p);
+        //     if (ed.size() == 0) {
+        //         throw std::runtime_error("Edge associated with output port not found");
+        //     }
+        //     d_block_buffers[p] = d_edge_buffers[ed[0]->identifier()];
+        // }
     }
 }
 

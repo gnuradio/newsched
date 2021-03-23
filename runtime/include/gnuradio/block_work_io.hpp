@@ -14,10 +14,10 @@ namespace gr {
  */
 struct block_work_input {
     int n_items;
-    buffer_sptr buffer;
+    buffer_reader_sptr buffer;
     int n_consumed; // output the number of items that were consumed on the work() call
 
-    block_work_input(int n_items_, buffer_sptr p_buf_)
+    block_work_input(int n_items_, buffer_reader_sptr p_buf_)
         : n_items(n_items_), buffer(p_buf_), n_consumed(-1)
     {
     }

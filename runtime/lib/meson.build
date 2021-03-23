@@ -25,6 +25,8 @@ if cuda_dep.found() and get_option('enable_cuda')
 endif
 
 runtime_sources = [
+  'buffer.cpp',
+  'simplebuffer.cpp',
   'realtime.cpp',
   'thread.cpp',
   'parameter_types.cpp',

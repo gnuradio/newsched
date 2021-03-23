@@ -1,9 +1,9 @@
 #include <gnuradio/vmcircbuf.hpp>
 
-#include "vmcircbuf_sysv_shm.hpp"
 #include "vmcircbuf_mmap_shm_open.hpp"
-#include <mutex>
+#include "vmcircbuf_sysv_shm.hpp"
 #include <cstring>
+#include <mutex>
 
 // Doubly mapped circular buffer class
 // For now, just do this as the sysv_shm flavor
@@ -36,71 +36,22 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
 }
 
 vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size)
+    : buffer(num_items, item_size)
 {
-    _num_items = num_items;
-    _item_size = item_size;
-    _buf_size = _num_items * _item_size;
-    _read_index = 0;
-    _write_index = 0;
 }
 
-
-int vmcirc_buffer::size()
-{ // in number of items
-    int w = _write_index;
-    int r = _read_index;
-
-    if (w < r)
-        w += _buf_size;
-    return (w - r) / _item_size;
-}
-int vmcirc_buffer::capacity() { return _num_items; }
-
-void* vmcirc_buffer::read_ptr() { return (void*)&_buffer[_read_index]; }
 void* vmcirc_buffer::write_ptr() { return (void*)&_buffer[_write_index]; }
 
-bool vmcirc_buffer::read_info(buffer_info_t& info)
+void vmcirc_buffer_reader::post_read(int num_items)
 {
-    std::scoped_lock guard(_buf_mutex);
-
-    info.ptr = read_ptr();
-    info.n_items = size();
-    info.item_size = _item_size;
-    info.total_items = _total_read;
-
-    return true;
-}
-
-bool vmcirc_buffer::write_info(buffer_info_t& info)
-{
-    std::scoped_lock guard(_buf_mutex);
-
-    info.ptr = write_ptr();
-    info.n_items = capacity() - size() - 1;
-    // always keep the write pointer 1 behind the read ptr
-    // only fill the buffer half way (this should really be a scheduler not a buffer
-    // decision FIXME)
-    info.n_items = std::min(info.n_items, capacity() / 2);
-
-    if (info.n_items < 0)
-        info.n_items = 0;
-    info.item_size = _item_size;
-    info.total_items = _total_written;
-
-    return true;
-}
-
-void vmcirc_buffer::post_read(int num_items)
-{
-    std::scoped_lock guard(_buf_mutex);
+    std::scoped_lock guard(_rdr_mutex);
 
     // advance the read pointer
-    _read_index += num_items * _item_size;
-    if (_read_index >= _buf_size) {
-        _read_index -= _buf_size;
+    _read_index += num_items * _buffer->item_size();
+    if (_read_index >= _buffer->buf_size()) {
+        _read_index -= _buffer->buf_size();
     }
     _total_read += num_items;
-    // _buf_mutex.unlock();
 }
 void vmcirc_buffer::post_write(int num_items)
 {
@@ -117,11 +68,19 @@ void vmcirc_buffer::post_write(int num_items)
     _total_written += num_items;
 }
 
-void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
+std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader()
 {
-    std::scoped_lock guard(_buf_mutex);
-
-    memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
+    std::shared_ptr<vmcirc_buffer_reader> r(
+        new vmcirc_buffer_reader(shared_from_this(), _write_index));
+    _readers.push_back(r.get());
+    return r;
 }
+
+// void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
+// {
+//     std::scoped_lock guard(_buf_mutex);
+
+//     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
+// }
 
 } // namespace gr

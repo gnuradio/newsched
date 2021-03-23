@@ -6,7 +6,6 @@
 #include <gnuradio/blocklib/blocks/nop_head.hpp>
 #include <gnuradio/blocklib/blocks/null_sink.hpp>
 #include <gnuradio/blocklib/blocks/nop_source.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>

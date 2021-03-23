@@ -8,7 +8,6 @@
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
 #include <gnuradio/blocklib/cuda/copy.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/logging.hpp>
 #include <gnuradio/realtime.hpp>
