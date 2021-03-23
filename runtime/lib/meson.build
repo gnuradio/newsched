@@ -15,7 +15,7 @@ if cuda_dep.found() and get_option('enable_cuda')
       cu_sources, 
       cuda_args: ['-DTAG_IS_SHARED=1', '-DTAG_IS_BUILDING=1'],
       install : true, 
-      dependencies : [cuda_dep],
+      dependencies : [cuda_dep, pmtf_dep],
       include_directories : incdir)
 
   newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,

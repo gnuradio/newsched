@@ -6,8 +6,6 @@
 #include <mutex>
 
 // Doubly mapped circular buffer class
-// For now, just do this as the sysv_shm flavor
-// expand out with the preferences and the factories later
 
 namespace gr {
 
@@ -75,12 +73,5 @@ std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader()
     _readers.push_back(r.get());
     return r;
 }
-
-// void vmcirc_buffer::copy_items(std::shared_ptr<buffer> from, int nitems)
-// {
-//     std::scoped_lock guard(_buf_mutex);
-
-//     memcpy(write_ptr(), from->write_ptr(), nitems * _item_size);
-// }
 
 } // namespace gr
