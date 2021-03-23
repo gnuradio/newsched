@@ -6,7 +6,6 @@
 #include <gnuradio/blocklib/blocks/head.hpp>
 #include <gnuradio/blocklib/blocks/null_sink.hpp>
 #include <gnuradio/blocklib/blocks/null_source.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
@@ -111,7 +110,7 @@ int main(int argc, char* argv[])
         if (nthreads > 0) {
             int blks_per_thread = nblocks / nthreads;
 
-            for (unsigned int i = 0; i < nthreads; i++) {
+            for (int i = 0; i < nthreads; i++) {
                 std::vector<block_sptr> block_group;
                 if (i == 0) {
                     block_group.push_back(src);

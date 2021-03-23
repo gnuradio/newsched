@@ -11,7 +11,6 @@
 #include <gnuradio/blocklib/blocks/null_source.hpp>
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 #include <gnuradio/vmcircbuf.hpp>

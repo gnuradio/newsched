@@ -7,16 +7,20 @@
 #include <gnuradio/blocklib/blocks/multiply_const.hpp>
 #include <gnuradio/blocklib/blocks/vector_sink.hpp>
 #include <gnuradio/blocklib/blocks/vector_source.hpp>
-#include <gnuradio/domain_adapter_direct.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 #include <gnuradio/vmcircbuf.hpp>
 
 using namespace gr;
 
+#if 1
 TEST(SchedulerMTTest, TwoSinks)
 {
-    std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
+    int nsamples = 100000;
+    std::vector<float> input_data(nsamples);
+    for (int i = 0; i < nsamples; i++) {
+        input_data[i] = i;
+    }
     auto src = blocks::vector_source_f::make(input_data, false);
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
@@ -29,14 +33,20 @@ TEST(SchedulerMTTest, TwoSinks)
     std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
     fg->set_scheduler(sched);
 
+    // force single threaded operation
+    // sched->add_block_group({src,snk1,snk2});
+
     fg->validate();
 
     fg->start();
     fg->wait();
 
+    EXPECT_EQ(snk1->data().size(), input_data.size());
+    EXPECT_EQ(snk2->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);
     EXPECT_EQ(snk2->data(), input_data);
 }
+#endif
 #if 0
 TEST(SchedulerMTTest, DomainAdapterBasic)
 {
@@ -76,6 +86,7 @@ TEST(SchedulerMTTest, DomainAdapterBasic)
     EXPECT_EQ(snk->data(), expected_data);
 }
 #endif
+#if 1
 TEST(SchedulerMTTest, BlockFanout)
 {
     int nsamples = 1000000;
@@ -133,4 +144,4 @@ TEST(SchedulerMTTest, BlockFanout)
        }
     }
 }
-
+#endif
