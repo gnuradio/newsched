@@ -46,7 +46,7 @@ protected:
     buffer_location_t _buffer_loc;
 
     domain_adapter(buffer_location_t buf_loc, const std::string& name = "domain_adapter")
-        : node(name), _buffer_loc(buf_loc)
+        : node(name), gr::buffer(0,0), _buffer_loc(buf_loc)
     {
     }
 

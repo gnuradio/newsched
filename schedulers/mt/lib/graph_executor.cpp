@@ -55,34 +55,25 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
-            buffer_sptr p_buf = nullptr;
-            uint64_t nitems_written = 0;
-            for (auto each_buf : _bufman->get_output_buffers(p)) {
-                buffer_info_t write_info;
-                ready = each_buf->write_info(write_info);
-                GR_LOG_DEBUG(_debug_logger,
-                             "write_info {} - {} @ {} {}",
-                             b->alias(),
-                             write_info.n_items,
-                             write_info.ptr,
-                             write_info.item_size);
-                if (!ready)
-                    break;
+            auto p_buf = _bufman->get_output_buffer(p);
+            buffer_info_t write_info;
+            ready = p_buf->write_info(write_info);
+            GR_LOG_DEBUG(_debug_logger,
+                         "write_info {} - {} @ {} {}",
+                         b->alias(),
+                         write_info.n_items,
+                         write_info.ptr,
+                         write_info.item_size);
 
-                size_t tmp_buf_size = write_info.n_items;
-                if (tmp_buf_size < s_min_buf_items) {
-                    ready = false;
-                    break;
-                }
-
-                if (tmp_buf_size < max_output_buffer)
-                    max_output_buffer = tmp_buf_size;
-
-                // store the first buffer
-                if (!p_buf) {
-                    p_buf = each_buf;
-                }
+            size_t tmp_buf_size = write_info.n_items;
+            if (tmp_buf_size < s_min_buf_items) {
+                ready = false;
+                break;
             }
+
+            if (tmp_buf_size < max_output_buffer)
+                max_output_buffer = tmp_buf_size;
+
 
             if (!ready)
                 break;
@@ -146,10 +137,10 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                             tag_propagation_policy_t::TPP_ALL_TO_ALL) {
                             int output_port_index = 0;
                             for (auto op : b->output_stream_ports()) {
-                                for (auto p_out_buf : _bufman->get_output_buffers(op)) {
-                                    p_out_buf->propagate_tags(
-                                        p_buf, work_input[input_port_index].n_consumed);
-                                }
+                                auto p_out_buf = _bufman->get_output_buffer(op);
+                                p_out_buf->propagate_tags(
+                                    p_buf, work_input[input_port_index].n_consumed);
+
                                 output_port_index++;
                             }
                         } else if (b->tag_propagation_policy() ==
@@ -157,12 +148,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                             int output_port_index = 0;
                             for (auto op : b->output_stream_ports()) {
                                 if (output_port_index == input_port_index) {
-                                    for (auto p_out_buf :
-                                         _bufman->get_output_buffers(op)) {
-                                        p_out_buf->propagate_tags(
-                                            p_buf,
-                                            work_input[input_port_index].n_consumed);
-                                    }
+                                    auto p_out_buf = _bufman->get_output_buffer(op);
+                                    p_out_buf->propagate_tags(
+                                        p_buf, work_input[input_port_index].n_consumed);
                                 }
                                 output_port_index++;
                             }
@@ -174,10 +162,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                  b->alias(),
                                  work_input[input_port_index].n_consumed);
 
-                    p_buf->prune_tags(work_input[input_port_index].n_consumed);
                     p_buf->post_read(work_input[input_port_index].n_consumed);
                     GR_LOG_DEBUG(_debug_logger, ".");
-                    
+
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_OUTPUT));
 
@@ -186,33 +173,21 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 int output_port_index = 0;
                 for (auto p : b->output_stream_ports()) {
-                    int j = 0;
-                    for (auto p_buf : _bufman->get_output_buffers(p)) {
-                        if (j > 0) {
-                            GR_LOG_DEBUG(_debug_logger,
-                                         "copy_items {} - {}",
-                                         b->alias(),
-                                         work_output[output_port_index].n_produced);
-                            p_buf->copy_items(_bufman->get_input_buffer(p),
-                                              work_output[output_port_index].n_produced);
-                            GR_LOG_DEBUG(_debug_logger, ".");
-                        }
-                        j++;
-                    }
-                    for (auto p_buf : _bufman->get_output_buffers(p)) {
+                    auto p_buf = _bufman->get_output_buffer(p);
 
-                        GR_LOG_DEBUG(_debug_logger,
-                                     "post_write {} - {}",
-                                     b->alias(),
-                                     work_output[output_port_index].n_produced);
-                        p_buf->post_write(work_output[output_port_index].n_produced);
-                        GR_LOG_DEBUG(_debug_logger, ".");
-                    }
+                    GR_LOG_DEBUG(_debug_logger,
+                                 "post_write {} - {}",
+                                 b->alias(),
+                                 work_output[output_port_index].n_produced);
+                    p_buf->post_write(work_output[output_port_index].n_produced);
+                    GR_LOG_DEBUG(_debug_logger, ".");
 
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_INPUT));
 
                     output_port_index++;
+
+                    p_buf->prune_tags();
                 }
             }
         }

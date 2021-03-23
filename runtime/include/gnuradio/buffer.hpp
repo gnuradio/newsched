@@ -22,36 +22,60 @@ struct buffer_info_t {
     int total_items; // the total number of items read/written from/to this buffer
 };
 
+class buffer_reader;
+typedef std::shared_ptr<buffer_reader> buffer_reader_sptr;
 /**
  * @brief Abstract buffer class
  *
  */
-class buffer
+class buffer : public std::enable_shared_from_this<buffer>
 {
 protected:
     std::string _name;
     std::string _type;
-    uint64_t _total_read = 0;
+
+    size_t _write_index = 0;
+    size_t _num_items;
+    size_t _item_size;
+    size_t _buf_size;
+
     uint64_t _total_written = 0;
 
     void set_type(const std::string& type) { _type = type; }
-    virtual ~buffer() {}
 
     std::mutex _buf_mutex;
     std::vector<tag_t> _tags;
 
+    std::vector<buffer_reader*> _readers;
+
 public:
-    virtual void* read_ptr() = 0;
-    virtual void* write_ptr() = 0;
+    buffer(size_t num_items, size_t item_size)
+        : _num_items(num_items), _item_size(item_size), _buf_size(num_items * item_size)
+    {
+    }
+    virtual ~buffer() {}
+    size_t item_size() { return _item_size; }
+    size_t num_items() { return _num_items; }
+    size_t buf_size() { return _buf_size; }
+    size_t write_index() { return _write_index; }
+    uint64_t total_written() const { return _total_written; }
+    const std::vector<tag_t>& tags() { return _tags; }
+    std::mutex* mutex() { return &_buf_mutex; }
 
     /**
-     * @brief Return current buffer state for reading
-     *
-     * @param info Reference to \buffer_info_t struct
-     * @return true if info is valid
-     * @return false if info is not valid (e.g. could not acquire mutex)
+     * @brief Return the pointer into the buffer at the given index
+     * 
+     * @param index 
+     * @return void* 
      */
-    virtual bool read_info(buffer_info_t& info) = 0;
+    virtual void* read_ptr(size_t index) = 0;
+
+    /**
+     * @brief Return the write pointer into the beginning of the buffer
+     * 
+     * @return void* 
+     */
+    virtual void* write_ptr() = 0;
 
     /**
      * @brief Return current buffer state for writing
@@ -60,107 +84,27 @@ public:
      * @return true if info is valid
      * @return false if info is not valid (e.g. could not acquire mutex)
      */
-    virtual bool write_info(buffer_info_t& info) = 0;
+    bool write_info(buffer_info_t& info);
 
     /**
-     * @brief Return the tags associated with this buffer
-     *
-     * @param num_items Number of items that will be associated with the work call, and
-     * thus return the tags from the current read pointer to this specified number of
-     * items
-     * @return std::vector<tag_t> Returns the vector of tags
+     * @brief Add Tags onto the tag queue
+     * 
+     * @param num_items 
+     * @param tags 
      */
-    virtual std::vector<tag_t> get_tags(unsigned int num_items)
-    {
-        std::scoped_lock guard(_buf_mutex);
-
-        // Find all the tags from total_read to total_read+offset
-        std::vector<tag_t> ret;
-        for (auto& tag : _tags) {
-            if (tag.offset >= _total_read && tag.offset < _total_read + num_items) {
-                ret.push_back(tag);
-            }
-        }
-
-        return ret;
-    }
-
-
-    virtual void add_tags(unsigned int num_items, std::vector<tag_t>& tags)
-    {
-        std::scoped_lock guard(_buf_mutex);
-
-        for (auto tag : tags) {
-            if (tag.offset < _total_written - num_items || tag.offset >= _total_written) {
-
-            } else {
-                _tags.push_back(tag);
-            }
-        }
-    }
+    void add_tags(size_t num_items, std::vector<tag_t>& tags);
 
     const std::vector<tag_t>& tags() const { return _tags; }
 
-    std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
-    {
-        std::scoped_lock guard(_buf_mutex);
-        std::vector<tag_t> ret;
-        for (auto& t : _tags) {
-            if (t.offset >= total_read() + item_start &&
-                t.offset < total_read() + item_end) {
-                ret.push_back(t);
-            }
-        }
-        return ret;
-    }
-
-    void add_tag(tag_t tag)
-    {
-        std::scoped_lock guard(_buf_mutex);
-        _tags.push_back(tag);
-    }
+    void add_tag(tag_t tag);
     void add_tag(uint64_t offset,
                  pmtf::pmt_sptr key,
                  pmtf::pmt_sptr value,
-                 pmtf::pmt_sptr srcid = nullptr)
-    {
-        std::scoped_lock guard(_buf_mutex);
-        _tags.emplace_back(offset, key, value, srcid);
-    }
+                 pmtf::pmt_sptr srcid = nullptr);
 
-    void propagate_tags(std::shared_ptr<buffer> p_in_buf, int n_consumed)
-    {
-        std::scoped_lock guard(_buf_mutex);
-        for (auto& t : p_in_buf->tags()) {
-            // Propagate the tags that occurred in the processed window
-            if (t.offset >= total_written() && t.offset < total_written() + n_consumed) {
-                // std::cout << "adding tag" << std::endl;
-                _tags.push_back(t);
-            }
-        }
-    }
+    void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 
-    void prune_tags(int n_consumed)
-    {
-        std::scoped_lock guard(_buf_mutex);
-        auto t = std::begin(_tags);
-        while (t != std::end(_tags)) {
-            // Do some stuff
-            if (t->offset < total_read() + n_consumed) {
-                t = _tags.erase(t);
-                // std::cout << "removing tag" << std::endl;
-            } else {
-                ++t;
-            }
-        }
-    }
-
-    /**
-     * @brief Updates the read pointers of the buffer
-     *
-     * @param num_items Number of items that were read from the buffer
-     */
-    virtual void post_read(int num_items) = 0;
+    void prune_tags();
 
     /**
      * @brief Updates the write pointers of the buffer
@@ -168,16 +112,6 @@ public:
      * @param num_items Number of items that were written to the buffer
      */
     virtual void post_write(int num_items) = 0;
-
-    /**
-     * @brief Copy items from another buffer into this buffer
-     *
-     * Note: This is not valid for all buffers, e.g. domain adapters
-     *
-     * @param from The other buffer that needs to be copied into this buffer
-     * @param nitems The number of items to copy
-     */
-    virtual void copy_items(std::shared_ptr<buffer> from, int nitems) = 0;
 
     /**
      * @brief Set the name of the buffer
@@ -200,8 +134,13 @@ public:
      */
     std::string type() { return _type; }
 
-    uint64_t total_written() const { return _total_written; }
-    uint64_t total_read() const { return _total_read; }
+    /**
+     * @brief Create a reader object and reference to this buffer
+     * 
+     * @return std::shared_ptr<buffer_reader> 
+     */
+    virtual std::shared_ptr<buffer_reader> add_reader() = 0;
+    // void drop_reader(std::shared_ptr<buffer_reader>);
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;
@@ -221,5 +160,56 @@ public:
 typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>
     buffer_factory_function;
+
+
+class buffer_reader
+{
+protected:
+    buffer_sptr _buffer; // the buffer that owns this reader
+    uint64_t _total_read = 0;
+    uint64_t _read_index = 0;
+    std::mutex _rdr_mutex;
+
+public:
+    buffer_reader(buffer_sptr buffer, size_t read_index = 0)
+        : _buffer(buffer), _read_index(read_index)
+    {
+    }
+    virtual ~buffer_reader() {}
+    size_t read_index() { return _read_index; }
+    void* read_ptr() { return _buffer->read_ptr(_read_index); }
+    virtual void post_read(int num_items) = 0;
+    uint64_t total_read() const { return _total_read; }
+
+    /**
+     * @brief Return the number of items available to be read
+     *
+     * @return uint64_t
+     */
+    virtual uint64_t items_available();
+
+    /**
+     * @brief Return current buffer state for reading
+     *
+     * @param info Reference to \buffer_info_t struct
+     * @return true if info is valid
+     * @return false if info is not valid (e.g. could not acquire mutex)
+     */
+    virtual bool read_info(buffer_info_t& info);
+
+    std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end);
+
+    /**
+     * @brief Return the tags associated with this buffer
+     *
+     * @param num_items Number of items that will be associated with the work call, and
+     * thus return the tags from the current read pointer to this specified number of
+     * items
+     * @return std::vector<tag_t> Returns the vector of tags
+     */
+    std::vector<tag_t> get_tags(size_t num_items);
+
+    const std::vector<tag_t>& tags() const;
+};
 
 } // namespace gr

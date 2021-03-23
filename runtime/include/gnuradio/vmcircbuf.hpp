@@ -36,19 +36,12 @@ private:
     vmcirc_buffer_type _buffer_type;
 };
 
+class vmcirc_buffer_reader;
 
 class vmcirc_buffer : public buffer
 {
 protected:
     uint8_t* _buffer;
-
-    unsigned int _read_index;
-    unsigned int _write_index;
-    unsigned int _num_items;
-    unsigned int _item_size;
-    unsigned int _buf_size;
-
-
 
 public:
     typedef std::shared_ptr<vmcirc_buffer> sptr;
@@ -62,22 +55,26 @@ public:
 
     // These methods are common to all the vmcircbufs
 
-    int size();
-
-    int capacity();
-
-    void* read_ptr();
+    void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
     void* write_ptr();
 
-    virtual bool read_info(buffer_info_t& info);
-
-    virtual bool write_info(buffer_info_t& info);
-
-    virtual void post_read(int num_items);
+    // virtual void post_read(int num_items);
     virtual void post_write(int num_items);
 
-    virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
+    // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
+    virtual std::shared_ptr<buffer_reader> add_reader();
+};
+
+class vmcirc_buffer_reader : public buffer_reader
+{
+public:
+    vmcirc_buffer_reader(buffer_sptr buffer, size_t read_index = 0)
+        : buffer_reader(buffer, read_index)
+    {
+    }
+
+    virtual void post_read(int num_items);
 };
 
 } // namespace gr
