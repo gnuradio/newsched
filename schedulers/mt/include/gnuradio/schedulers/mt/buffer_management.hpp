@@ -12,7 +12,8 @@ private:
     const int s_fixed_buf_size;
     static const int s_min_items_to_process = 1;
     const size_t s_min_buf_items = 1;
-    std::map<port_sptr, std::vector<buffer_sptr>> d_block_buffers;
+    std::map<port_sptr, buffer_sptr> d_block_buffers;
+    std::map<port_sptr, buffer_reader_sptr> d_block_readers;
 
     // make these two go away
     std::map<std::string, buffer_sptr> d_edge_buffers;
@@ -32,18 +33,14 @@ public:
     }
     ~buffer_manager() {}
 
-    buffer_sptr get_input_buffer(port_sptr p)
-    {
-        return d_block_buffers[p][0];
-    }
+    buffer_reader_sptr get_input_buffer(port_sptr p) { return d_block_readers[p]; }
 
-    std::vector<buffer_sptr>& get_output_buffers(port_sptr p)
-    {
-        return d_block_buffers[p];
-    }   
+    buffer_sptr get_output_buffer(port_sptr p) { return d_block_buffers[p]; }
 
-    void initialize_buffers(flat_graph_sptr fg, buffer_factory_function buf_factory, std::shared_ptr<buffer_properties> buf_props );
-    
+    void initialize_buffers(flat_graph_sptr fg,
+                            buffer_factory_function buf_factory,
+                            std::shared_ptr<buffer_properties> buf_props);
+
 private:
     int get_buffer_num_items(edge_sptr e, flat_graph_sptr fg);
 };
