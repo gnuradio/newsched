@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/blocks')
+subdir('include/gnuradio/blocks')
 subdir('lib')
