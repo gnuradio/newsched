@@ -1,2 +1,2 @@
-subdir('include/gnuradio/blocklib/cuda')
+subdir('include/gnuradio/cuda')
 subdir('lib')

@@ -1,4 +1,4 @@
-incdir = include_directories(['../include/gnuradio/blocklib/cuda','../include'])
+incdir = include_directories(['../include/gnuradio/cuda','../include'])
 
 srcs = [
     'copy.cu',
@@ -19,7 +19,7 @@ srcs = [
     'multiply_const.cpp',
 ]
 
-incdir = include_directories(['../include/gnuradio/blocklib/cuda','../include'])
+incdir = include_directories(['../include/gnuradio/cuda','../include'])
 newsched_blocklib_cuda_lib = library('newsched-blocklib-cuda', 
     srcs, 
     include_directories : incdir,
