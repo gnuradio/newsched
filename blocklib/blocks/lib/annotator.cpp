@@ -55,8 +55,8 @@ annotator::annotator(uint64_t when,
 work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
-    auto in = (const float*)work_input[0].items();
-    auto out = (float*)work_output[0].items();
+    // auto in = (const float*)work_input[0].items();
+    // auto out = (float*)work_output[0].items();
 
     auto noutput_items = work_output[0].n_items;
 
@@ -91,8 +91,8 @@ work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
 
             // We don't really care about the data here
             
-            // in = (const float*)work_input[i].items;
-            // out = (float*)work_output[i].items;
+            // in = (const float*)work_input[i].items();
+            // out = (float*)work_output[i].items();
             // out[j] = in[j];
         }
         abs_N++;

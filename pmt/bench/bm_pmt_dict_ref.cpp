@@ -11,7 +11,7 @@ namespace po = boost::program_options;
 
 using namespace pmtf;
 
-bool run_test(const int times, pmt_map<std::string>::sptr d, uint64_t index)
+bool run_test(const int times, pmt_map<std::string>::sptr d, int32_t index)
 {
     std::stringbuf sb; // fake channel
 
@@ -36,8 +36,8 @@ bool run_test(const int times, pmt_map<std::string>::sptr d, uint64_t index)
 int main(int argc, char* argv[])
 {
     uint64_t samples;
-    uint64_t items;
-    uint64_t index;
+    uint32_t items;
+    uint32_t index;
 
     po::options_description desc("Basic Test Flow Graph");
     desc.add_options()("help,h", "display help")(
@@ -45,10 +45,10 @@ int main(int argc, char* argv[])
         po::value<uint64_t>(&samples)->default_value(10000),
         "Number of times to perform lookup")(
         "items",
-        po::value<uint64_t>(&items)->default_value(100),
+        po::value<uint32_t>(&items)->default_value(100),
         "Number of items in dict")(
         "index",
-        po::value<uint64_t>(&index)->default_value(0),
+        po::value<uint32_t>(&index)->default_value(0),
         "Index for lookup");
 
 
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     {
         // Create the dictionary
         std::map<std::string,pmt_sptr> starting_map;
-        for (int k = 0; k < items; k++)
+        for (uint32_t k = 0; k < items; k++)
         {
             auto key = std::string("key" + std::to_string(k));
             auto value = pmt_scalar<int32_t>::make(k);
