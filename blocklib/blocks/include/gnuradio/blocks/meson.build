@@ -9,4 +9,4 @@ blocks_headers = [
     'vector_source.hpp',
 ]
 
-install_headers(blocks_headers, subdir : 'gnuradio/blocklib/blocks')
+install_headers(blocks_headers, subdir : 'gnuradio/blocks')

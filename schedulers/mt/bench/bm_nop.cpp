@@ -2,10 +2,10 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocklib/blocks/nop.hpp>
-#include <gnuradio/blocklib/blocks/nop_head.hpp>
-#include <gnuradio/blocklib/blocks/null_sink.hpp>
-#include <gnuradio/blocklib/blocks/nop_source.hpp>
+#include <gnuradio/blocks/nop.hpp>
+#include <gnuradio/blocks/nop_head.hpp>
+#include <gnuradio/blocks/null_sink.hpp>
+#include <gnuradio/blocks/nop_source.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/realtime.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>

@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/blocks/head.hpp>
+#include <gnuradio/blocks/head.hpp>
 
 namespace gr {
 namespace blocks {

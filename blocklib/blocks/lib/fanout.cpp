@@ -1,4 +1,4 @@
-#include <gnuradio/blocklib/blocks/fanout.hpp>
+#include <gnuradio/blocks/fanout.hpp>
 
 namespace gr {
 namespace blocks {
