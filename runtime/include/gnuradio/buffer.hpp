@@ -167,7 +167,7 @@ class buffer_reader
 protected:
     buffer_sptr _buffer; // the buffer that owns this reader
     uint64_t _total_read = 0;
-    uint64_t _read_index = 0;
+    size_t _read_index = 0;
     std::mutex _rdr_mutex;
 
 public:
