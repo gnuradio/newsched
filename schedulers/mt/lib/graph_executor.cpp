@@ -3,6 +3,11 @@
 namespace gr {
 namespace schedulers {
 
+inline static unsigned int round_down(unsigned int n, unsigned int multiple)
+{
+    return (n / multiple) * multiple;
+}
+
 std::map<nodeid_t, executor_iteration_status>
 graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 {
@@ -74,6 +79,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             if (tmp_buf_size < max_output_buffer)
                 max_output_buffer = tmp_buf_size;
 
+            if (b->output_multiple_set())
+                max_output_buffer = round_down(max_output_buffer, b->output_multiple());
 
             if (!ready)
                 break;
@@ -115,10 +122,14 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
                     work_output[0].n_items >>= 1;
-                    if (work_output[0].n_items < 4) // min block size
+                    if (work_output[0].n_items < b->output_multiple()) // min block size
                     {
+                        per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
                         break;
                     }
+                } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
+                    per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
+                    break;
                 }
             }
             // TODO - handle READY_NO_OUTPUT
@@ -163,8 +174,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                  work_input[input_port_index].n_consumed);
 
                     p_buf->post_read(work_input[input_port_index].n_consumed);
-                    GR_LOG_DEBUG(_debug_logger, ".");
-
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_OUTPUT));
 
@@ -180,7 +189,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                  b->alias(),
                                  work_output[output_port_index].n_produced);
                     p_buf->post_write(work_output[output_port_index].n_produced);
-                    GR_LOG_DEBUG(_debug_logger, ".");
 
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_INPUT));
