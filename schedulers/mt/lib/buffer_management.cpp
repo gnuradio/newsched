@@ -110,13 +110,6 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             d_block_readers[p] = d_edge_buffers[ed[0]->identifier()]->add_reader();
         }
 
-        // for (auto p : output_ports) {
-        //     edge_vector_t ed = fg->find_edge(p);
-        //     if (ed.size() == 0) {
-        //         throw std::runtime_error("Edge associated with output port not found");
-        //     }
-        //     d_block_buffers[p] = d_edge_buffers[ed[0]->identifier()];
-        // }
     }
 }
 
@@ -135,6 +128,12 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         grblock = std::dynamic_pointer_cast<block>(e->dst().node());
     }
 
+    if (grblock->output_multiple_set())
+    {
+        nitems =
+            std::max(nitems, static_cast<size_t>(2 * (grblock->output_multiple())));
+    }
+
     // FIXME: Downstream block connections get messed up by domain adapters
     //   Need to tag the blocks before they get partitioned
     //   and store the information in the edge objects
@@ -143,19 +142,21 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     // // If any downstream blocks are decimators and/or have a large output_multiple,
     // // ensure we have a buffer at least twice their decimation
     // // factor*output_multiple
-    // auto blocks = fg->calc_downstream_blocks(grblock, port);
 
-    // for (auto&  p : blocks) {
-    //     // block_sptr dgrblock = cast_to_block_sptr(*p);
-    //     // if (!dgrblock)
-    //     //     throw std::runtime_error("allocate_buffer found non-gr::block");
+    auto blocks = fg->calc_downstream_blocks(grblock, e->src().port());
 
-    //     // double decimation = (1.0 / dgrblock->relative_rate());
-    //     int multiple = p->output_multiple();
-    //     nitems =
-    //         std::max(nitems, static_cast<int>(2 * (multiple)));
-    //         // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
-    // }
+    for (auto&  p : blocks) {
+        // block_sptr dgrblock = cast_to_block_sptr(*p);
+        // if (!dgrblock)
+        //     throw std::runtime_error("allocate_buffer found non-gr::block");
+
+        // double decimation = (1.0 / dgrblock->relative_rate());
+        double decimation = (1.0 / p->relative_rate());
+        int multiple = p->output_multiple();
+        nitems =
+            std::max(nitems, static_cast<size_t>(2 * (decimation * multiple)));
+            // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
+    }
 
     return nitems;
 }

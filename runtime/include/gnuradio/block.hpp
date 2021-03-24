@@ -26,6 +26,9 @@ class block : public gr::node, public std::enable_shared_from_this<block>
 private:
     bool d_running = false;
     tag_propagation_policy_t d_tag_propagation_policy;
+    int d_output_multiple = 1;
+    bool d_output_multiple_set = false;
+    double d_relative_rate = 1.0;
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
@@ -99,6 +102,34 @@ public:
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+
+    void consume_each(int num, std::vector<block_work_input>& work_input)
+    {
+        for (auto& input : work_input) {
+            input.consume(num);
+        }
+    }
+
+    void produce_each(int num, std::vector<block_work_output>& work_output)
+    {
+        for (auto& output : work_output) {
+            output.produce(num);
+        }
+    }
+
+    void set_output_multiple(int multiple)
+    {
+        if (multiple < 1)
+            throw std::invalid_argument("block::set_output_multiple");
+
+        d_output_multiple_set = true;
+        d_output_multiple = multiple;
+    }
+    int output_multiple() const { return d_output_multiple; }
+    bool output_multiple_set() const { return d_output_multiple_set; }
+
+    void set_relative_rate(double relative_rate) { d_relative_rate = relative_rate; }
+    double relative_rate() const { return d_relative_rate; }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
