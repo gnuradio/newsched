@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocklib/blocks/msg_forward.hpp>
+#include <gnuradio/blocks/msg_forward.hpp>
 #include <gnuradio/flowgraph.hpp>
 #include <gnuradio/schedulers/mt/scheduler_mt.hpp>
 
