@@ -16,7 +16,7 @@ public:
         auto ptr = std::make_shared<copy>(itemsize);
 
         ptr->add_port(untyped_port::make(
-            "input", port_direction_t::INPUT, itemsize));
+            "in", port_direction_t::INPUT, itemsize));
 
         ptr->add_port(untyped_port::make(
             "out", port_direction_t::OUTPUT, itemsize));
@@ -33,9 +33,9 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output)
     {
-        auto* iptr = (uint8_t*)work_input[0].buffer->read_ptr();
+        auto* iptr = (uint8_t*)work_input[0].items();
         int size = work_output[0].n_items * _itemsize;
-        auto* optr = (uint8_t*)work_output[0].buffer->write_ptr();
+        auto* optr = (uint8_t*)work_output[0].items();
         // std::copy(iptr, iptr + size, optr);
         memcpy(optr, iptr, size);
 
