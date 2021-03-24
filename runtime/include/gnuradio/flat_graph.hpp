@@ -78,11 +78,12 @@ public:
         return fg;
     }
 
+    block_vector_t calc_downstream_blocks(block_sptr block, port_sptr port);
+
 protected:
     block_vector_t d_blocks;
 
     port_vector_t calc_used_ports(block_sptr block, bool check_inputs);
-    block_vector_t calc_downstream_blocks(block_sptr block, port_sptr port);
     edge_vector_t calc_upstream_edges(block_sptr block);
     bool has_block_p(block_sptr block);
 

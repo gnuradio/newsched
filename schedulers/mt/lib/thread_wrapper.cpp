@@ -23,6 +23,9 @@ thread_wrapper::thread_wrapper(int id,
 
 void thread_wrapper::start()
 {
+    for (auto& b : d_blocks) {
+        b->start();
+    }
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
 }
 void thread_wrapper::stop()
