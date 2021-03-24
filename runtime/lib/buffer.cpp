@@ -104,10 +104,10 @@ void buffer::prune_tags()
     }
 }
 
-    uint64_t buffer_reader::items_available()
+    size_t buffer_reader::items_available()
     {
-        int w = _buffer->write_index();
-        int r = _read_index;
+        size_t w = _buffer->write_index();
+        size_t r = _read_index;
 
         if (w < r)
             w += _buffer->buf_size();
