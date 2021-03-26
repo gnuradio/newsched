@@ -4,7 +4,6 @@
 #include <gnuradio/logging.hpp>
 
 namespace gr {
-namespace schedulers {
 
 class buffer_manager
 {
@@ -35,6 +34,4 @@ private:
     int get_buffer_num_items(edge_sptr e, flat_graph_sptr fg);
 };
 
-
-} // namespace schedulers
 } // namespace gr

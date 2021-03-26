@@ -2,6 +2,8 @@ runtime_headers = [
     'block.hpp',
     'block_work_io.hpp',
     'buffer.hpp',
+    'buffer_management.hpp',
+    'block_group_properties.hpp',
     'concurrent_queue.hpp',
     'cudabuffer.hpp',
     'cudabuffer_pinned.hpp',

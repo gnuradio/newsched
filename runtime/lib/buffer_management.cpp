@@ -1,8 +1,6 @@
-#include "buffer_management.hpp"
+#include <gnuradio/buffer_management.hpp>
 
 namespace gr {
-namespace schedulers {
-
 
 void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                                         buffer_factory_function buf_factory,
@@ -93,6 +91,4 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     return nitems;
 }
 
-
-} // namespace schedulers
 } // namespace gr

@@ -4,7 +4,6 @@
 #include <vector>
 
 namespace gr {
-namespace schedulers {
 
 class block_group_properties
 {
@@ -62,5 +61,4 @@ private:
     std::vector<unsigned int> _affinity_mask;
 };
 
-} // namespace schedulers
 } // namespace gr
