@@ -1,14 +1,14 @@
 blocks_sources = [
-    'annotator.cpp',
-    'copy.cpp',
-    'fanout.cpp',
-    'head.cpp',
-    'multiply_const.cpp',
-    'vector_sink.cpp',
-    'vector_source.cpp'
+    '../annotator/annotator.cpp',
+    '../copy/copy.cpp',
+    '../fanout/fanout.cpp',
+    '../head/head.cpp',
+    '../multiply_const/multiply_const.cpp',
+    '../vector_sink/vector_sink.cpp',
+    '../vector_source/vector_source.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocks','../include'])
+incdir = include_directories(['../_include/gnuradio/blocks','../_include'])
 newsched_blocklib_blocks_lib = library('newsched-blocklib-blocks', 
     blocks_sources, 
     include_directories : incdir, 
