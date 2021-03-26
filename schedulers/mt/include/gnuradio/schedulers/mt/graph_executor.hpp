@@ -2,9 +2,8 @@
 
 #include <gnuradio/block.hpp>
 #include <gnuradio/buffer.hpp>
+#include <gnuradio/buffer_management.hpp>
 #include <gnuradio/executor.hpp>
-
-#include "buffer_management.hpp"
 
 #include <map>
 

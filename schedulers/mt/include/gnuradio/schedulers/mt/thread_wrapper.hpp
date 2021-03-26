@@ -1,7 +1,6 @@
 #pragma once
 
-#include "block_group_properties.hpp"
-#include "graph_executor.hpp"
+#include <gnuradio/block_group_properties.hpp>
 #include <gnuradio/block.hpp>
 #include <gnuradio/concurrent_queue.hpp>
 #include <gnuradio/flowgraph_monitor.hpp>
@@ -9,6 +8,8 @@
 #include <gnuradio/neighbor_interface_info.hpp>
 #include <gnuradio/scheduler_message.hpp>
 #include <thread>
+
+#include "graph_executor.hpp"
 
 namespace gr {
 namespace schedulers {

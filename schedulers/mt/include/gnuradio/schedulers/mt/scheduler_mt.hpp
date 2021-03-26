@@ -1,11 +1,10 @@
+#include <gnuradio/block_group_properties.hpp>
 #include <gnuradio/domain.hpp>
 #include <gnuradio/graph_utils.hpp>
 #include <gnuradio/scheduler.hpp>
 #include <gnuradio/vmcircbuf.hpp>
 
-#include "block_group_properties.hpp"
 #include "thread_wrapper.hpp"
-
 namespace gr {
 namespace schedulers {
 class scheduler_mt : public scheduler
@@ -49,13 +48,11 @@ public:
      * @param block_sched_map for each block in this flowgraph, a map of neighboring
      * schedulers
      */
-    void initialize(flat_graph_sptr fg,
-                    flowgraph_monitor_sptr fgmon);
+    void initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon);
     void start();
     void stop();
     void wait();
     void run();
-
 };
 } // namespace schedulers
 } // namespace gr
