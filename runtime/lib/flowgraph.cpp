@@ -44,7 +44,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     for (auto& info : graph_part_info) {
         d_flat_subgraphs.push_back(flat_graph::make_flat(info.subgraph));
         info.scheduler->initialize(
-            d_flat_subgraphs[d_flat_subgraphs.size() - 1], d_fgmon, info.neighbor_map);
+            d_flat_subgraphs[d_flat_subgraphs.size() - 1], d_fgmon);
     }
 }
 

@@ -6,8 +6,8 @@
 namespace gr {
 
 /**
- * @brief Endpoint consisting only of Blocks 
- * 
+ * @brief Endpoint consisting only of Blocks
+ *
  */
 class block_endpoint : public node_endpoint
 {
@@ -50,12 +50,22 @@ public:
 
         // Collect all blocks in the edge list
         for (auto& p : edges()) {
-            auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
-            auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
-            if (src_ptr != nullptr)
-                tmp.push_back(src_ptr);
-            if (dst_ptr != nullptr)
-                tmp.push_back(dst_ptr);
+            // if both ends of the edge belong to this graph
+            if (std::find(_nodes.begin(), _nodes.end(), p->src().node()) !=
+                    _nodes.end() &&
+                std::find(_nodes.begin(), _nodes.end(), p->dst().node()) !=
+                    _nodes.end()) {
+
+                auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
+                auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
+
+                if (src_ptr != nullptr) {
+                    tmp.push_back(src_ptr);
+                }
+                if (dst_ptr != nullptr) {
+                    tmp.push_back(dst_ptr);
+                }
+            }
         }
 
         return unique_vector<block_sptr>(tmp);
@@ -65,13 +75,20 @@ public:
     {
         // FIXME: Actually do the flattening
         // for now assume it is already flat, and just cast things
-        std::shared_ptr<flat_graph> fg = std::shared_ptr<flat_graph>(new flat_graph());
+        auto fg = std::make_shared<flat_graph>();
         for (auto e : g->edges()) {
-            fg->connect(e->src(), e->dst())
-                ->set_custom_buffer(e->buffer_factory(), e->buf_properties());
+            // connect only if both sides of the edge are in this graph
+            if (std::find(g->nodes().begin(), g->nodes().end(), e->src().node()) !=
+                    g->nodes().end() &&
+                std::find(g->nodes().begin(), g->nodes().end(), e->dst().node()) !=
+                    g->nodes().end()) {
+                fg->connect(e->src(), e->dst())
+                    ->set_custom_buffer(e->buffer_factory(), e->buf_properties());
+            } else { // edge is a pathway into another domain
+                fg->add_edge(e);
+            }
         }
-        for (auto o : g->orphan_nodes())
-        {
+        for (auto o : g->orphan_nodes()) {
             fg->add_orphan_node(o);
         }
 

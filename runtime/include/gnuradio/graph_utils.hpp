@@ -17,7 +17,6 @@ namespace gr {
 struct graph_partition_info {
     scheduler_sptr scheduler;
     graph_sptr subgraph;
-    neighbor_interface_map neighbor_map;
 };
 
 typedef std::vector<graph_partition_info> graph_partition_info_vec;
@@ -35,8 +34,6 @@ struct graph_utils {
     static graph_partition_info_vec
     partition(graph_sptr input_graph,
               std::vector<scheduler_sptr> scheds,
-              std::vector<domain_conf>& confs,
-              neighbor_interface_map neighbor_intf_map =
-                  neighbor_interface_map());
+              std::vector<domain_conf>& confs);
 };
 } // namespace gr
