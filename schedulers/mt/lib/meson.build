@@ -1,6 +1,5 @@
 scheduler_mt_sources = [
     'graph_executor.cpp',
-    'buffer_management.cpp',
     'thread_wrapper.cpp',
     'scheduler_mt.cpp',
 ]

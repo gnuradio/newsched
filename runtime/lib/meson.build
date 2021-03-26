@@ -26,6 +26,7 @@ endif
 
 runtime_sources = [
   'buffer.cpp',
+  'buffer_management.cpp',
   'simplebuffer.cpp',
   'realtime.cpp',
   'thread.cpp',
