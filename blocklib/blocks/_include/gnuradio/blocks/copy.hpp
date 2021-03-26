@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/sync_block.hpp>
+#include <gnuradio/block_context.hpp>
 
 namespace gr {
 namespace blocks {
@@ -8,19 +8,17 @@ namespace blocks {
 // forward declaration of class
 class copy_impl;
 
-class copy : public sync_block
+class copy : public block_context
 {
 public:
     typedef std::shared_ptr<copy> sptr;
     copy(size_t itemsize)
-        : sync_block("copy")
     {
         add_port(untyped_port::make(
             "in", port_direction_t::INPUT, itemsize));
 
         add_port(untyped_port::make(
             "out", port_direction_t::OUTPUT, itemsize));
-
     }
 
     /**
