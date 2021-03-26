@@ -35,6 +35,7 @@ public:
     std::shared_ptr<graph> base() { return shared_from_this(); }
     edge_vector_t& edges() { return _edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
+    node_vector_t& nodes() { return _nodes; }
     edge_sptr connect(const node_endpoint& src,
                  const node_endpoint& dst);
     edge_sptr connect(node_sptr src_node,
@@ -49,6 +50,7 @@ public:
     virtual void validate(){};
     virtual void clear(){};
     void add_orphan_node(node_sptr orphan_node);
+    void add_edge(edge_sptr edge);
 
     // }
     node_vector_t calc_used_nodes();

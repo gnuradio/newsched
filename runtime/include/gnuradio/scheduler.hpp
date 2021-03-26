@@ -28,8 +28,7 @@ public:
     };
     virtual ~scheduler() {}
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
-    virtual void initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon,
-               neighbor_interface_map scheduler_adapter_map = neighbor_interface_map()) = 0;
+    virtual void initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon) = 0;
     virtual void push_message(scheduler_message_sptr msg) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;

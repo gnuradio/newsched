@@ -33,7 +33,4 @@ struct neighbor_interface_info {
     }
 };
 
-// FIXME - this mapping prevents a block from going to two different schedulers
-typedef std::map<nodeid_t, neighbor_interface_info> neighbor_interface_map;
-
 } // namespace gr

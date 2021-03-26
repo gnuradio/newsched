@@ -2,11 +2,13 @@
 
 #include <gnuradio/neighbor_interface.hpp>
 #include <gnuradio/parameter_types.hpp>
+#include <gnuradio/buffer.hpp>
 #include <algorithm>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
+
 
 namespace gr {
 
@@ -95,6 +97,10 @@ public:
     sptr base() { return shared_from_this(); }
 
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
+    void set_buffer(buffer_sptr buffer) { _buffer = buffer; }
+    buffer_sptr buffer() { return _buffer; }
+    void set_buffer_reader(buffer_reader_sptr rdr) { _buffer_reader = rdr; }
+    buffer_reader_sptr buffer_reader() { return _buffer_reader; }
 
     void notify_connected_ports(scheduler_message_sptr msg)
     {
@@ -147,6 +153,8 @@ protected:
 
     std::vector<sptr> _connected_ports;
     neighbor_interface_sptr _parent_intf = nullptr;
+    buffer_sptr _buffer = nullptr;
+    buffer_reader_sptr _buffer_reader = nullptr;
 };
 
 typedef port_base::sptr port_sptr;
