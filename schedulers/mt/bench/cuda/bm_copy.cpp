@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
     std::vector<cuda::copy::sptr> copy_blks(nblocks);
     for (int i = 0; i < nblocks; i++) {
-        copy_blks[i] = cuda::copy::make(batch_size, load);
+        copy_blks[i] = cuda::copy::cpu(batch_size, load);
     }
 
     std::vector<gr_complex> input_data(samples);

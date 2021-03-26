@@ -1,18 +1,15 @@
 #pragma once
 
-#include <gnuradio/block_context.hpp>
+#include <gnuradio/sync_block.hpp>
 
 namespace gr {
 namespace blocks {
 
-// forward declaration of class
-class copy_impl;
-
-class copy : public block_context
+class copy : public sync_block
 {
 public:
     typedef std::shared_ptr<copy> sptr;
-    copy(size_t itemsize)
+    copy(size_t itemsize) : sync_block("copy")
     {
         add_port(untyped_port::make(
             "in", port_direction_t::INPUT, itemsize));
@@ -26,12 +23,8 @@ public:
      * 
      * @return std::shared_ptr<copy> 
      */
-    virtual sptr cpu() { 
-        throw std::runtime_error("cpu() method not defined for block ]" + name() + "]");
-    };
+    static sptr cpu(size_t itemsize);
 
-private:
-    std::unique_ptr<copy_impl> p_impl;
 };
 
 } // namespace blocks

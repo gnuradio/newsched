@@ -2,16 +2,16 @@
 
 namespace gr {
 namespace blocks {
-namespace impl {
 
-class copy_cpu : public copy
+class copy_cpu : public copy_impl
 {
 public:
+    copy_cpu(size_t itemsize) : copy_impl(itemsize) {}
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
-private:
-    size_t _itemsize;
 };
+
+copy::sptr copy::cpu(size_t itemsize) { return std::make_shared<copy_cpu>(itemsize); }
 
 work_return_code_t copy_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
@@ -25,6 +25,5 @@ work_return_code_t copy_cpu::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
-} // namespace impl
 } // namespace blocks
 } // namespace gr

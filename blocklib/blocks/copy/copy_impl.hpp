@@ -1,13 +1,15 @@
 #include <gnuradio/blocks/copy.hpp>
-#include <gnuradio/sync_block.hpp>
 namespace gr {
 namespace blocks {
-namespace impl {
-class copy_impl : public sync_block
+
+class copy_impl : public copy
 {
-    public:
-    copy_impl(size_t itemsize);
+public:
+    copy_impl(size_t itemsize) : copy(itemsize), _itemsize(itemsize) {}
+
+protected:
+    size_t _itemsize;
 };
-} // namespace impl
+
 } // namespace blocks
 } // namespace gr

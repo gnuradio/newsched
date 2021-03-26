@@ -29,8 +29,8 @@ TEST(SchedulerMTTest, CudaCopyBasic)
 
     auto src = blocks::vector_source_c::make(input_data, false, veclen);
     auto snk1 = blocks::vector_sink_c::make(veclen);
-    auto copy1 = cuda::copy::make(veclen);
-    auto copy2 = cuda::copy::make(veclen);
+    auto copy1 = cuda::copy::cpu(veclen);
+    auto copy2 = cuda::copy::cpu(veclen);
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
@@ -66,8 +66,8 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
 
     auto src = blocks::vector_source_c::make(input_data, false, veclen);
     auto snk1 = blocks::vector_sink_c::make(veclen);
-    auto copy1 = cuda::copy::make(veclen);
-    auto copy2 = cuda::copy::make(veclen);
+    auto copy1 = cuda::copy::cpu(veclen);
+    auto copy2 = cuda::copy::cpu(veclen);
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
