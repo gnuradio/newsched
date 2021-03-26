@@ -1,4 +1,4 @@
-#include <gnuradio/blocks/copy.hpp>
+#include "copy_impl.hpp"
 
 namespace gr {
 namespace blocks {

@@ -1,14 +1,16 @@
 #pragma once
 
 #include <gnuradio/block.hpp>
+#include <gnuradio/block_interface.hpp>
 #include <gnuradio/node_interface.hpp>
 
 namespace gr {
 class block_context : public block_interface, public node_interface
 {
     protected:
-        block_sptr block_impl;
+        block_sptr block_impl = nullptr;
     public:
+        block_context() {}
         block_context(block_sptr b) { block_impl = b; }
     /**
      * @brief Abstract method to call signal processing work from a derived block
