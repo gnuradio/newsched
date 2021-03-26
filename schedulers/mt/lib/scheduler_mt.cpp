@@ -22,8 +22,7 @@ void scheduler_mt::add_block_group(const std::vector<block_sptr>& blocks, const 
 }
 
 void scheduler_mt::initialize(flat_graph_sptr fg,
-                              flowgraph_monitor_sptr fgmon,
-                              neighbor_interface_map block_sched_map)
+                              flowgraph_monitor_sptr fgmon)
 {
     for (auto& b : fg->calc_used_blocks()) {
         b->set_scheduler(base());
@@ -47,7 +46,6 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
                  id(), bg, bufman, fgmon);
             _threads.push_back(t);
 
-            
             std::vector<node_sptr> node_vec;
             for (auto& b : bg.blocks()) { // domain adapters don't show up as blocks
                 auto it = std::find(blocks.begin(), blocks.end(), b);
@@ -55,7 +53,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
                     blocks.erase(it);
                 }
 
-                append_domain_adapters(b, fg, node_vec);
+                node_vec.push_back(b);
 
                 for (auto& p : b->all_ports()) {
                     p->set_parent_intf(t); // give a shared pointer to the scheduler class
@@ -69,7 +67,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
     for (auto& b : blocks) {
 
         std::vector<node_sptr> node_vec;
-        append_domain_adapters(b, fg, node_vec);
+        node_vec.push_back(b);
 
         auto t =
             thread_wrapper::make(id(), block_group_properties({b}), bufman, fgmon);
@@ -80,31 +78,6 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
         }
 
         _block_thread_map[b->id()] = t;
-    }
-}
-
-void scheduler_mt::append_domain_adapters(block_sptr b,
-                                          flat_graph_sptr fg,
-                                          node_vector_t& node_vec)
-{
-    node_vec.push_back(b);
-
-    // If b has connections to any domain adapters, include them in this scheduler
-    for (auto& p : b->input_ports()) {
-        for (auto& ed : fg->find_edge(p)) {
-            auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed->src().node());
-            if (da_cast != nullptr) {
-                node_vec.push_back(ed->src().node());
-            }
-        }
-    }
-    for (auto& p : b->output_ports()) {
-        for (auto& ed : fg->find_edge(p)) {
-            auto da_cast = std::dynamic_pointer_cast<domain_adapter>(ed->dst().node());
-            if (da_cast != nullptr) {
-                node_vec.push_back(ed->dst().node());
-            }
-        }
     }
 }
 

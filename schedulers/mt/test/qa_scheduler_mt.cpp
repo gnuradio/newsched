@@ -13,7 +13,7 @@
 
 using namespace gr;
 
-#if 1
+#if 0
 TEST(SchedulerMTTest, TwoSinks)
 {
     int nsamples = 100000;
@@ -47,8 +47,7 @@ TEST(SchedulerMTTest, TwoSinks)
     EXPECT_EQ(snk2->data(), input_data);
 }
 #endif
-#if 0
-TEST(SchedulerMTTest, DomainAdapterBasic)
+TEST(SchedulerMTTest, MultiDomainBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
 
@@ -73,10 +72,8 @@ TEST(SchedulerMTTest, DomainAdapterBasic)
     fg->add_scheduler(sched1);
     fg->add_scheduler(sched2);
 
-    auto da_conf = domain_adapter_direct_conf::make(buffer_preference_t::UPSTREAM);
-
-    domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }, da_conf),
-                           domain_conf(sched2, { mult2, snk }, da_conf) };
+    domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }),
+                           domain_conf(sched2, { mult2, snk }) };
 
     fg->partition(dconf);
 
@@ -85,8 +82,7 @@ TEST(SchedulerMTTest, DomainAdapterBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
-#endif
-#if 1
+#if 0
 TEST(SchedulerMTTest, BlockFanout)
 {
     int nsamples = 1000000;

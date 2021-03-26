@@ -27,7 +27,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         // for each input port of the block
         bool ready = true;
         for (auto p : b->input_stream_ports()) {
-            auto p_buf = _bufman->get_input_buffer(p);
+            auto p_buf = p->buffer_reader();
 
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
@@ -60,7 +60,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
-            auto p_buf = _bufman->get_output_buffer(p);
+            auto p_buf = p->buffer();
             buffer_info_t write_info;
             ready = p_buf->write_info(write_info);
             GR_LOG_DEBUG(_debug_logger,
@@ -140,7 +140,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 int input_port_index = 0;
                 for (auto p : b->input_stream_ports()) {
-                    auto p_buf = _bufman->get_input_buffer(p);
+                    auto p_buf = p->buffer_reader();
 
                     if (!p_buf->tags().empty()) {
                         // Pass the tags according to TPP
@@ -148,7 +148,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                             tag_propagation_policy_t::TPP_ALL_TO_ALL) {
                             int output_port_index = 0;
                             for (auto op : b->output_stream_ports()) {
-                                auto p_out_buf = _bufman->get_output_buffer(op);
+                                auto p_out_buf = op->buffer();
                                 p_out_buf->propagate_tags(
                                     p_buf, work_input[input_port_index].n_consumed);
 
@@ -159,7 +159,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                             int output_port_index = 0;
                             for (auto op : b->output_stream_ports()) {
                                 if (output_port_index == input_port_index) {
-                                    auto p_out_buf = _bufman->get_output_buffer(op);
+                                    auto p_out_buf = op->buffer();
                                     p_out_buf->propagate_tags(
                                         p_buf, work_input[input_port_index].n_consumed);
                                 }
@@ -182,7 +182,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 int output_port_index = 0;
                 for (auto p : b->output_stream_ports()) {
-                    auto p_buf = _bufman->get_output_buffer(p);
+                    auto p_buf = p->buffer();
 
                     GR_LOG_DEBUG(_debug_logger,
                                  "post_write {} - {}",

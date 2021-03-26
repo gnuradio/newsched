@@ -50,27 +50,12 @@ public:
      * schedulers
      */
     void initialize(flat_graph_sptr fg,
-                    flowgraph_monitor_sptr fgmon,
-                    neighbor_interface_map block_sched_map);
+                    flowgraph_monitor_sptr fgmon);
     void start();
     void stop();
     void wait();
     void run();
 
-private:
-    /**
-     * @brief Append domain adapters to connected block
-     *
-     * Domain adapters don't show up as blocks, so make sure they get added into the
-     * partition configuration
-     *
-     * @param b block sptr
-     * @param fg flowgraph to search edges
-     * @param node_vec output node vector that the block and associated domain adapters
-     * will be appended to
-     */
-    void
-    append_domain_adapters(block_sptr b, flat_graph_sptr fg, node_vector_t& node_vec);
 };
 } // namespace schedulers
 } // namespace gr
