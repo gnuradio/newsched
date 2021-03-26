@@ -5,6 +5,9 @@
 namespace gr {
 namespace blocks {
 
+// forward declaration of class
+class copy_impl;
+
 class copy : public sync_block
 {
 public:
@@ -20,6 +23,17 @@ public:
 
     }
 
+    /**
+     * @brief Set the implementation to CPU and return a shared pointer to the block instance
+     * 
+     * @return std::shared_ptr<copy> 
+     */
+    virtual sptr cpu() { 
+        throw std::runtime_error("cpu() method not defined for block ]" + name() + "]");
+    };
+
+private:
+    std::unique_ptr<copy_impl> p_impl;
 };
 
 } // namespace blocks

@@ -1,6 +1,6 @@
 blocks_sources = [
     '../annotator/annotator.cpp',
-    '../copy/copy.cpp',
+    '../copy/copy_cpu.cpp',
     '../fanout/fanout.cpp',
     '../head/head.cpp',
     '../multiply_const/multiply_const.cpp',
