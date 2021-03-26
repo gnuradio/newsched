@@ -3,8 +3,6 @@ runtime_headers = [
     'block_work_io.hpp',
     'buffer.hpp',
     'concurrent_queue.hpp',
-    'domain_adapter.hpp',
-    'domain_adapter_direct.hpp',
     'cudabuffer.hpp',
     'cudabuffer_pinned.hpp',
     'domain.hpp',

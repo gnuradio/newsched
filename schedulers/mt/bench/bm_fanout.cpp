@@ -82,7 +82,6 @@ int main(int argc, char* argv[])
             }
         }
 
-        std::cout << "no domain adapters" << std::endl;
         auto sched1 = schedulers::scheduler_mt::make("sched1");
         fg->add_scheduler(sched1);
         fg->validate();

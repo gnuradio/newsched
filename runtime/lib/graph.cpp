@@ -116,5 +116,10 @@ edge_vector_t graph::find_edge(port_sptr port)
     return ret;
 }
 
+void graph::add_edge(edge_sptr edge)
+{
+    // TODO: check that edge is not already in the graph
+    _edges.push_back(edge);
+}
 
 } // namespace gr
