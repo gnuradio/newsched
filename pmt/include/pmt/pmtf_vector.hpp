@@ -82,6 +82,58 @@ public:
 };
 
 
+// If we like this idea, I would rename this to pmt_vector and rename pmt_vector to
+// something like _pmt_vector.
+template <class T>
+class pmt_vector_wrapper {
+public:
+    using value_type = T;
+    using size_type = size_t;
+    using reference = T&;
+    using const_reference = const T&;
+    // Constructors.  Try to match std vector constructors.
+    // Right now I'm not allowing for a custom allocator, because I would believe 
+    // that we would say that flatbuffer is our allocator.
+    pmt_vector_wrapper(size_type n): 
+        d_ptr(pmt_vector<T>::make(std::vector<T>(n))) {}
+    pmt_vector_wrapper(size_type n, const value_type& val):
+        d_ptr(pmt_vector<T>::make(std::vector<T>(n))) {}
+    template <class InputIterator>
+    pmt_vector_wrapper(InputIterator first, InputIterator last):
+        d_ptr(pmt_vector<T>::make(std::vector<T>(first, last))) {}
+    pmt_vector_wrapper(const pmt_vector_wrapper& x):
+        d_ptr(x.d_ptr) {}
+    pmt_vector_wrapper(std::initializer_list<value_type> il):
+        d_ptr(pmt_vector<T>::make(std::vector<T>(il))) {}
+    
+    // Add in a few more constructors because we are wrapping a vector.
+    pmt_vector_wrapper(typename pmt_vector<T>::sptr p):
+        d_ptr(p) {}
+    // TODO: Allow for custom allocators (such as volk) in the constructor
+    pmt_vector_wrapper(const std::vector<T>& x):
+        d_ptr(pmt_vector<T>::make(x)) {}
+
+    // TODO: Think about real iterators instead of pointers.
+    value_type* begin() { return d_ptr->writable_elements(); }
+    value_type* end() { return d_ptr->writable_elements() + size(); }
+
+    reference operator[] (size_type n) {
+        // operator[] doesn't do bounds checking, use at for that
+        // TODO: implement at
+        auto data = d_ptr->writable_elements();
+        return data[n];
+    }
+    const reference operator[] (size_type n) const {
+        auto data = d_ptr->elements();
+        return data[n];
+    }
+    
+
+    size_type size() { return d_ptr->size(); }
+private:
+    typename pmt_vector<T>::sptr d_ptr;
+};
+
 typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_function;
 
 

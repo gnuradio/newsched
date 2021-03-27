@@ -73,6 +73,7 @@ TEST(Pmt, VectorWrites)
                                                               { 6, 7 },
                                                               { 8, 9 } };
         auto cf_pmt_vec = pmt_vector<std::complex<float>>::make(cf_vec_val);
+	std::cout << cf_pmt_vec->size() << std::endl;
         EXPECT_EQ(cf_pmt_vec->value(), cf_vec_val);
         EXPECT_EQ(cf_pmt_vec->data_type(), Data::VectorComplex64);
 
@@ -98,5 +99,28 @@ TEST(Pmt, VectorWrites)
         writable_vec[4] = 10;
 
         EXPECT_EQ(int_pmt_vec->value(), int_vec_val_modified);
+    }
+}
+
+TEST(Pmt, VectorWrapper) {
+    pmt_vector_wrapper<uint32_t> x(10);
+    pmt_vector_wrapper<uint32_t> y{1,2,3,4,6,7};
+    std::vector<uint32_t> data{1,2,3,4,6,7};
+    for (size_t i = 0; i < y.size(); i++) {
+        EXPECT_EQ(y[i], data[i]);
+    }
+    // Make sure that range based for loop works.
+    size_t i = 0;
+    for (auto& e : y) {
+        EXPECT_EQ(e, data[i++]);
+    }
+
+    // Make sure I can mutate the data
+    for (auto& e: y) {
+        e += 2;
+    }
+    i = 0;
+    for (auto& e: y) {
+        EXPECT_EQ(e, data[i++]+2);
     }
 }
