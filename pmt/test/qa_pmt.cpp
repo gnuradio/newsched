@@ -73,7 +73,6 @@ TEST(Pmt, VectorWrites)
                                                               { 6, 7 },
                                                               { 8, 9 } };
         auto cf_pmt_vec = pmt_vector<std::complex<float>>::make(cf_vec_val);
-	std::cout << cf_pmt_vec->size() << std::endl;
         EXPECT_EQ(cf_pmt_vec->value(), cf_vec_val);
         EXPECT_EQ(cf_pmt_vec->data_type(), Data::VectorComplex64);
 
