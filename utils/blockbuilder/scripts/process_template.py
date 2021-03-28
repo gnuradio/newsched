@@ -11,12 +11,14 @@ def argParse():
     parser.add_argument("--input_file")
     parser.add_argument("--output_file")
     parser.add_argument("--yaml_file")
+    parser.add_argument("--domain", default='cpu')
 
     return parser.parse_args()
 
 def main():
     args = argParse()
-    env = Environment(loader = FileSystemLoader(os.path.abspath('/')))
+    # env = Environment(loader = FileSystemLoader(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','templates'))
+    env = Environment(loader = FileSystemLoader('/'))
 
     template = env.get_template(args.input_file)
 
