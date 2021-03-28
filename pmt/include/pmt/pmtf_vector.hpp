@@ -97,7 +97,7 @@ public:
     pmt_vector_wrapper(size_type n): 
         d_ptr(pmt_vector<T>::make(std::vector<T>(n))) {}
     pmt_vector_wrapper(size_type n, const value_type& val):
-        d_ptr(pmt_vector<T>::make(std::vector<T>(n))) {}
+        d_ptr(pmt_vector<T>::make(std::vector<T>(n, val))) {}
     template <class InputIterator>
     pmt_vector_wrapper(InputIterator first, InputIterator last):
         d_ptr(pmt_vector<T>::make(std::vector<T>(first, last))) {}
@@ -109,13 +109,16 @@ public:
     // Add in a few more constructors because we are wrapping a vector.
     pmt_vector_wrapper(typename pmt_vector<T>::sptr p):
         d_ptr(p) {}
-    // TODO: Allow for custom allocators (such as volk) in the constructor
-    pmt_vector_wrapper(const std::vector<T>& x):
+    // Allow for custom allocators (such as volk) in the constructor
+    template <class alloc>
+    pmt_vector_wrapper(const std::vector<T, alloc>& x):
         d_ptr(pmt_vector<T>::make(x)) {}
 
     // TODO: Think about real iterators instead of pointers.
     value_type* begin() { return d_ptr->writable_elements(); }
     value_type* end() { return d_ptr->writable_elements() + size(); }
+    const value_type* cbegin() { return d_ptr->writable_elements(); }
+    const value_type* cend() { return d_ptr->writable_elements() + size(); }
 
     reference operator[] (size_type n) {
         // operator[] doesn't do bounds checking, use at for that
@@ -128,7 +131,7 @@ public:
         return data[n];
     }
     
-
+    typename pmt_vector<T>::sptr ptr() { return d_ptr; }
     size_type size() { return d_ptr->size(); }
 private:
     typename pmt_vector<T>::sptr d_ptr;

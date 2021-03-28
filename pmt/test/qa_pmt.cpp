@@ -122,4 +122,26 @@ TEST(Pmt, VectorWrapper) {
     for (auto& e: y) {
         EXPECT_EQ(e, data[i++]+2);
     }
+
+    // Create from an std::vector
+    pmt_vector_wrapper<uint32_t> x_vec(std::vector<uint32_t>{1,2,3,4,6,7});
+
+    // Check the other constructors
+    pmt_vector_wrapper<uint32_t> vec1(4);
+    EXPECT_EQ(vec1.size(), 4);
+    for (auto& e: vec1)
+        EXPECT_EQ(e, 0);
+
+    pmt_vector_wrapper<uint32_t> vec2(4, 2);
+    for (auto& e: vec2)
+        EXPECT_EQ(e, 2);
+
+    pmt_vector_wrapper<uint32_t> vec3(data.begin(), data.end());
+    EXPECT_EQ(vec3.size(), data.size());
+    i = 0;
+    for (auto& e: vec3)
+        EXPECT_EQ(e, data[i++]);
+
+    pmt_vector_wrapper<uint32_t> vec4(vec3);
+    EXPECT_EQ(vec3.ptr(), vec4.ptr());
 }
