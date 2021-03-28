@@ -1,5 +1,8 @@
 #include "copy_cpu.hpp"
 
+namespace gr {
+namespace blocks {
+
 work_return_code_t copy_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
 {

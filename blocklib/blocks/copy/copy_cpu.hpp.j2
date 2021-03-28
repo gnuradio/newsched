@@ -14,3 +14,6 @@ public:
 };
 
 {{ block }}::sptr {{ block }}::cpu({% for param in parameters %} {{ param['dtype'] }} {{ param['id'] }} {{ "," if not loop.last }} {% endfor %}) { return std::make_shared<{{ block }}_cpu>({{ parameters|join(', ', attribute='id') }}); }
+
+} // namespace gr
+} // namespace blocks
