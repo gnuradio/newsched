@@ -1,0 +1,16 @@
+#pragma once
+
+#include "{{ block }}_impl.hpp"
+
+namespace gr {
+namespace {{ module }} {
+
+class {{ block }}_cpu : public {{ block }}_impl
+{
+public:
+    {{ block }}_cpu({% for param in parameters %} {{ param['dtype'] }} {{ param['id'] }} {{ "," if not loop.last }} {% endfor %}) : {{ block }}_impl({{ parameters|join(', ', attribute='id') }}) {}
+    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
+                                    std::vector<block_work_output>& work_output) override;
+};
+
+{{ block }}::sptr {{ block }}::cpu({% for param in parameters %} {{ param['dtype'] }} {{ param['id'] }} {{ "," if not loop.last }} {% endfor %}) { return std::make_shared<{{ block }}_cpu>({{ parameters|join(', ', attribute='id') }}); }

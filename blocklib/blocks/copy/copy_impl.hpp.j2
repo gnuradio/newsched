@@ -1,0 +1,19 @@
+#include <gnuradio/{{ module }}/{{ block }}.hpp>
+namespace gr {
+namespace {{ module }} {
+
+class {{ block }}_impl : public {{ block }}
+{
+public:
+    {{ block }}_impl({% for param in parameters %}{{ param['dtype'] }} {{ param['id'] }}{{ ", " if not loop.last }}{% endfor %}) : 
+    {{ block }}({{ parameters|join(', ', attribute='id') }}){{',' if parameters }} 
+    {% for param in parameters %}_{{ param['id'] }}({{ param['id'] }}){{ ',' if not loop.last}}{% endfor %} {}
+
+protected:
+    {% for param in parameters %}
+    {{ param['dtype'] }} _{{ param['id'] }};
+    {% endfor %}
+};
+
+} // namespace {{ module }}
+} // namespace gr

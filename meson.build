@@ -19,8 +19,8 @@ threads_dep = dependency('threads')
 fmt_dep = dependency('fmt')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'))
-
 flatc = find_program('flatc', version : '>=1.12')
+python3 = find_program('python3', version : '>=3.8')
 
 subdir('pmt')
 subdir('runtime')

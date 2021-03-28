@@ -1,0 +1,30 @@
+module: blocks
+block: copy
+label: Copy
+
+properties:
+    blocktype: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: itemsize
+
+-   domain: stream
+    id: out
+    direction: output
+    type: untyped
+    size: itemsize
+
+implementations:
+-   id: cpu
+
+file_format: 1
