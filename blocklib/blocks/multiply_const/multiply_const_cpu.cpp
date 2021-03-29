@@ -8,15 +8,22 @@
  *
  */
 
-#include "multiply_const.hpp"
+#include "multiply_const_cpu.hpp"
 #include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
 
+template <class T>
+typename multiply_const<T>::sptr multiply_const<T>::cpu(PARAM_LIST) { return std::make_shared<multiply_const_cpu<T>>(PARAM_VALS); }
+
+template <>
+typename multiply_const<gr_complex>::sptr multiply_const<gr_complex>::cpu(gr_complex k, size_t vlen) { return std::make_shared<multiply_const_cpu<gr_complex>>(k, vlen); }
+
+
 template <>
 work_return_code_t
-multiply_const<float>::work(std::vector<block_work_input>& work_input,
+multiply_const_cpu<float>::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
 
@@ -32,7 +39,7 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 
 template <>
 work_return_code_t
-multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
+multiply_const_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
                                  std::vector<block_work_output>& work_output)
 {
     const gr_complex* in = (const gr_complex*)work_input[0].items();
@@ -46,12 +53,7 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 }
 
 template <class T>
-multiply_const<T>::multiply_const(T k, size_t vlen) : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
-{
-}
-
-template <class T>
-work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_input,
+work_return_code_t multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
                                            std::vector<block_work_output>& work_output)
 {
     // Pre-generate these from modtool, for example
@@ -80,9 +82,10 @@ work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_i
     return work_return_code_t::WORK_OK;
 }
 
-template class multiply_const<std::int16_t>;
-template class multiply_const<std::int32_t>;
-template class multiply_const<float>;
-template class multiply_const<gr_complex>;
+template class multiply_const_cpu<std::int16_t>;
+template class multiply_const_cpu<std::int32_t>;
+template class multiply_const_cpu<float>;
+template class multiply_const_cpu<gr_complex>;
+
 } /* namespace blocks */
 } /* namespace gr */

@@ -1,0 +1,36 @@
+{% macro param_list() -%}
+{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}{{ "," if not loop.last }}{% endfor %}
+{% endmacro -%}
+{% macro param_vals() -%}
+{{ parameters|join(', ', attribute='id') }}
+{% endmacro -%}
+#pragma once
+
+#include <gnuradio/{{ module }}/{{ block }}.hpp>
+
+namespace gr {
+namespace {{ module }} {
+
+template <class T>
+class {{ block }}_cpu : public {{ block }}<T>
+{
+public:
+    {{ block }}_cpu({{ param_list() }}) : {{ block }}<T>({{ param_vals() }}){{',' if parameters }} 
+    {% for param in parameters %}d_{{ param['id'] }}({{ param['id'] }}){{ ',' if not loop.last}}{% endfor %}  {}
+    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
+                                    std::vector<block_work_output>& work_output) override;
+
+protected:
+    {% for param in parameters -%}
+    {{ param['dtype'] }} d_{{ param['id'] }};
+    {% endfor %}
+};
+
+#define PARAM_LIST {{ param_list() }}
+#define PARAM_VALS {{ param_vals() }}
+
+//template <class T>
+//typename {{ block }}<T>::sptr {{ block }}<T>::cpu({% for param in parameters %} {{ param['dtype'] }} {{ param['id'] }} {{ "," if not loop.last }} {% endfor %}) { return std::make_shared<{{ block }}_cpu<T>>({{ parameters|join(', ', attribute='id') }}); }
+
+} // namespace gr
+} // namespace {{ module }}

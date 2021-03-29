@@ -1,0 +1,42 @@
+#pragma once
+{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+{% if blocktype == 'sync' -%}
+#include <gnuradio/sync_block.hpp>
+{% elif blocktype == 'general' -%}
+#include <gnuradio/block.hpp>
+{% endif -%}
+#include <gnuradio/types.hpp>
+
+namespace gr {
+namespace {{module}} {
+
+template <class T>
+class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
+{
+public:
+    typedef std::shared_ptr<{{ block }}> sptr;
+    {{ block }}({% for param in parameters %}{{ param['dtype'] }} {{ param['id'] }}{{ ", " if not loop.last }}{% endfor %}) : sync_block("{{ block }}")
+    {
+        {% for port in ports %}
+        add_port(port<T>::make("{{ port['id'] }}", 
+                                    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
+                                    std::vector<size_t>{{ port['dims'] }}));
+        {% endfor %}
+    }
+
+    {% for impl in implementations -%}
+    /**
+     * @brief Set the implementation to {{ impl['id'] | upper }} and return a shared pointer to the block instance
+     * 
+     * @return std::shared_ptr<{{ block }}> 
+     */
+    static sptr {{impl['id']}}({% for param in parameters %}{{ param['dtype'] }} {{ param['id'] }}{{ ", " if not loop.last }}{% endfor %});
+    {% endfor %} 
+};
+
+{% for opt in properties|selectattr("id", "equalto", "type")|map(attribute="options")|first -%}
+typedef multiply_const<{{ opt['dtype']}}> multiply_const_{{ opt['suffix'] }};
+{% endfor -%}
+
+} // namespace {{ module }}
+} // namespace gr

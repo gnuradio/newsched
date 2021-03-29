@@ -31,7 +31,7 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks * ngroups);
 
             for (int i = 0; i < nblocks * ngroups; i++) {
-                mult_blks[i] = blocks::multiply_const_cc::make(k, veclen);
+                mult_blks[i] = blocks::multiply_const_cc::cpu(k, veclen);
             }
 
             flowgraph_sptr fg(new flowgraph());
