@@ -6,6 +6,7 @@
 #include <pmt/pmtf_scalar.hpp>
 #include <pmt/pmtf_string.hpp>
 #include <pmt/pmtf_vector.hpp>
+#include <pmt/pmtf_wrap.hpp>
 
 using namespace pmtf;
 
@@ -144,4 +145,14 @@ TEST(Pmt, VectorWrapper) {
 
     pmt_vector_wrapper<uint32_t> vec4(vec3);
     EXPECT_EQ(vec3.ptr(), vec4.ptr());
+}
+
+TEST(Pmt, MapWrapper) {
+    pmt_map_wrapper<std::string> x();
+
+}
+
+TEST(Pmt, PmtWrap) {
+    pmt_wrap x(4);
+    pmt_wrap y(std::vector({1,2,3,4}));
 }
