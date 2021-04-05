@@ -12,10 +12,10 @@ namespace gr {
 namespace {{ module }} {
 
 template <class T>
-class {{ block }}_cpu : public {{ block }}<T>
+class {{ block }}_{{ domain }} : public {{ block }}<T>
 {
 public:
-    {{ block }}_cpu({{ param_list() }}) : {{ block }}<T>({{ param_vals() }}){{',' if parameters }} 
+    {{ block }}_{{ domain }}({{ param_list() }}) : {{ block }}<T>({{ param_vals() }}){{',' if parameters }} 
     {% for param in parameters %}d_{{ param['id'] }}({{ param['id'] }}){{ ',' if not loop.last}}{% endfor %}  {}
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
