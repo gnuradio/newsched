@@ -3,7 +3,8 @@ block: copy
 label: Copy
 
 properties:
-    blocktype: sync
+-   id: blocktype
+    value: sync
 
 parameters:
 -   id: itemsize

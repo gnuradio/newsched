@@ -2,6 +2,7 @@ from jinja2 import Template, FileSystemLoader, DictLoader, Environment
 import os
 import yaml
 import argparse
+import shutil
 
 def argParse():
     """Parses commandline args."""
@@ -35,23 +36,37 @@ def main():
 
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
+        # Does this block specify a templated version
+        templated = False
+        if [x for x in d['properties'] if x['id'] == 'type']:
+            templated = True 
 
-        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], '_include', 'gnuradio', d['module'], blockname + '.hpp')
+        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hpp')
+        blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], '_include', 'gnuradio', d['module'], blockname + '.hpp')
 
-        template = env.get_template('blockname_templated.hpp.j2')
+        if templated:
+            template = env.get_template('blockname_templated.hpp.j2')
+        else:
+            template = env.get_template('blockname.hpp.j2')
+
         rendered = template.render(d)
         with open(blockname_h, 'w') as file:
             print("generating " + blockname_h)
             file.write(rendered)
 
+        # Copy to the include dir
+        shutil.copyfile(blockname_h, blockname_h_includedir)
+
         for impl in d['implementations']:
-            template = env.get_template('blockname_templated_domain.hpp.j2')
+            if templated:
+                template = env.get_template('blockname_templated_domain.hpp.j2')
+            else:
+                template = env.get_template('blockname_domain.hpp.j2')
+
             domain = impl['id']
             rendered = template.render(d, domain=domain)
 
-            print("build: " + args.build_dir)
             blockname_domain_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_' + domain + '.hpp')
-            print("generating " + blockname_domain_h)
             with open(blockname_domain_h, 'w') as file:
                 print("generating " + blockname_domain_h)
                 file.write(rendered)

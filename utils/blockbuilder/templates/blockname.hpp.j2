@@ -1,13 +1,14 @@
 #pragma once
-{% if properties['blocktype'] == 'sync' %}
+{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+{% if blocktype == 'sync' -%}
 #include <gnuradio/sync_block.hpp>
-{% elif properties['blocktype'] == 'general' %}
+{% elif blocktype == 'general' -%}
 #include <gnuradio/block.hpp>
-{% endif %}
+{% endif -%}
 namespace gr {
 namespace {{module}} {
 
-class {{ block }} : public {{ 'sync_block' if properties['blocktype'] == 'sync' else 'block'}}
+class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {
 public:
     typedef std::shared_ptr<{{ block }}> sptr;
