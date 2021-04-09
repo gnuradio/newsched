@@ -3,6 +3,7 @@
 
 #include <pmt/pmtf.hpp>
 #include <pmt/pmtf_map.hpp>
+#include <pmt/pmtf_map2.hpp>
 #include <pmt/pmtf_scalar.hpp>
 #include <pmt/pmtf_string.hpp>
 #include <pmt/pmtf_vector.hpp>
@@ -148,8 +149,12 @@ TEST(Pmt, VectorWrapper) {
 }
 
 TEST(Pmt, MapWrapper) {
-    pmt_map_wrapper<std::string> x();
-
+    pmt_map2<std::string> x;
+    x["abc"] = 4;
+    x["qwer"] = std::vector<int>{1,2,4};
+    for (auto& [key, value]: x) {
+        std::cout << key << std::endl;
+    }
 }
 
 TEST(Pmt, PmtWrap) {

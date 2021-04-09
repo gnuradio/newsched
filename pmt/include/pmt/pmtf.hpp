@@ -23,6 +23,7 @@ public:
 
     bool serialize(std::streambuf& sb)
     {
+        serialize_setup();
         uint8_t* buf = _fbb.GetBufferPointer();
         int size = _fbb.GetSize();
         return sb.sputn((const char*)buf, size) != std::streambuf::traits_type::eof();
@@ -90,6 +91,7 @@ public:
 
 protected:
     pmt_base(Data data_type) : _data_type(data_type){};
+    virtual void serialize_setup() {}
     Data _data_type;
     flatbuffers::FlatBufferBuilder _fbb;
     flatbuffers::Offset<void> _data;
