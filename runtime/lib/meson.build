@@ -237,4 +237,5 @@ newsched_runtime_lib = library('newsched-runtime',
     cpp_args : cpp_args)
 
 newsched_runtime_dep = declare_dependency(include_directories : incdir,
+					   dependencies: runtime_deps,
 					   link_with : newsched_runtime_lib)
