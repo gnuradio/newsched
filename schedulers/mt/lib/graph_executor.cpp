@@ -41,6 +41,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             if (read_info.n_items < s_min_items_to_process ||
                 (min_read > 0 && read_info.n_items < min_read)) {
+
+                p_buf->input_blocked_callback(s_min_items_to_process);
+
                 ready = false;
                 break;
             }
@@ -85,6 +88,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             if (tmp_buf_size < s_min_buf_items ||
                 (min_fill > 0 && tmp_buf_size < min_fill)) {
                 ready = false;
+                p_buf->output_blocked_callback(false);
                 break;
             }
 
@@ -146,10 +150,12 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     if (work_output[0].n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
+                        // call the input blocked callback
                         break;
                     }
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
                     per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
+                    // call the output blocked callback
                     break;
                 }
             }
