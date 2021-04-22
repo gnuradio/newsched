@@ -16,7 +16,7 @@ namespace gr {
 namespace blocks {
 
 /*!
- * \brief 1-to-1 stream annotator testing block. FOR TESTING PURPOSES ONLY.
+ * \brief 1-to-1 stream head testing block. FOR TESTING PURPOSES ONLY.
  * \ingroup debug_tools_blk
  *
  * \details
@@ -32,26 +32,22 @@ namespace blocks {
  * Warning: This block is only meant for testing and showing how to use the
  * tags.
  */
-class annotator : virtual public sync_block
+class head : public sync_block
 {
 public:
-    typedef std::shared_ptr<annotator> sptr;
-
-    static sptr make(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
-
-    std::vector<tag_t> data() const { return d_stored_tags; };
-
-    annotator(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
-
-private:
-    const uint64_t d_when;
-    uint64_t d_tag_counter;
-    std::vector<tag_t> d_stored_tags;
-    size_t d_num_inputs, d_num_outputs;
-    tag_propagation_policy_t d_tpp;
-
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output);
+    typedef std::shared_ptr<head> sptr;
+    head(size_t itemsize) : sync_block("head")
+    {
+        add_port(untyped_port::make("input", port_direction_t::INPUT, itemsize));
+        add_port(untyped_port::make("output", port_direction_t::OUTPUT, itemsize));
+    }
+    /**
+     * @brief Set the implementation to CPU and return a shared pointer to the block
+     * instance
+     *
+     * @return std::shared_ptr<head>
+     */
+    static sptr cpu(size_t itemsize, size_t nitems);
 };
 
 } /* namespace blocks */
