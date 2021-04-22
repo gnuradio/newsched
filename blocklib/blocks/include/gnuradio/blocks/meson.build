@@ -1,5 +1,4 @@
 blocks_headers = [
-    'fanout.hpp',
     'head.hpp',
     'multiply_const.hpp',
     'null_sink.hpp',

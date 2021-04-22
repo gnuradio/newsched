@@ -1,6 +1,5 @@
 blocks_sources = [
     'annotator.cpp',
-    'fanout.cpp',
     'head.cpp',
     'multiply_const.cpp',
     'vector_sink.cpp',
