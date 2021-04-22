@@ -14,7 +14,6 @@
 
 using namespace gr;
 
-
 TEST(SchedulerMTTest, TwoSinks)
 {
     int nsamples = 100000;
