@@ -28,6 +28,7 @@ runtime_sources = [
   'buffer.cpp',
   'buffer_management.cpp',
   'simplebuffer.cpp',
+  'buffer_sm.cpp',
   'realtime.cpp',
   'thread.cpp',
   'parameter_types.cpp',
