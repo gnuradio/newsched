@@ -53,7 +53,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         }
 
         // for each output port of the block
-        buffer_sptr p_blocked_buf = nullptr;
         for (auto p : b->output_stream_ports()) {
 
             // When a block has multiple output buffers, it adds the restriction
@@ -75,7 +74,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             size_t tmp_buf_size = write_info.n_items;
             if (tmp_buf_size < s_min_buf_items) {
                 ready = false;
-                p_blocked_buf = p_buf;
+                p_buf->output_blocked_callback(false);
                 break;
             }
 
@@ -96,7 +95,6 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
         if (!ready) {
             per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
-            p_blocked_buf->output_blocked_callback(false);
             continue;
         }
 

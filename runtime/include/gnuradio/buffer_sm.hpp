@@ -261,7 +261,13 @@ public:
             _read_index = 0;
         }
         if (_read_index > _buffer->buf_size()) {
-            throw std::runtime_error("buffer_sm_reader: Wrote too far into buffer");
+            GR_LOG_INFO(_logger,
+                        "too far: num_items {}, prev_index {}, post_index {}",
+                        num_items,
+                        _read_index - num_items * _buffer->item_size(),
+                        _read_index);
+
+            // throw std::runtime_error("buffer_sm_reader: Wrote too far into buffer");
         }
 
         _total_read += num_items;
@@ -300,19 +306,37 @@ public:
         // Can only read up to to the write_index, or the end of the buffer
         // there is no wraparound
 
+        size_t ret = 0;
+
         size_t w = _buffer->write_index();
         size_t r = _read_index;
 
-        if (w < r)
-            return (_buffer->buf_size() - r) / _buffer->item_size();
-        else if (w == r)
-            if (total_read() < _buffer->total_written()) {
-                return _buffer->num_items();
-            } else {
-                return 0;
-            }
-        else
-            return (w - r) / _buffer->item_size();
+        // if (w < r)
+        //     return (_buffer->buf_size() - r) / _buffer->item_size();
+        // else if (w == r)
+        //     if (total_read() < _buffer->total_written()) {
+        //         return _buffer->num_items();
+        //     } else {
+        //         return 0;
+        //     }
+
+        if (w < r) {
+            ret = (_buffer->buf_size() - r) / _buffer->item_size();
+        } else if (w == r && total_read() < _buffer->total_written()) {
+            ret = _buffer->num_items() - r / _buffer->item_size();
+        } else {
+            ret = (w - r) / _buffer->item_size();
+        }
+
+        // return ret;
+
+        GR_LOG_DEBUG(_debug_logger,
+                     "items_available: write_index {}, read_index {}, ret {}",
+                     w,
+                     r,
+                     ret);
+
+        return ret;
     }
 };
 
