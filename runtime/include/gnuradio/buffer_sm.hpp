@@ -178,7 +178,63 @@ public:
     }
 
     virtual std::shared_ptr<buffer_reader> add_reader();
-};
+
+    bool adjust_buffer_data()
+    {
+
+        // Find reader with the smallest read index that is greater than the
+        // write index
+        auto min_reader_index = std::numeric_limits<size_t>::max();
+        auto min_read_idx = std::numeric_limits<size_t>::max();
+        for (size_t idx = 0; idx < _readers.size(); ++idx) {
+            if (_readers[idx]->read_index() > write_index()) {
+                // Record index of reader with minimum read-index
+                // FIXME: What if one of the readers has wrapped back around?
+                //  -- in that case this should use items_available() callback
+                if (_readers[idx]->read_index() < min_read_idx) {
+                    min_read_idx = _readers[idx]->read_index();
+                    min_reader_index = idx;
+                }
+            }
+        }
+
+        // Note items_avail might be zero, that's okay.
+        auto max_bytes_avail = _buf_size - min_read_idx;
+        auto max_items_avail = max_bytes_avail / _item_size;
+        auto gap = min_read_idx - _write_index;
+        if (_write_index > min_read_idx || max_bytes_avail > gap) {
+            return false;
+        }
+
+        GR_LOG_DEBUG(_debug_logger,
+                     "adust_buffer_data: max_bytes_avail {}, gap {}",
+                     max_bytes_avail,
+                     gap);
+
+
+        // Shift existing data down to make room for blocked data at end of buffer
+        auto move_data_size = _write_index;
+        auto dest = _buffer.data() + max_bytes_avail;
+        std::memmove(dest, _buffer.data(), move_data_size);
+
+        // Next copy the data from the end of the buffer back to the beginning
+        auto avail_data_size = max_bytes_avail;
+        auto src = _buffer.data() + (min_read_idx * _item_size);
+        std::memcpy(_buffer.data(), src, avail_data_size);
+
+        // Finally adjust all reader pointers
+        for (size_t idx = 0; idx < _readers.size(); ++idx) {
+            _readers[idx]->set_read_index(max_items_avail -
+                                          _readers[idx]->items_available());
+        }
+
+        // Now adjust write pointer
+        _write_index += max_items_avail;
+
+        return true;
+    }
+
+}; // namespace gr
 
 class buffer_sm_reader : public buffer_reader
 {
@@ -218,78 +274,27 @@ public:
         // Only singly mapped buffers need to do anything with this callback
         auto items_avail = items_available();
 
-        GR_LOG_DEBUG(
-            _debug_logger,
-            "input_blocked_callback: items_avail {}, _read_index {}, _write_index {}",
-            items_avail,
-            _read_index,
-            _buffer->write_index());
+        GR_LOG_DEBUG(_debug_logger,
+                     "input_blocked_callback: items_avail {}, _read_index {}, "
+                     "_write_index {}, items_required {}",
+                     items_avail,
+                     _read_index,
+                     _buffer->write_index(),
+                     items_required);
 
         GR_LOG_DEBUG(_debug_logger,
                      "input_blocked_callback: total_written {}, total_read {}",
                      _buffer->total_written(),
                      total_read());
 
-#if 0
+
         // Maybe adjust read pointers from min read index?
         // This would mean that *all* readers must be > (passed) the write index
-        if (((_buffer->buf_size() - _read_index) < (uint32_t)items_required) &&
-            (_buffer->write_index() < read_index())) {
-
-            // Update items available before going farther as it could be stale
-            items_avail = items_available();
-
-            // Find reader with the smallest read index that is greater than the
-            // write index
-            uint32_t min_reader_index = std::numeric_limits<uint32_t>::max();
-            uint32_t min_read_idx = std::numeric_limits<uint32_t>::max();
-            for (size_t idx = 0; idx < _buffer->readers().size(); ++idx) {
-                if (_buffer->readers()[idx]->read_index() > _buffer->write_index()) {
-                    // Record index of reader with minimum read-index
-                    if (_buffer->readers()[idx]->read_index() < min_read_idx) {
-                        min_read_idx = _buffer->readers()[idx]->read_index();
-                        min_reader_index = idx;
-                    }
-                }
-            }
-
-            // Note items_avail might be zero, that's okay.
-            items_avail += read_index() - min_read_idx;
-            int gap = min_read_idx - _buffer->write_index();
-            if (items_avail > gap) {
-                return false;
-            }
-
-
-            // Shift existing data down to make room for blocked data at end of buffer
-            uint32_t move_data_size = _buffer->write_index() * _buffer->d_sizeof_item;
-            char* dest = _buffer->d_base + (items_avail * _buffer->d_sizeof_item);
-            std::memmove(dest, _buffer->d_base, move_data_size);
-
-            // Next copy the data from the end of the buffer back to the beginning
-            uint32_t avail_data_size = items_avail * _buffer->d_sizeof_item;
-            char* src = _buffer->d_base + (min_read_idx * _buffer->d_sizeof_item);
-            std::memcpy(_buffer->d_base, src, avail_data_size);
-
-            // Now adjust write pointer
-            _buffer->write_index() += items_avail;
-
-            // Finally adjust all reader pointers
-            for (size_t idx = 0; idx < _buffer->_readers.size(); ++idx) {
-                if (idx == min_reader_index) {
-                    _buffer->_readers[idx]->read_index() = 0;
-                } else {
-                    _buffer->_readers[idx]->read_index() += items_avail;
-                    _buffer->_readers[idx]->read_index() %= _buffer->buf_size();
-                }
-            }
-
-            return true;
+        if (items_available() < items_required && _buffer->write_index() < read_index()) {
+            return _buffer_sm->adjust_buffer_data();
         }
 
         return false;
-#endif
-        return true;
     }
 
     virtual size_t items_available() override
