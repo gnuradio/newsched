@@ -134,7 +134,7 @@ public:
             min_items_read = std::min(min_items_read, _readers[idx]->total_read());
         }
 
-        size_t space = _buf_size - _write_index;
+        size_t space = (_buf_size - _write_index) / _item_size;
         auto min_idx_reader = _readers[min_items_read_idx];
         unsigned min_read_index = _readers[min_items_read_idx]->read_index();
 
@@ -148,17 +148,15 @@ public:
                 space = 0;
             }
         } else if (min_read_index > _write_index) {
-            space = min_read_index - _write_index;
-            // Leave extra space in case the reader gets stuck and needs realignment
-            {
-                if ((_write_index > (_buf_size / 2)) ||
-                    (min_read_index < (_buf_size / 2))) {
-                    space = 0;
-                } else {
-                    space = (_buf_size / 2) - _write_index;
-                }
-            }
+            space = (min_read_index - _write_index) / _item_size;
         }
+
+        if (space == 0)
+            return space;
+        // Only half fill the buffer
+        // Leave extra space in case the reader gets stuck and needs realignment
+
+        space = std::min(space, _num_items / 2);
 
         return space;
     }
