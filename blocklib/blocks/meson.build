@@ -4,6 +4,7 @@ subdir('include/gnuradio/blocks')
 subdir('copy')
 subdir('annotator')
 subdir('head')
+subdir('multiply_const')
 
 
 subdir('lib')

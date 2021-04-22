@@ -8,16 +8,28 @@
  *
  */
 
-#include "multiply_const.hpp"
+#include "multiply_const_cpu.hpp"
 #include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
 
+template <class T>
+typename multiply_const<T>::sptr multiply_const<T>::cpu(PARAM_LIST)
+{
+    return std::make_shared<multiply_const_cpu<T>>(PARAM_VALS);
+}
+
+template <class T>
+multiply_const_cpu<T>::multiply_const_cpu(T k, size_t vlen)
+    : multiply_const<T>(k, vlen), d_k(k), d_vlen(vlen)
+{
+}
+
 template <>
 work_return_code_t
-multiply_const<float>::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+multiply_const_cpu<float>::work(std::vector<block_work_input>& work_input,
+                                std::vector<block_work_output>& work_output)
 {
 
     const float* in = (const float*)work_input[0].items();
@@ -32,8 +44,8 @@ multiply_const<float>::work(std::vector<block_work_input>& work_input,
 
 template <>
 work_return_code_t
-multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
-                                 std::vector<block_work_output>& work_output)
+multiply_const_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
+                                     std::vector<block_work_output>& work_output)
 {
     const gr_complex* in = (const gr_complex*)work_input[0].items();
     gr_complex* out = (gr_complex*)work_output[0].items();
@@ -46,13 +58,9 @@ multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
 }
 
 template <class T>
-multiply_const<T>::multiply_const(T k, size_t vlen) : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
-{
-}
-
-template <class T>
-work_return_code_t multiply_const<T>::work(std::vector<block_work_input>& work_input,
-                                           std::vector<block_work_output>& work_output)
+work_return_code_t
+multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
+                            std::vector<block_work_output>& work_output)
 {
     // Pre-generate these from modtool, for example
     T* iptr = (T*)work_input[0].items();
@@ -84,5 +92,6 @@ template class multiply_const<std::int16_t>;
 template class multiply_const<std::int32_t>;
 template class multiply_const<float>;
 template class multiply_const<gr_complex>;
+
 } /* namespace blocks */
 } /* namespace gr */
