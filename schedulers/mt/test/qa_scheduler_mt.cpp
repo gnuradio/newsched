@@ -22,8 +22,8 @@ TEST(SchedulerMTTest, TwoSinks)
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make(input_data, false);
-    auto snk1 = blocks::vector_sink_f::make();
-    auto snk2 = blocks::vector_sink_f::make();
+    auto snk1 = blocks::vector_sink_f::cpu();
+    auto snk2 = blocks::vector_sink_f::cpu();
 
 
     flowgraph_sptr fg(new flowgraph());
@@ -59,7 +59,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     auto src = blocks::vector_source_f::make(input_data, false);
     auto mult1 = blocks::multiply_const_ff::cpu(100.0);
     auto mult2 = blocks::multiply_const_ff::cpu(200.0);
-    auto snk = blocks::vector_sink_f::make();
+    auto snk = blocks::vector_sink_f::cpu();
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, mult1, 0);
@@ -104,7 +104,7 @@ TEST(SchedulerMTTest, BlockFanout)
 
         for (int i = 0; i < nblocks; i++) {
             mult_blks[i] = blocks::multiply_const_cc::cpu(k, veclen);
-            sink_blks[i] = blocks::vector_sink_c::make();
+            sink_blks[i] = blocks::vector_sink_c::cpu();
         }
         flowgraph_sptr fg(new flowgraph());
 

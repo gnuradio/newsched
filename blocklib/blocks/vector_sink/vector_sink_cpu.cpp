@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2008,2010,2013,2018 Free Software Foundation, Inc.
+ * Copyright 2004,2009,2010,2012,2018 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -8,25 +8,27 @@
  *
  */
 
-#include "vector_sink.hpp"
-#include <algorithm>
-#include <iostream>
+#include "vector_sink_cpu.hpp"
+#include <volk/volk.h>
 
-#include <gnuradio/scheduler.hpp>
-
-using namespace std;
 namespace gr {
 namespace blocks {
 
 template <class T>
-vector_sink<T>::vector_sink(const size_t vlen, const size_t reserve_items)
-    : sync_block("vector_sink"), d_vlen(vlen)
+typename vector_sink<T>::sptr vector_sink<T>::cpu(PARAM_LIST)
+{
+    return std::make_shared<vector_sink_cpu<T>>(PARAM_VALS);
+}
+
+template <class T>
+vector_sink_cpu<T>::vector_sink_cpu(const size_t vlen, const size_t reserve_items)
+    : vector_sink<T>(vlen, reserve_items), d_vlen(vlen)
 {
     d_data.reserve(d_vlen * reserve_items);
 }
 
 template <class T>
-work_return_code_t vector_sink<T>::work(std::vector<block_work_input>& work_input,
+work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
                                         std::vector<block_work_output>& work_output)
 {
     T* iptr = (T*)work_input[0].items();
@@ -44,5 +46,6 @@ template class vector_sink<std::int16_t>;
 template class vector_sink<std::int32_t>;
 template class vector_sink<float>;
 template class vector_sink<gr_complex>;
+
 } /* namespace blocks */
 } /* namespace gr */

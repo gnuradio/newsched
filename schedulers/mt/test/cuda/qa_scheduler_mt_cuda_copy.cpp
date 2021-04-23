@@ -28,7 +28,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     }
 
     auto src = blocks::vector_source_c::make(input_data, false, veclen);
-    auto snk1 = blocks::vector_sink_c::make(veclen);
+    auto snk1 = blocks::vector_sink_c::cpu(veclen);
     auto copy1 = cuda::copy::make(veclen);
     auto copy2 = cuda::copy::make(veclen);
 
@@ -65,7 +65,7 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     }
 
     auto src = blocks::vector_source_c::make(input_data, false, veclen);
-    auto snk1 = blocks::vector_sink_c::make(veclen);
+    auto snk1 = blocks::vector_sink_c::cpu(veclen);
     auto copy1 = cuda::copy::make(veclen);
     auto copy2 = cuda::copy::make(veclen);
 

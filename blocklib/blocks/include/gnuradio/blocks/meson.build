@@ -1,7 +1,6 @@
 blocks_headers = [
     'null_sink.hpp',
     'null_source.hpp',
-    'vector_sink.hpp',
     'vector_source.hpp',
 ]
 
