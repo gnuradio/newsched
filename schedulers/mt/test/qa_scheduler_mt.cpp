@@ -21,7 +21,7 @@ TEST(SchedulerMTTest, TwoSinks)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make(input_data, false);
+    auto src = blocks::vector_source_f::cpu(input_data, false);
     auto snk1 = blocks::vector_sink_f::cpu();
     auto snk2 = blocks::vector_sink_f::cpu();
 
@@ -56,7 +56,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
         expected_data.push_back(100.0 * 200.0 * d);
     }
 
-    auto src = blocks::vector_source_f::make(input_data, false);
+    auto src = blocks::vector_source_f::cpu(input_data, false);
     auto mult1 = blocks::multiply_const_ff::cpu(100.0);
     auto mult2 = blocks::multiply_const_ff::cpu(200.0);
     auto snk = blocks::vector_sink_f::cpu();
@@ -98,7 +98,7 @@ TEST(SchedulerMTTest, BlockFanout)
     for (auto nblocks : { 2, 8, 16 }) {
     // for (auto nblocks : { 2, }) {
         int veclen = 1;
-        auto src = blocks::vector_source_c::make(input_data);
+        auto src = blocks::vector_source_c::cpu(input_data);
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
         std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 

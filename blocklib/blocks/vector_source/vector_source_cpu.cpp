@@ -1,14 +1,4 @@
-/* -*- c++ -*- */
-/*
- * Copyright 2004,2008,2010,2013,2018 Free Software Foundation, Inc.
- *
- * This file is part of GNU Radio
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
-
-#include "vector_source.hpp"
+#include "vector_source_cpu.hpp"
 #include <algorithm>
 #include <cstring> // for memcpy
 #include <stdexcept>
@@ -19,11 +9,17 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-vector_source<T>::vector_source(const std::vector<T>& data,
+typename vector_source<T>::sptr vector_source<T>::cpu(PARAM_LIST)
+{
+    return std::make_shared<vector_source_cpu<T>>(PARAM_VALS);
+}
+
+template <class T>
+vector_source_cpu<T>::vector_source_cpu(const std::vector<T>& data,
                                 bool repeat,
                                 unsigned int vlen,
                                 const std::vector<tag_t>& tags)
-    : sync_block("vector_source"),
+    : vector_source<T>(vlen),
       d_data(data),
       d_repeat(repeat),
       d_offset(0),
@@ -36,7 +32,7 @@ vector_source<T>::vector_source(const std::vector<T>& data,
 
 
 template <class T>
-work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_input,
+work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& work_input,
                                           std::vector<block_work_output>& work_output)
 {
 
