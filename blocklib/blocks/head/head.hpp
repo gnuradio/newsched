@@ -47,7 +47,7 @@ public:
      *
      * @return std::shared_ptr<head>
      */
-    static sptr cpu(size_t itemsize, size_t nitems);
+    static sptr make_cpu(size_t itemsize, size_t nitems);
 };
 
 } /* namespace blocks */

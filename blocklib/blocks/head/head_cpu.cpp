@@ -13,7 +13,7 @@
 namespace gr {
 namespace blocks {
 
-head::sptr head::cpu(size_t itemsize, size_t nitems)
+head::sptr head::make_cpu(size_t itemsize, size_t nitems)
 {
     return std::make_shared<head_cpu>(itemsize, nitems);
 }

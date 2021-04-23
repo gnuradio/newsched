@@ -25,7 +25,7 @@ public:
      *
      * @return std::shared_ptr<multiply_const>
      */
-    static sptr cpu(T k, size_t vlen = 1);
+    static sptr make_cpu(T k, size_t vlen = 1);
 };
 
 typedef multiply_const<int16_t> multiply_const_ss;

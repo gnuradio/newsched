@@ -21,9 +21,9 @@ TEST(SchedulerMTTest, TwoSinks)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::cpu(input_data, false);
-    auto snk1 = blocks::vector_sink_f::cpu();
-    auto snk2 = blocks::vector_sink_f::cpu();
+    auto src = blocks::vector_source_f::make_cpu(input_data, false);
+    auto snk1 = blocks::vector_sink_f::make_cpu();
+    auto snk2 = blocks::vector_sink_f::make_cpu();
 
 
     flowgraph_sptr fg(new flowgraph());
@@ -56,10 +56,10 @@ TEST(SchedulerMTTest, MultiDomainBasic)
         expected_data.push_back(100.0 * 200.0 * d);
     }
 
-    auto src = blocks::vector_source_f::cpu(input_data, false);
-    auto mult1 = blocks::multiply_const_ff::cpu(100.0);
-    auto mult2 = blocks::multiply_const_ff::cpu(200.0);
-    auto snk = blocks::vector_sink_f::cpu();
+    auto src = blocks::vector_source_f::make_cpu(input_data, false);
+    auto mult1 = blocks::multiply_const_ff::make_cpu(100.0);
+    auto mult2 = blocks::multiply_const_ff::make_cpu(200.0);
+    auto snk = blocks::vector_sink_f::make_cpu();
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, mult1, 0);
@@ -98,13 +98,13 @@ TEST(SchedulerMTTest, BlockFanout)
     for (auto nblocks : { 2, 8, 16 }) {
     // for (auto nblocks : { 2, }) {
         int veclen = 1;
-        auto src = blocks::vector_source_c::cpu(input_data);
+        auto src = blocks::vector_source_c::make_cpu(input_data);
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
         std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
         for (int i = 0; i < nblocks; i++) {
-            mult_blks[i] = blocks::multiply_const_cc::cpu(k, veclen);
-            sink_blks[i] = blocks::vector_sink_c::cpu();
+            mult_blks[i] = blocks::multiply_const_cc::make_cpu(k, veclen);
+            sink_blks[i] = blocks::vector_sink_c::make_cpu();
         }
         flowgraph_sptr fg(new flowgraph());
 

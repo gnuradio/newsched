@@ -24,7 +24,7 @@ public:
      *
      * @return std::shared_ptr<vector_source>
      */
-    static sptr cpu(const std::vector<T>& data,
+    static sptr make_cpu(const std::vector<T>& data,
                     bool repeat = false,
                     unsigned int vlen = 1,
                     const std::vector<tag_t>& tags = std::vector<tag_t>());

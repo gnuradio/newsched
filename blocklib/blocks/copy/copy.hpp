@@ -19,7 +19,7 @@ public:
      *
      * @return std::shared_ptr<copy>
      */
-    static sptr cpu(size_t itemsize);
+    static sptr make_cpu(size_t itemsize);
 };
 
 } // namespace blocks

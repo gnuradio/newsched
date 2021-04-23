@@ -20,7 +20,7 @@ namespace gr {
 namespace blocks {
 
 annotator::sptr
-annotator::cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp)
+annotator::make_cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp)
 {
     return std::make_shared<annotator_cpu>(when, itemsize, num_inputs, num_outputs, tpp);
 }

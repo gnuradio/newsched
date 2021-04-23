@@ -15,7 +15,7 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename vector_sink<T>::sptr vector_sink<T>::cpu(PARAM_LIST)
+typename vector_sink<T>::sptr vector_sink<T>::make_cpu(PARAM_LIST)
 {
     return std::make_shared<vector_sink_cpu<T>>(PARAM_VALS);
 }

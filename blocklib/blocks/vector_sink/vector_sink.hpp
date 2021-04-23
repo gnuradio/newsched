@@ -25,7 +25,7 @@ public:
      *
      * @return std::shared_ptr<vector_sink>
      */
-    static sptr cpu(const size_t vlen = 1, const size_t reserve_items = 1024);
+    static sptr make_cpu(const size_t vlen = 1, const size_t reserve_items = 1024);
 };
 
 typedef vector_sink<std::uint8_t> vector_sink_b;

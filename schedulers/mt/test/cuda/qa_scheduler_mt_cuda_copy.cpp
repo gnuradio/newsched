@@ -27,8 +27,8 @@ TEST(SchedulerMTTest, CudaCopyBasic)
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::cpu(input_data, false, veclen);
-    auto snk1 = blocks::vector_sink_c::cpu(veclen);
+    auto src = blocks::vector_source_c::make_cpu(input_data, false, veclen);
+    auto snk1 = blocks::vector_sink_c::make_cpu(veclen);
     auto copy1 = cuda::copy::make(veclen);
     auto copy2 = cuda::copy::make(veclen);
 
@@ -64,8 +64,8 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::cpu(input_data, false, veclen);
-    auto snk1 = blocks::vector_sink_c::cpu(veclen);
+    auto src = blocks::vector_source_c::make_cpu(input_data, false, veclen);
+    auto snk1 = blocks::vector_sink_c::make_cpu(veclen);
     auto copy1 = cuda::copy::make(veclen);
     auto copy2 = cuda::copy::make(veclen);
 

@@ -43,8 +43,7 @@ public:
      * 
      * @return std::shared_ptr<annotator> 
      */
-    static sptr cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
-
+    static sptr make_cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
 };
 
 } /* namespace blocks */

@@ -9,7 +9,7 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename vector_source<T>::sptr vector_source<T>::cpu(PARAM_LIST)
+typename vector_source<T>::sptr vector_source<T>::make_cpu(PARAM_LIST)
 {
     return std::make_shared<vector_source_cpu<T>>(PARAM_VALS);
 }

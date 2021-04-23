@@ -15,7 +15,7 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename multiply_const<T>::sptr multiply_const<T>::cpu(PARAM_LIST)
+typename multiply_const<T>::sptr multiply_const<T>::make_cpu(PARAM_LIST)
 {
     return std::make_shared<multiply_const_cpu<T>>(PARAM_VALS);
 }
