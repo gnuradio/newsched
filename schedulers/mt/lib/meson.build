@@ -9,6 +9,7 @@ incdir = include_directories('../include', '../include/gnuradio/schedulers/mt')
 newsched_scheduler_mt_lib = library('newsched-scheduler-mt', 
     scheduler_mt_sources, include_directories : incdir, 
     install : true,
+    link_language : 'cpp',
     dependencies : scheduler_mt_deps)
 
 newsched_scheduler_mt_dep = declare_dependency(include_directories : incdir,
