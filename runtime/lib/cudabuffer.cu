@@ -5,8 +5,6 @@
 #include <mutex>
 #include <vector>
 // #include <boost/thread/mutex.hpp>
-#include <cuda.h>
-#include <cuda_runtime.h>
 
 #include <gnuradio/cudabuffer.hpp>
 
@@ -48,6 +46,7 @@ buffer_sptr cuda_buffer::make(size_t num_items,
 
 void* cuda_buffer::read_ptr(size_t index)
 {
+    std::lock_guard<std::mutex> guard(_buf_mutex);
     if (_type == cuda_buffer_type::D2H) {
         return (void*)&_host_buffer[index];
     } else {
@@ -56,6 +55,7 @@ void* cuda_buffer::read_ptr(size_t index)
 }
 void* cuda_buffer::write_ptr()
 {
+    // std::lock_guard<std::mutex> guard(_buf_mutex);
     if (_type == cuda_buffer_type::H2D) {
         return (void*)&_host_buffer[_write_index];
     } else {
@@ -127,12 +127,13 @@ void cuda_buffer::post_write(int num_items)
                        num_bytes_2,
                        cudaMemcpyDeviceToDevice, stream);
     }
+    cudaStreamSynchronize(stream);
     // advance the write pointer
     _write_index += bytes_written;
     if (_write_index >= _buf_size) {
         _write_index -= _buf_size;
     }
-    cudaStreamSynchronize(stream);
+    
 }
 
 std::shared_ptr<buffer_reader> cuda_buffer::add_reader()

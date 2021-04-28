@@ -2,6 +2,11 @@ yml_file = 'copy.yml'
 
 blocks_copy_files = files('copy_cpu.cpp')
 
+if cuda_dep.found() and get_option('enable_cuda')
+    blocks_copy_files += files('copy_cuda.cpp')
+    blocks_copy_cu_files = files('copy_cuda.cu')
+endif
+
 # Copy the hpp file to the build directory
 gen_copy_h = custom_target('gen_copy_cpu_h',
                         input : ['copy.hpp'],

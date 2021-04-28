@@ -25,9 +25,9 @@ public:
         case available_impl::CPU:
             make_cpu(args);
             break;
-        // case available_impl::CUDA;
-        // make_cuda(args);
-        // break;
+        case available_impl::CUDA:
+            make_cuda(args);
+            break;
         default:
             throw std::invalid_argument(
                 "blocks::copy - invalid implementation specified");
@@ -41,6 +41,14 @@ public:
      * @return std::shared_ptr<copy>
      */
     static sptr make_cpu(block_args args);
+
+    /**
+     * @brief Set the implementation to CUDA and return a shared pointer to the block
+     * instance
+     *
+     * @return std::shared_ptr<copy>
+     */
+    static sptr make_cuda(block_args args);
 };
 
 } // namespace blocks

@@ -9,7 +9,7 @@ newsched_blocklib_cuda_cu = library('newsched-blocklib-cuda-cu',
     srcs, 
     include_directories : incdir, 
     install : true, 
-    dependencies : [newsched_runtime_dep, cuda_dep, threads_dep])
+    dependencies : [cuda_dep])
 
 newsched_blocklib_cuda_cu_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_cuda_cu)
