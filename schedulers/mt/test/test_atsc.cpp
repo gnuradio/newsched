@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     flowgraph_sptr fg(new flowgraph());
     auto sched = schedulers::scheduler_mt::make("sched",32768);
 
-#if 0   // the whole shebang
+#if 1   // the whole shebang
     auto src = fileio::file_source::make(2*sizeof(uint16_t), argv[1], false);
     // auto src = fileio::file_source::make(sizeof(float)*1, argv[1], false);
     // auto src = fileio::file_source::make(sizeof(float)*832, argv[1], false);

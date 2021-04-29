@@ -80,14 +80,18 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 }
 
-                
-
 
                 if (tmp_buf_size < max_output_buffer)
                     max_output_buffer = tmp_buf_size;
 
-                if (b->output_multiple_set())
-                    max_output_buffer = round_down(max_output_buffer, b->output_multiple());
+                // std::cout << b->name() << " " << b->output_multiple_set() << std::endl;
+                if (b->output_multiple_set()) {
+                    // std::cout << max_output_buffer << " " << b->output_multiple() << " "
+                    //           << round_down(max_output_buffer, b->output_multiple())
+                    //           << std::endl;
+                    max_output_buffer =
+                        round_down(max_output_buffer, b->output_multiple());
+                }
 
                 // store the first buffer
                 if (!p_buf) {
@@ -134,7 +138,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     per_block_status[b->id()] = executor_iteration_status::READY;
                     break;
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
-                    work_output[0].n_items >>= 1;
+                    if (b->output_multiple_set()) {
+                        work_output[0].n_items -= b->output_multiple();
+                    } else {
+                        work_output[0].n_items >>= 1;
+                    }
                     if (work_output[0].n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
@@ -191,7 +199,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                     p_buf->prune_tags(work_input[input_port_index].n_consumed);
                     p_buf->post_read(work_input[input_port_index].n_consumed);
-                    
+
                     p->notify_connected_ports(std::make_shared<scheduler_action>(
                         scheduler_action_t::NOTIFY_OUTPUT));
 
