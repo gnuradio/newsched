@@ -3,7 +3,6 @@
 __global__ void adaptN_kernel(float* in, float *out, float* taps, float *train, int ntaps, int nsamps)
 {
     __shared__ float temp[1024];
-    __shared__ float accum;
     __shared__ float e;
 
     static const double BETA = 0.00005; // FIXME figure out what this ought to be
@@ -17,7 +16,7 @@ __global__ void adaptN_kernel(float* in, float *out, float* taps, float *train, 
     for (int j=0; j<nsamps; j++)
     {
         __syncthreads();
-        temp[threadIdx.x] = taps[tap_idx] * in[j+tap_idx];
+        temp[tap_idx] = taps[tap_idx] * in[j+tap_idx];
 
         __syncthreads();
 
@@ -27,9 +26,8 @@ __global__ void adaptN_kernel(float* in, float *out, float* taps, float *train, 
                 sum += temp[i];
             }
 
-            accum = sum;
-            e = accum - train[j];
-            out[j] = accum;
+            e = sum - train[j];
+            out[j] = sum;
         }
 
         __syncthreads();
