@@ -101,35 +101,35 @@ atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
     cudaStreamCreate(&stream);
 }
 
-void atsc_equalizer_cuda::adaptN(const float* input_samples,
-                            const float* training_pattern,
-                            float* output_samples,
-                            int nsamples)
-{
-    static const double BETA = 0.00005; // FIXME figure out what this ought to be
-                                        // FIXME add gear-shifting
+// void atsc_equalizer_cuda::adaptN(const float* input_samples,
+//                             const float* training_pattern,
+//                             float* output_samples,
+//                             int nsamples)
+// {
+//     static const double BETA = 0.00005; // FIXME figure out what this ought to be
+//                                         // FIXME add gear-shifting
 
-    for (int j = 0; j < nsamples; j++) {
-        output_samples[j] = 0;
-        volk_32f_x2_dot_prod_32f(
-            &output_samples[j], &input_samples[j], &d_taps[0], NTAPS);
+//     for (int j = 0; j < nsamples; j++) {
+//         output_samples[j] = 0;
+//         volk_32f_x2_dot_prod_32f(
+//             &output_samples[j], &input_samples[j], &d_taps[0], NTAPS);
 
-        float e = output_samples[j] - training_pattern[j];
+//         float e = output_samples[j] - training_pattern[j];
 
-        // update taps...
-        float tmp_taps[NTAPS];
-        volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * e, NTAPS);
+//         // update taps...
+//         float tmp_taps[NTAPS];
+//         volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * e, NTAPS);
 
-        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
-        //                        std::ios::app | std::ios::binary);
-        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
+//         // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
+//         //                        std::ios::app | std::ios::binary);
+//         // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
 
-        volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
-    }
+//         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
+//     }
 
-    // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
-    // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
-}
+//     // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
+//     // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
+// }
 
 work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work_input,
                                              std::vector<block_work_output>& work_output)
