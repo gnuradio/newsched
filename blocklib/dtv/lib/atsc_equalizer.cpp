@@ -102,6 +102,7 @@ void atsc_equalizer::adaptN(const float* input_samples,
     static const double BETA = 0.00005; // FIXME figure out what this ought to be
                                         // FIXME add gear-shifting
 
+#if 0 // standard lms
     for (int j = 0; j < nsamples; j++) {
         output_samples[j] = 0;
         volk_32f_x2_dot_prod_32f(
@@ -119,6 +120,39 @@ void atsc_equalizer::adaptN(const float* input_samples,
 
         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
     }
+
+#else // block lms
+    int block_size = nsamples; //NTAPS*8;
+    int nblocks = nsamples / block_size;
+    nsamples = block_size * nblocks;
+    float e[block_size];
+
+    for (int j = 0; j < nsamples; j += block_size) {
+        
+        for (int b = 0; b < block_size; b++) {
+
+            output_samples[j + b] = 0;
+            volk_32f_x2_dot_prod_32f(
+                &output_samples[j+b], &input_samples[j+b], &d_taps[0], NTAPS);
+            e[b] = output_samples[j+b] - training_pattern[j+b];
+        }
+
+
+        float f;
+        volk_32f_x2_dot_prod_32f(
+                &f, &input_samples[j], &e[0], block_size);
+
+        // update taps...
+        float tmp_taps[NTAPS];
+        volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * f, NTAPS);
+
+        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
+        //                        std::ios::app | std::ios::binary);
+        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
+
+        volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
+    }
+#endif
 
     // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
     // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
