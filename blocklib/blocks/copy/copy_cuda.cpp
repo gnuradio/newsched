@@ -6,13 +6,15 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-extern void apply_copy(
-    const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream);
-extern void get_block_and_grid(int* minGrid, int* minBlock);
 
 
 namespace gr {
 namespace blocks {
+
+extern void apply_copy(
+    const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream);
+
+extern void get_block_and_grid(int* minGrid, int* minBlock);
 
 copy::sptr copy::make_cuda(block_args args) { return std::make_shared<copy_cuda>(args); }
 
