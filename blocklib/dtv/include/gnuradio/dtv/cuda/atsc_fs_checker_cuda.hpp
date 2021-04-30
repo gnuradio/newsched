@@ -62,7 +62,7 @@ private:
     inline static int decr(int index) { return wrap(index - 1); }
     static const int OUTPUT_MULTIPLE = 1;
 
-    size_t d_max_output_items =  8; // 32768 / 4 / 828 // TODO - handle larger max_output items - limitation is in calculating downstream block sizes
+    size_t d_max_output_items =  256; // 32768 / 4 / 828 // TODO - handle larger max_output items - limitation is in calculating downstream block sizes
     float* d_host_in;
     float* d_dev_in;
     uint8_t* d_dev_tmp;
@@ -73,7 +73,7 @@ private:
     uint8_t* d_dev_atsc_pn511;
     uint8_t* d_dev_atsc_pn63;
 
-    cudaStream_t stream1, stream2;
+    cudaStream_t stream1, stream2, stream3;
 
 };
 

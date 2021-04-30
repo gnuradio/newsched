@@ -85,6 +85,29 @@ if get_option('enable_testing')
         install : true)
     
 
+    srcs = ['test_atsc_gpu.cpp']
+    e = executable('test_atsc_gpu', 
+        srcs, 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: [newsched_runtime_dep,
+                    newsched_runtime_cu_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    newsched_blocklib_analog_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_dtv_dep,
+                    newsched_blocklib_dtv_cuda_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_fileio_dep,
+                    newsched_blocklib_streamops_dep,
+                    newsched_blocklib_math_dep,
+                    threads_dep,
+                    volk_dep,
+                    gtest_dep,
+                    cuda_dep], 
+        install : true)
+
 endif
 
 if cuda_dep.found() and get_option('enable_cuda')

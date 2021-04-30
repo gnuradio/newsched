@@ -145,6 +145,9 @@ work_return_code_t atsc_sync_cuda::work(std::vector<block_work_input>& work_inpu
     assert(work_output[0].n_items % OUTPUT_MULTIPLE == 0);
     // assert(noutput_items <= OUTPUT_MULTIPLE);
 
+    // force a small number of output items
+    // noutput_items = OUTPUT_MULTIPLE;
+
     if (work_output[0].nitems_written() >= 1312) {
         volatile int x = 7;
     }

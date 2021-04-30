@@ -20,6 +20,14 @@ void exec_adaptN(float* in,
                  int nsamps,
                  cudaStream_t stream);
 
+void exec_blockadaptN(float* in,
+                      float* filtered,
+                      float* taps,
+                      float* train,
+                      int ntaps,
+                      int nsamps,
+                      cudaStream_t stream);
+
 namespace gr {
 namespace dtv {
 
@@ -78,11 +86,11 @@ atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
         cudaMalloc((void**)&d_dev_data_2, ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
     checkCudaErrors(cudaMalloc((void**)&d_dev_taps, NTAPS * sizeof(float)));
     checkCudaErrors(cudaMemset(d_dev_taps, 0, NTAPS * sizeof(float)));
-    
+
     checkCudaErrors(cudaMalloc((void**)&data_mem,
                                (ATSC_DATA_SEGMENT_LENGTH + NTAPS) * sizeof(float)));
-    checkCudaErrors(
-        cudaMalloc((void**)&data_mem2, ATSC_DATA_SEGMENT_LENGTH * sizeof(float)));
+    checkCudaErrors(cudaMalloc((void**)&data_mem2,
+                               (ATSC_DATA_SEGMENT_LENGTH + NTAPS) * sizeof(float)));
 
     checkCudaErrors(
         cudaMalloc((void**)&d_dev_train1, KNOWN_FIELD_SYNC_LENGTH * sizeof(float)));
@@ -127,7 +135,8 @@ atsc_equalizer_cuda::atsc_equalizer_cuda() : gr::block("dtv_atsc_equalizer")
 //         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
 //     }
 
-//     // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out | std::ios::binary);
+//     // std::ofstream dbgfile5("/tmp/ns_taps_data5.bin", std::ios::out |
+//     std::ios::binary);
 //     // dbgfile5.write((char*)output_samples, sizeof(float) * (nsamples));
 // }
 
@@ -180,13 +189,31 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                 // float tmp_out[ATSC_DATA_SEGMENT_LENGTH];
                 // float train[KNOWN_FIELD_SYNC_LENGTH];
 
-                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
-                // checkCudaErrors(cudaMemcpy(train, d_dev_train2, KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH
+                // + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(train, d_dev_train2,
+                // KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
 
                 // adaptN(tmp_in, train, tmp_out, KNOWN_FIELD_SYNC_LENGTH);
 
-                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(), NTAPS*sizeof(float), cudaMemcpyHostToDevice));
+                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(),
+                // NTAPS*sizeof(float), cudaMemcpyHostToDevice));
 
+                // filter with the current weights
+                // exec_filterN(data_mem,
+                //              data_mem2,
+                //              d_dev_taps,
+                //              NTAPS,
+                //              ATSC_DATA_SEGMENT_LENGTH,
+                //              stream);
+                // exec_blockadaptN(data_mem,
+                //             data_mem2,
+                //             d_dev_taps,
+                //             d_dev_train2,
+                //             NTAPS,
+                //             KNOWN_FIELD_SYNC_LENGTH,
+                //             stream);
+                // update the weights
                 exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
@@ -194,20 +221,37 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                             NTAPS,
                             KNOWN_FIELD_SYNC_LENGTH,
                             stream);
-                            
+
+
             } else {
 
                 // float tmp_in[ATSC_DATA_SEGMENT_LENGTH + NTAPS];
                 // float tmp_out[ATSC_DATA_SEGMENT_LENGTH];
                 // float train[KNOWN_FIELD_SYNC_LENGTH];
 
-                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
-                // checkCudaErrors(cudaMemcpy(train, d_dev_train1, KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(tmp_in, data_mem, (ATSC_DATA_SEGMENT_LENGTH
+                // + NTAPS)*sizeof(float), cudaMemcpyDeviceToHost));
+                // checkCudaErrors(cudaMemcpy(train, d_dev_train1,
+                // KNOWN_FIELD_SYNC_LENGTH*sizeof(float), cudaMemcpyDeviceToHost));
 
                 // adaptN(tmp_in, train, tmp_out, KNOWN_FIELD_SYNC_LENGTH);
 
-                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(), NTAPS*sizeof(float), cudaMemcpyHostToDevice));
+                // checkCudaErrors(cudaMemcpy(d_dev_taps, d_taps.data(),
+                // NTAPS*sizeof(float), cudaMemcpyHostToDevice));
 
+                // exec_filterN(data_mem,
+                //              data_mem2,
+                //              d_dev_taps,
+                //              NTAPS,
+                //              ATSC_DATA_SEGMENT_LENGTH,
+                //              stream);
+                // exec_blockadaptN(data_mem,
+                //             data_mem2,
+                //             d_dev_taps,
+                //             d_dev_train1,
+                //             NTAPS,
+                //             KNOWN_FIELD_SYNC_LENGTH,
+                //             stream);
                 exec_adaptN(data_mem,
                             d_dev_data_2,
                             d_dev_taps,
@@ -215,6 +259,7 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                             NTAPS,
                             KNOWN_FIELD_SYNC_LENGTH,
                             stream);
+
             }
             checkCudaErrors(cudaPeekAtLastError());
             // cudaStreamSynchronize(stream);
@@ -240,7 +285,7 @@ work_return_code_t atsc_equalizer_cuda::work(std::vector<block_work_input>& work
                                         NPRETAPS * sizeof(float),
                                         cudaMemcpyDeviceToDevice,
                                         stream));
-                                        
+
         checkCudaErrors(cudaMemcpyAsync(&data_mem[NPRETAPS],
                                         in + i * ATSC_DATA_SEGMENT_LENGTH,
                                         ATSC_DATA_SEGMENT_LENGTH * sizeof(float),

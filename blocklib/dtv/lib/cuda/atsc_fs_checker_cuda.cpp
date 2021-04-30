@@ -79,6 +79,7 @@ atsc_fs_checker_cuda::atsc_fs_checker_cuda() : gr::block("dtv_atsc_fs_checker")
 
     cudaStreamCreate(&stream1);
     cudaStreamCreate(&stream2);
+    cudaStreamCreate(&stream3);
 }
 
 void atsc_fs_checker_cuda::reset()
@@ -142,6 +143,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                                         stream1));
 
         cudaStreamSynchronize(stream1);
+        // cudaStreamSynchronize(stream2);
 
         for (int j = 0; j < items_to_process; j++) {
             int errors1 = d_host_nerrors511[j]; // needs to be the sum of errors across
@@ -179,9 +181,9 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                                     &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
                                     ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
                                     cudaMemcpyDeviceToDevice,
-                                    stream1));
+                                    stream3));
 
-                cudaStreamSynchronize(stream1);
+                // cudaStreamSynchronize(stream3);
 
                 plinfo pli_out;
                 pli_out.set_regular_seg((d_field_num == 2), d_segment_num);
@@ -197,6 +199,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                 }
             }
         }
+        cudaStreamSynchronize(stream3);
     }
 
     consume_each(noutput_items, work_input);
