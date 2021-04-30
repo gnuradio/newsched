@@ -24,6 +24,43 @@ struct buffer_info_t {
 
 class buffer_reader;
 typedef std::shared_ptr<buffer_reader> buffer_reader_sptr;
+
+/**
+ * @brief Base class for passing custom buffer properties into factory method
+ *
+ * Buffer Properties will vary according to the particular buffer
+ */
+class buffer_properties
+{
+public:
+    buffer_properties(size_t buf_size = 0,
+                      size_t max_buffer_size = 0,
+                      size_t min_buffer_size = 0,
+                      size_t max_buffer_fill = 0,
+                      size_t min_buffer_fill = 0)
+        : _buffer_size(buf_size),
+          _max_buffer_size(max_buffer_size),
+          _min_buffer_size(min_buffer_size),
+          _max_buffer_fill(max_buffer_fill),
+          _min_buffer_fill(min_buffer_fill)
+    {
+    }
+    virtual ~buffer_properties() {}
+
+    size_t buffer_size() { return _buffer_size; }
+    size_t max_buffer_size() { return _max_buffer_size; }
+    size_t min_buffer_size() { return _min_buffer_size; }
+    size_t max_buffer_fill() { return _max_buffer_fill; }
+    size_t min_buffer_fill() { return _min_buffer_fill; }
+
+protected:
+    size_t _buffer_size = 0;
+    size_t _max_buffer_size = 0;
+    size_t _min_buffer_size = 0;
+    size_t _max_buffer_fill = 0;
+    size_t _min_buffer_fill = 0;
+};
+
 /**
  * @brief Abstract buffer class
  *
@@ -40,6 +77,8 @@ protected:
     size_t _buf_size;
 
     uint64_t _total_written = 0;
+
+    buffer_properties _buf_properties;
 
     void set_type(const std::string& type) { _type = type; }
 
@@ -144,18 +183,6 @@ public:
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;
-
-/**
- * @brief Base class for passing custom buffer properties into factory method
- *
- * Buffer Properties will vary according to the particular buffer
- */
-class buffer_properties
-{
-public:
-    buffer_properties() {}
-    virtual ~buffer_properties() {}
-};
 
 typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>

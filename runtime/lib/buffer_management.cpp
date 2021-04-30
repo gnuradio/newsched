@@ -27,11 +27,23 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 }
                 e->src().port()->set_buffer(buf);
 
-                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}", e->identifier(), buf->type());
+                GR_LOG_INFO(_logger,
+                            "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                            e->identifier(),
+                            buf->type(),
+                            buf->buf_size(),
+                            buf->num_items(),
+                            buf->item_size());
             }
         } else {
             auto buf = e->src().port()->buffer();
-            GR_LOG_INFO(_logger, "Edge: {}, Buf(copy): {}", e->identifier(), buf->type());
+            GR_LOG_INFO(_logger,
+                        "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
+                        e->identifier(),
+                        buf->type(),
+                        buf->buf_size(),
+                        buf->num_items(),
+                        buf->item_size());
         }
     }
 
@@ -58,7 +70,27 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     // *2 because we're now only filling them 1/2 way in order to
     // increase the available parallelism when using the TPB scheduler.
     // (We're double buffering, where we used to single buffer)
-    size_t nitems = (s_fixed_buf_size * 2) / item_size;
+
+    size_t buf_size = s_fixed_buf_size;
+    if (e->has_custom_buffer()) {
+
+        auto req_buf_size = e->buf_properties()->buffer_size();
+
+        if (req_buf_size > 0) {
+            buf_size = req_buf_size;
+        } else {
+            auto max_buf_size = e->buf_properties()->max_buffer_size();
+            auto min_buf_size = e->buf_properties()->min_buffer_size();
+            if (max_buf_size > 0) {
+                buf_size = std::min(buf_size, max_buf_size);
+            }
+            if (min_buf_size > 0) {
+                buf_size = std::max(buf_size, min_buf_size);
+            }
+        }
+    }
+
+    size_t nitems = (buf_size * 2) / item_size;
 
     auto grblock = std::dynamic_pointer_cast<block>(e->src().node());
     if (grblock == nullptr) // might be a domain adapter, not a block
