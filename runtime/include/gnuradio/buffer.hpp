@@ -37,7 +37,7 @@ typedef std::function<std::shared_ptr<buffer>(
  *
  * Buffer Properties will vary according to the particular buffer
  */
-class buffer_properties
+class buffer_properties : public std::enable_shared_from_this<buffer_properties>
 {
 public:
     buffer_properties(size_t buf_size = 0,
@@ -60,7 +60,33 @@ public:
     size_t max_buffer_fill() { return _max_buffer_fill; }
     size_t min_buffer_fill() { return _min_buffer_fill; }
 
-    buffer_factory_function& factory() { return _bff; }
+    auto set_buffer_size(size_t buffer_size)
+    {
+        _buffer_size = buffer_size;
+        return shared_from_this();
+    }
+    auto set_max_buffer_size(size_t max_buffer_size)
+    {
+        _max_buffer_size = max_buffer_size;
+        return shared_from_this();
+    }
+    auto set_min_buffer_size(size_t min_buffer_size)
+    {
+        _min_buffer_size = min_buffer_size;
+        return shared_from_this();
+    }
+    auto set_max_buffer_fill(size_t max_buffer_fill)
+    {
+        _max_buffer_fill = max_buffer_fill;
+        return shared_from_this();
+    }
+    auto set_min_buffer_fill(size_t min_buffer_fill)
+    {
+        _min_buffer_fill = min_buffer_fill;
+        return shared_from_this();
+    }
+
+    buffer_factory_function factory() { return _bff; }
 
 protected:
     size_t _buffer_size = 0;
@@ -114,16 +140,16 @@ public:
 
     /**
      * @brief Return the pointer into the buffer at the given index
-     * 
-     * @param index 
-     * @return void* 
+     *
+     * @param index
+     * @return void*
      */
     virtual void* read_ptr(size_t index) = 0;
 
     /**
      * @brief Return the write pointer into the beginning of the buffer
-     * 
-     * @return void* 
+     *
+     * @return void*
      */
     virtual void* write_ptr() = 0;
 
@@ -138,9 +164,9 @@ public:
 
     /**
      * @brief Add Tags onto the tag queue
-     * 
-     * @param num_items 
-     * @param tags 
+     *
+     * @param num_items
+     * @param tags
      */
     void add_tags(size_t num_items, std::vector<tag_t>& tags);
 
@@ -186,15 +212,14 @@ public:
 
     /**
      * @brief Create a reader object and reference to this buffer
-     * 
-     * @return std::shared_ptr<buffer_reader> 
+     *
+     * @return std::shared_ptr<buffer_reader>
      */
     virtual std::shared_ptr<buffer_reader> add_reader() = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;
-
 
 
 class buffer_reader

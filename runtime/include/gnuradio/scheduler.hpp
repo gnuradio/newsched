@@ -49,7 +49,6 @@ protected:
     logger_sptr _logger;
     logger_sptr _debug_logger;
 
-    buffer_factory_function _default_buf_factory = nullptr;
     std::shared_ptr<buffer_properties> _default_buf_properties = nullptr;
 
 private:

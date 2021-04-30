@@ -3,7 +3,6 @@
 namespace gr {
 
 void buffer_manager::initialize_buffers(flat_graph_sptr fg,
-                                        buffer_factory_function buf_factory,
                                         std::shared_ptr<buffer_properties> buf_props)
 {
     // not all edges may be used
@@ -23,7 +22,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     buf = e->buffer_factory()(
                         num_items, e->itemsize(), e->buf_properties());
                 } else {
-                    buf = buf_factory(num_items, e->itemsize(), buf_props);
+                    buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
                 }
                 e->src().port()->set_buffer(buf);
 
