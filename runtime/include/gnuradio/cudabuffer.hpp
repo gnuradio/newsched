@@ -10,47 +10,6 @@
 namespace gr {
 enum class cuda_buffer_type { D2D, H2D, D2H };
 
-
-class cuda_buffer_properties : public buffer_properties
-{
-public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
-    cuda_buffer_properties(cuda_buffer_type buffer_type_,
-                           size_t buf_size = 0,
-                           size_t max_buffer_size = 0,
-                           size_t min_buffer_size = 0,
-                           size_t max_buffer_fill = 0,
-                           size_t min_buffer_fill = 0)
-        : buffer_properties(buf_size,
-                            max_buffer_size,
-                            min_buffer_size,
-                            max_buffer_fill,
-                            min_buffer_fill),
-          _buffer_type(buffer_type_)
-    {
-    }
-    cuda_buffer_type buffer_type() { return _buffer_type; }
-    static std::shared_ptr<buffer_properties> make(cuda_buffer_type buffer_type_,
-                                                   size_t buf_size = 0,
-                                                   size_t max_buffer_size = 0,
-                                                   size_t min_buffer_size = 0,
-                                                   size_t max_buffer_fill = 0,
-                                                   size_t min_buffer_fill = 0)
-    {
-        return std::dynamic_pointer_cast<buffer_properties>(
-            std::make_shared<cuda_buffer_properties>(buffer_type_,
-                                                     buf_size,
-                                                     max_buffer_size,
-                                                     min_buffer_size,
-                                                     max_buffer_fill,
-                                                     min_buffer_fill));
-    }
-
-private:
-    cuda_buffer_type _buffer_type;
-};
-
-
 class cuda_buffer : public buffer
 {
 private:
@@ -89,9 +48,49 @@ public:
     virtual void post_read(int num_items);
 };
 
+class cuda_buffer_properties : public buffer_properties
+{
+public:
+    // typedef sptr std::shared_ptr<buffer_properties>;
+    cuda_buffer_properties(cuda_buffer_type buffer_type_,
+                           size_t buf_size = 0,
+                           size_t max_buffer_size = 0,
+                           size_t min_buffer_size = 0,
+                           size_t max_buffer_fill = 0,
+                           size_t min_buffer_fill = 0)
+        : buffer_properties(buf_size,
+                            max_buffer_size,
+                            min_buffer_size,
+                            max_buffer_fill,
+                            min_buffer_fill),
+          _buffer_type(buffer_type_)
+    {
+        _bff = cuda_buffer::make;
+    }
+    cuda_buffer_type buffer_type() { return _buffer_type; }
+    static std::shared_ptr<buffer_properties> make(cuda_buffer_type buffer_type_,
+                                                   size_t buf_size = 0,
+                                                   size_t max_buffer_size = 0,
+                                                   size_t min_buffer_size = 0,
+                                                   size_t max_buffer_fill = 0,
+                                                   size_t min_buffer_fill = 0)
+    {
+        return std::dynamic_pointer_cast<buffer_properties>(
+            std::make_shared<cuda_buffer_properties>(buffer_type_,
+                                                     buf_size,
+                                                     max_buffer_size,
+                                                     min_buffer_size,
+                                                     max_buffer_fill,
+                                                     min_buffer_fill));
+    }
+
+private:
+    cuda_buffer_type _buffer_type;
+};
+
 
 } // namespace gr
 
-#define CUDA_BUFFER_ARGS_H2D cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::H2D)
-#define CUDA_BUFFER_ARGS_D2H cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::D2H)
-#define CUDA_BUFFER_ARGS_D2D cuda_buffer::make, cuda_buffer_properties::make(cuda_buffer_type::D2D)
+#define CUDA_BUFFER_ARGS_H2D cuda_buffer_properties::make(cuda_buffer_type::H2D)
+#define CUDA_BUFFER_ARGS_D2H cuda_buffer_properties::make(cuda_buffer_type::D2H)
+#define CUDA_BUFFER_ARGS_D2D cuda_buffer_properties::make(cuda_buffer_type::D2D)

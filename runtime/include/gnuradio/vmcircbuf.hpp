@@ -17,44 +17,6 @@ extern std::mutex s_vm_mutex;
 
 enum class vmcirc_buffer_type { AUTO, SYSV_SHM, MMAP_SHM, MMAP_TMPFILE };
 
-class vmcirc_buffer_properties : public buffer_properties
-{
-public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
-    vmcirc_buffer_properties(vmcirc_buffer_type buffer_type_ = vmcirc_buffer_type::AUTO,
-                             size_t buf_size = 0,
-                             size_t max_buffer_size = 0,
-                             size_t min_buffer_size = 0,
-                             size_t max_buffer_fill = 0,
-                             size_t min_buffer_fill = 0)
-        : buffer_properties(buf_size,
-                            max_buffer_size,
-                            min_buffer_size,
-                            max_buffer_fill,
-                            min_buffer_fill),
-          _buffer_type(buffer_type_)
-    {
-    }
-    vmcirc_buffer_type buffer_type() { return _buffer_type; }
-    static std::shared_ptr<buffer_properties> make(vmcirc_buffer_type buffer_type_,
-                                                   size_t buf_size = 0,
-                                                   size_t max_buffer_size = 0,
-                                                   size_t min_buffer_size = 0,
-                                                   size_t max_buffer_fill = 0,
-                                                   size_t min_buffer_fill = 0)
-    {
-        return std::dynamic_pointer_cast<buffer_properties>(
-            std::make_shared<vmcirc_buffer_properties>(buffer_type_,
-                                                       buf_size,
-                                                       max_buffer_size,
-                                                       min_buffer_size,
-                                                       max_buffer_fill,
-                                                       min_buffer_fill));
-    }
-
-private:
-    vmcirc_buffer_type _buffer_type;
-};
 
 class vmcirc_buffer_reader;
 
@@ -97,11 +59,51 @@ public:
     virtual void post_read(int num_items);
 };
 
+class vmcirc_buffer_properties : public buffer_properties
+{
+public:
+    // typedef sptr std::shared_ptr<buffer_properties>;
+    vmcirc_buffer_properties(vmcirc_buffer_type buffer_type_ = vmcirc_buffer_type::AUTO,
+                             size_t buf_size = 0,
+                             size_t max_buffer_size = 0,
+                             size_t min_buffer_size = 0,
+                             size_t max_buffer_fill = 0,
+                             size_t min_buffer_fill = 0)
+        : buffer_properties(buf_size,
+                            max_buffer_size,
+                            min_buffer_size,
+                            max_buffer_fill,
+                            min_buffer_fill),
+          _buffer_type(buffer_type_)
+
+    {
+        _bff = vmcirc_buffer::make;
+    }
+    vmcirc_buffer_type buffer_type() { return _buffer_type; }
+    static std::shared_ptr<buffer_properties> make(vmcirc_buffer_type buffer_type_,
+                                                   size_t buf_size = 0,
+                                                   size_t max_buffer_size = 0,
+                                                   size_t min_buffer_size = 0,
+                                                   size_t max_buffer_fill = 0,
+                                                   size_t min_buffer_fill = 0)
+    {
+        return std::dynamic_pointer_cast<buffer_properties>(
+            std::make_shared<vmcirc_buffer_properties>(buffer_type_,
+                                                       buf_size,
+                                                       max_buffer_size,
+                                                       min_buffer_size,
+                                                       max_buffer_fill,
+                                                       min_buffer_fill));
+    }
+
+private:
+    vmcirc_buffer_type _buffer_type;
+};
+
 } // namespace gr
 
-#define VMCIRC_BUFFER_ARGS \
-    vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+#define VMCIRC_BUFFER_ARGS vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
 #define VMCIRC_BUFFER_SYSV_SHM_ARGS \
-    vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::SYSV_SHM)
+    vmcirc_buffer_properties::make(vmcirc_buffer_type::SYSV_SHM)
 #define VMCIRC_BUFFER_MMAP_SHM_ARGS \
-    vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::MMAP_SHM)
+    vmcirc_buffer_properties::make(vmcirc_buffer_type::MMAP_SHM)

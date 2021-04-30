@@ -159,10 +159,10 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, copy1, 0);
-    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 4096));
-    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 0, 4096, 8192));
-    fg->connect(copy1, 0, copy3, 0)->set_custom_buffer(vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 16384));
-    fg->connect(copy3, 0, snk2, 0)->set_custom_buffer(vmcirc_buffer::make, vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 0, 16384));
+    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 4096));
+    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 0, 4096, 8192));
+    fg->connect(copy1, 0, copy3, 0)->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 16384));
+    fg->connect(copy3, 0, snk2, 0)->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO, 0, 16384));
 
     std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
     fg->set_scheduler(sched);

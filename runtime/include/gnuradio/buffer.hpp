@@ -25,6 +25,13 @@ struct buffer_info_t {
 class buffer_reader;
 typedef std::shared_ptr<buffer_reader> buffer_reader_sptr;
 
+class buffer;
+class buffer_properties;
+typedef std::function<std::shared_ptr<buffer>(
+    size_t, size_t, std::shared_ptr<buffer_properties>)>
+    buffer_factory_function;
+
+
 /**
  * @brief Base class for passing custom buffer properties into factory method
  *
@@ -53,12 +60,16 @@ public:
     size_t max_buffer_fill() { return _max_buffer_fill; }
     size_t min_buffer_fill() { return _min_buffer_fill; }
 
+    buffer_factory_function& factory() { return _bff; }
+
 protected:
     size_t _buffer_size = 0;
     size_t _max_buffer_size = 0;
     size_t _min_buffer_size = 0;
     size_t _max_buffer_fill = 0;
     size_t _min_buffer_fill = 0;
+
+    buffer_factory_function _bff = nullptr;
 };
 
 /**
@@ -184,9 +195,6 @@ public:
 
 typedef std::shared_ptr<buffer> buffer_sptr;
 
-typedef std::function<std::shared_ptr<buffer>(
-    size_t, size_t, std::shared_ptr<buffer_properties>)>
-    buffer_factory_function;
 
 
 class buffer_reader
