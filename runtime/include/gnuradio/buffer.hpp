@@ -40,16 +40,7 @@ typedef std::function<std::shared_ptr<buffer>(
 class buffer_properties : public std::enable_shared_from_this<buffer_properties>
 {
 public:
-    buffer_properties(size_t buf_size = 0,
-                      size_t max_buffer_size = 0,
-                      size_t min_buffer_size = 0,
-                      size_t max_buffer_fill = 0,
-                      size_t min_buffer_fill = 0)
-        : _buffer_size(buf_size),
-          _max_buffer_size(max_buffer_size),
-          _min_buffer_size(min_buffer_size),
-          _max_buffer_fill(max_buffer_fill),
-          _min_buffer_fill(min_buffer_fill)
+    buffer_properties()
     {
     }
     virtual ~buffer_properties() {}

@@ -166,8 +166,8 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
                                 ->set_buffer_size(4096));
     fg->connect(copy2, 0, snk1, 0)
         ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
-                                ->set_min_buffer_size(8192)
-                                ->set_max_buffer_size(4096));
+                                ->set_min_buffer_size(4096)
+                                ->set_max_buffer_size(8192));
     fg->connect(copy1, 0, copy3, 0)
         ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
                                 ->set_buffer_size(16384));
