@@ -22,6 +22,8 @@ struct buffer_info_t {
     int total_items; // the total number of items read/written from/to this buffer
 };
 
+class buffer_properties;
+
 /**
  * @brief Abstract buffer class
  *
@@ -39,6 +41,8 @@ protected:
     unsigned int _num_items;
     unsigned int _item_size;
     unsigned int _buf_size;
+
+    buffer_properties _buf_properties;
 
     void set_type(const std::string& type) { _type = type; }
     virtual ~buffer() {}
@@ -86,12 +90,13 @@ public:
 
     virtual const std::vector<tag_t>& tags();
 
-    virtual std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end);
+    virtual std::vector<tag_t> tags_in_window(const uint64_t item_start,
+                                              const uint64_t item_end);
     virtual void add_tag(tag_t tag);
     virtual void add_tag(uint64_t offset,
-                 pmtf::pmt_sptr key,
-                 pmtf::pmt_sptr value,
-                 pmtf::pmt_sptr srcid = nullptr);
+                         pmtf::pmt_sptr key,
+                         pmtf::pmt_sptr value,
+                         pmtf::pmt_sptr srcid = nullptr);
     void propagate_tags(std::shared_ptr<buffer> p_in_buf, int n_consumed);
 
     void prune_tags(int n_consumed);
@@ -155,8 +160,32 @@ typedef std::shared_ptr<buffer> buffer_sptr;
 class buffer_properties
 {
 public:
-    buffer_properties() {}
+    buffer_properties(size_t buf_size = 0,
+                      size_t max_buffer_size = 0,
+                      size_t min_buffer_size = 0,
+                      size_t max_buffer_fill = 0,
+                      size_t min_buffer_fill = 0)
+        : _buffer_size(buf_size),
+          _max_buffer_size(max_buffer_size),
+          _min_buffer_size(min_buffer_size),
+          _max_buffer_fill(max_buffer_fill),
+          _min_buffer_fill(min_buffer_fill)
+    {
+    }
     virtual ~buffer_properties() {}
+
+    size_t buffer_size() { return _buffer_size; }
+    size_t max_buffer_size() { return _max_buffer_size; }
+    size_t min_buffer_size() { return _min_buffer_size; }
+    size_t max_buffer_fill() { return _max_buffer_fill; }
+    size_t min_buffer_fill() { return _min_buffer_fill; }
+
+protected:
+    size_t _buffer_size = 0;
+    size_t _max_buffer_size = 0;
+    size_t _min_buffer_size = 0;
+    size_t _max_buffer_fill = 0;
+    size_t _min_buffer_fill = 0;
 };
 
 typedef std::function<std::shared_ptr<buffer>(

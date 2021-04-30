@@ -93,6 +93,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         round_down(max_output_buffer, b->output_multiple());
                 }
 
+
                 // store the first buffer
                 if (!p_buf) {
                     p_buf = each_buf;

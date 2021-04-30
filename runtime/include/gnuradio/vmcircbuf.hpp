@@ -21,15 +21,35 @@ class vmcirc_buffer_properties : public buffer_properties
 {
 public:
     // typedef sptr std::shared_ptr<buffer_properties>;
-    vmcirc_buffer_properties(vmcirc_buffer_type buffer_type_ = vmcirc_buffer_type::AUTO)
-        : buffer_properties(), _buffer_type(buffer_type_)
+    vmcirc_buffer_properties(vmcirc_buffer_type buffer_type_ = vmcirc_buffer_type::AUTO,
+                             size_t buf_size = 0,
+                             size_t max_buffer_size = 0,
+                             size_t min_buffer_size = 0,
+                             size_t max_buffer_fill = 0,
+                             size_t min_buffer_fill = 0)
+        : buffer_properties(buf_size,
+                            max_buffer_size,
+                            min_buffer_size,
+                            max_buffer_fill,
+                            min_buffer_fill),
+          _buffer_type(buffer_type_)
     {
     }
     vmcirc_buffer_type buffer_type() { return _buffer_type; }
-    static std::shared_ptr<buffer_properties> make(vmcirc_buffer_type buffer_type_)
+    static std::shared_ptr<buffer_properties> make(vmcirc_buffer_type buffer_type_,
+                                                   size_t buf_size = 0,
+                                                   size_t max_buffer_size = 0,
+                                                   size_t min_buffer_size = 0,
+                                                   size_t max_buffer_fill = 0,
+                                                   size_t min_buffer_fill = 0)
     {
         return std::dynamic_pointer_cast<buffer_properties>(
-            std::make_shared<vmcirc_buffer_properties>(buffer_type_));
+            std::make_shared<vmcirc_buffer_properties>(buffer_type_,
+                                                       buf_size,
+                                                       max_buffer_size,
+                                                       min_buffer_size,
+                                                       max_buffer_fill,
+                                                       min_buffer_fill));
     }
 
 private:
@@ -69,7 +89,6 @@ public:
     virtual void post_write(int num_items);
 
     virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
-
 };
 
 } // namespace gr

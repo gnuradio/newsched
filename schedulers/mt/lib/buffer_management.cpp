@@ -37,7 +37,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buffer_sptr buf;
 
                 if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(num_items, e->itemsize(), e->buf_properties());
+                    buf = e->buffer_factory()(
+                        num_items, e->itemsize(), e->buf_properties());
                 } else {
                     buf = buf_factory(num_items, e->itemsize(), buf_props);
                 }
@@ -45,7 +46,13 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 src_da_cast->set_buffer(buf);
                 auto tmp = std::dynamic_pointer_cast<buffer>(src_da_cast);
                 d_edge_buffers[e->identifier()] = tmp;
-                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
+                GR_LOG_INFO(_logger,
+                            "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                            e->identifier(),
+                            buf->type(),
+                            buf->size(),
+                            buf->num_items(),
+                            buf->item_size());
             } else {
                 d_edge_buffers[e->identifier()] =
                     std::dynamic_pointer_cast<buffer>(src_da_cast);
@@ -56,7 +63,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buffer_sptr buf;
 
                 if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(num_items, e->itemsize(), e->buf_properties());
+                    buf = e->buffer_factory()(
+                        num_items, e->itemsize(), e->buf_properties());
                 } else {
                     buf = buf_factory(num_items, e->itemsize(), buf_props);
                 }
@@ -64,7 +72,13 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 dst_da_cast->set_buffer(buf);
                 auto tmp = std::dynamic_pointer_cast<buffer>(dst_da_cast);
                 d_edge_buffers[e->identifier()] = tmp;
-                GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
+                GR_LOG_INFO(_logger,
+                            "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                            e->identifier(),
+                            buf->type(),
+                            buf->size(),
+                            buf->num_items(),
+                            buf->item_size());
             } else {
                 d_edge_buffers[e->identifier()] =
                     std::dynamic_pointer_cast<buffer>(dst_da_cast);
@@ -82,9 +96,15 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 buf = buf_factory(num_items, e->itemsize(), buf_props);
             }
 
-        // FIXME: Using a string for edge map lookup is inefficient
+            // FIXME: Using a string for edge map lookup is inefficient
             d_edge_buffers[e->identifier()] = buf;
-            GR_LOG_INFO(_logger, "Edge: {}, Buf: {}, {} bytes, {} items of size {}", e->identifier(), buf->type(), buf->size(), buf->num_items(), buf->item_size());
+            GR_LOG_INFO(_logger,
+                        "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                        e->identifier(),
+                        buf->type(),
+                        buf->size(),
+                        buf->num_items(),
+                        buf->item_size());
         }
     }
 
@@ -115,7 +135,27 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     // *2 because we're now only filling them 1/2 way in order to
     // increase the available parallelism when using the TPB scheduler.
     // (We're double buffering, where we used to single buffer)
-    size_t nitems = (s_fixed_buf_size * 2) / item_size;
+
+    size_t buf_size = s_fixed_buf_size;
+    if (e->has_custom_buffer()) {
+
+        auto req_buf_size = e->buf_properties()->buffer_size();
+
+        if (req_buf_size > 0) {
+            buf_size = req_buf_size;
+        } else {
+            auto max_buf_size = e->buf_properties()->max_buffer_size();
+            auto min_buf_size = e->buf_properties()->min_buffer_size();
+            if (max_buf_size > 0) {
+                buf_size = std::min(buf_size, max_buf_size);
+            }
+            if (min_buf_size > 0) {
+                buf_size = std::max(buf_size, min_buf_size);
+            }
+        }
+    }
+
+    size_t nitems = (buf_size * 2) / item_size;
 
     auto grblock = std::dynamic_pointer_cast<block>(e->src().node());
     if (grblock == nullptr) // might be a domain adapter, not a block
@@ -123,10 +163,8 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         grblock = std::dynamic_pointer_cast<block>(e->dst().node());
     }
 
-    if (grblock->output_multiple_set())
-    {
-        nitems =
-            std::max(nitems, static_cast<size_t>(2 * (grblock->output_multiple())));
+    if (grblock->output_multiple_set()) {
+        nitems = std::max(nitems, static_cast<size_t>(2 * (grblock->output_multiple())));
     }
 
     // FIXME: Downstream block connections get messed up by domain adapters
@@ -140,7 +178,7 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
 
     auto blocks = fg->calc_downstream_blocks(grblock, e->src().port());
 
-    for (auto&  p : blocks) {
+    for (auto& p : blocks) {
         // block_sptr dgrblock = cast_to_block_sptr(*p);
         // if (!dgrblock)
         //     throw std::runtime_error("allocate_buffer found non-gr::block");
@@ -148,9 +186,8 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         // double decimation = (1.0 / dgrblock->relative_rate());
         double decimation = (1.0 / p->relative_rate());
         int multiple = p->output_multiple();
-        nitems =
-            std::max(nitems, static_cast<size_t>(2 * (decimation * multiple)));
-            // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
+        nitems = std::max(nitems, static_cast<size_t>(2 * (decimation * multiple)));
+        // std::max(nitems, static_cast<int>(2 * (decimation * multiple)));
     }
 
     return nitems;
