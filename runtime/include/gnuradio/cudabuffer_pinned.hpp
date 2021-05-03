@@ -9,20 +9,6 @@
 
 namespace gr {
 
-class cuda_buffer_pinned_properties : public buffer_properties
-{
-public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
-    cuda_buffer_pinned_properties()
-        : buffer_properties()
-    {
-    }
-    static std::shared_ptr<buffer_properties> make()
-    {
-        return std::dynamic_pointer_cast<buffer_properties>(
-            std::make_shared<cuda_buffer_pinned_properties>());
-    }
-};
 
 
 class cuda_buffer_pinned : public buffer
@@ -56,6 +42,23 @@ public:
     virtual void post_read(int num_items);
 };
 
+class cuda_buffer_pinned_properties : public buffer_properties
+{
+public:
+    // typedef sptr std::shared_ptr<buffer_properties>;
+    cuda_buffer_pinned_properties()
+        : buffer_properties()
+    {
+        _bff = cuda_buffer_pinned::make;
+    }
+    static std::shared_ptr<buffer_properties> make()
+    {
+        return std::dynamic_pointer_cast<buffer_properties>(
+            std::make_shared<cuda_buffer_pinned_properties>());
+    }
+};
+
+
 } // namespace gr
 
-#define CUDA_BUFFER_PINNED_ARGS cuda_buffer_pinned::make, cuda_buffer_pinned_properties::make()
+#define CUDA_BUFFER_PINNED_ARGS cuda_buffer_pinned_properties::make()
