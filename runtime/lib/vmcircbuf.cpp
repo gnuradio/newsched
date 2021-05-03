@@ -20,9 +20,9 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
         switch (bp->buffer_type()) {
         case vmcirc_buffer_type::AUTO:
         case vmcirc_buffer_type::SYSV_SHM:
-            return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size));
+            return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size, buffer_properties));
         case vmcirc_buffer_type::MMAP_SHM:
-            return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size));
+            return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size, buffer_properties));
         default:
             throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
@@ -33,8 +33,8 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
     }
 }
 
-vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size)
-    : buffer(num_items, item_size)
+vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+    : buffer(num_items, item_size, buf_properties)
 {
 }
 

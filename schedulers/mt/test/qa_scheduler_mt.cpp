@@ -31,7 +31,7 @@ TEST(SchedulerMTTest, TwoSinks)
     fg->connect(src, 0, snk1, 0);
     fg->connect(src, 0, snk2, 0);
 
-    std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
+    auto sched = schedulers::scheduler_mt::make();
     fg->set_scheduler(sched);
 
     // force single threaded operation

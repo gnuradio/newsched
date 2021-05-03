@@ -28,6 +28,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         bool ready = true;
         for (auto p : b->input_stream_ports()) {
             auto p_buf = p->buffer_reader();
+            auto max_read = p_buf->max_buffer_read();
+            auto min_read = p_buf->min_buffer_read();
 
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
@@ -37,10 +39,16 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             if (!ready)
                 break;
 
-            if (read_info.n_items < s_min_items_to_process) {
+            if (read_info.n_items < s_min_items_to_process ||
+                (min_read > 0 && read_info.n_items < min_read)) {
                 ready = false;
                 break;
             }
+
+            if (max_read > 0 && read_info.n_items > max_read) {
+                read_info.n_items = max_read;
+            }
+
 
             auto tags = p_buf->get_tags(read_info.n_items);
             work_input.push_back(block_work_input(read_info.n_items, p_buf));
@@ -61,6 +69,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
             auto p_buf = p->buffer();
+            auto max_fill = p_buf->max_buffer_fill();
+            auto min_fill = p_buf->min_buffer_fill();
+
             buffer_info_t write_info;
             ready = p_buf->write_info(write_info);
             GR_LOG_DEBUG(_debug_logger,
@@ -71,7 +82,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                          write_info.item_size);
 
             size_t tmp_buf_size = write_info.n_items;
-            if (tmp_buf_size < s_min_buf_items) {
+            if (tmp_buf_size < s_min_buf_items ||
+                (min_fill > 0 && tmp_buf_size < min_fill)) {
                 ready = false;
                 break;
             }
@@ -79,8 +91,17 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             if (tmp_buf_size < max_output_buffer)
                 max_output_buffer = tmp_buf_size;
 
-            if (b->output_multiple_set())
+            if (max_fill > 0 && max_output_buffer > max_fill) {
+                max_output_buffer = max_fill;
+            }
+
+            if (b->output_multiple_set()) {
                 max_output_buffer = round_down(max_output_buffer, b->output_multiple());
+            }
+
+            if (max_output_buffer <= 0) {
+                ready = false;
+            }
 
             if (!ready)
                 break;

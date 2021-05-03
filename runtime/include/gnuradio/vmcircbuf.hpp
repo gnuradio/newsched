@@ -33,7 +33,7 @@ public:
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
-    vmcirc_buffer(size_t num_items, size_t item_size);
+    vmcirc_buffer(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties);
 
     // These methods are common to all the vmcircbufs
 
