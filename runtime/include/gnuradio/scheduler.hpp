@@ -39,10 +39,9 @@ public:
     void set_id(int id) { _id = id; }
 
     virtual void
-    set_default_buffer_factory(const buffer_factory_function& bff,
+    set_default_buffer_factory(
                                std::shared_ptr<buffer_properties> bp = nullptr)
     {
-        _default_buf_factory = bff;
         _default_buf_properties = bp;
     }
 
@@ -50,7 +49,6 @@ protected:
     logger_sptr _logger;
     logger_sptr _debug_logger;
 
-    buffer_factory_function _default_buf_factory = nullptr;
     std::shared_ptr<buffer_properties> _default_buf_properties = nullptr;
 
 private:

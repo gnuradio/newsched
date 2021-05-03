@@ -83,7 +83,7 @@ public:
                 std::find(g->nodes().begin(), g->nodes().end(), e->dst().node()) !=
                     g->nodes().end()) {
                 fg->connect(e->src(), e->dst())
-                    ->set_custom_buffer(e->buffer_factory(), e->buf_properties());
+                    ->set_custom_buffer(e->buf_properties());
             } else { // edge is a pathway into another domain
                 fg->add_edge(e);
             }

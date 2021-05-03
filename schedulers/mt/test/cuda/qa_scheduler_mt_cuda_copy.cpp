@@ -33,7 +33,9 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     auto copy2 = cuda::copy::make(veclen);
 
     auto fg = flowgraph::make();
-    fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+    auto x = CUDA_BUFFER_ARGS_H2D;
+    auto cbp = std::dynamic_pointer_cast<cuda_buffer_properties>(x);
+    fg->connect(src, 0, copy1, 0)->set_custom_buffer(cbp);
     fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
     fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
 
