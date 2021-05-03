@@ -49,6 +49,65 @@ if get_option('enable_testing')
         install : true)
     test('MT Tags Tests', e)
 
+    srcs = ['qa_fileio.cpp']
+    e = executable('qa_fileio', 
+        srcs, 
+        include_directories : incdir, 
+        dependencies: [newsched_runtime_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_blocklib_fileio_dep,
+                    newsched_scheduler_mt_dep,
+                    gtest_dep], 
+        install : true)
+    test('MT FileIO Tests', e)
+
+    srcs = ['test_atsc.cpp']
+    e = executable('test_atsc', 
+        srcs, 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: [newsched_runtime_dep,
+                    newsched_runtime_cu_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    newsched_blocklib_analog_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_dtv_dep,
+                    newsched_blocklib_dtv_cuda_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_fileio_dep,
+                    newsched_blocklib_streamops_dep,
+                    newsched_blocklib_math_dep,
+                    threads_dep,
+                    volk_dep,
+                    gtest_dep,
+                    cuda_dep], 
+        install : true)
+    
+
+    srcs = ['test_atsc_gpu.cpp']
+    e = executable('test_atsc_gpu', 
+        srcs, 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: [newsched_runtime_dep,
+                    newsched_runtime_cu_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    newsched_blocklib_analog_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_dtv_dep,
+                    newsched_blocklib_dtv_cuda_dep,
+                    newsched_blocklib_filter_dep,
+                    newsched_blocklib_fileio_dep,
+                    newsched_blocklib_streamops_dep,
+                    newsched_blocklib_math_dep,
+                    threads_dep,
+                    volk_dep,
+                    gtest_dep,
+                    cuda_dep], 
+        install : true)
+
 endif
 
 if cuda_dep.found() and get_option('enable_cuda')

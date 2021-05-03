@@ -20,7 +20,7 @@
 namespace gr {
 vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
     size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
-    : vmcirc_buffer(num_items, item_size, buf_properties)
+    : vmcirc_buffer(num_items, item_size, gr::pagesize(), buf_properties)
 {
     set_type("vmcircbuf_mmap_shm_open");
 
