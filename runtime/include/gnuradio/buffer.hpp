@@ -48,6 +48,8 @@ public:
     size_t min_buffer_size() { return _min_buffer_size; }
     size_t max_buffer_fill() { return _max_buffer_fill; }
     size_t min_buffer_fill() { return _min_buffer_fill; }
+    size_t max_buffer_read() { return _max_buffer_read; }
+    size_t min_buffer_read() { return _min_buffer_read; }
 
     auto set_buffer_size(size_t buffer_size)
     {
@@ -125,8 +127,13 @@ protected:
     std::vector<buffer_reader*> _readers;
 
 public:
-    buffer(size_t num_items, size_t item_size)
-        : _num_items(num_items), _item_size(item_size), _buf_size(num_items * item_size)
+    buffer(size_t num_items,
+           size_t item_size,
+           std::shared_ptr<buffer_properties> buf_properties)
+        : _num_items(num_items),
+          _item_size(item_size),
+          _buf_size(num_items * item_size),
+          _buf_properties(buf_properties)
     {
     }
     virtual ~buffer() {}
@@ -137,6 +144,11 @@ public:
     uint64_t total_written() const { return _total_written; }
     const std::vector<tag_t>& tags() { return _tags; }
     std::mutex* mutex() { return &_buf_mutex; }
+    // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
+    size_t max_buffer_size() { return _buf_properties ? _buf_properties->max_buffer_size() : 0; }
+    size_t min_buffer_size() { return _buf_properties ? _buf_properties->min_buffer_size() : 0; }
+    size_t max_buffer_fill() { return _buf_properties ? _buf_properties->max_buffer_fill() : 0; }
+    size_t min_buffer_fill() { return _buf_properties ? _buf_properties->min_buffer_fill() : 0; }
 
     /**
      * @brief Return the pointer into the buffer at the given index
@@ -215,7 +227,8 @@ public:
      *
      * @return std::shared_ptr<buffer_reader>
      */
-    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props) = 0;
+    virtual std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props) = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
 };
 
@@ -230,10 +243,12 @@ protected:
     uint64_t _total_read = 0;
     size_t _read_index = 0;
     std::mutex _rdr_mutex;
-   
+
 
 public:
-    buffer_reader(buffer_sptr buffer,  std::shared_ptr<buffer_properties> buf_props, size_t read_index = 0)
+    buffer_reader(buffer_sptr buffer,
+                  std::shared_ptr<buffer_properties> buf_props,
+                  size_t read_index = 0)
         : _buffer(buffer), _buf_properties(buf_props), _read_index(read_index)
     {
     }
@@ -242,6 +257,11 @@ public:
     void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
+    // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
+    size_t max_buffer_read() { return _buf_properties ? _buf_properties->max_buffer_read() : 0; }
+    size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
+
+
 
     /**
      * @brief Return the number of items available to be read
