@@ -63,14 +63,14 @@ public:
         _total_written += num_items;
     }
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props);
 };
 
 class simplebuffer_reader : public buffer_reader
 {
 public:
-    simplebuffer_reader(buffer_sptr buffer, size_t read_index = 0)
-        : buffer_reader(buffer, read_index)
+    simplebuffer_reader(buffer_sptr buffer, std::shared_ptr<buffer_properties> buf_props, size_t read_index = 0)
+        : buffer_reader(buffer, buf_props, read_index)
     {
     }
 
