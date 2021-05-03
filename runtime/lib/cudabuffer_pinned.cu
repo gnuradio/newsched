@@ -65,10 +65,10 @@ void cuda_buffer_pinned::post_write(int num_items)
     }
 }
 
-std::shared_ptr<buffer_reader> cuda_buffer_pinned::add_reader()
+std::shared_ptr<buffer_reader> cuda_buffer_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props)
 {
     std::shared_ptr<cuda_buffer_pinned_reader> r(
-        new cuda_buffer_pinned_reader(shared_from_this(), _write_index));
+        new cuda_buffer_pinned_reader(shared_from_this(), buf_props, _write_index));
     _readers.push_back(r.get());
     return r;
 }
