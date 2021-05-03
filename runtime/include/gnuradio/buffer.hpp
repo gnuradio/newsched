@@ -40,9 +40,7 @@ typedef std::function<std::shared_ptr<buffer>(
 class buffer_properties : public std::enable_shared_from_this<buffer_properties>
 {
 public:
-    buffer_properties()
-    {
-    }
+    buffer_properties() {}
     virtual ~buffer_properties() {}
 
     size_t buffer_size() { return _buffer_size; }
@@ -76,7 +74,16 @@ public:
         _min_buffer_fill = min_buffer_fill;
         return shared_from_this();
     }
-
+    auto set_max_buffer_read(size_t max_buffer_read)
+    {
+        _max_buffer_read = max_buffer_read;
+        return shared_from_this();
+    }
+    auto set_min_buffer_read(size_t min_buffer_read)
+    {
+        _min_buffer_read = min_buffer_read;
+        return shared_from_this();
+    }
     buffer_factory_function factory() { return _bff; }
 
 protected:
@@ -85,6 +92,8 @@ protected:
     size_t _min_buffer_size = 0;
     size_t _max_buffer_fill = 0;
     size_t _min_buffer_fill = 0;
+    size_t _max_buffer_read = 0;
+    size_t _min_buffer_read = 0;
 
     buffer_factory_function _bff = nullptr;
 };
@@ -106,7 +115,7 @@ protected:
 
     uint64_t _total_written = 0;
 
-    buffer_properties _buf_properties;
+    std::shared_ptr<buffer_properties> _buf_properties;
 
     void set_type(const std::string& type) { _type = type; }
 
@@ -206,7 +215,7 @@ public:
      *
      * @return std::shared_ptr<buffer_reader>
      */
-    virtual std::shared_ptr<buffer_reader> add_reader() = 0;
+    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props) = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
 };
 
@@ -217,13 +226,15 @@ class buffer_reader
 {
 protected:
     buffer_sptr _buffer; // the buffer that owns this reader
+    std::shared_ptr<buffer_properties> _buf_properties;
     uint64_t _total_read = 0;
     size_t _read_index = 0;
     std::mutex _rdr_mutex;
+   
 
 public:
-    buffer_reader(buffer_sptr buffer, size_t read_index = 0)
-        : _buffer(buffer), _read_index(read_index)
+    buffer_reader(buffer_sptr buffer,  std::shared_ptr<buffer_properties> buf_props, size_t read_index = 0)
+        : _buffer(buffer), _buf_properties(buf_props), _read_index(read_index)
     {
     }
     virtual ~buffer_reader() {}

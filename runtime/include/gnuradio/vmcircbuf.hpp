@@ -45,14 +45,14 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props);
 };
 
 class vmcirc_buffer_reader : public buffer_reader
 {
 public:
-    vmcirc_buffer_reader(buffer_sptr buffer, size_t read_index = 0)
-        : buffer_reader(buffer, read_index)
+    vmcirc_buffer_reader(buffer_sptr buffer, std::shared_ptr<buffer_properties> buf_props, size_t read_index = 0)
+        : buffer_reader(buffer, buf_props, read_index)
     {
     }
 
