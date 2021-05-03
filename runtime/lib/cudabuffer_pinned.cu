@@ -11,8 +11,8 @@
 #include <gnuradio/cudabuffer_pinned.hpp>
 
 namespace gr {
-cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size)
-    : buffer(num_items, item_size)
+cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+    : buffer(num_items, item_size, buf_properties)
 {
     if (!cudaHostAlloc((void**)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
         throw std::runtime_error("Failed to allocate CUDA pinned memory");
@@ -24,7 +24,7 @@ buffer_sptr cuda_buffer_pinned::make(size_t num_items,
                                      size_t item_size,
                                      std::shared_ptr<buffer_properties> buffer_properties)
 {
-    return buffer_sptr(new cuda_buffer_pinned(num_items, item_size));
+    return buffer_sptr(new cuda_buffer_pinned(num_items, item_size, buffer_properties));
 }
 
 void* cuda_buffer_pinned::read_ptr(size_t index) { return (void*)&_pinned_buffer[index]; }

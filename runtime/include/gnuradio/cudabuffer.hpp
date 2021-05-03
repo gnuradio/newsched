@@ -22,7 +22,8 @@ public:
     typedef std::shared_ptr<cuda_buffer> sptr;
     cuda_buffer(size_t num_items,
                 size_t item_size,
-                cuda_buffer_type type = cuda_buffer_type::D2D);
+                cuda_buffer_type type,
+                std::shared_ptr<buffer_properties> buf_properties);
     ~cuda_buffer();
 
     static buffer_sptr make(size_t num_items,
