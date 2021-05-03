@@ -15,7 +15,7 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
                                 size_t item_size,
                                 std::shared_ptr<buffer_properties> buffer_properties)
 {
-    auto bp = std::dynamic_pointer_cast<vmcirc_buffer_properties>(buffer_properties);
+    auto bp = std::static_pointer_cast<vmcirc_buffer_properties>(buffer_properties);
     if (bp != nullptr) {
         switch (bp->buffer_type()) {
         case vmcirc_buffer_type::AUTO:

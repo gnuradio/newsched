@@ -27,7 +27,6 @@ public:
     ~buffer_manager() {}
 
     void initialize_buffers(flat_graph_sptr fg,
-                            buffer_factory_function buf_factory,
                             std::shared_ptr<buffer_properties> buf_props);
 
 private:

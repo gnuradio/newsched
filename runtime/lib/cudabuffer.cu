@@ -37,7 +37,7 @@ buffer_sptr cuda_buffer::make(size_t num_items,
                               size_t item_size,
                               std::shared_ptr<buffer_properties> buffer_properties)
 {
-    auto cbp = std::dynamic_pointer_cast<cuda_buffer_properties>(buffer_properties);
+    auto cbp = std::static_pointer_cast<cuda_buffer_properties>(buffer_properties);
     if (cbp != nullptr) {
         return buffer_sptr(new cuda_buffer(num_items, item_size, cbp->buffer_type()));
     } else {
