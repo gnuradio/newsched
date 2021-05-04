@@ -60,21 +60,21 @@ private:
 
     bool d_buff_not_filled = true;
 
-    float *data_mem;
-    float *data_mem2;
+    float* data_mem;
+    float* data_mem2;
+    float* data_mem_host;
 
-    float *d_dev_data;
-    float *d_dev_data_2;
-    float *d_dev_taps;
-    float *d_dev_train1;
-    float *d_dev_train2;
+    float* d_dev_data;
+    float* d_dev_data_2;
+    float* d_dev_taps;
+    float* d_dev_train1;
+    float* d_dev_train2;
     cudaStream_t stream;
 
     // void adaptN(const float* input_samples,
     //             const float* training_pattern,
     //             float* output_samples,
     //             int nsamples);
-
 };
 
 } /* namespace dtv */

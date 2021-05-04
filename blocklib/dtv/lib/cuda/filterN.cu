@@ -1,6 +1,6 @@
 #include <cuda.h>
 
-__global__ void filterN_kernel(float* in, float* out, float* taps, int ntaps, int nsamps)
+__global__ void filterN_kernel(const float* in, float* out, float* taps, int ntaps, int nsamps)
 {
     __shared__ float temp[1024];
     // Filters one output sample across N taps
@@ -26,7 +26,7 @@ __global__ void filterN_kernel(float* in, float* out, float* taps, int ntaps, in
 }
 
 void exec_filterN(
-    float* in, float* out, float* taps, int ntaps, int nsamps, cudaStream_t stream)
+    const float* in, float* out, float* taps, int ntaps, int nsamps, cudaStream_t stream)
 {
     int nblocks = (ntaps * nsamps) / 1024;
 

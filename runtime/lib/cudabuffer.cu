@@ -131,7 +131,8 @@ void cuda_buffer::post_write(int num_items)
         cudaMemcpyAsync(&_device_buffer[wi2],
                         &_device_buffer[wi1],
                         num_bytes_1,
-                        cudaMemcpyDeviceToDevice);
+                        cudaMemcpyDeviceToDevice,
+                        stream);
         if (num_bytes_2)
             cudaMemcpyAsync(&_device_buffer[0],
                             &_device_buffer[_buf_size],
