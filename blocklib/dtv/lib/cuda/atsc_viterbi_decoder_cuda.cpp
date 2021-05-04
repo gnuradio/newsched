@@ -144,7 +144,7 @@ work_return_code_t atsc_viterbi_decoder_cuda::work(std::vector<block_work_input>
     unsigned char best_state[NCODERS][enco_which_max];
 
     // force it to be only 1 noutput item for now
-    noutput_items = NCODERS;
+    // noutput_items = NCODERS;
     for (int i = 0; i < noutput_items; i += NCODERS) {
 
         exec_deinterleave_kernel(in + i * ATSC_DATA_SEGMENT_LENGTH, d_data, streams[0]);      
