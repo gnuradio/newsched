@@ -73,8 +73,6 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
 
     int output_produced = 0;
 
-    auto tag_pmt = pmtf::pmt_string::make("plinfo");
-
     for (int i = 0; i < noutput_items; i++) {
         // check for a hit on the PN 511 pattern
         int errors = 0;

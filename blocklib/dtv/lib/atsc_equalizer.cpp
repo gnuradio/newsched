@@ -102,7 +102,7 @@ void atsc_equalizer::adaptN(const float* input_samples,
     static const double BETA = 0.00005; // FIXME figure out what this ought to be
                                         // FIXME add gear-shifting
 
-#if 0 // standard lms
+#if 1 // standard lms
     for (int j = 0; j < nsamples; j++) {
         output_samples[j] = 0;
         volk_32f_x2_dot_prod_32f(
@@ -113,11 +113,6 @@ void atsc_equalizer::adaptN(const float* input_samples,
         // update taps...
         float tmp_taps[NTAPS];
         volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * e, NTAPS);
-
-        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
-        //                        std::ios::app | std::ios::binary);
-        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
-
         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
     }
 
@@ -204,7 +199,7 @@ work_return_code_t atsc_equalizer::work(std::vector<block_work_input>& work_inpu
         if (d_segno == -1) {
             if (d_flags & 0x0010) {
                 adaptN(data_mem, training_sequence2, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
-            } else {
+            } else if (!(d_flags & 0x0010)) {
                 adaptN(data_mem, training_sequence1, data_mem2, KNOWN_FIELD_SYNC_LENGTH);
             }
 
