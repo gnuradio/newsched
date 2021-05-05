@@ -146,9 +146,9 @@ void atsc_equalizer::adaptN(const float* input_samples,
         float tmp_taps[NTAPS];
         volk_32f_s32f_multiply_32f(tmp_taps, &input_samples[j], BETA * f, NTAPS);
 
-        std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
-                               std::ios::app | std::ios::binary);
-        dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
+        // std::ofstream dbgfile6("/tmp/ns_taps_data6.bin",
+                            //    std::ios::app | std::ios::binary);
+        // dbgfile6.write((char*)tmp_taps, sizeof(float) * (NTAPS));
 
         volk_32f_x2_subtract_32f(&d_taps[0], &d_taps[0], tmp_taps, NTAPS);
     }

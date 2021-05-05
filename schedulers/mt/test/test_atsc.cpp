@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     // auto snk = fileio::file_sink::make(sizeof(float)*832, fn);
     // auto snkeq = fileio::file_sink::make(sizeof(float)*832, "/tmp/ns_eq_out.dat");
     // auto snk = fileio::file_sink::make(sizeof(uint8_t)*207, "/tmp/ns_vit_out.dat");
-    auto snk = fileio::file_sink::make(sizeof(uint8_t)*188, "/tmp/ns_atsc_out.dat");
+    auto snk = fileio::file_sink::make(sizeof(uint8_t)*188, "/tmp/mpeg.live.ts");
     // auto null = blocks::null_sink::make(4); // plinfo
 
     fg->connect(src, 0, is2c, 0);
