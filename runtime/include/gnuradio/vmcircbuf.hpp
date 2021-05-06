@@ -33,7 +33,10 @@ public:
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
-    vmcirc_buffer(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties);
+    vmcirc_buffer(size_t num_items,
+                  size_t item_size,
+                  size_t granularity,
+                  std::shared_ptr<buffer_properties> buf_properties);
 
     // These methods are common to all the vmcircbufs
 
@@ -45,13 +48,16 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props);
+    virtual std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props);
 };
 
 class vmcirc_buffer_reader : public buffer_reader
 {
 public:
-    vmcirc_buffer_reader(buffer_sptr buffer, std::shared_ptr<buffer_properties> buf_props, size_t read_index = 0)
+    vmcirc_buffer_reader(buffer_sptr buffer,
+                         std::shared_ptr<buffer_properties> buf_props,
+                         size_t read_index = 0)
         : buffer_reader(buffer, buf_props, read_index)
     {
     }

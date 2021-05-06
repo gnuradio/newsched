@@ -6,6 +6,13 @@
 
 
 namespace gr {
+
+inline static unsigned int round_down(unsigned int n, unsigned int multiple)
+{
+    return (n / multiple) * multiple;
+}
+
+
 /**
  * @brief synchronous 1:1 input to output
  *
@@ -45,12 +52,24 @@ public:
             min_num_items = std::min(min_num_items, w.n_items);
         }
 
+        if (output_multiple_set())
+        {
+            min_num_items = round_down(min_num_items, output_multiple());
+        }
+
         // all inputs and outputs need to be fixed to the absolute min
         for (auto& w : work_input) {
             w.n_items = min_num_items;
         }
         for (auto& w : work_output) {
             w.n_items = min_num_items;
+        }
+
+        for (auto& w : work_output) {
+            if (w.n_items < output_multiple())
+            {
+                return work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS;
+            }
         }
 
         work_return_code_t ret = work(work_input, work_output);

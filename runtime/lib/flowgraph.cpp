@@ -53,6 +53,8 @@ void flowgraph::validate()
     GR_LOG_TRACE(_debug_logger, "validate()");
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
 
+    // Need to validate that all non-optional ports of all blocks in the graph are connected to something
+
     d_flat_graph = flat_graph::make_flat(base());
     for (auto sched : d_schedulers)
         sched->initialize(d_flat_graph, d_fgmon);
