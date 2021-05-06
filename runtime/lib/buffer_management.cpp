@@ -46,7 +46,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             if (ed.size() == 0) {
                 throw std::runtime_error("Edge associated with input port not found");
             }
-            p->set_buffer_reader(ed[0]->src().port()->buffer()->add_reader());
+            p->set_buffer_reader(ed[0]->src().port()->buffer()->add_reader( ed[0]->src().node()->alias() + "_" + ed[0]->dst().node()->alias()));
         }
     }
 }

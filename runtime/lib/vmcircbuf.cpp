@@ -66,7 +66,7 @@ void vmcirc_buffer::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader()
+std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader(const std::string& name)
 {
     std::shared_ptr<vmcirc_buffer_reader> r(
         new vmcirc_buffer_reader(shared_from_this(), _write_index));

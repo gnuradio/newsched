@@ -43,7 +43,7 @@ public:
     void* write_ptr();
     virtual void post_write(int num_items);
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader> add_reader(const std::string& name="");
 };
 class cuda_buffer_pinned_reader : public buffer_reader
 {

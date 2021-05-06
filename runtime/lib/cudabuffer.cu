@@ -135,7 +135,7 @@ void cuda_buffer::post_write(int num_items)
     cudaStreamSynchronize(stream);
 }
 
-std::shared_ptr<buffer_reader> cuda_buffer::add_reader()
+std::shared_ptr<buffer_reader> cuda_buffer::add_reader(const std::string& name)
 {
     std::shared_ptr<cuda_buffer_reader> r(
         new cuda_buffer_reader(shared_from_this(), _write_index));

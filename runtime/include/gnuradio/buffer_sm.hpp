@@ -64,6 +64,7 @@ public:
 
     virtual bool output_blocked_callback(bool force = false)
     {
+        std::scoped_lock guard(_buf_mutex);
 
         auto space_avail = space_available();
 
@@ -107,6 +108,9 @@ public:
             _write_index -= min_read_idx;
 
             for (size_t idx = 0; idx < _readers.size(); ++idx) {
+                GR_LOG_DEBUG(_debug_logger,
+                             "output_blocked_callback,setting _read_index to {}",
+                             _readers[idx]->read_index() - min_read_idx);
                 _readers[idx]->set_read_index(_readers[idx]->read_index() - min_read_idx);
             }
 
@@ -175,7 +179,7 @@ public:
         return true;
     }
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader> add_reader(const std::string& name = "");
 
     bool adjust_buffer_data()
     {
@@ -222,6 +226,9 @@ public:
 
         // Finally adjust all reader pointers
         for (size_t idx = 0; idx < _readers.size(); ++idx) {
+                GR_LOG_DEBUG(_debug_logger,
+                             "adjust_buffer_data,setting _read_index to {}",
+                             _readers[idx]->read_index() - min_read_idx);
             _readers[idx]->set_read_index(max_items_avail -
                                           _readers[idx]->items_available());
         }
@@ -243,20 +250,27 @@ private:
     std::shared_ptr<buffer_sm> _buffer_sm;
 
 public:
-    buffer_sm_reader(std::shared_ptr<buffer_sm> buffer, size_t read_index = 0)
+    buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
+                     size_t read_index = 0,
+                     const std::string& name = "")
         : buffer_reader(buffer, read_index), _buffer_sm(buffer)
     {
-        _logger = logging::get_logger("buffer_sm_reader", "default");
-        _debug_logger = logging::get_logger("buffer_sm_reader_dbg", "debug");
+        _logger = logging::get_logger("buffer_sm_reader_" + name, "default");
+        _debug_logger = logging::get_logger("buffer_sm_reader_dbg_" + name, "debug");
     }
 
     virtual void post_read(int num_items)
     {
         std::scoped_lock guard(_rdr_mutex);
 
+        GR_LOG_DEBUG(_debug_logger,
+                     "post_read: _read_index {}, num_items {}",
+                     _read_index,
+                     num_items);
+
         // advance the read pointer
         _read_index += num_items * _buffer->item_size();
-
+        _total_read += num_items;
         if (_read_index == _buffer->buf_size()) {
             _read_index = 0;
         }
@@ -270,12 +284,14 @@ public:
             // throw std::runtime_error("buffer_sm_reader: Wrote too far into buffer");
         }
 
-        _total_read += num_items;
+        GR_LOG_DEBUG(_debug_logger, "post_read: _read_index {}", _read_index);
     }
 
     virtual bool input_blocked_callback(size_t items_required)
     {
         // Only singly mapped buffers need to do anything with this callback
+        std::scoped_lock guard(*(_buffer->mutex()));
+
         auto items_avail = items_available();
 
         GR_LOG_DEBUG(_debug_logger,
@@ -294,7 +310,9 @@ public:
 
         // Maybe adjust read pointers from min read index?
         // This would mean that *all* readers must be > (passed) the write index
-        if (items_available() < items_required && _buffer->write_index() < read_index()) {
+        if (items_avail < items_required && _buffer->write_index() < read_index()) {
+            GR_LOG_DEBUG(_debug_logger,
+                     "Calling adjust_buffer_data ");
             return _buffer_sm->adjust_buffer_data();
         }
 
@@ -311,19 +329,10 @@ public:
         size_t w = _buffer->write_index();
         size_t r = _read_index;
 
-        // if (w < r)
-        //     return (_buffer->buf_size() - r) / _buffer->item_size();
-        // else if (w == r)
-        //     if (total_read() < _buffer->total_written()) {
-        //         return _buffer->num_items();
-        //     } else {
-        //         return 0;
-        //     }
-
         if (w < r) {
             ret = (_buffer->buf_size() - r) / _buffer->item_size();
         } else if (w == r && total_read() < _buffer->total_written()) {
-            ret = _buffer->num_items() - r / _buffer->item_size();
+            ret = (_buffer->buf_size() - r) / _buffer->item_size();
         } else {
             ret = (w - r) / _buffer->item_size();
         }
@@ -331,10 +340,22 @@ public:
         // return ret;
 
         GR_LOG_DEBUG(_debug_logger,
-                     "items_available: write_index {}, read_index {}, ret {}",
+                     "items_available: write_index {}, read_index {}, ret {}, total_read "
+                     "{}, total_written {}",
                      w,
                      r,
-                     ret);
+                     ret,
+                     total_read(),
+                     _buffer->total_written());
+
+        if (_buffer->total_written() - total_read() < ret) {
+            GR_LOG_DEBUG(_debug_logger,
+                         "check_math {} {} {} {}",
+                         _buffer->total_written() - total_read(),
+                         ret,
+                         total_read(),
+                         _buffer->total_written());
+        }
 
         return ret;
     }

@@ -63,7 +63,7 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader> add_reader(const std::string& name="");
 };
 
 class vmcirc_buffer_reader : public buffer_reader

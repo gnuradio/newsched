@@ -75,7 +75,7 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
         input_data[i] = gr_complex(2 * i, 2 * i + 1);
     }
 
-    auto nblocks = 2;
+    auto nblocks = 4;
 
 
     int veclen = 1;

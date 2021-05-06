@@ -142,7 +142,7 @@ public:
      * 
      * @return std::shared_ptr<buffer_reader> 
      */
-    virtual std::shared_ptr<buffer_reader> add_reader() = 0;
+    virtual std::shared_ptr<buffer_reader> add_reader(const std::string& name="") = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
 
     virtual bool output_blocked_callback(bool force = false)
@@ -190,6 +190,7 @@ public:
     void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
+    std::mutex* mutex() { return &_rdr_mutex; }
 
     /**
      * @brief Return the number of items available to be read
