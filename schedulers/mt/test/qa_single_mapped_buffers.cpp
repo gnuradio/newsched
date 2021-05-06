@@ -13,7 +13,7 @@
 
 using namespace gr;
 
-#if 0
+
 TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
 {
     int nsamples = 1000000;
@@ -61,8 +61,9 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     EXPECT_EQ(snk->data(), expected_data);
     EXPECT_EQ(snk->data().size(), expected_data.size());
 }
-#endif
 
+
+#if 1
 // Test the case where we have multiple readers to a single block
 TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
 {
@@ -73,6 +74,7 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
     float k = 1.0;
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = gr_complex(2 * i, 2 * i + 1);
+        expected_data[i] = gr_complex(k * 2 * i, k * (2 * i + 1));
     }
 
     auto nblocks = 4;
@@ -103,12 +105,22 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
     fg->wait();
 
     for (int n = 0; n < nblocks; n++) {
-        for (int i = 0; i < nsamples; i++) {
-            input_data[i] = gr_complex(2 * i, 2 * i + 1);
-            expected_data[i] = gr_complex(k * 2 * i, k * (2 * i + 1));
-        }
 
-        EXPECT_EQ(sink_blks[n]->data(), expected_data);
-        EXPECT_EQ(sink_blks[n]->data().size(), expected_data.size());
+        auto d = sink_blks[n]->data();
+        EXPECT_EQ(d.size(), expected_data.size());
+        if (d.size() == expected_data.size())
+        {
+            EXPECT_EQ(d, expected_data);
+        }
+        else
+        {
+            if (d.size() < expected_data.size())
+            {
+                auto e = std::vector<gr_complex>(expected_data.begin(), expected_data.begin()+d.size());
+                EXPECT_EQ(d, e);
+            }
+        }
+        
     }
 }
+#endif
