@@ -82,6 +82,9 @@ void cuda_buffer_reader::post_read(int num_items)
 }
 void cuda_buffer::post_write(int num_items)
 {
+    if (num_items < 0)
+        return;
+        
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
     size_t bytes_written = num_items * _item_size;
