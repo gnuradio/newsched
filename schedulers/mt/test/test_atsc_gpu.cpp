@@ -93,14 +93,19 @@ int main(int argc, char* argv[])
     fg->connect(rsd, 0, der, 0);
     fg->connect(rsd, 1, der, 1);
     fg->connect(der, 0, snk, 0);
-#elif 0
+#elif 1
+     // Current state: this section, which does CUDA acceleration on all 4 blocks
+     // has discontinuities on the output stream when using either the fs_checker or
+     // the equalizer block in CUDA
+
     // auto src = fileio::file_source::make(sizeof(float), "/tmp/fpll_out.f32", false);
     auto src = fileio::file_source::make(sizeof(float), "/tmp/fpll_out.f32", false);
     auto dcb = filter::dc_blocker<float>::make(4096, true);
     auto agc = analog::agc_blk<float>::make(1e-5, 4.0, 1.0);
-    auto sync = dtv::atsc_sync_cuda::make(oversampled_rate);
-    // auto fschk = dtv::atsc_fs_checker_cuda::make();
-    auto fschk = dtv::atsc_fs_checker::make();
+    // auto sync = dtv::atsc_sync_cuda::make(oversampled_rate);
+    auto sync = dtv::atsc_sync::make(oversampled_rate);
+    auto fschk = dtv::atsc_fs_checker_cuda::make();
+    // auto fschk = dtv::atsc_fs_checker::make();
     auto eq = dtv::atsc_equalizer_cuda::make();
     // auto eq = dtv::atsc_equalizer::make();
     auto vit = dtv::atsc_viterbi_decoder_cuda::make();
@@ -114,7 +119,7 @@ int main(int argc, char* argv[])
     fg->connect(src, 0, dcb, 0);
     fg->connect(dcb, 0, agc, 0);
 
-    fg->connect(agc, 0, sync, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS); //->set_max_buffer_read(32*832));
+    fg->connect(agc, 0, sync, 0); //->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS); //->set_max_buffer_read(32*832));
     fg->connect(sync, 0, fschk, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
     fg->connect(fschk, 0, eq, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
     fg->connect(eq, 0, vit, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
@@ -142,6 +147,10 @@ int main(int argc, char* argv[])
     fg->connect(rsd, 1, der, 1);
     fg->connect(der, 0, snk, 0);
 #elif 1
+
+     // When the input is given to the fs_checker, not using the sync block, there is 
+     // no issues with the decoded stream
+
     auto src = fileio::file_source::make(832*sizeof(float), "/tmp/sync_out.f32", false);
     // auto dcb = filter::dc_blocker<float>::make(4096, true);
     // auto agc = analog::agc_blk<float>::make(1e-5, 4.0, 1.0);
