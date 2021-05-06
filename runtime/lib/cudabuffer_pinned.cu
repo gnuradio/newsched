@@ -45,6 +45,9 @@ void cuda_buffer_pinned::post_write(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
+    if (num_items < 0)
+        return;
+
     size_t bytes_written = num_items * _item_size;
     size_t wi1 = _write_index;
     size_t wi2 = _write_index + _buf_size;

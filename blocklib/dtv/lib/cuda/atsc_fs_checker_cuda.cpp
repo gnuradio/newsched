@@ -120,7 +120,10 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                              items_to_process,
                              d_dev_nerrors511,
                              stream1);
+            
         checkCudaErrors(cudaPeekAtLastError());
+        cudaStreamSynchronize(stream1);
+        
         exec_atsc_fs_checker(in + i * ATSC_DATA_SEGMENT_LENGTH,
                              d_dev_atsc_pn63,
                              LENGTH_2ND_63,
@@ -129,12 +132,13 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                              d_dev_nerrors63,
                              stream1);
         checkCudaErrors(cudaPeekAtLastError());
+        cudaStreamSynchronize(stream1);
         checkCudaErrors(cudaMemcpyAsync(d_host_nerrors511,
                                         d_dev_nerrors511,
                                         sizeof(int16_t) * items_to_process,
                                         cudaMemcpyDeviceToHost,
                                         stream1));
-                                            
+        cudaStreamSynchronize(stream1);                                        
 
         checkCudaErrors(cudaMemcpyAsync(d_host_nerrors63,
                                         // checkCudaErrors(cudaMemcpy(d_host_nerrors63,
@@ -174,18 +178,12 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                 // So we copy out current packet data to an output packet and fill its
                 // plinfo
                 // std::cout << (output_produced - (i+j)) << " ";
+                // std::cout << d_field_num << "-" << work_input[0].nitems_read() + i+j << std::endl;
                 if (output_produced == 0)
                 {
                     start_item = i+j;
                 }
-                // checkCudaErrors(
-                //     cudaMemcpyAsync(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
-                //                     &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
-                //                     ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
-                //                     cudaMemcpyDeviceToDevice,
-                //                     stream3));
 
-                // cudaStreamSynchronize(stream3);
 
                 plinfo pli_out;
                 pli_out.set_regular_seg((d_field_num == 2), d_segment_num);
@@ -195,7 +193,14 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                     d_field_num = 0;
                     d_segment_num = 0;
                 } else {
+                checkCudaErrors(
+                    cudaMemcpyAsync(&out[output_produced * ATSC_DATA_SEGMENT_LENGTH],
+                                    &in[(i + j) * ATSC_DATA_SEGMENT_LENGTH],
+                                    ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
+                                    cudaMemcpyDeviceToDevice,
+                                    stream1));
 
+                cudaStreamSynchronize(stream1);
                     // std::cout << flags << " " << segno << std::endl;
                     plout[output_produced++] = pli_out;
                 }
@@ -204,16 +209,19 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
 
         if (output_produced > 0)
         {
-            checkCudaErrors(
-                cudaMemcpyAsync(&out[0],
-                                &in[start_item * ATSC_DATA_SEGMENT_LENGTH],
-                                output_produced * ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
-                                cudaMemcpyDeviceToDevice,
-                                stream3));
+            // checkCudaErrors(
+                // cudaMemcpyAsync(&out[0],
+                //                 &in[start_item * ATSC_DATA_SEGMENT_LENGTH],
+                //                 output_produced * ATSC_DATA_SEGMENT_LENGTH * sizeof(float),
+                //                 cudaMemcpyDeviceToDevice,
+                //                 stream1));
+                // memcpy(&out[0],
+                //                 &in[start_item * ATSC_DATA_SEGMENT_LENGTH],
+                //                 output_produced * ATSC_DATA_SEGMENT_LENGTH * sizeof(float));
         }
-
+        cudaStreamSynchronize(stream1);
     }
-    cudaStreamSynchronize(stream3);
+    // cudaStreamSynchronize(stream3);
 
     consume_each(noutput_items, work_input);
     produce_each(output_produced, work_output);
