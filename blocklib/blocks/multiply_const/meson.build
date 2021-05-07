@@ -1,5 +1,10 @@
 blocks_multiply_const_files = files('multiply_const_cpu.cpp')
 
+if cuda_dep.found() and get_option('enable_cuda')
+    blocks_multiply_const_files += files('multiply_const_cuda.cpp')
+    blocks_multiply_const_cu_files = files('multiply_const_cuda.cu')
+endif
+
 # Copy the hpp file to the build directory
 gen_multiply_const_h = custom_target('gen_multiply_const_cpu_h',
                         input : ['multiply_const.hpp'],

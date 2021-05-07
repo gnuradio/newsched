@@ -7,7 +7,6 @@
 #include <cuda_runtime.h>
 
 
-
 namespace gr {
 namespace blocks {
 
