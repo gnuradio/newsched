@@ -12,7 +12,7 @@ template <class T>
 class multiply_const_cpu : public multiply_const<T>
 {
 public:
-    multiply_const_cpu(T k, size_t vlen);
+    multiply_const_cpu(const typename multiply_const<T>::block_args& args);
     
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;

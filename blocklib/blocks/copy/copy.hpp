@@ -23,10 +23,10 @@ public:
     {
         switch (impl) {
         case available_impl::CPU:
-            make_cpu(args);
+            return make_cpu(args);
             break;
         case available_impl::CUDA:
-            make_cuda(args);
+            return make_cuda(args);
             break;
         default:
             throw std::invalid_argument(

@@ -25,13 +25,13 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
     for (auto ngroups : { 2, 4, 8 }) {
         for (auto nblocks : { 2, 8, 16 }) {
             // for (auto nblocks : { 2, }) {
-            int veclen = 1;
+            size_t veclen = 1;
             auto src = blocks::vector_source_c::make_cpu(input_data);
             auto snk = blocks::vector_sink_c::make_cpu();
             std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks * ngroups);
 
             for (int i = 0; i < nblocks * ngroups; i++) {
-                mult_blks[i] = blocks::multiply_const_cc::make_cpu(k, veclen);
+                mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
             }
 
             flowgraph_sptr fg(new flowgraph());

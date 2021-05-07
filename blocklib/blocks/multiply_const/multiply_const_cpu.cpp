@@ -15,14 +15,14 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename multiply_const<T>::sptr multiply_const<T>::make_cpu(PARAM_LIST)
+typename multiply_const<T>::sptr multiply_const<T>::make_cpu(const block_args& args)
 {
-    return std::make_shared<multiply_const_cpu<T>>(PARAM_VALS);
+    return std::make_shared<multiply_const_cpu<T>>(args);
 }
 
 template <class T>
-multiply_const_cpu<T>::multiply_const_cpu(T k, size_t vlen)
-    : multiply_const<T>(k, vlen), d_k(k), d_vlen(vlen)
+multiply_const_cpu<T>::multiply_const_cpu(const typename multiply_const<T>::block_args& args)
+    : multiply_const<T>(args), d_k(args.k), d_vlen(args.vlen)
 {
 }
 

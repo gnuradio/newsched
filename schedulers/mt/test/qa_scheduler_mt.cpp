@@ -57,8 +57,8 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     }
 
     auto src = blocks::vector_source_f::make_cpu(input_data, false);
-    auto mult1 = blocks::multiply_const_ff::make_cpu(100.0);
-    auto mult2 = blocks::multiply_const_ff::make_cpu(200.0);
+    auto mult1 = blocks::multiply_const_ff::make_cpu({100.0});
+    auto mult2 = blocks::multiply_const_ff::make_cpu({200.0});
     auto snk = blocks::vector_sink_f::make_cpu();
 
     flowgraph_sptr fg(new flowgraph());

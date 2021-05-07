@@ -9,6 +9,11 @@ template <class T>
 class multiply_const : public sync_block
 {
 public:
+    typedef struct {
+        T k;
+        size_t vlen = 1;
+    } block_args;
+
     typedef std::shared_ptr<multiply_const> sptr;
     multiply_const(T k, size_t vlen) : sync_block("multiply_const")
     {
@@ -25,7 +30,7 @@ public:
      *
      * @return std::shared_ptr<multiply_const>
      */
-    static sptr make_cpu(T k, size_t vlen = 1);
+    static sptr make_cpu(block_args args);
 };
 
 typedef multiply_const<int16_t> multiply_const_ss;
