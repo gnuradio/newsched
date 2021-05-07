@@ -22,7 +22,7 @@ template <typename T>
 extern void get_block_and_grid_multiply_const(int* minGrid, int* minBlock);
 
 template <class T>
-typename multiply_const<T>::sptr multiply_const<T>::make_cpu(const block_args& args)
+typename multiply_const<T>::sptr multiply_const<T>::make_cuda(const block_args& args)
 {
     return std::make_shared<multiply_const_cuda<T>>(args);
 }

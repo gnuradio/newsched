@@ -15,13 +15,13 @@ public:
     } block_args;
 
     typedef std::shared_ptr<multiply_const> sptr;
-    multiply_const(T k, size_t vlen) : sync_block("multiply_const")
+    multiply_const(const block_args& args) : sync_block("multiply_const")
     {
         add_port(
-            port<T>::make("in", port_direction_t::INPUT, std::vector<size_t>{ vlen }));
+            port<T>::make("in", port_direction_t::INPUT, std::vector<size_t>{ args.vlen }));
 
         add_port(
-            port<T>::make("out", port_direction_t::OUTPUT, std::vector<size_t>{ vlen }));
+            port<T>::make("out", port_direction_t::OUTPUT, std::vector<size_t>{ args.vlen }));
     }
 
     /**
@@ -30,7 +30,15 @@ public:
      *
      * @return std::shared_ptr<multiply_const>
      */
-    static sptr make_cpu(block_args args);
+    static sptr make_cpu(const block_args& args);
+
+    /**
+     * @brief Set the implementation to CUDA and return a shared pointer to the block
+     * instance
+     *
+     * @return std::shared_ptr<multiply_const>
+     */
+    static sptr make_cuda(const block_args& args);
 };
 
 typedef multiply_const<int16_t> multiply_const_ss;
