@@ -18,9 +18,9 @@ void multiply_const_kernel(const cuFloatComplex* in, cuFloatComplex* out, cuFloa
 {
     auto i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n)
-    { // this is not correct
-        out[i].x = k.x * in[i].y;
-        out[i].y = k.x * in[i].y;
+    {
+        out[i].x = k.x * in[i].x - k.y*in[i].y;
+        out[i].y = k.x * in[i].y + k.y*in[i].x;
     }
 }
 
