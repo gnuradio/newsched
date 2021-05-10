@@ -6,7 +6,6 @@
 
 #include <gnuradio/blocks/annotator.hpp>
 #include <gnuradio/blocks/head.hpp>
-#include <gnuradio/blocks/multiply_const.hpp>
 #include <gnuradio/blocks/null_sink.hpp>
 #include <gnuradio/blocks/null_source.hpp>
 #include <gnuradio/blocks/vector_sink.hpp>

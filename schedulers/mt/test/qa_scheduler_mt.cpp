@@ -13,7 +13,6 @@
 
 using namespace gr;
 
-#if 0
 TEST(SchedulerMTTest, TwoSinks)
 {
     int nsamples = 100000;
@@ -46,7 +45,7 @@ TEST(SchedulerMTTest, TwoSinks)
     EXPECT_EQ(snk1->data(), input_data);
     EXPECT_EQ(snk2->data(), input_data);
 }
-#endif
+
 TEST(SchedulerMTTest, MultiDomainBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
@@ -82,7 +81,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
-#if 0
+
 TEST(SchedulerMTTest, BlockFanout)
 {
     int nsamples = 1000000;
@@ -97,13 +96,13 @@ TEST(SchedulerMTTest, BlockFanout)
 
     for (auto nblocks : { 2, 8, 16 }) {
     // for (auto nblocks : { 2, }) {
-        int veclen = 1;
+        size_t veclen = 1;
         auto src = blocks::vector_source_c::make_cpu(input_data);
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
         std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
         for (int i = 0; i < nblocks; i++) {
-            mult_blks[i] = blocks::multiply_const_cc::make_cpu(k, veclen);
+            mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
             sink_blks[i] = blocks::vector_sink_c::make_cpu();
         }
         flowgraph_sptr fg(new flowgraph());
@@ -140,4 +139,4 @@ TEST(SchedulerMTTest, BlockFanout)
        }
     }
 }
-#endif
+
