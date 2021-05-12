@@ -137,3 +137,4 @@ builddir
 callgrind.out.*
 perf.data
 trace.dat
+build*

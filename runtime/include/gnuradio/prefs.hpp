@@ -42,6 +42,7 @@ private:
             // fnames.push_back(userconf.string());
             _config = YAML::LoadFile(userconf.string());
         }
+
     }
 
     const char* tmp_path()

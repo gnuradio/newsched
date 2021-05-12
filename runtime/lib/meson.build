@@ -1,9 +1,10 @@
 incdir = [
     '../include',
+    '/opt/staging/usr/include'
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, rt_dep, pmtf_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
@@ -234,7 +235,8 @@ newsched_runtime_lib = library('newsched-runtime',
     dependencies : runtime_deps,
     link_language : 'cpp',
     include_directories : incdir,
-    cpp_args : cpp_args)
+    cpp_args : cpp_args,
+              link_args : '-lstdc++fs')
 
 newsched_runtime_dep = declare_dependency(include_directories : incdir,
 					  #  dependencies: runtime_deps, // have to disable this for blocklib_blocks_cuda_cu to link

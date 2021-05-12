@@ -3,7 +3,7 @@ scheduler_mt_sources = [
     'thread_wrapper.cpp',
     'scheduler_mt.cpp',
 ]
-scheduler_mt_deps = [newsched_runtime_dep, threads_dep, fmt_dep, pmtf_dep]
+scheduler_mt_deps = [newsched_runtime_dep, threads_dep, pmtf_dep]
 
 incdir = include_directories('../include', '../include/gnuradio/schedulers/mt')
 newsched_scheduler_mt_lib = library('newsched-scheduler-mt', 

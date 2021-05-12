@@ -27,8 +27,8 @@ if get_option('enable_testing')
         install : true)
     test('MT Block Grouping Tests', e)
 
-    srcs = ['qa_message_ports.cpp']
-    e = executable('qa_message_ports', 
+    srcs = ['qa_pluto.cpp']
+    e = executable('qa_pluto', 
         srcs, 
         include_directories : incdir, 
         dependencies: [newsched_runtime_dep,
@@ -36,18 +36,29 @@ if get_option('enable_testing')
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
+    test('PLUTOSDR Tests', e)
+
+    # srcs = ['qa_message_ports.cpp']
+    # e = executable('qa_message_ports', 
+    #     srcs, 
+    #     include_directories : incdir, 
+    #     dependencies: [newsched_runtime_dep,
+    #                 newsched_blocklib_blocks_dep,
+    #                 newsched_scheduler_mt_dep,
+    #                 gtest_dep], 
+    #     install : true)
     # test('MT Message Port Tests', e)
 
-    srcs = ['qa_tags.cpp']
-    e = executable('qa_tags', 
-        srcs, 
-        include_directories : incdir, 
-        dependencies: [newsched_runtime_dep,
-                    newsched_blocklib_blocks_dep,
-                    newsched_scheduler_mt_dep,
-                    gtest_dep], 
-        install : true)
-    test('MT Tags Tests', e)
+    # srcs = ['qa_tags.cpp']
+    # e = executable('qa_tags', 
+    #     srcs, 
+    #     include_directories : incdir, 
+    #     dependencies: [newsched_runtime_dep,
+    #                 newsched_blocklib_blocks_dep,
+    #                 newsched_scheduler_mt_dep,
+    #                 gtest_dep], 
+    #     install : true)
+    # test('MT Tags Tests', e)
 
 endif
 

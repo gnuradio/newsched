@@ -1,5 +1,5 @@
 blocks_sources = [
-    'annotator.cpp',
+    # 'annotator.cpp',
     'copy.cpp',
     'fanout.cpp',
     'head.cpp',
@@ -8,12 +8,13 @@ blocks_sources = [
     'vector_source.cpp'
 ]
 
-incdir = include_directories(['../include/gnuradio/blocks','../include'])
+incdir = include_directories(['../include/gnuradio/blocks','../include', '/opt/staging/usr/include'])
 newsched_blocklib_blocks_lib = library('newsched-blocklib-blocks', 
     blocks_sources, 
     include_directories : incdir, 
     install : true, 
-    dependencies : [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep])
+    # dependencies : [newsched_runtime_dep, pmtf_dep, rt_dep, spdlog_dep])
+    dependencies : [newsched_runtime_dep, pmtf_dep, rt_dep, spdlog_dep])
 
 newsched_blocklib_blocks_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_blocks_lib)

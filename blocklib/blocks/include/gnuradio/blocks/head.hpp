@@ -3,6 +3,7 @@
 
 
 #include <gnuradio/sync_block.hpp>
+#include <algorithm>
 
 namespace gr {
 namespace blocks {
@@ -47,7 +48,7 @@ public:
             return work_return_code_t::WORK_DONE; // Done!
         }
 
-        unsigned n = std::min(_nitems - _ncopied_items, (uint64_t)work_output[0].n_items);
+        unsigned n = std::min((uint64_t)(_nitems - _ncopied_items), (uint64_t)work_output[0].n_items);
 
         if (n == 0)
         {
