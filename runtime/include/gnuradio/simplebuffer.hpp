@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <string.h>
 #include <algorithm>
 #include <cstdint>
@@ -92,5 +93,24 @@ public:
         _total_read += num_items;
     }
 };
+
+class simplebuffer_properties : public buffer_properties
+{
+public:
+    // typedef sptr std::shared_ptr<buffer_properties>;
+    simplebuffer_properties()
+        : buffer_properties()
+
+    {
+        _bff = simplebuffer::make;
+    }
+
+    static std::shared_ptr<buffer_properties> make()
+    {
+        return std::static_pointer_cast<buffer_properties>(
+            std::make_shared<simplebuffer_properties>());
+    }
+};
+
 
 } // namespace gr

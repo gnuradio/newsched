@@ -10,12 +10,12 @@
 
 #include <gnuradio/thread.hpp>
 
-#include <boost/format.hpp>
 
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
 #include <windows.h>
+// #include <boost/format.hpp>
 
 namespace gr {
 namespace thread {
@@ -258,18 +258,18 @@ void thread_unbind(gr_thread_t thread)
     cpu_set_t set;
     size_t len = sizeof(cpu_set_t);
 
-    CPU_ZERO(&set);
-    long ncpus = sysconf(_SC_NPROCESSORS_ONLN);
-    for (long n = 0; n < ncpus; n++) {
-        CPU_SET(n, &set);
-    }
+    // CPU_ZERO(&set);
+    // long ncpus = sysconf(_SC_NPROCESSORS_ONLN);
+    // for (long n = 0; n < ncpus; n++) {
+    //     CPU_SET(n, &set);
+    // }
 
-    int ret = pthread_setaffinity_np(thread, len, &set);
-    if (ret != 0) {
-        std::stringstream s;
-        s << "thread_unbind failed with error: " << ret << std::endl;
-        throw std::runtime_error(s.str());
-    }
+    // int ret = pthread_setaffinity_np(thread, len, &set);
+    // if (ret != 0) {
+    //     std::stringstream s;
+    //     s << "thread_unbind failed with error: " << ret << std::endl;
+    //     throw std::runtime_error(s.str());
+    // }
 }
 
 int thread_priority(gr_thread_t thread)
@@ -298,8 +298,10 @@ void set_thread_name(gr_thread_t thread, const std::string& name)
         return;
 
     std::string thread_name = name;
-    if (name.empty())
-        thread_name = boost::str(boost::format("thread %llu") % ((unsigned long long)thread));
+    if (name.empty()) {
+        //thread_name = boost::str(boost::format("thread %llu") % ((unsigned long long)thread));
+        thread_name = "thread " + std::to_string((unsigned long long)thread);
+    }
 
     const int max_len = 16; // Maximum accepted by PR_SET_NAME
 

@@ -1,6 +1,6 @@
 #include "thread_wrapper.hpp"
 #include <gnuradio/thread.hpp>
-#include <boost/format.hpp>
+// #include <boost/format.hpp>
 #include <thread>
 
 namespace gr {
@@ -88,8 +88,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
 #else
     thread::set_thread_name(pthread_self(),
-                            str(boost::format("%s%d") % top->d_block_group.name() %
-                                top->d_block_group.blocks()[0]->id()));
+                            top->d_block_group.name() + 
+                                std::to_string(top->d_block_group.blocks()[0]->id()));
 #endif
 
     // Set thread affinity if it was set before fg was started.

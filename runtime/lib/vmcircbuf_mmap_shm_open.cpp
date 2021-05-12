@@ -12,7 +12,7 @@
 #endif
 #include "pagesize.hpp"
 #include <gnuradio/sys_paths.hpp>
-#include <boost/format.hpp>
+// #include <boost/format.hpp>
 #include <cerrno>
 #include <cstdio>
 
@@ -52,14 +52,16 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
 
             // This is the POSIX recommended "portable format".
             // Of course the "portable format" doesn't work on some systems...
-            seg_name = str(boost::format("/gnuradio-%d-%d") % getpid() % s_seg_counter);
+            // seg_name = str(boost::format("/gnuradio-%d-%d") % getpid() % s_seg_counter);
+            seg_name = "/gnuradio-" + std::to_string(getpid()) + "-" + std::to_string(s_seg_counter);
         } else {
 
             // Where the "portable format" doesn't work, we try building
             // a full filesystem pathname pointing into a suitable temporary directory.
 
-            seg_name = str(boost::format("%s/gnuradio-%d-%d") % gr::tmp_path() %
-                           getpid() % s_seg_counter);
+            // seg_name = str(boost::format("%s/gnuradio-%d-%d") % gr::tmp_path() %
+                        //    getpid() % s_seg_counter);
+            seg_name = std::string(gr::tmp_path()) + "/gnuradio-" + std::to_string(getpid()) + "-" + std::to_string(s_seg_counter);
         }
 
         shm_fd = shm_open(seg_name.c_str(), O_RDWR | O_CREAT | O_EXCL, 0600);
@@ -75,8 +77,8 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
                 EEXIST) // Named segment already exists (shouldn't happen).  Try again
                 continue;
 
-            static std::string msg =
-                str(boost::format("shm_open [%s] failed") % seg_name);
+            // static std::string msg =
+                // str(boost::format("shm_open [%s] failed") % seg_name);
             // GR_LOG_ERROR(d_logger, msg.c_str());
             throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
         }

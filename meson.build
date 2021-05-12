@@ -11,11 +11,17 @@ rt_dep = cc.find_library('rt', required : false)
 
 cuda_available = add_languages('cuda', required : false)
 
-boost_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')
-volk_dep = dependency('volk', version : '>=2.2')
+inc = include_directories('/usr/include')
+
+inc_dep = declare_dependency(
+    include_directories : inc,
+)
+
+# boost_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')
+# volk_dep = dependency('volk', version : '>=2.3')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
-fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
-spdlog_dep = dependency('spdlog', method: 'cmake', modules : ['spdlog::spdlog'])
+fmt_dep = dependency('fmt', modules: ['fmt::fmt'])
+spdlog_dep = dependency('spdlog',  modules : ['spdlog::spdlog'], include_type : 'non-system')
 threads_dep = dependency('threads')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'))

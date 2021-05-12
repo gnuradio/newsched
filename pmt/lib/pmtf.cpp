@@ -86,8 +86,8 @@ pmt_base::sptr pmt_base::from_buffer(const uint8_t* buf, size_t size)
     return from_pmt(PMT);
 }
 
-template class pmt_scalar<std::complex<float>>;
-template class pmt_vector<std::int32_t>;
+// template class pmt_scalar<std::complex<float>>;
+// template class pmt_vector<std::int32_t>;
 // template class pmt_vector<std::complex<float>>;
 
 } // namespace pmtf

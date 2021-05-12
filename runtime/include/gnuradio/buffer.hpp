@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <gnuradio/tag.hpp>
 #include <functional>
 #include <memory>
@@ -268,7 +269,7 @@ public:
      *
      * @return uint64_t
      */
-    virtual uint64_t items_available();
+    virtual size_t items_available();
 
     /**
      * @brief Return current buffer state for reading

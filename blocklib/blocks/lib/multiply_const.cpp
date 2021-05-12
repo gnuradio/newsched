@@ -9,41 +9,41 @@
  */
 
 #include "multiply_const.hpp"
-#include <volk/volk.h>
+// #include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
 
-template <>
-work_return_code_t
-multiply_const<float>::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
-{
+// template <>
+// work_return_code_t
+// multiply_const<float>::work(std::vector<block_work_input>& work_input,
+//                             std::vector<block_work_output>& work_output)
+// {
 
-    const float* in = (const float*)work_input[0].items();
-    float* out = (float*)work_output[0].items();
-    int noi = work_output[0].n_items * d_vlen;
+//     const float* in = (const float*)work_input[0].items();
+//     float* out = (float*)work_output[0].items();
+//     int noi = work_output[0].n_items * d_vlen;
 
-    volk_32f_s32f_multiply_32f(out, in, d_k, noi);
+//     volk_32f_s32f_multiply_32f(out, in, d_k, noi);
 
-    work_output[0].n_produced = work_output[0].n_items;
-    return work_return_code_t::WORK_OK;
-}
+//     work_output[0].n_produced = work_output[0].n_items;
+//     return work_return_code_t::WORK_OK;
+// }
 
-template <>
-work_return_code_t
-multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
-                                 std::vector<block_work_output>& work_output)
-{
-    const gr_complex* in = (const gr_complex*)work_input[0].items();
-    gr_complex* out = (gr_complex*)work_output[0].items();
-    int noi = work_output[0].n_items * d_vlen;
+// template <>
+// work_return_code_t
+// multiply_const<gr_complex>::work(std::vector<block_work_input>& work_input,
+//                                  std::vector<block_work_output>& work_output)
+// {
+//     const gr_complex* in = (const gr_complex*)work_input[0].items();
+//     gr_complex* out = (gr_complex*)work_output[0].items();
+//     int noi = work_output[0].n_items * d_vlen;
 
-    volk_32fc_s32fc_multiply_32fc(out, in, d_k, noi);
+//     volk_32fc_s32fc_multiply_32fc(out, in, d_k, noi);
 
-    work_output[0].n_produced = work_output[0].n_items;
-    return work_return_code_t::WORK_OK;
-}
+//     work_output[0].n_produced = work_output[0].n_items;
+//     return work_return_code_t::WORK_OK;
+// }
 
 template <class T>
 multiply_const<T>::multiply_const(T k, size_t vlen) : sync_block("multiply_const"), d_k(k), d_vlen(vlen)
