@@ -3,7 +3,6 @@
 
 #include <pmt/pmtf.hpp>
 #include <pmt/pmtf_map.hpp>
-#include <pmt/pmtf_map2.hpp>
 #include <pmt/pmtf_scalar.hpp>
 #include <pmt/pmtf_string.hpp>
 #include <pmt/pmtf_vector.hpp>
@@ -14,10 +13,10 @@ using namespace pmtf;
 TEST(Pmt, BasicPmtTests)
 {
     std::complex<float> cplx_val = std::complex<float>(1.2, -3.4);
-    auto x = pmt_scalar<std::complex<float>>::make(cplx_val);
+    auto x = pmt_scalar(cplx_val);
 
-    EXPECT_EQ(x->value(), cplx_val);
-    EXPECT_EQ(x->data_type(), Data::ScalarComplex64);
+    EXPECT_EQ(x, cplx_val);
+    EXPECT_EQ(x.data_type(), Data::ScalarComplex64);
 
     std::vector<int32_t> int_vec_val{ 5, 9, 23445, 63, -25 };
     auto int_pmt_vec = pmt_vector<int32_t>::make(int_vec_val);
@@ -45,7 +44,7 @@ TEST(Pmt, PmtMapTests)
 
     // Create the PMT map
     std::map<std::string, pmt_sptr> input_map({
-        { "key1", pmt_scalar<std::complex<float>>::make(val1) },
+        { "key1", pmt_scalar(val1) },
         { "key2", pmt_vector<int32_t>::make(val2) },
     });
     auto map_pmt = pmt_map<std::string>::make(input_map);

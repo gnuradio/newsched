@@ -4,7 +4,6 @@ files = [
     'pmtf_vector.hpp',
     'pmtf_string.hpp',
     'pmtf_map.hpp',
-    'pmtf_map2.hpp',
     'pmtf_wrap.hpp'
 ]
 install_headers(files, subdir : 'pmt')
