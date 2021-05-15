@@ -17,7 +17,7 @@ class pmt_wrap {
     pmt_wrap() : d_ptr(nullptr) {}
     template <class T, class alloc>
     pmt_wrap(const std::vector<T, alloc>& x) {
-        auto value = pmt_vector_wrapper(x);
+        auto value = pmt_vector(x);
         d_ptr = value.ptr();
     }
     pmt_wrap(pmt_base::sptr x): d_ptr(x) {}
@@ -25,7 +25,7 @@ class pmt_wrap {
     //pmt_wrap(const std::map<std::string, T>& x);
     template <class T>
     pmt_wrap(const T& x) {
-        auto value = pmt_scalar_wrapper(x);
+        auto value = pmt_scalar(x);
         d_ptr = value.ptr();  
     };
     operator typename pmt_base::sptr() const { return d_ptr; }

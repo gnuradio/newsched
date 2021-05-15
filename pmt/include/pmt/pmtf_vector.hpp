@@ -15,25 +15,25 @@ namespace pmtf {
 
 
 template <class T>
-class pmt_vector : public pmt_base
+class pmt_vector_value : public pmt_base
 {
 public:
-    typedef std::shared_ptr<pmt_vector> sptr;
+    typedef std::shared_ptr<pmt_vector_value> sptr;
     static sptr make(const std::vector<T>& val)
     {
-        return std::make_shared<pmt_vector<T>>(val);
+        return std::make_shared<pmt_vector_value<T>>(val);
     }
     static sptr make(const T* data, size_t len)
     {
-        return std::make_shared<pmt_vector<T>>(data, len);
+        return std::make_shared<pmt_vector_value<T>>(data, len);
     }
     static sptr from_buffer(const uint8_t* buf)
     {
-        return std::make_shared<pmt_vector<T>>(buf);
+        return std::make_shared<pmt_vector_value<T>>(buf);
     }
     static sptr from_pmt(const pmtf::Pmt* fb_pmt)
     {
-        return std::make_shared<pmt_vector<T>>(fb_pmt);
+        return std::make_shared<pmt_vector_value<T>>(fb_pmt);
     }
 
 
@@ -42,21 +42,21 @@ public:
      *
      * @param val
      */
-    pmt_vector(const std::vector<T>& val);
+    pmt_vector_value(const std::vector<T>& val);
     /**
      * @brief Construct a new pmt vector object from an array
      *
      * @param data
      * @param len
      */
-    pmt_vector(const T* data, size_t len);
+    pmt_vector_value(const T* data, size_t len);
     /**
      * @brief Construct a new pmt vector object from a serialized flatbuffer
      *
      * @param buf
      */
-    pmt_vector(const uint8_t* buf);
-    pmt_vector(const pmtf::Pmt* fb_pmt);
+    pmt_vector_value(const uint8_t* buf);
+    pmt_vector_value(const pmtf::Pmt* fb_pmt);
 
     void set_value(const std::vector<T>& val);
     void set_value(const T* data, size_t len);
@@ -85,8 +85,9 @@ public:
 // If we like this idea, I would rename this to pmt_vector and rename pmt_vector to
 // something like _pmt_vector.
 template <class T>
-class pmt_vector_wrapper {
+class pmt_vector {
 public:
+    using sptr = typename pmt_vector_value<T>::sptr;
     using value_type = T;
     using size_type = size_t;
     using reference = T&;
@@ -94,25 +95,25 @@ public:
     // Constructors.  Try to match std vector constructors.
     // Right now I'm not allowing for a custom allocator, because I would believe 
     // that we would say that flatbuffer is our allocator.
-    pmt_vector_wrapper(size_type n): 
-        d_ptr(pmt_vector<T>::make(std::vector<T>(n))) {}
-    pmt_vector_wrapper(size_type n, const value_type& val):
-        d_ptr(pmt_vector<T>::make(std::vector<T>(n, val))) {}
+    pmt_vector(size_type n): 
+        d_ptr(pmt_vector_value<T>::make(std::vector<T>(n))) {}
+    pmt_vector(size_type n, const value_type& val):
+        d_ptr(pmt_vector_value<T>::make(std::vector<T>(n, val))) {}
     template <class InputIterator>
-    pmt_vector_wrapper(InputIterator first, InputIterator last):
-        d_ptr(pmt_vector<T>::make(std::vector<T>(first, last))) {}
-    pmt_vector_wrapper(const pmt_vector_wrapper& x):
+    pmt_vector(InputIterator first, InputIterator last):
+        d_ptr(pmt_vector_value<T>::make(std::vector<T>(first, last))) {}
+    pmt_vector(const pmt_vector& x):
         d_ptr(x.d_ptr) {}
-    pmt_vector_wrapper(std::initializer_list<value_type> il):
-        d_ptr(pmt_vector<T>::make(std::vector<T>(il))) {}
+    pmt_vector(std::initializer_list<value_type> il):
+        d_ptr(pmt_vector_value<T>::make(std::vector<T>(il))) {}
     
     // Add in a few more constructors because we are wrapping a vector.
-    pmt_vector_wrapper(typename pmt_vector<T>::sptr p):
+    pmt_vector(sptr p):
         d_ptr(p) {}
     // Allow for custom allocators (such as volk) in the constructor
     template <class alloc>
-    pmt_vector_wrapper(const std::vector<T, alloc>& x):
-        d_ptr(pmt_vector<T>::make(x)) {}
+    pmt_vector(const std::vector<T, alloc>& x):
+        d_ptr(pmt_vector_value<T>::make(x)) {}
 
     // TODO: Think about real iterators instead of pointers.
     value_type* begin() { return d_ptr->writable_elements(); }
@@ -131,10 +132,23 @@ public:
         return data[n];
     }
     
-    typename pmt_vector<T>::sptr ptr() { return d_ptr; }
+    sptr ptr() { return d_ptr; }
     size_type size() { return d_ptr->size(); }
+    auto data_type() { return d_ptr->data_type(); }
+    
+    // When we switch to c++20, make this a concept.
+    template <class U>
+    bool operator==(U&& other) {
+        if (other.size() != size()) return false;
+        auto my_val = begin();
+        for (auto&& val : other) {
+            if (*my_val != val) return false;
+            my_val++;
+        }
+        return true;
+    }
 private:
-    typename pmt_vector<T>::sptr d_ptr;
+    sptr d_ptr;
 };
 
 typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_function;
@@ -142,7 +156,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
 
 #define IMPLEMENT_PMT_VECTOR(datatype, fbtype)                                        \
     template <>                                                                       \
-    flatbuffers::Offset<void> pmt_vector<datatype>::rebuild_data(                     \
+    flatbuffers::Offset<void> pmt_vector_value<datatype>::rebuild_data(                     \
         flatbuffers::FlatBufferBuilder& fbb)                                          \
     {                                                                                 \
         /* fbb.Reset(); */                                                            \
@@ -155,7 +169,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    void pmt_vector<datatype>::set_value(const std::vector<datatype>& val)            \
+    void pmt_vector_value<datatype>::set_value(const std::vector<datatype>& val)            \
     {                                                                                 \
         _fbb.Reset();                                                                 \
         auto vec = _fbb.CreateVector(val.data(), val.size());                         \
@@ -166,7 +180,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    void pmt_vector<datatype>::set_value(const datatype* data, size_t len)            \
+    void pmt_vector_value<datatype>::set_value(const datatype* data, size_t len)            \
     {                                                                                 \
         _fbb.Reset();                                                                 \
         auto vec = _fbb.CreateVector(data, len);                                      \
@@ -177,21 +191,21 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    pmt_vector<datatype>::pmt_vector(const std::vector<datatype>& val)                \
+    pmt_vector_value<datatype>::pmt_vector_value(const std::vector<datatype>& val)                \
         : pmt_base(Data::Vector##fbtype)                                              \
     {                                                                                 \
         set_value(val);                                                               \
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    pmt_vector<datatype>::pmt_vector(const datatype* data, size_t len)                \
+    pmt_vector_value<datatype>::pmt_vector_value(const datatype* data, size_t len)                \
         : pmt_base(Data::Vector##fbtype)                                              \
     {                                                                                 \
         set_value(data, len);                                                         \
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    pmt_vector<datatype>::pmt_vector(const uint8_t* buf)                              \
+    pmt_vector_value<datatype>::pmt_vector_value(const uint8_t* buf)                              \
         : pmt_base(Data::Vector##fbtype)                                              \
     {                                                                                 \
         auto data = GetPmt(buf)->data_as_Vector##fbtype()->value();                   \
@@ -200,7 +214,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    pmt_vector<datatype>::pmt_vector(const pmtf::Pmt* fb_pmt)                         \
+    pmt_vector_value<datatype>::pmt_vector_value(const pmtf::Pmt* fb_pmt)                         \
         : pmt_base(Data::Vector##fbtype)                                              \
     {                                                                                 \
         auto data = fb_pmt->data_as_Vector##fbtype()->value();                        \
@@ -209,7 +223,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    std::vector<datatype> pmt_vector<datatype>::value() const                         \
+    std::vector<datatype> pmt_vector_value<datatype>::value() const                         \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(buffer_pointer());                              \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -219,7 +233,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    const datatype* pmt_vector<datatype>::data()                                      \
+    const datatype* pmt_vector_value<datatype>::data()                                      \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -227,7 +241,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    size_t pmt_vector<datatype>::size()                                               \
+    size_t pmt_vector_value<datatype>::size()                                               \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -235,7 +249,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    datatype pmt_vector<datatype>::ref(size_t k)                                      \
+    datatype pmt_vector_value<datatype>::ref(size_t k)                                      \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -245,7 +259,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    void pmt_vector<datatype>::set(size_t k, datatype val)                            \
+    void pmt_vector_value<datatype>::set(size_t k, datatype val)                            \
     {                                                                                 \
         auto pmt =                                                                    \
             GetMutablePmt(buffer_pointer() + 4); /* assuming size prefix is 32 bit */ \
@@ -255,14 +269,14 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         fb_vec->Mutate(k, val);                                                       \
     }                                                                                 \
     template <>                                                                       \
-    const datatype* pmt_vector<datatype>::elements()                                  \
+    const datatype* pmt_vector_value<datatype>::elements()                                  \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
         return (datatype*)(fb_vec->Data());                                           \
     }                                                                                 \
     template <>                                                                       \
-    datatype* pmt_vector<datatype>::writable_elements()                               \
+    datatype* pmt_vector_value<datatype>::writable_elements()                               \
     {                                                                                 \
         auto pmt =                                                                    \
             GetMutablePmt(buffer_pointer() + 4); /* assuming size prefix is 32 bit */ \
@@ -270,11 +284,11 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
                                ->mutable_value()                                      \
                                ->Data());                                             \
     }                                                                                 \
-    template class pmt_vector<datatype>;
+    template class pmt_vector_value<datatype>;
 
 #define IMPLEMENT_PMT_VECTOR_CPLX(datatype, fbtype)                                     \
     template <>                                                                         \
-    flatbuffers::Offset<void> pmt_vector<datatype>::rebuild_data(                       \
+    flatbuffers::Offset<void> pmt_vector_value<datatype>::rebuild_data(                       \
         flatbuffers::FlatBufferBuilder& fbb)                                            \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(buffer_pointer());                                \
@@ -285,7 +299,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         return vb.Finish().Union();                                                     \
     }                                                                                   \
     template <>                                                                         \
-    void pmt_vector<datatype>::set_value(const std::vector<datatype>& val)              \
+    void pmt_vector_value<datatype>::set_value(const std::vector<datatype>& val)              \
     {                                                                                   \
         _fbb.Reset();                                                                   \
         auto vec =                                                                      \
@@ -296,7 +310,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         build();                                                                        \
     }                                                                                   \
     template <>                                                                         \
-    void pmt_vector<datatype>::set_value(const datatype* data, size_t len)              \
+    void pmt_vector_value<datatype>::set_value(const datatype* data, size_t len)              \
     {                                                                                   \
         _fbb.Reset();                                                                   \
         auto vec = _fbb.CreateVectorOfNativeStructs<fbtype, datatype>(data, len);       \
@@ -306,19 +320,19 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         build();                                                                        \
     }                                                                                   \
     template <>                                                                         \
-    pmt_vector<datatype>::pmt_vector(const std::vector<datatype>& val)                  \
+    pmt_vector_value<datatype>::pmt_vector_value(const std::vector<datatype>& val)                  \
         : pmt_base(Data::Vector##fbtype)                                                \
     {                                                                                   \
         set_value(val);                                                                 \
     }                                                                                   \
     template <>                                                                         \
-    pmt_vector<datatype>::pmt_vector(const datatype* data, size_t len)                  \
+    pmt_vector_value<datatype>::pmt_vector_value(const datatype* data, size_t len)                  \
         : pmt_base(Data::Vector##fbtype)                                                \
     {                                                                                   \
         set_value(data, len);                                                           \
     }                                                                                   \
     template <>                                                                         \
-    pmt_vector<datatype>::pmt_vector(const uint8_t* buf)                                \
+    pmt_vector_value<datatype>::pmt_vector_value(const uint8_t* buf)                                \
         : pmt_base(Data::Vector##fbtype)                                                \
     {                                                                                   \
         auto data = GetPmt(buf)->data_as_Vector##fbtype()->value();                     \
@@ -326,7 +340,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         set_value((const datatype*)data->Data(), len);                                  \
     }                                                                                   \
     template <>                                                                         \
-    pmt_vector<datatype>::pmt_vector(const pmtf::Pmt* fb_pmt)                           \
+    pmt_vector_value<datatype>::pmt_vector_value(const pmtf::Pmt* fb_pmt)                           \
         : pmt_base(Data::Vector##fbtype)                                                \
     {                                                                                   \
         auto data = fb_pmt->data_as_Vector##fbtype()->value();                          \
@@ -334,7 +348,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         set_value((const datatype*)data->Data(), len);                                  \
     }                                                                                   \
     template <>                                                                         \
-    std::vector<datatype> pmt_vector<datatype>::value() const                           \
+    std::vector<datatype> pmt_vector_value<datatype>::value() const                           \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
@@ -346,7 +360,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         return ret;                                                                     \
     }                                                                                   \
     template <>                                                                         \
-    const datatype* pmt_vector<datatype>::data()                                        \
+    const datatype* pmt_vector_value<datatype>::data()                                        \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
@@ -354,14 +368,14 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
             fb_vec->Data(); /* no good native conversions in API, just cast here*/      \
     }                                                                                   \
     template <>                                                                         \
-    size_t pmt_vector<datatype>::size()                                                 \
+    size_t pmt_vector_value<datatype>::size()                                                 \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
         return fb_vec->size();                                                          \
     }                                                                                   \
     template <>                                                                         \
-    datatype pmt_vector<datatype>::ref(size_t k)                                        \
+    datatype pmt_vector_value<datatype>::ref(size_t k)                                        \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
@@ -370,14 +384,14 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         return *((datatype*)(*fb_vec)[k]); /* hacky cast */                             \
     }                                                                                   \
     template <>                                                                         \
-    const datatype* pmt_vector<datatype>::elements()                                    \
+    const datatype* pmt_vector_value<datatype>::elements()                                    \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
         return (datatype*)(fb_vec->Data()); /* hacky cast*/                             \
     }                                                                                   \
     template <>                                                                         \
-    void pmt_vector<datatype>::set(size_t k, datatype val)                              \
+    void pmt_vector_value<datatype>::set(size_t k, datatype val)                              \
     {                                                                                   \
         auto pmt =                                                                      \
             GetMutablePmt(buffer_pointer() + 4); /* assuming size prefix is 32 bit */   \
@@ -387,7 +401,7 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
         fb_vec->Mutate(k, (fbtype*)&val); /* hacky cast */                              \
     }                                                                                   \
     template <>                                                                         \
-    datatype* pmt_vector<datatype>::writable_elements()                                 \
+    datatype* pmt_vector_value<datatype>::writable_elements()                                 \
     {                                                                                   \
         auto pmt =                                                                      \
             GetMutablePmt(buffer_pointer() + 4); /* assuming size prefix is 32 bit */   \
@@ -396,6 +410,6 @@ typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_funct
                                ->GetMutableObject(0);                                   \
         return (datatype*)(mutable_obj); /* hacky cast */                               \
     }                                                                                   \
-    template class pmt_vector<datatype>;
+    template class pmt_vector_value<datatype>;
 
 } // namespace pmtf

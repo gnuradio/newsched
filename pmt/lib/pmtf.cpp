@@ -51,29 +51,29 @@ pmt_base::sptr pmt_base::from_pmt(const pmtf::Pmt* fb_pmt)
     case Data::ScalarUInt64:
         return std::static_pointer_cast<pmt_base>(pmt_scalar_value<uint64_t>::from_pmt(fb_pmt));
     case Data::VectorInt8:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<int8_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<int8_t>::from_pmt(fb_pmt));
     case Data::VectorUInt8:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<uint8_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<uint8_t>::from_pmt(fb_pmt));
     case Data::VectorInt16:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<int16_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<int16_t>::from_pmt(fb_pmt));
     case Data::VectorUInt16:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<uint16_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<uint16_t>::from_pmt(fb_pmt));
     case Data::VectorInt32:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<int32_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<int32_t>::from_pmt(fb_pmt));
     case Data::VectorUInt32:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<uint32_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<uint32_t>::from_pmt(fb_pmt));
     case Data::VectorInt64:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<int64_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<int64_t>::from_pmt(fb_pmt));
     case Data::VectorUInt64:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<uint64_t>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<uint64_t>::from_pmt(fb_pmt));
     case Data::VectorFloat32:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<float>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<float>::from_pmt(fb_pmt));
     case Data::VectorFloat64:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<double>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<double>::from_pmt(fb_pmt));
     case Data::VectorComplex64:
-        return std::static_pointer_cast<pmt_base>(pmt_vector<std::complex<float>>::from_pmt(fb_pmt));
+        return std::static_pointer_cast<pmt_base>(pmt_vector_value<std::complex<float>>::from_pmt(fb_pmt));
     // case Data::VectorComplex128:
-    //     return std::static_pointer_cast<pmt_base>(pmt_vector<std::complex<double>>::from_pmt(fb_pmt));
+    //     return std::static_pointer_cast<pmt_base>(pmt_vector_value<std::complex<double>>::from_pmt(fb_pmt));
 
     default:
         throw std::runtime_error("Unsupported PMT Type");
@@ -87,7 +87,7 @@ pmt_base::sptr pmt_base::from_buffer(const uint8_t* buf, size_t size)
 }
 
 template class pmt_scalar_value<std::complex<float>>;
-template class pmt_vector<std::int32_t>;
-// template class pmt_vector<std::complex<float>>;
+template class pmt_vector_value<std::int32_t>;
+// template class pmt_vector_value<std::complex<float>>;
 
 } // namespace pmtf

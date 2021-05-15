@@ -19,14 +19,14 @@ TEST(Pmt, BasicPmtTests)
     EXPECT_EQ(x.data_type(), Data::ScalarComplex64);
 
     std::vector<int32_t> int_vec_val{ 5, 9, 23445, 63, -25 };
-    auto int_pmt_vec = pmt_vector<int32_t>::make(int_vec_val);
-    EXPECT_EQ(int_pmt_vec->value(), int_vec_val);
-    EXPECT_EQ(int_pmt_vec->data_type(), Data::VectorInt32);
+    auto int_pmt_vec = pmt_vector<int32_t>(int_vec_val);
+    EXPECT_EQ(int_pmt_vec, int_vec_val);
+    EXPECT_EQ(int_pmt_vec.data_type(), Data::VectorInt32);
 
     std::vector<std::complex<float>> cf_vec_val{ { 0, 1 }, { 2, 3 }, { 4, 5 } };
-    auto cf_pmt_vec = pmt_vector<std::complex<float>>::make(cf_vec_val);
-    EXPECT_EQ(cf_pmt_vec->value(), cf_vec_val);
-    EXPECT_EQ(cf_pmt_vec->data_type(), Data::VectorComplex64);
+    auto cf_pmt_vec = pmt_vector<std::complex<float>>(cf_vec_val);
+    EXPECT_EQ(cf_pmt_vec, cf_vec_val);
+    EXPECT_EQ(cf_pmt_vec.data_type(), Data::VectorComplex64);
 }
 
 TEST(Pmt, PmtStringTests)
@@ -43,27 +43,18 @@ TEST(Pmt, PmtMapTests)
     std::vector<int32_t> val2{ 44, 34563, -255729, 4402 };
 
     // Create the PMT map
-    std::map<std::string, pmt_sptr> input_map({
+    std::map<std::string, pmt_wrap> input_map({
         { "key1", pmt_scalar(val1) },
-        { "key2", pmt_vector<int32_t>::make(val2) },
+        { "key2", pmt_vector(val2) },
     });
-    auto map_pmt = pmt_map<std::string>::make(input_map);
+    auto map_pmt = pmt_map<std::string>(input_map);
 
     // Lookup values in the PMT map and compare with what was put in there
-    auto vv1 =
-        std::static_pointer_cast<pmt_scalar<std::complex<float>>>(map_pmt->ref("key1"));
-    EXPECT_EQ(vv1->value(), val1);
+    auto vv1 = map_pmt["key1"];
+    EXPECT_EQ(vv1, val1);
 
-    auto vv2 = std::static_pointer_cast<pmt_vector<int32_t>>(map_pmt->ref("key2"));
-    EXPECT_EQ(vv2->value(), val2);
-
-    // Pull the map back out of the PMT
-    auto newmap = map_pmt->value();
-    EXPECT_EQ(std::static_pointer_cast<pmt_scalar<std::complex<float>>>(newmap["key1"])
-                  ->value(),
-              val1);
-    EXPECT_EQ(std::static_pointer_cast<pmt_vector<int32_t>>(newmap["key2"])->value(),
-              val2);
+    auto vv2 = map_pmt["key2"];
+    EXPECT_EQ(vv2, val2);
 }
 
 TEST(Pmt, VectorWrites)
@@ -73,38 +64,36 @@ TEST(Pmt, VectorWrites)
         std::vector<std::complex<float>> cf_vec_val_modified{ { 4, 5 },
                                                               { 6, 7 },
                                                               { 8, 9 } };
-        auto cf_pmt_vec = pmt_vector<std::complex<float>>::make(cf_vec_val);
-        EXPECT_EQ(cf_pmt_vec->value(), cf_vec_val);
-        EXPECT_EQ(cf_pmt_vec->data_type(), Data::VectorComplex64);
+        auto cf_pmt_vec = pmt_vector(cf_vec_val);
+        EXPECT_EQ(cf_pmt_vec, cf_vec_val);
+        EXPECT_EQ(cf_pmt_vec.data_type(), Data::VectorComplex64);
 
-        auto writable_vec = cf_pmt_vec->writable_elements();
-        writable_vec[0] = { 4, 5 };
-        writable_vec[1] = { 6, 7 };
-        writable_vec[2] = { 8, 9 };
+        cf_vec_val[0] = { 4, 5 };
+        cf_vec_val[1] = { 6, 7 };
+        cf_vec_val[2] = { 8, 9 };
 
-        EXPECT_EQ(cf_pmt_vec->value(), cf_vec_val_modified);
+        EXPECT_EQ(cf_pmt_vec, cf_vec_val_modified);
     }
     {
         std::vector<uint32_t> int_vec_val{ 1, 2, 3, 4, 5 };
         std::vector<uint32_t> int_vec_val_modified{ 6, 7, 8, 9, 10 };
-        auto int_pmt_vec = pmt_vector<uint32_t>::make(int_vec_val);
-        EXPECT_EQ(int_pmt_vec->value(), int_vec_val);
-        EXPECT_EQ(int_pmt_vec->data_type(), Data::VectorUInt32);
+        auto int_pmt_vec = pmt_vector(int_vec_val);
+        EXPECT_EQ(int_pmt_vec, int_vec_val);
+        EXPECT_EQ(int_pmt_vec.data_type(), Data::VectorUInt32);
 
-        auto writable_vec = int_pmt_vec->writable_elements();
-        writable_vec[0] = 6;
-        writable_vec[1] = 7;
-        writable_vec[2] = 8;
-        writable_vec[3] = 9;
-        writable_vec[4] = 10;
+        int_vec_val[0] = 6;
+        int_vec_val[1] = 7;
+        int_vec_val[2] = 8;
+        int_vec_val[3] = 9;
+        int_vec_val[4] = 10;
 
-        EXPECT_EQ(int_pmt_vec->value(), int_vec_val_modified);
+        EXPECT_EQ(int_pmt_vec, int_vec_val_modified);
     }
 }
 
 TEST(Pmt, VectorWrapper) {
-    pmt_vector_wrapper<uint32_t> x(10);
-    pmt_vector_wrapper<uint32_t> y{1,2,3,4,6,7};
+    pmt_vector<uint32_t> x(10);
+    pmt_vector<uint32_t> y{1,2,3,4,6,7};
     std::vector<uint32_t> data{1,2,3,4,6,7};
     for (size_t i = 0; i < y.size(); i++) {
         EXPECT_EQ(y[i], data[i]);
@@ -125,30 +114,30 @@ TEST(Pmt, VectorWrapper) {
     }
 
     // Create from an std::vector
-    pmt_vector_wrapper<uint32_t> x_vec(std::vector<uint32_t>{1,2,3,4,6,7});
+    pmt_vector<uint32_t> x_vec(std::vector<uint32_t>{1,2,3,4,6,7});
 
     // Check the other constructors
-    pmt_vector_wrapper<uint32_t> vec1(4);
+    pmt_vector<uint32_t> vec1(4);
     EXPECT_EQ(vec1.size(), 4);
     for (auto& e: vec1)
         EXPECT_EQ(e, 0);
 
-    pmt_vector_wrapper<uint32_t> vec2(4, 2);
+    pmt_vector<uint32_t> vec2(4, 2);
     for (auto& e: vec2)
         EXPECT_EQ(e, 2);
 
-    pmt_vector_wrapper<uint32_t> vec3(data.begin(), data.end());
+    pmt_vector<uint32_t> vec3(data.begin(), data.end());
     EXPECT_EQ(vec3.size(), data.size());
     i = 0;
     for (auto& e: vec3)
         EXPECT_EQ(e, data[i++]);
 
-    pmt_vector_wrapper<uint32_t> vec4(vec3);
+    pmt_vector<uint32_t> vec4(vec3);
     EXPECT_EQ(vec3.ptr(), vec4.ptr());
 }
 
 TEST(Pmt, MapWrapper) {
-    pmt_map2<std::string> x;
+    pmt_map<std::string> x;
     x["abc"] = 4;
     x["qwer"] = std::vector<int>{1,2,4};
     for (auto& [key, value]: x) {
