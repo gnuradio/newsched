@@ -53,13 +53,20 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     fg->wait();
 
     for (int i = 0; i < nsamples; i++) {
-        input_data[i] = gr_complex(2 * i, 2 * i + 1);
         expected_data[i] = gr_complex(k * 2 * i, k * (2 * i + 1));
     }
 
 
-    EXPECT_EQ(snk->data(), expected_data);
-    EXPECT_EQ(snk->data().size(), expected_data.size());
+    auto d = snk->data();
+    EXPECT_EQ(d, expected_data);
+    EXPECT_EQ(d.size(), expected_data.size());
+
+    for (size_t i = 0; i < expected_data.size(); i++) {
+        if (d[i] != expected_data[i]) {
+            std::cout << i << ": " << d[i] << " " << expected_data[i]
+                      << std::endl;
+        }
+    }
 }
 
 
@@ -111,6 +118,15 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
         if (d.size() == expected_data.size())
         {
             EXPECT_EQ(d, expected_data);
+
+                for (size_t i = 0; i< expected_data.size(); i++)
+                {
+                    if (d[i] != expected_data[i])
+                    {
+                        std::cout << n << " " << i << ": " << d[i] << " " << expected_data[i] << std::endl;
+                    }
+                }
+            
         }
         else
         {
@@ -118,6 +134,14 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
             {
                 auto e = std::vector<gr_complex>(expected_data.begin(), expected_data.begin()+d.size());
                 EXPECT_EQ(d, e);
+
+                for (size_t i = 0; i< e.size(); i++)
+                {
+                    if (d[i] != e[i])
+                    {
+                        std::cout << n << " " << i << ": " << d[i] << " " << e[i] << std::endl;
+                    }
+                }
             }
         }
         
