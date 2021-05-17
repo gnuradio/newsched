@@ -99,13 +99,15 @@ public:
             // Determine how much "to be read" data needs to be moved
             auto to_move_bytes = _write_index - min_read_idx;
 
+            if (to_move_bytes > min_read_idx) {
+                return false;
+            }
+
             GR_LOG_DEBUG(
                 _debug_logger, "output_blocked_callback, moving {} bytes", to_move_bytes);
 
             // Shift "to be read" data back to the beginning of the buffer
-            std::memmove(_buffer.data(),
-                         _buffer.data() + (min_read_idx * _item_size),
-                         to_move_bytes);
+            std::memmove(_buffer.data(), _buffer.data() + (min_read_idx), to_move_bytes);
 
             // Adjust write index and each reader index
             _write_index -= min_read_idx;
@@ -126,36 +128,32 @@ public:
     virtual size_t space_available() override
     {
         // Find the max number of items available across readers
-        // uint64_t n_available = 0;
+
         size_t min_items_read_idx = 0;
-        auto min_items_read = _readers[0]->total_read();
-        for (size_t idx = 1; idx < _readers.size(); idx++) {
-            // auto n = _readers[i]->items_available();
-            // if (n > n_available) {
-            //     n_available = n;
-            // }
-            if (_readers[idx]->total_read() <
-                _readers[min_items_read_idx]->total_read()) {
+
+        uint64_t min_items_read = std::numeric_limits<uint64_t>::max();
+        auto min_read_idx = 0;
+        for (size_t idx = 0; idx < _readers.size(); idx++) {
+            std::scoped_lock lck{ *(_readers[idx]->mutex()) };
+            auto total_read = _readers[idx]->total_read();
+            if (total_read < min_items_read) {
                 min_items_read_idx = idx;
+                min_items_read = total_read;
+                min_read_idx = _readers[idx]->read_index();
             }
-            min_items_read = std::min(min_items_read, _readers[idx]->total_read());
         }
 
         size_t space = (_buf_size - _write_index) / _item_size;
-        auto min_idx_reader = _readers[min_items_read_idx];
-        unsigned min_read_index = _readers[min_items_read_idx]->read_index();
 
-
-        if (min_read_index == _write_index) {
-
+        if (min_read_idx == _write_index) {
             // If the (min) read index and write index are equal then the buffer
             // is either completely empty or completely full depending on if
             // the number of items read matches the number written
-            if ((min_idx_reader->total_read()) != total_written()) {
+            if (min_items_read != total_written()) {
                 space = 0;
             }
-        } else if (min_read_index > _write_index) {
-            space = (min_read_index - _write_index) / _item_size;
+        } else if (min_read_idx > _write_index) {
+            space = (min_read_idx - _write_index) / _item_size;
         }
 
         if (space == 0)
@@ -182,7 +180,8 @@ public:
         return true;
     }
 
-    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props) override;
+    virtual std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props) override;
 
     bool adjust_buffer_data()
     {
@@ -367,11 +366,7 @@ public:
 class buffer_sm_properties : public buffer_properties
 {
 public:
-    buffer_sm_properties()
-        : buffer_properties()
-    {
-        _bff = buffer_sm::make;
-    }
+    buffer_sm_properties() : buffer_properties() { _bff = buffer_sm::make; }
 
     static std::shared_ptr<buffer_properties> make()
     {
