@@ -1,3 +1,5 @@
+// NOTE: This header is intended to be generated automatically and is left here as a reference for now
+
 #pragma once
 #include <gnuradio/sync_block.hpp>
 #include <gnuradio/types.hpp>

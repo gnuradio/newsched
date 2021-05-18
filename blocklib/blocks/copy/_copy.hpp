@@ -1,4 +1,7 @@
+// NOTE: This header is intended to be generated automatically and is left here as a reference for now
+
 #pragma once
+
 #include <gnuradio/sync_block.hpp>
 namespace gr {
 namespace blocks {
@@ -10,8 +13,6 @@ public:
         size_t itemsize;
     } block_args;
 
-    enum class available_impl { CPU, CUDA };
-
     typedef std::shared_ptr<copy> sptr;
     copy(block_args args) : sync_block("copy")
     {
@@ -19,6 +20,7 @@ public:
         add_port(untyped_port::make("out", port_direction_t::OUTPUT, args.itemsize));
     }
 
+    enum class available_impl { CPU, CUDA };
     static sptr make(block_args args, available_impl impl = available_impl::CPU)
     {
         switch (impl) {
