@@ -35,21 +35,6 @@ void exec_kernel(
         <<<grid_size, block_size, 0, stream>>>(in, out, k, block_size * grid_size);
 }
 
-// template <>
-// void exec_kernel(const std::complex<float>* in,
-//                  std::complex<float>* out,
-//                  std::complex<float> k,
-//                  int grid_size,
-//                  int block_size,
-//                  cudaStream_t stream)
-// {
-//     multiply_const_kernel<cuFloatComplex>
-//         <<<grid_size, block_size, 0, stream>>>(reinterpret_cast<const cuFloatComplex*>(in),
-//                                                reinterpret_cast<cuFloatComplex*>(out),
-//                                                make_cuFloatComplex(real(k), imag(k)),
-//                                                block_size * grid_size);
-// }
-
 template <typename T>
 void get_block_and_grid(int* minGrid, int* minBlock)
 {

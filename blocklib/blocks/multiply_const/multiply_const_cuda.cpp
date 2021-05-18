@@ -26,9 +26,7 @@ multiply_const_cuda<T>::multiply_const_cuda(
     : multiply_const<T>(args), d_k(args.k), d_vlen(args.vlen)
 {
     multiply_const_cu::get_block_and_grid<T>(&d_min_grid_size, &d_block_size);
-    std::cout << "minGrid: " << d_min_grid_size << ", blockSize: " << d_block_size
-              << std::endl;
-
+    GR_LOG_INFO(gr::node::_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 
@@ -38,9 +36,7 @@ multiply_const_cuda<gr_complex>::multiply_const_cuda(
     : multiply_const<gr_complex>(args), d_k(args.k), d_vlen(args.vlen)
 {
     multiply_const_cu::get_block_and_grid<cuFloatComplex>(&d_min_grid_size, &d_block_size);
-    std::cout << "minGrid: " << d_min_grid_size << ", blockSize: " << d_block_size
-              << std::endl;
-
+    GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 

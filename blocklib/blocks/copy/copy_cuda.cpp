@@ -21,8 +21,7 @@ copy_cuda::copy_cuda(block_args args) : copy(args), d_itemsize(args.itemsize)
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
-    std::cout << "minGrid: " << d_min_grid_size << ", blockSize: " << d_block_size
-              << std::endl;
+    GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
 
     cudaStreamCreate(&d_stream);
 }
