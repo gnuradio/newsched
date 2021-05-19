@@ -62,9 +62,9 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     auto snk = blocks::vector_sink_f::make_cpu();
 
     flowgraph_sptr fg(new flowgraph());
-    fg->connect(src, 0, mult1, 0);
-    fg->connect(mult1, 0, mult2, 0);
-    fg->connect(mult2, 0, snk, 0);
+    fg->connect(src, mult1);
+    fg->connect(mult1, mult2);
+    fg->connect(mult2, snk);
 
     auto sched1 = schedulers::scheduler_mt::make("sched1");
     auto sched2 = schedulers::scheduler_mt::make("sched2");
