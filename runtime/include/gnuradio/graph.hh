@@ -43,6 +43,8 @@ public:
                  node_sptr dst_node,
                  unsigned int dst_port_index);
     edge_sptr connect(node_sptr src_node,
+                 node_sptr dst_node);
+    edge_sptr connect(node_sptr src_node,
                  const std::string& src_port_name,
                  node_sptr dst_node,
                  const std::string& dst_port_name);
