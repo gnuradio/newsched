@@ -36,10 +36,11 @@ public:
                      const param_type_t data_type = param_type_t::CFLOAT,
                      const port_type_t port_type = port_type_t::STREAM,
                      const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+                     const bool optional = false,
                      const int multiplicity = 1)
     {
         return std::make_shared<port_base>(
-            name, direction, data_type, port_type, dims, multiplicity);
+            name, direction, data_type, port_type, dims, optional, multiplicity);
     }
 
     port_base(const std::string& name,
@@ -47,12 +48,14 @@ public:
               const param_type_t data_type = param_type_t::CFLOAT,
               const port_type_t port_type = port_type_t::STREAM,
               const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+              const bool optional = false,
               const int multiplicity = 1)
         : _name(name),
           _direction(direction),
           _data_type(data_type),
           _port_type(port_type),
           _dims(dims),
+          _optional(optional),
           _multiplicity(multiplicity)
     {
         // _type_info = param_type_info(_data_type); // might not be needed
@@ -70,11 +73,13 @@ public:
               const port_direction_t direction,
               const size_t itemsize,
               const port_type_t port_type = port_type_t::STREAM,
+              const bool optional = false,
               const int multiplicity = 1)
         : _name(name),
           _direction(direction),
           _data_type(param_type_t::UNTYPED),
           _port_type(port_type),
+          _optional(optional),
           _multiplicity(multiplicity),
           _datasize(itemsize),
           _itemsize(itemsize)
@@ -147,6 +152,7 @@ protected:
     int _index = -1;           // how does this get set??
     std::vector<size_t> _dims; // allow for matrices to be sent naturally across ports
     // empty dims refers to a scalar, dims=[n] same as vlen=n
+    bool _optional;
     int _multiplicity; // port can be replicated as in grc
     size_t _datasize;
     size_t _itemsize; // data size across all dims
@@ -177,13 +183,15 @@ public:
     make(const std::string& name,
          const port_direction_t direction,
          const std::vector<size_t>& dims = std::vector<size_t>(),
+         const bool optional = false,
          const int multiplicity = 1)
     {
-        return std::shared_ptr<port<T>>(new port<T>(name, direction, dims, multiplicity));
+        return std::shared_ptr<port<T>>(new port<T>(name, direction, dims, optional, multiplicity));
     }
     port(const std::string& name,
          const port_direction_t direction,
          const std::vector<size_t>& dims = std::vector<size_t>(),
+         const bool optional = false,
          const int multiplicity = 1)
         : port_base(name,
                     //    parent,
@@ -192,6 +200,7 @@ public:
                         std::type_index(typeid(T))),
                     port_type_t::STREAM,
                     dims,
+                    optional,
                     multiplicity)
     {
     }
@@ -211,16 +220,18 @@ public:
     static std::shared_ptr<untyped_port> make(const std::string& name,
                                               const port_direction_t direction,
                                               const size_t itemsize,
+                                              const bool optional = false,
                                               const int multiplicity = 1)
     {
         return std::shared_ptr<untyped_port>(
-            new untyped_port(name, direction, itemsize, multiplicity));
+            new untyped_port(name, direction, itemsize, optional, multiplicity));
     }
     untyped_port(const std::string& name,
                  const port_direction_t direction,
                  const size_t itemsize,
+                 const bool optional = false,
                  const int multiplicity = 1)
-        : port_base(name, direction, itemsize, port_type_t::STREAM, multiplicity)
+        : port_base(name, direction, itemsize, port_type_t::STREAM, optional, multiplicity)
     {
     }
 };
@@ -242,14 +253,16 @@ public:
     typedef std::shared_ptr<message_port> sptr;
     static sptr make(const std::string& name,
                      const port_direction_t direction,
+                     const bool optional = true,
                      const int multiplicity = 1)
     {
-        return std::make_shared<message_port>(name, direction, multiplicity);
+        return std::make_shared<message_port>(name, direction, optional, multiplicity);
     }
     message_port(const std::string& name,
                  const port_direction_t direction,
+                 const bool optional = false,
                  const int multiplicity = 1)
-        : port_base(name, direction, 0, port_type_t::MESSAGE, multiplicity)
+        : port_base(name, direction, 0, port_type_t::MESSAGE, optional, multiplicity)
     {
     }
 
