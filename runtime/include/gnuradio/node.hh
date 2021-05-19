@@ -84,26 +84,6 @@ public:
         return result;
     }
 
-    std::vector<size_t> sizeof_input_stream_ports()
-    {
-        std::vector<size_t> result;
-        for (auto& p : d_input_ports)
-            if (p->type() == port_type_t::STREAM)
-                result.push_back(p->data_size());
-
-        return result;
-    }
-
-    std::vector<size_t> sizeof_output_stream_ports()
-    {
-        std::vector<size_t> result;
-        for (auto& p : d_output_ports)
-            if (p->type() == port_type_t::STREAM)
-                result.push_back(p->data_size());
-
-        return result;
-    }
-
     std::string& name() { return d_name; };
     std::string& alias() { return d_alias; }
     uint32_t id() { return d_id; }
