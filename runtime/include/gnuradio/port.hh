@@ -100,6 +100,8 @@ public:
     size_t itemsize() { return _itemsize; }
     std::vector<size_t> dims() { return _dims; }
     sptr base() { return shared_from_this(); }
+    bool optional() { return _optional; }
+    auto& connected_ports() { return _connected_ports; }
 
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
     void set_buffer(buffer_sptr buffer) { _buffer = buffer; }
@@ -273,7 +275,6 @@ public:
     {
         notify_connected_ports(std::make_shared<msgport_message>(msg, _callback_fcn));
     }
-
     virtual void push_message(scheduler_message_sptr msg)
     {
         auto m = std::static_pointer_cast<msgport_message>(msg);
