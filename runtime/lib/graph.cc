@@ -67,6 +67,12 @@ edge_sptr graph::connect(node_sptr src_node,
 }
 
 edge_sptr graph::connect(node_sptr src_node,
+                    node_sptr dst_node)
+{
+    return connect(src_node, 0, dst_node, 0);
+}
+
+edge_sptr graph::connect(node_sptr src_node,
                     const std::string& src_port_name,
                     node_sptr dst_node,
                     const std::string& dst_port_name)
