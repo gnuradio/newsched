@@ -33,6 +33,7 @@ public:
     void add_scheduler(scheduler_sptr sched);
     void clear_schedulers();
     void partition(std::vector<domain_conf>& confs);
+    void check_connections(const graph_sptr& g);
     void validate();
     void start();
     void stop();
