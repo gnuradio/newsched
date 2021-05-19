@@ -43,8 +43,8 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     d_flat_subgraphs.clear();
     for (auto& info : graph_part_info) {
         d_flat_subgraphs.push_back(flat_graph::make_flat(info.subgraph));
-        info.scheduler->initialize(
-            d_flat_subgraphs[d_flat_subgraphs.size() - 1], d_fgmon);
+        info.scheduler->initialize(d_flat_subgraphs[d_flat_subgraphs.size() - 1],
+                                   d_fgmon);
     }
 }
 
@@ -54,6 +54,34 @@ void flowgraph::validate()
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
 
     d_flat_graph = flat_graph::make_flat(base());
+
+    // Are all non-optional ports connected to something
+    for (auto& node : d_flat_graph->calc_used_nodes()) {
+        for (auto& port : node->output_ports()) {
+            if (!port->optional() && port->connected_ports().size() == 0) {
+                throw std::runtime_error("Nothing connected to " + port->alias());
+            }
+        }
+        for (auto& port : node->input_ports()) {
+            if (!port->optional()) {
+
+                if (port->type() == port_type_t::STREAM) {
+
+                    if (port->connected_ports().size() < 1) {
+                        throw std::runtime_error("Nothing connected to " + port->alias());
+                    } else if (port->connected_ports().size() > 1) {
+                        throw std::runtime_error("More than 1 port connected to " +
+                                                 port->alias());
+                    }
+                } else if (port->type() == port_type_t::MESSAGE) {
+                    if (port->connected_ports().size() < 1) {
+                        throw std::runtime_error("Nothing connected to " + port->alias());
+                    }
+                }
+            }
+        }
+    }
+
     for (auto sched : d_schedulers)
         sched->initialize(d_flat_graph, d_fgmon);
 }
@@ -61,8 +89,7 @@ void flowgraph::start()
 {
     GR_LOG_TRACE(_debug_logger, "start()");
 
-    if (d_schedulers.empty())
-    {
+    if (d_schedulers.empty()) {
         GR_LOG_ERROR(_logger, "No Scheduler Specified.");
     }
 
