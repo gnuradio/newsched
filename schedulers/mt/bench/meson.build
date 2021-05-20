@@ -1,6 +1,6 @@
 incdir = include_directories('../include')
 
-srcs = ['bm_copy.cpp']
+srcs = ['bm_copy.cc']
 executable('bm_mt_copy', 
     srcs, 
     include_directories : incdir, 
@@ -11,7 +11,7 @@ executable('bm_mt_copy',
                    boost_dep], 
     install : true)
 
-srcs = ['bm_fanout.cpp']
+srcs = ['bm_fanout.cc']
 executable('bm_mt_fanout', 
     srcs, 
     include_directories : incdir,
@@ -22,7 +22,7 @@ executable('bm_mt_fanout',
                    boost_dep], 
     install : true)
 
-srcs = ['bm_nop.cpp']
+srcs = ['bm_nop.cc']
 executable('bm_mt_nop', 
     srcs, 
     include_directories : incdir, 

@@ -1,9 +1,9 @@
-blocks_head_files = files('head_cpu.cpp')
+blocks_head_files = files('head_cpu.cc')
 
 # Copy the hpp file to the build directory
 gen_head_h = custom_target('gen_head_cpu_h',
-                        input : ['head.hpp'],
-                        output : ['head.hpp'],
+                        input : ['head.hh'],
+                        output : ['head.hh'],
                         command : ['python3', join_paths(meson.source_root(),'utils/copyfile.py'),
                             '--input_file', '@INPUT@', 
                             '--output_file', '@OUTPUT@', 

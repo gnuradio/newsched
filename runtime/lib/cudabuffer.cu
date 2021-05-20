@@ -4,9 +4,9 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-// #include <boost/thread/mutex.hpp>
+// #include <boost/thread/mutex.hh>
 
-#include <gnuradio/cudabuffer.hpp>
+#include <gnuradio/cudabuffer.hh>
 
 
 // typedef boost::unique_lock<boost::mutex> scoped_lock;

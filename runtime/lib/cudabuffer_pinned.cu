@@ -8,7 +8,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/cudabuffer_pinned.hpp>
+#include <gnuradio/cudabuffer_pinned.hh>
 
 namespace gr {
 cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size)

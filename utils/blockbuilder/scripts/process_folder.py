@@ -41,14 +41,14 @@ def main():
         if [x for x in d['properties'] if x['id'] == 'type']:
             templated = True 
 
-        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hpp')
-        blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hpp')
+        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
+        blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
         full_outputfile = os.path.join(args.build_dir, args.output_file)
 
         if templated:
-            template = env.get_template('blockname_templated.hpp.j2')
+            template = env.get_template('blockname_templated.hh.j2')
         else:
-            template = env.get_template('blockname.hpp.j2')
+            template = env.get_template('blockname.hh.j2')
 
         rendered = template.render(d)
         with open(blockname_h, 'w') as file:
@@ -61,14 +61,14 @@ def main():
 
         # for impl in d['implementations']:
         #     if templated:
-        #         template = env.get_template('blockname_templated_domain.hpp.j2')
+        #         template = env.get_template('blockname_templated_domain.hh.j2')
         #     else:
-        #         template = env.get_template('blockname_domain.hpp.j2')
+        #         template = env.get_template('blockname_domain.hh.j2')
 
         #     domain = impl['id']
         #     rendered = template.render(d, domain=domain)
 
-        #     blockname_domain_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_' + domain + '.hpp')
+        #     blockname_domain_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_' + domain + '.hh')
         #     with open(blockname_domain_h, 'w') as file:
         #         print("generating " + blockname_domain_h)
         #         file.write(rendered)

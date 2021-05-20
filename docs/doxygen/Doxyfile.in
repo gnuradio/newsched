@@ -841,14 +841,14 @@ INPUT_ENCODING         = UTF-8
 #
 # If left blank the following patterns are tested:*.c, *.cc, *.cxx, *.cpp,
 # *.c++, *.java, *.ii, *.ixx, *.ipp, *.i++, *.inl, *.idl, *.ddl, *.odl, *.h,
-# *.hh, *.hxx, *.hpp, *.h++, *.cs, *.d, *.php, *.php4, *.php5, *.phtml, *.inc,
+# *.hh, *.hxx, *.hh, *.h++, *.cs, *.d, *.php, *.php4, *.php5, *.phtml, *.inc,
 # *.m, *.markdown, *.md, *.mm, *.dox (to be provided as doxygen C comment),
 # *.doc (to be provided as doxygen C comment), *.txt (to be provided as doxygen
 # C comment), *.py, *.pyw, *.f90, *.f95, *.f03, *.f08, *.f, *.for, *.tcl, *.vhd,
 # *.vhdl, *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.h \
-                         *.hpp \
+                         *.hh \
                          *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -2141,7 +2141,7 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
-# patterns (like *.h and *.hpp) to filter out the header-files in the
+# patterns (like *.h and *.hh) to filter out the header-files in the
 # directories. If left blank, the patterns specified with FILE_PATTERNS will be
 # used.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.

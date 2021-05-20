@@ -1,9 +1,9 @@
-blocks_annotator_files = files('annotator_cpu.cpp')
+blocks_annotator_files = files('annotator_cpu.cc')
 
 # Copy the hpp file to the build directory
 gen_annotator_h = custom_target('gen_annotator_cpu_h',
-                        input : ['annotator.hpp'],
-                        output : ['annotator.hpp'],
+                        input : ['annotator.hh'],
+                        output : ['annotator.hh'],
                         command : ['python3', join_paths(meson.source_root(),'utils/copyfile.py'),
                             '--input_file', '@INPUT@', 
                             '--output_file', '@OUTPUT@', 

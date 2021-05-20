@@ -1,9 +1,9 @@
-blocks_vector_source_files = files('vector_source_cpu.cpp')
+blocks_vector_source_files = files('vector_source_cpu.cc')
 
 # Copy the hpp file to the build directory
 gen_vector_source_h = custom_target('gen_vector_source_cpu_h',
-                        input : ['vector_source.hpp'],
-                        output : ['vector_source.hpp'],
+                        input : ['vector_source.hh'],
+                        output : ['vector_source.hh'],
                         command : ['python3', join_paths(meson.source_root(),'utils/copyfile.py'),
                             '--input_file', '@INPUT@', 
                             '--output_file', '@OUTPUT@', 

@@ -1,9 +1,9 @@
 
 
-# test_pmtf_sources = ['test_pmtf.cpp']
+# test_pmtf_sources = ['test_pmtf.cc']
 # executable('test_pmtf', test_pmtf_sources, include_directories : incdir, dependencies: [pmtf_dep], install : false)
 
-test_pmtf_sources = ['test_pmtf.cpp']
+test_pmtf_sources = ['test_pmtf.cc']
 executable('test_pmtf', test_pmtf_sources, include_directories : incdir, dependencies: [pmtf_dep], install : false)
 
 # executable('test_pmt', test_pmt_sources, include_directories : incdir, install : true)
@@ -11,7 +11,7 @@ executable('test_pmtf', test_pmtf_sources, include_directories : incdir, depende
 
 
 if get_option('enable_testing')
-    srcs = ['qa_pmt.cpp']
+    srcs = ['qa_pmt.cc']
     e = executable('qa_pmt', 
         srcs, 
         include_directories : incdir, 
