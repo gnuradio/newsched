@@ -21,8 +21,10 @@ void bind_block_work_io(py::module&);
 void bind_node(py::module&);
 void bind_block(py::module&);
 void bind_sync_block(py::module&);
+void bind_edge(py::module&);
 void bind_graph(py::module&);
 void bind_flowgraph(py::module&);
+void bind_scheduler(py::module&);
 
 // We need this hack because import_array() returns NULL
 // for newer Python versions.
@@ -48,8 +50,10 @@ PYBIND11_MODULE(runtime_python, m)
     bind_node(m);
     bind_block(m);
     bind_sync_block(m);
+    bind_edge(m);
     bind_graph(m);
     bind_flowgraph(m);
+    bind_scheduler(m);
     
     // TODO: Move into gr_types.hpp
     // %constant int sizeof_char 	= sizeof(char);

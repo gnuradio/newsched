@@ -4,9 +4,11 @@ runtime_pybind_sources = files([
     'block_pybind.cc',
     'node_pybind.cc',
     'sync_block_pybind.cc',
+    'edge_pybind.cc',
     'graph_pybind.cc',
     'flowgraph_pybind.cc',
-    'runtime_pybind.cc'
+    'runtime_pybind.cc',
+    'scheduler_pybind.cc'
  ] )
 
 newsched_runtime_pybind = py3_mod.extension_module('runtime_python',

@@ -20,7 +20,7 @@ def main():
     fg.connect(src, 0, cp2, 0)
     fg.connect(cp2, 0, snk2, 0)
 
-    sched = mt()
+    sched = mt.scheduler_mt()
     fg.set_scheduler(sched)
 
     fg.validate()
@@ -28,7 +28,8 @@ def main():
     fg.start()
     fg.wait()
 
-
+    print(snk1.data() == input_data)
+    print(snk2.data() == input_data)
 
 
 if __name__ == "__main__":

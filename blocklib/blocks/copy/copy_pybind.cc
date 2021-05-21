@@ -12,7 +12,7 @@ void bind_copy(py::module& m)
 {
     using copy = ::gr::blocks::copy;
 
-    py::class_<copy, std::shared_ptr<copy>> copy_class(m, "copy");
+    py::class_<copy, gr::sync_block, gr::block, gr::node, std::shared_ptr<copy>> copy_class(m, "copy");
 
     py::enum_<::gr::blocks::copy::available_impl>(copy_class, "available_impl")
         .value("cpu", ::gr::blocks::copy::available_impl::CPU)   // 0

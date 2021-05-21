@@ -28,14 +28,14 @@ void* init_numpy()
     return NULL;
 }
 
-PYBIND11_MODULE(gr_scheduler_mt, m)
+PYBIND11_MODULE(scheduler_mt_python, m)
 {
     // Initialize the numpy C API
     // (otherwise we will see segmentation faults)
     init_numpy();
 
     // Allow access to base block methods
-    py::module::import("gnuradio.gr");
+    py::module::import("newsched.gr");
 
     using mt = gr::schedulers::scheduler_mt;
     py::class_<mt,  gr::scheduler, std::shared_ptr<mt>>(
