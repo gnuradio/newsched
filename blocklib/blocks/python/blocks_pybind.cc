@@ -17,6 +17,7 @@ namespace py = pybind11;
 
 void bind_copy(py::module&);
 void bind_vector_source(py::module&);
+void bind_vector_sink(py::module&);
 
 // We need this hack because import_array() returns NULL
 // for newer Python versions.
@@ -35,8 +36,9 @@ PYBIND11_MODULE(blocks_python, m)
     init_numpy();
 
     // Allow access to base block methods
-    // py::module::import("gnuradio.gr");
+    py::module::import("newsched.gr");
 
     bind_copy(m);
     bind_vector_source(m);
+    bind_vector_sink(m);
 }

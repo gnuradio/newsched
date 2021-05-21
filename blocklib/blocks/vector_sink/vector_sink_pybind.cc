@@ -19,22 +19,21 @@ void bind_vector_sink_template(py::module& m, const char* classname)
         vector_sink_class(m, classname);
 
     py::enum_<typename gr::blocks::vector_sink<T>::available_impl>(vector_sink_class,
-                                                                     "available_impl")
+                                                                   "available_impl")
         .value("cpu", ::gr::blocks::vector_sink<T>::available_impl::CPU) // 0
         // .value("cuda", ::gr::blocks::vector_sink::available_impl::CUDA) // 1
         .export_values();
 
-    vector_sink_class.def(
-        py::init([](const std::vector<T>& data,
-                    bool repeat,
-                    unsigned int vlen,
-                    const std::vector<gr::tag_t>& tags,
-                    typename gr::blocks::vector_sink<T>::available_impl impl) {
-            return gr::blocks::vector_sink<T>::make({ data, repeat, vlen, tags }, impl);
-        }),
-        py::arg("vlen") = 1,
-        py::arg("reserve_items") = 1024,
-        py::arg("impl") = gr::blocks::vector_sink<T>::available_impl::CPU);
+    vector_sink_class
+        .def(py::init([](size_t vlen,
+                         size_t reserve_items,
+                         typename gr::blocks::vector_sink<T>::available_impl impl) {
+                 return gr::blocks::vector_sink<T>::make({ vlen, reserve_items }, impl);
+             }),
+             py::arg("vlen") = 1,
+             py::arg("reserve_items") = 1024,
+             py::arg("impl") = gr::blocks::vector_sink<T>::available_impl::CPU)
+        .def("data", &gr::blocks::vector_sink<T>::data);
 }
 
 

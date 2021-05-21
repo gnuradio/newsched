@@ -14,3 +14,7 @@ gen_vector_sink_h = custom_target('gen_vector_sink_cpu_h',
 gen_vector_sink_h = declare_dependency(sources : [gen_vector_sink_h])
 
 blocks_vector_sink_deps = [gen_vector_sink_h]
+
+if get_option('enable_python')
+    blocks_pybind_sources += files('vector_sink_pybind.cc')
+endif

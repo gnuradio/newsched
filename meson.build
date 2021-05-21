@@ -21,8 +21,8 @@ python3_dep = dependency('python3', required : get_option('enable_python'))
 # Import python3 meson module which is used to find the Python dependencies.
 py3_mod = import('python3')
 # Locate the python executable.
-py3 = py3_mod.find_python()
-# py3_inst = pymod.find_installation('python3')
+# py3 = py3_mod.find_python()
+py3_inst = import('python').find_installation('python3')
 # # Create the Meson python3 dependency from the python3 module.
 # python3_dep = dependency('python3', required : false)
 
@@ -53,3 +53,7 @@ subdir('runtime')
 subdir('blocklib')
 subdir('schedulers')
 subdir('docs')
+if (get_option('enable_python'))
+  subdir('python/gnuradio')
+endif
+

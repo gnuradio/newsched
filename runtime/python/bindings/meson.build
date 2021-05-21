@@ -9,10 +9,12 @@ runtime_pybind_sources = files([
     'runtime_pybind.cc'
  ] )
 
-newsched_runtime_pybind = py3_mod.extension_module('gr_python',
+newsched_runtime_pybind = py3_mod.extension_module('runtime_python',
     runtime_pybind_sources, 
     dependencies : [newsched_runtime_dep, python3_dep, pybind11_dep],
-    link_language : 'cpp'
+    link_language : 'cpp',
+    install : true,
+    install_dir : join_paths(py3_inst.get_install_dir(),'newsched','gr')
 )
 
 newsched_runtime_pybind_dep = declare_dependency(
