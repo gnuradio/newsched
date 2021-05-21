@@ -16,11 +16,37 @@ volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
 spdlog_dep = dependency('spdlog', method: 'cmake', modules : ['spdlog::spdlog'])
+python3_dep = dependency('python3', required : get_option('enable_python'))
+
+# Import python3 meson module which is used to find the Python dependencies.
+py3_mod = import('python3')
+# Locate the python executable.
+py3 = py3_mod.find_python()
+# py3_inst = pymod.find_installation('python3')
+# # Create the Meson python3 dependency from the python3 module.
+# python3_dep = dependency('python3', required : false)
+
+pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
 threads_dep = dependency('threads')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'))
 
 flatc = find_program('flatc', version : '>=1.12')
+
+
+# pymod = import('python')
+# python = pymod.find_installation('python3')
+# python3_dep = python.dependency()
+# pybind11_dep = declare_dependency(
+#     compile_args : [
+#         # see https://github.com/pybind/pybind11/issues/1604
+#         '-fsized-deallocation',
+#         '-fvisibility=hidden'
+#     ],
+#     dependencies : [
+#         python.dependency()
+#     ],
+# )
 
 subdir('pmt')
 subdir('runtime')
