@@ -34,16 +34,5 @@ blocks_copy_deps = [gen_copy_h]
 
 
 if get_option('enable_python')
-    # gen_copy_h = custom_target('gen_copy_pybind',
-    #                         input : ['copy.yml'],
-    #                         output : ['copy_python.cc'],
-    #                         command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/gen_block_pybind.py'),
-    #                             '--yaml_file', '@INPUT@', 
-    #                             '--output_file', '@OUTPUT@', 
-    #                             '--build_dir', join_paths(meson.build_root())],
-    #                         install : false)
-
-
-    # blocks_copy_pybind = 
     blocks_pybind_sources += files('copy_pybind.cc')
 endif

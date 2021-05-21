@@ -29,7 +29,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make_cpu(input_data, false, veclen);
+    auto src = blocks::vector_source_c::make_cpu({input_data, false, veclen});
     auto snk1 = blocks::vector_sink_c::make_cpu(veclen);
     auto copy1 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
     auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
@@ -58,7 +58,7 @@ TEST(SchedulerMTTest, CudaCopyBasic)
  */
 TEST(SchedulerMTTest, CudaCopyMultiThreaded)
 {
-    int veclen = 1024;
+    size_t veclen = 1024;
     int num_samples = veclen*1000;
     std::vector<gr_complex> input_data(num_samples);
 
@@ -66,8 +66,8 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make_cpu(input_data, false, veclen);
-    auto snk1 = blocks::vector_sink_c::make_cpu(veclen);
+    auto src = blocks::vector_source_c::make_cpu({input_data, false, veclen});
+    auto snk1 = blocks::vector_sink_c::make_cpu({veclen});
     auto copy1 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
     auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
 

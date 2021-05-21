@@ -14,3 +14,7 @@ gen_vector_source_h = custom_target('gen_vector_source_cpu_h',
 gen_vector_source_h = declare_dependency(sources : [gen_vector_source_h])
 
 blocks_vector_source_deps = [gen_vector_source_h]
+
+if get_option('enable_python')
+    blocks_pybind_sources += files('vector_source_pybind.cc')
+endif

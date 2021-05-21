@@ -26,7 +26,7 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
         for (auto nblocks : { 2, 8, 16 }) {
             // for (auto nblocks : { 2, }) {
             size_t veclen = 1;
-            auto src = blocks::vector_source_c::make_cpu(input_data);
+            auto src = blocks::vector_source_c::make_cpu( blocks::vector_source_c::block_args{ input_data,false});
             auto snk = blocks::vector_sink_c::make_cpu();
             std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks * ngroups);
 

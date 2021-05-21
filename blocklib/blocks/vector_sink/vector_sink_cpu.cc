@@ -15,16 +15,16 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename vector_sink<T>::sptr vector_sink<T>::make_cpu(PARAM_LIST)
+typename vector_sink<T>::sptr vector_sink<T>::make_cpu(const block_args& args)
 {
-    return std::make_shared<vector_sink_cpu<T>>(PARAM_VALS);
+    return std::make_shared<vector_sink_cpu<T>>(args);
 }
 
 template <class T>
-vector_sink_cpu<T>::vector_sink_cpu(const size_t vlen, const size_t reserve_items)
-    : vector_sink<T>(vlen, reserve_items), d_vlen(vlen)
+vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& args)
+    : vector_sink<T>(args), d_vlen(args.vlen)
 {
-    d_data.reserve(d_vlen * reserve_items);
+    d_data.reserve(d_vlen * args.reserve_items);
 }
 
 template <class T>

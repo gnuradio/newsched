@@ -11,12 +11,12 @@
 #include <pybind11/pybind11.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <gnuradio/types.hh>
 #include <numpy/arrayobject.h>
 
 namespace py = pybind11;
 
-void bind_copy(py::module&);
-void bind_vector_source(py::module&);
+#include <gnuradio/schedulers/mt/scheduler_mt.hh>
 
 // We need this hack because import_array() returns NULL
 // for newer Python versions.
@@ -28,15 +28,23 @@ void* init_numpy()
     return NULL;
 }
 
-PYBIND11_MODULE(blocks_python, m)
+PYBIND11_MODULE(gr_scheduler_mt, m)
 {
     // Initialize the numpy C API
     // (otherwise we will see segmentation faults)
     init_numpy();
 
     // Allow access to base block methods
-    // py::module::import("gnuradio.gr");
+    py::module::import("gnuradio.gr");
 
-    bind_copy(m);
-    bind_vector_source(m);
+    using mt = gr::schedulers::scheduler_mt;
+    py::class_<mt,  gr::scheduler, std::shared_ptr<mt>>(
+        m, "scheduler_mt")
+        .def(py::init(&gr::schedulers::scheduler_mt::make),
+            py::arg("name") = "multi_threaded",
+            py::arg("fixed_buf_size") = 32768)
+        ;
+
+
 }
+
