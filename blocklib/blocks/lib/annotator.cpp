@@ -85,7 +85,7 @@ work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
         //for (unsigned i = 0; i < std::min(d_num_outputs, d_num_inputs); i++) {
         for (unsigned i = 0; i < d_num_outputs; i++) {
             if (abs_N % d_when == 0) {
-                auto value = pmtf::pmt_scalar<uint64_t>::make(d_tag_counter++);
+                auto value = pmtf::pmt_scalar(d_tag_counter++);
                 work_output[i].buffer->add_tag(abs_N, key, value, srcid);
             }
 

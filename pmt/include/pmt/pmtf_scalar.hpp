@@ -64,10 +64,10 @@ public:
         d_ptr(x.d_ptr) {}
    
     sptr ptr() { return d_ptr; }
-    T& operator==(const T& val) { return *d_ptr == val;}
-    T& operator==(const pmt_scalar<T>& val) { return *d_ptr == *val.d_ptr; }
+    bool operator==(const T& val) const { return *d_ptr == val;}
+    bool operator==(const pmt_scalar<T>& val) const { return *d_ptr == *val.d_ptr; }
     auto data_type() { return d_ptr->data_type(); }
-    
+
 
     // Make it act like a pointer.  Probably need a better way
     // to think about it.

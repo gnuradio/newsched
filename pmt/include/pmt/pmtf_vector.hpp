@@ -116,8 +116,8 @@ public:
         d_ptr(pmt_vector_value<T>::make(x)) {}
 
     // TODO: Think about real iterators instead of pointers.
-    value_type* begin() { return d_ptr->writable_elements(); }
-    value_type* end() { return d_ptr->writable_elements() + size(); }
+    value_type* begin() const { return d_ptr->writable_elements(); }
+    value_type* end() const { return d_ptr->writable_elements() + size(); }
     const value_type* cbegin() { return d_ptr->writable_elements(); }
     const value_type* cend() { return d_ptr->writable_elements() + size(); }
 
@@ -133,12 +133,12 @@ public:
     }
     
     sptr ptr() { return d_ptr; }
-    size_type size() { return d_ptr->size(); }
+    size_type size() const { return d_ptr->size(); }
     auto data_type() { return d_ptr->data_type(); }
     
     // When we switch to c++20, make this a concept.
     template <class U>
-    bool operator==(U&& other) {
+    bool operator==(U&& other) const {
         if (other.size() != size()) return false;
         auto my_val = begin();
         for (auto&& val : other) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/tag.hpp>
+#include <pmt/pmtf_map.hpp>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -186,9 +187,9 @@ public:
 
     void add_tag(tag_t tag);
     void add_tag(uint64_t offset,
-                 pmtf::pmt_sptr key,
-                 pmtf::pmt_sptr value,
-                 pmtf::pmt_sptr srcid = nullptr);
+                 pmtf::pmt_wrap key,
+                 pmtf::pmt_wrap value,
+                 pmtf::pmt_wrap srcid = nullptr);
 
     void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 

@@ -29,11 +29,19 @@ class pmt_wrap {
         d_ptr = value.ptr();  
     };
     operator typename pmt_base::sptr() const { return d_ptr; }
-    typename pmt_base::sptr ptr() { return d_ptr; }
+    typename pmt_base::sptr ptr() const { return d_ptr; }
   private:
         pmt_base::sptr d_ptr;
 };
 
+template <class U>
+bool operator==(const pmt_wrap& x1, const U& x2) {
+    return x1.ptr() == x2;
+}
+template <class U>
+bool operator!=(const pmt_wrap& x1, const U& x2) {
+    return !(x1 == x2);
+}
 }
 
 

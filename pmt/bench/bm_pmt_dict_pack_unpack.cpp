@@ -17,16 +17,16 @@ bool run_test(const int times, uint64_t nitems)
     bool valid = true;
     for (int i = 0; i < times; i++) {
         // Create the dictionary
-        std::map<std::string, pmt_sptr> starting_map;
+        std::map<std::string, pmt_wrap> starting_map;
 
         #if 1
         for (uint64_t k = 0; k < nitems; k++) {
             auto key = std::string("key" + std::to_string(k));
-            auto value = pmt_scalar<int32_t>::make(k);
+            auto value = pmt_scalar(k);
 
             starting_map[key] = value;
         }
-        auto d_in = pmt_map<std::string>::make(starting_map);
+        auto d_in = pmt_map(starting_map);
         #else
         auto d_in = pmt_map<std::string>::make(starting_map);
         for (int k = 0; k < nitems; k++) {
