@@ -3,7 +3,8 @@ files = [
     'pmtf_scalar.hpp',
     'pmtf_vector.hpp',
     'pmtf_string.hpp',
-    'pmtf_map.hpp'
+    'pmtf_map.hpp',
+    'pmtf_wrap.hpp'
 ]
 install_headers(files, subdir : 'pmt')
 

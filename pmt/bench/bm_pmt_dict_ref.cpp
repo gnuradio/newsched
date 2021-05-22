@@ -11,7 +11,7 @@ namespace po = boost::program_options;
 
 using namespace pmtf;
 
-bool run_test(const int times, pmt_map<std::string>::sptr d, int32_t index)
+bool run_test(const int times, pmt_map<std::string>& d, int32_t index)
 {
     std::stringbuf sb; // fake channel
 
@@ -20,12 +20,12 @@ bool run_test(const int times, pmt_map<std::string>::sptr d, int32_t index)
     bool valid = true;
     for (int i=0; i< times; i++)
     {
-        auto ref = d->ref(key);
+        auto ref = d[key];
 
         // if (ref == nullptr)
         //    valid = false;
 
-        if (std::static_pointer_cast<pmt_scalar<int32_t>>(ref)->value() != index)
+        if (ref != index)
         {
             valid = false;
         }
@@ -63,16 +63,16 @@ int main(int argc, char* argv[])
 
     {
         // Create the dictionary
-        std::map<std::string,pmt_sptr> starting_map;
+        std::map<std::string,pmt_wrap> starting_map;
         for (uint32_t k = 0; k < items; k++)
         {
             auto key = std::string("key" + std::to_string(k));
-            auto value = pmt_scalar<int32_t>::make(k);
+            auto value = pmt_scalar(k);
 
             starting_map[key] = value;
         }
 
-        auto d = pmt_map<std::string>::make(starting_map);
+        auto d = pmt_map(starting_map);
 
         auto t1 = std::chrono::steady_clock::now();
 

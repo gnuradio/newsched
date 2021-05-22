@@ -17,15 +17,15 @@ int main(int argc, char* argv[])
     // std::cout << cplx_pmt.value() << std::endl;
 
     auto x = std::vector<int>{ 4, 5, 6 };
-    auto int_vec_pmt2 = pmt_vector<int32_t>::make({ 7, 8, 9 });
+    auto int_vec_pmt2 = pmt_vector<int32_t>{ 7, 8, 9 };
 
-    int_vec_pmt2->set(1, 3);
-    std::cout << int_vec_pmt2->ref(1) << std::endl;
+    int_vec_pmt2[1] = 3;
+    std::cout << int_vec_pmt2[1] << std::endl;
 
 
     std::stringbuf sb; // fake channel
     sb.str("");        // reset channel to empty
-    bool ret = int_vec_pmt2->serialize(sb);
+    bool ret = int_vec_pmt2.ptr()->serialize(sb);
     std::cout << ret << std::endl;
     auto base_ptr = pmt_base::deserialize(sb);
 
