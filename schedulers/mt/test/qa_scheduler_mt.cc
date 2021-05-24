@@ -13,7 +13,7 @@
 #include <gnuradio/vmcircbuf.hh>
 
 using namespace gr;
-
+#if 0
 TEST(SchedulerMTTest, TwoSinks)
 {
     int nsamples = 100000;
@@ -82,7 +82,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
 
     EXPECT_EQ(snk->data(), expected_data);
 }
-
+#endif
 TEST(SchedulerMTTest, BlockFanout)
 {
     int nsamples = 1000000;
