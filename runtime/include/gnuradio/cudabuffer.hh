@@ -6,6 +6,8 @@
 #include <vector>
 
 #include <gnuradio/buffer.hh>
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 namespace gr {
 enum class cuda_buffer_type { D2D, H2D, D2H, UNKNOWN };
