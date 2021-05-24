@@ -1,5 +1,7 @@
 subdir('include/gnuradio/blocks')
 
+blocks_sources = []
+blocks_deps = []
 # Individual block subdirectories
 subdir('copy')
 subdir('annotator')

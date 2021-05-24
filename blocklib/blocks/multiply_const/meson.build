@@ -37,6 +37,6 @@ gen_multiply_const_cc = custom_target('gen_multiply_const_cc',
                         install_dir : 'include/gnuradio/blocks')
 
 
-blocks_multiply_const_deps = declare_dependency(sources : [gen_multiply_const_h])#, gen_multiply_const_cc] )  #, gen_multiply_const_cc])
-
+blocks_deps += declare_dependency(sources : [gen_multiply_const_h] )  #, gen_multiply_const_cc])
+blocks_sources += [blocks_multiply_const_files, gen_multiply_const_cc]
 # blocks_multiply_const_deps = [gen_multiply_const_h, gen_multiply_const_cc]

@@ -1,21 +1,13 @@
-blocks_sources = [
-    blocks_copy_files,
+blocks_sources += [
     blocks_annotator_files,
     blocks_head_files,
-    blocks_multiply_const_files,
     blocks_vector_sink_files,
-    blocks_vector_source_files,
-    #  gen_multiply_const_cc,
-    join_paths(meson.build_root(),'blocklib','blocks','copy','copy.cc'),
-    join_paths(meson.build_root(),'blocklib','blocks','multiply_const','multiply_const.cc')
-    
+    blocks_vector_source_files,   
 ]
 
-blocks_deps = [
-    blocks_copy_deps,
+blocks_deps += [
     blocks_annotator_deps,
     blocks_head_deps,
-    blocks_multiply_const_deps,
     blocks_vector_sink_deps,
     blocks_vector_source_deps
 ]

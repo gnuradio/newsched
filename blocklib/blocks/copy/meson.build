@@ -29,6 +29,15 @@ gen_copy_h = custom_target('gen_copy_cpu_h',
                         install : true,
                         install_dir : 'include/gnuradio/blocks')
 
-gen_copy_h = declare_dependency(sources : [gen_copy_h])
+gen_copy_cc = custom_target('gen_copy_cpu_cc',
+                        input : ['copy.yml'],
+                        output : ['copy.cc'], #,'copy.cc'],
+                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
+                            '--yaml_file', '@INPUT@', 
+                            '--output_file', '@OUTPUT@', 
+                            '--build_dir', join_paths(meson.build_root())],
+                        install : true,
+                        install_dir : 'include/gnuradio/blocks')                        
 
-blocks_copy_deps = [gen_copy_h]
+blocks_deps += declare_dependency(sources : [gen_copy_h])
+blocks_sources += [blocks_copy_files, gen_copy_cc]
