@@ -5,7 +5,7 @@ incdir = include_directories('../include')
 ###################################################
 
 if get_option('enable_testing')
-    srcs = ['qa_scheduler_mt.cpp']
+    srcs = ['qa_scheduler_mt.cc']
     e = executable('qa_scheduler_mt', 
         srcs, 
         include_directories : incdir, 
@@ -16,7 +16,7 @@ if get_option('enable_testing')
         install : true)
     test('Multi Threaded Scheduler Tests', e)
 
-    srcs = ['qa_block_grouping.cpp']
+    srcs = ['qa_block_grouping.cc']
     e = executable('qa_block_grouping', 
         srcs, 
         include_directories : incdir, 
@@ -27,7 +27,7 @@ if get_option('enable_testing')
         install : true)
     test('MT Block Grouping Tests', e)
 
-    srcs = ['qa_single_mapped_buffers.cpp']
+    srcs = ['qa_single_mapped_buffers.cc']
     e = executable('qa_single_mapped_buffers', 
         srcs, 
         include_directories : incdir, 
@@ -38,7 +38,7 @@ if get_option('enable_testing')
         install : true)
     test('MT Single Mapped Buffers', e)
 
-    srcs = ['qa_message_ports.cpp']
+    srcs = ['qa_message_ports.cc']
     e = executable('qa_message_ports', 
         srcs, 
         include_directories : incdir, 
@@ -49,7 +49,7 @@ if get_option('enable_testing')
         install : true)
     # test('MT Message Port Tests', e)
 
-    srcs = ['qa_tags.cpp']
+    srcs = ['qa_tags.cc']
     e = executable('qa_tags', 
         srcs, 
         include_directories : incdir, 

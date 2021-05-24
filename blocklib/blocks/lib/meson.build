@@ -1,11 +1,11 @@
 blocks_sources = [
-    'annotator.cpp',
-    'copy.cpp',
-    'fanout.cpp',
-    'head.cpp',
-    'multiply_const.cpp',
-    'vector_sink.cpp',
-    'vector_source.cpp'
+    'annotator.cc',
+    'copy.cc',
+    'fanout.cc',
+    'head.cc',
+    'multiply_const.cc',
+    'vector_sink.cc',
+    'vector_source.cc'
 ]
 
 incdir = include_directories(['../include/gnuradio/blocks','../include'])

@@ -1,7 +1,7 @@
 scheduler_mt_sources = [
-    'graph_executor.cpp',
-    'thread_wrapper.cpp',
-    'scheduler_mt.cpp',
+    'graph_executor.cc',
+    'thread_wrapper.cc',
+    'scheduler_mt.cc',
 ]
 scheduler_mt_deps = [newsched_runtime_dep, threads_dep, fmt_dep, pmtf_dep]
 

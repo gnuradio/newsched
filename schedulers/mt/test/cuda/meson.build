@@ -5,7 +5,7 @@ incdir = include_directories('../../include')
 ###################################################
 
 if get_option('enable_testing')
-    srcs = ['qa_scheduler_mt_cuda_copy.cpp']
+    srcs = ['qa_scheduler_mt_cuda_copy.cc']
     e = executable('qa_scheduler_mt_cuda_copy', 
         srcs, 
         include_directories : incdir, 
