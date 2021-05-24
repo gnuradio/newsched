@@ -32,7 +32,7 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = blocks::multiply_const_cc::make({k, veclen});
+        mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
     }
 
     auto fg = flowgraph::make();
@@ -93,7 +93,7 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
     std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = blocks::multiply_const_cc::make({k, veclen});
+        mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
         sink_blks[i] = blocks::vector_sink_c::make();
     }
     flowgraph_sptr fg(new flowgraph());

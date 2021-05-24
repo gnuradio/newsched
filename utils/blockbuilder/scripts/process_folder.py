@@ -55,6 +55,16 @@ def main():
             print("generating " + blockname_h)
             file.write(rendered)
 
+        blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
+        if templated:
+            template = env.get_template('blockname_templated.cc.j2')
+        else:
+            template = env.get_template('blockname.cc.j2')
+        rendered = template.render(d)
+        with open(blockname_cc, 'w') as file:
+            print("generating " + blockname_cc)
+            file.write(rendered)
+
         # Copy to the include dir
         shutil.copyfile(blockname_h, blockname_h_includedir)
         # shutil.copyfile(blockname_h, full_outputfile)

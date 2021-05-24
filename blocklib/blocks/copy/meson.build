@@ -1,6 +1,7 @@
 yml_file = 'copy.yml'
 
-blocks_copy_files = files('copy_cpu.cc')
+blocks_copy_files = files(['copy_cpu.cc'])
+
 
 if cuda_dep.found() and get_option('enable_cuda')
     blocks_copy_files += files('copy_cuda.cc')
@@ -20,7 +21,7 @@ endif
 
 gen_copy_h = custom_target('gen_copy_cpu_h',
                         input : ['copy.yml'],
-                        output : ['copy.hh'],
+                        output : ['copy.hh'], #,'copy.cc'],
                         command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
                             '--yaml_file', '@INPUT@', 
                             '--output_file', '@OUTPUT@', 

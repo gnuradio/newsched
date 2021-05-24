@@ -41,19 +41,7 @@ public:
     }
 
     enum class available_impl { {% for impl in implementations %}{{ impl['id'] | upper }}{{ ", " if not loop.last }}{% endfor %} };
-    static sptr make(block_args args, available_impl impl = available_impl::{{implementations[0]['id'] | upper }})
-    {
-        switch (impl) {
-        {% for impl in implementations %}
-        case available_impl::{{ impl['id'] | upper }}:
-            return make_{{ impl['id'] | lower }}(args);
-            break;
-        {% endfor %}
-        default:
-            throw std::invalid_argument(
-                "invalid implementation specified");
-        }
-    }
+    static sptr make(block_args args, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
 
     {% for impl in implementations %}
     /**

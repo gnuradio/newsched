@@ -4,7 +4,11 @@ blocks_sources = [
     blocks_head_files,
     blocks_multiply_const_files,
     blocks_vector_sink_files,
-    blocks_vector_source_files
+    blocks_vector_source_files,
+    #  gen_multiply_const_cc,
+    join_paths(meson.build_root(),'blocklib','blocks','copy','copy.cc'),
+    join_paths(meson.build_root(),'blocklib','blocks','multiply_const','multiply_const.cc')
+    
 ]
 
 blocks_deps = [
@@ -18,8 +22,10 @@ blocks_deps = [
 
 blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
 
+block_cpp_args = ['-DHAVE_CPU']
 if cuda_dep.found() and get_option('enable_cuda')
-
+    block_cpp_args += '-DHAVE_CUDA'
+    
     blocks_cu_srcs = [
         blocks_copy_cu_files,
         blocks_multiply_const_cu_files
@@ -45,7 +51,8 @@ newsched_blocklib_blocks_lib = library('newsched-blocklib-blocks',
     include_directories : incdir, 
     install : true,
     link_language: 'cpp',
-    dependencies : blocks_deps)
+    dependencies : blocks_deps,
+    cpp_args : block_cpp_args)
 
 newsched_blocklib_blocks_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_blocks_lib,
