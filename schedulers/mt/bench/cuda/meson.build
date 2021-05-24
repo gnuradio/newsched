@@ -1,6 +1,6 @@
 incdir = include_directories('../../include')
 
-srcs = ['bm_copy.cpp']
+srcs = ['bm_copy.cc']
 executable('bm_mt_cuda_copy', 
     srcs, 
     include_directories : incdir, 

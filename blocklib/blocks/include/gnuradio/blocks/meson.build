@@ -1,12 +1,12 @@
 blocks_headers = [
-    'copy.hpp',
-    'fanout.hpp',
-    'head.hpp',
-    'multiply_const.hpp',
-    'null_sink.hpp',
-    'null_source.hpp',
-    'vector_sink.hpp',
-    'vector_source.hpp',
+    'copy.hh',
+    'fanout.hh',
+    'head.hh',
+    'multiply_const.hh',
+    'null_sink.hh',
+    'null_source.hh',
+    'vector_sink.hh',
+    'vector_source.hh',
 ]
 
 install_headers(blocks_headers, subdir : 'gnuradio/blocks')

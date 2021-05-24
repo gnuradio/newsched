@@ -15,8 +15,8 @@ newsched_blocklib_cuda_cu_dep = declare_dependency(include_directories : incdir,
 					   link_with : newsched_blocklib_cuda_cu)
 
 srcs = [
-    'copy.cpp',
-    'multiply_const.cpp',
+    'copy.cc',
+    'multiply_const.cc',
 ]
 
 incdir = include_directories(['../include/gnuradio/cuda','../include'])

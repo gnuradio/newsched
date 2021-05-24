@@ -1,6 +1,6 @@
 headers = [
-    'copy.hpp',
-    'multiply_const.hpp'
+    'copy.hh',
+    'multiply_const.hh'
 ]
 
 install_headers(headers, subdir : 'gnuradio/cuda')
