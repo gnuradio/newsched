@@ -36,22 +36,14 @@ class annotator : virtual public sync_block
 {
 public:
     typedef std::shared_ptr<annotator> sptr;
+    virtual std::vector<tag_t> data() const = 0;
 
-    static sptr make(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
-
-    std::vector<tag_t> data() const { return d_stored_tags; };
-
-    annotator(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
-
-private:
-    const uint64_t d_when;
-    uint64_t d_tag_counter;
-    std::vector<tag_t> d_stored_tags;
-    size_t d_num_inputs, d_num_outputs;
-    tag_propagation_policy_t d_tpp;
-
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output);
+    /**
+     * @brief Set the implementation to CPU and return a shared pointer to the block instance
+     * 
+     * @return std::shared_ptr<annotator> 
+     */
+    static sptr make_cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp);
 };
 
 } /* namespace blocks */

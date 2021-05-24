@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/blocks/annotator.hh>
+#include "annotator_cpu.hh"
 #include <pmt/pmtf.hh>
 #include <pmt/pmtf_scalar.hh>
 #include <pmt/pmtf_string.hh>
@@ -20,12 +20,12 @@ namespace gr {
 namespace blocks {
 
 annotator::sptr
-annotator::make(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp)
+annotator::make_cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp)
 {
-    return std::make_shared<annotator>(when, itemsize, num_inputs, num_outputs, tpp);
+    return std::make_shared<annotator_cpu>(when, itemsize, num_inputs, num_outputs, tpp);
 }
 
-annotator::annotator(uint64_t when,
+annotator_cpu::annotator_cpu(uint64_t when,
                      size_t itemsize,
                      size_t num_inputs,
                      size_t num_outputs, tag_propagation_policy_t tpp)
@@ -52,7 +52,7 @@ annotator::annotator(uint64_t when,
     // set_relative_rate(1, 1);
 }
 
-work_return_code_t annotator::work(std::vector<block_work_input>& work_input,
+work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
     // auto in = (const float*)work_input[0].items();
