@@ -25,27 +25,27 @@ if cuda_dep.found() and get_option('enable_cuda')
 endif
 
 runtime_sources = [
-  'buffer.cpp',
-  'buffer_sm.cpp',
-  'buffer_management.cpp',
-  'simplebuffer.cpp',
-  'buffer_sm.cpp',
-  'realtime.cpp',
-  'thread.cpp',
-  'parameter_types.cpp',
-  'edge.cpp',
-  'graph.cpp',
-  'graph_utils.cpp',
-  'flat_graph.cpp',
-  'flowgraph_monitor.cpp',
-  'flowgraph.cpp',
-  'logging.cpp',
-  'pagesize.cpp',
-  'sys_paths.cpp',
-  'vmcircbuf.cpp',
-  'vmcircbuf_sysv_shm.cpp',
+  'buffer.cc',
+  'buffer_sm.cc',
+  'buffer_management.cc',
+  'simplebuffer.cc',
+  'buffer_sm.cc',
+  'realtime.cc',
+  'thread.cc',
+  'parameter_types.cc',
+  'edge.cc',
+  'graph.cc',
+  'graph_utils.cc',
+  'flat_graph.cc',
+  'flowgraph_monitor.cc',
+  'flowgraph.cc',
+  'logging.cc',
+  'pagesize.cc',
+  'sys_paths.cc',
+  'vmcircbuf.cc',
+  'vmcircbuf_sysv_shm.cc',
   # mmap requires librt - FIXME - handle this a conditional dependency
-  'vmcircbuf_mmap_shm_open.cpp'
+  'vmcircbuf_mmap_shm_open.cc'
 ]
 
 cpp_args = []

@@ -814,7 +814,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 
 # The INPUT tag is used to specify the files and/or directories that contain
-# documented source files. You may enter file names like myfile.cpp or
+# documented source files. You may enter file names like myfile.cc or
 # directories like /usr/src/myproject. Separate the files or directories with
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
@@ -832,23 +832,23 @@ INPUT                  = @top_srcdir@ \
 INPUT_ENCODING         = UTF-8
 
 # If the value of the INPUT tag contains directories, you can use the
-# FILE_PATTERNS tag to specify one or more wildcard patterns (like *.cpp and
+# FILE_PATTERNS tag to specify one or more wildcard patterns (like *.cc and
 # *.h) to filter out the source-files in the directories.
 #
 # Note that for custom extensions or not directly supported extensions you also
 # need to set EXTENSION_MAPPING for the extension otherwise the files are not
 # read by doxygen.
 #
-# If left blank the following patterns are tested:*.c, *.cc, *.cxx, *.cpp,
+# If left blank the following patterns are tested:*.c, *.cc, *.cxx, *.cc,
 # *.c++, *.java, *.ii, *.ixx, *.ipp, *.i++, *.inl, *.idl, *.ddl, *.odl, *.h,
-# *.hh, *.hxx, *.hpp, *.h++, *.cs, *.d, *.php, *.php4, *.php5, *.phtml, *.inc,
+# *.hh, *.hxx, *.hh, *.h++, *.cs, *.d, *.php, *.php4, *.php5, *.phtml, *.inc,
 # *.m, *.markdown, *.md, *.mm, *.dox (to be provided as doxygen C comment),
 # *.doc (to be provided as doxygen C comment), *.txt (to be provided as doxygen
 # C comment), *.py, *.pyw, *.f90, *.f95, *.f03, *.f08, *.f, *.for, *.tcl, *.vhd,
 # *.vhdl, *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.h \
-                         *.hpp \
+                         *.hh \
                          *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -909,7 +909,7 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = @abs_top_srcdir@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
-# EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
+# EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cc and
 # *.h) to filter out the source-files in the directories. If left blank all
 # files are included.
 
@@ -952,7 +952,7 @@ INPUT_FILTER           =
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
 # filter if there is a match. The filters are a list of the form: pattern=filter
-# (like *.cpp=my_cpp_filter). See INPUT_FILTER for further information on how
+# (like *.cc=my_cpp_filter). See INPUT_FILTER for further information on how
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
 # patterns match the file name, INPUT_FILTER is applied.
 #
@@ -2141,7 +2141,7 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
-# patterns (like *.h and *.hpp) to filter out the header-files in the
+# patterns (like *.h and *.hh) to filter out the header-files in the
 # directories. If left blank, the patterns specified with FILE_PATTERNS will be
 # used.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.

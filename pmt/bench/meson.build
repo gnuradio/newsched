@@ -1,6 +1,6 @@
 incdir = include_directories('../include')
 
-# srcs = ['bm_pmt_serialize_uvec.cpp']
+# srcs = ['bm_pmt_serialize_uvec.cc']
 # executable('bm_pmt_serialize_uvec', 
 #     srcs, 
 #     include_directories : incdir, 
@@ -8,7 +8,7 @@ incdir = include_directories('../include')
 #                    boost_dep], 
 #     install : true)
 
-srcs = ['bm_pmt_dict_ref.cpp']
+srcs = ['bm_pmt_dict_ref.cc']
 executable('bm_pmt_dict_ref', 
     srcs, 
     include_directories : incdir, 
@@ -16,7 +16,7 @@ executable('bm_pmt_dict_ref',
                    boost_dep], 
     install : true)
 
-srcs = ['bm_pmt_dict_pack_unpack.cpp']
+srcs = ['bm_pmt_dict_pack_unpack.cc']
 executable('bm_pmt_dict_pack_unpack', 
     srcs, 
     include_directories : incdir, 

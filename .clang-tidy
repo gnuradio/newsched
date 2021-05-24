@@ -2,7 +2,7 @@
 Checks:          '-*,misc-throw-by-value-catch-by-reference,misc-static-assert,readability-container-size-empty'
 # Not in here: modernize-use-emplace, since that basically broke all things it touched
 WarningsAsErrors: ''
-HeaderFilterRegex: '\.(cc|c|cpp|h|hpp)$'
+HeaderFilterRegex: '\.(cc|c|cpp|h|.hpp|.hh)$'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
 CheckOptions:
