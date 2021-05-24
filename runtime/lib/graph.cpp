@@ -5,7 +5,17 @@ namespace gr {
 edge_sptr graph::connect(const node_endpoint& src,
                     const node_endpoint& dst)
 {
-    // FIXME: Do a bunch of checking
+    
+    if (src.port()->itemsize() != dst.port()->itemsize())
+    {
+        std::stringstream msg;
+        msg << "itemsize mismatch: " << src << " using " << src.port()->itemsize() << ", " << dst
+            << " using " << dst.port()->itemsize();
+        throw std::invalid_argument(msg.str());
+    }
+
+    // If not untyped ports, check that data types are the same
+    // TODO
     
     auto newedge = edge::make(src, dst);
     _edges.push_back(newedge);
@@ -27,7 +37,7 @@ edge_sptr graph::connect(const node_endpoint& src,
         name_count[b->name()] = cnt + 1;
 
         // for now, just use the name+nodeid as the alias
-        b->set_alias(b->name() + std::to_string(b->id()));
+        b->set_alias(b->name() + "(" + std::to_string(b->id()) + ")");
     }
 
     // Give the underlying port objects information about the connected ports

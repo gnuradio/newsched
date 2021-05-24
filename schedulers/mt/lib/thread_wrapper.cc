@@ -68,7 +68,8 @@ bool thread_wrapper::handle_work_notification()
 
     bool notify_self_ = false;
     for (auto elem : s) {
-        if (elem.second == executor_iteration_status::READY) {
+        if (elem.second == executor_iteration_status::READY ||
+            elem.second == executor_iteration_status::BLKD_OUT) {
             notify_self_ = true;
         }
     }

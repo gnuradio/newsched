@@ -26,7 +26,6 @@ public:
                  const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
-        _default_buf_factory = vmcirc_buffer::make;
         _default_buf_properties =
             vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO);
     }

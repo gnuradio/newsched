@@ -38,8 +38,16 @@ std::string edge::identifier() const
 
 size_t edge::itemsize() const { return _src.port()->itemsize(); }
 
-bool edge::has_custom_buffer() { return _buffer_factory != nullptr; }
-buffer_factory_function edge::buffer_factory() { return _buffer_factory; }
+bool edge::has_custom_buffer()
+{
+    if (_buffer_properties) {
+        return _buffer_properties->factory() != nullptr;
+    } else {
+        return false;
+    }
+}
+
+buffer_factory_function edge::buffer_factory() { return _buffer_properties->factory(); }
 std::shared_ptr<buffer_properties> edge::buf_properties() { return _buffer_properties; }
 
 } // namespace gr

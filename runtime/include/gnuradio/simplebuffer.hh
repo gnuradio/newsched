@@ -18,7 +18,10 @@ private:
 
 public:
     typedef std::shared_ptr<simplebuffer> sptr;
-    simplebuffer(size_t num_items, size_t item_size) : buffer(num_items, item_size)
+    simplebuffer(size_t num_items,
+                 size_t item_size,
+                 std::shared_ptr<buffer_properties> buf_properties)
+        : buffer(num_items, item_size, buf_properties)
     {
         _buffer.resize(_buf_size * 2); // double circular buffer
         _write_index = 0;
@@ -30,7 +33,7 @@ public:
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties)
     {
-        return buffer_sptr(new simplebuffer(num_items, item_size));
+        return buffer_sptr(new simplebuffer(num_items, item_size, buffer_properties));
     }
 
     void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
@@ -63,14 +66,17 @@ public:
         _total_written += num_items;
     }
 
-    virtual std::shared_ptr<buffer_reader> add_reader();
+    virtual std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props);
 };
 
 class simplebuffer_reader : public buffer_reader
 {
 public:
-    simplebuffer_reader(buffer_sptr buffer, size_t read_index = 0)
-        : buffer_reader(buffer, read_index)
+    simplebuffer_reader(buffer_sptr buffer,
+                        std::shared_ptr<buffer_properties> buf_props,
+                        size_t read_index = 0)
+        : buffer_reader(buffer, buf_props, read_index)
     {
     }
 

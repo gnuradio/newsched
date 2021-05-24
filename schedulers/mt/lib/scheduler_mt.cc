@@ -29,7 +29,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
     }
 
     auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
-    bufman->initialize_buffers(fg, _default_buf_factory, _default_buf_properties);
+    bufman->initialize_buffers(fg, _default_buf_properties);
 
 
     //  Partition the flowgraph according to how blocks are specified in groups

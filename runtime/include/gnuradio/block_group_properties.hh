@@ -14,7 +14,7 @@ public:
         : _blocks(blocks), _name(name), _affinity_mask(affinity_mask)
     {
         if (_name == "") {
-            _name = blocks[0]->name();
+            _name = blocks[0]->alias();
         }
 
         if (!_affinity_mask.empty()) {

@@ -1,10 +1,9 @@
 #include <gnuradio/buffer.hh>
 
 namespace gr {
-bool buffer::write_info(buffer_info_t& info)
-{
-    std::scoped_lock guard(_buf_mutex);
 
+size_t buffer::space_available()
+{
     // Find the max number of items available across readers
     uint64_t n_available = 0;
     for (auto& r : _readers) {
@@ -14,13 +13,22 @@ bool buffer::write_info(buffer_info_t& info)
         }
     }
 
+    int space = _num_items - n_available - 1;
+
+    if (space < 0)
+        space = 0;
+    space = std::min(space, (int)(_num_items / 2)); // move to a max_fill parameter
+
+    return space;
+}
+bool buffer::write_info(buffer_info_t& info)
+{
+    std::scoped_lock guard(_buf_mutex);
+
+
+    auto space = space_available();
     info.ptr = write_ptr();
-    info.n_items = _num_items - n_available -
-                   1; // always keep the write pointer 1 behind the read ptr
-    if (info.n_items < 0)
-        info.n_items = 0;
-    info.n_items =
-        std::min(info.n_items, (int)(_num_items / 2)); // move to a max_fill parameter
+    info.n_items = space;
     info.item_size = _item_size;
     info.total_items = _total_written;
 
@@ -40,7 +48,7 @@ void buffer::add_tags(size_t num_items, std::vector<tag_t>& tags)
 }
 
 std::vector<tag_t> buffer_reader::tags_in_window(const uint64_t item_start,
-                                          const uint64_t item_end)
+                                                 const uint64_t item_end)
 {
     std::scoped_lock guard(*(_buffer->mutex()));
 
@@ -104,56 +112,56 @@ void buffer::prune_tags()
     }
 }
 
-    size_t buffer_reader::items_available()
-    {
-        size_t w = _buffer->write_index();
-        size_t r = _read_index;
+size_t buffer_reader::items_available()
+{
+    size_t w = _buffer->write_index();
+    size_t r = _read_index;
 
-        if (w < r)
-            w += _buffer->buf_size();
-        return (w - r) / _buffer->item_size();
-    }
+    if (w < r)
+        w += _buffer->buf_size();
+    return (w - r) / _buffer->item_size();
+}
 
-    bool buffer_reader::read_info(buffer_info_t& info)
-    {
-        // std::scoped_lock guard(_rdr_mutex);
+bool buffer_reader::read_info(buffer_info_t& info)
+{
+    // std::scoped_lock guard(_rdr_mutex);
 
-        info.ptr = _buffer->read_ptr(_read_index);
-        info.n_items = items_available();
-        info.item_size = _buffer->item_size();
-        info.total_items = _total_read;
+    info.ptr = _buffer->read_ptr(_read_index);
+    info.n_items = items_available();
+    info.item_size = _buffer->item_size();
+    info.total_items = _total_read;
 
-        return true;
-    }
+    return true;
+}
 
-    /**
-     * @brief Return the tags associated with this buffer
-     *
-     * @param num_items Number of items that will be associated with the work call, and
-     * thus return the tags from the current read pointer to this specified number of
-     * items
-     * @return std::vector<tag_t> Returns the vector of tags
-     */
-    std::vector<tag_t> buffer_reader::get_tags(size_t num_items)
-    {
-        std::scoped_lock guard(*(_buffer->mutex()));
+/**
+ * @brief Return the tags associated with this buffer
+ *
+ * @param num_items Number of items that will be associated with the work call, and
+ * thus return the tags from the current read pointer to this specified number of
+ * items
+ * @return std::vector<tag_t> Returns the vector of tags
+ */
+std::vector<tag_t> buffer_reader::get_tags(size_t num_items)
+{
+    std::scoped_lock guard(*(_buffer->mutex()));
 
-        // Find all the tags from total_read to total_read+offset
-        std::vector<tag_t> ret;
-        for (auto& tag : _buffer->tags()) {
-            if (tag.offset >= total_read() && tag.offset < total_read() + num_items) {
-                ret.push_back(tag);
-            }
+    // Find all the tags from total_read to total_read+offset
+    std::vector<tag_t> ret;
+    for (auto& tag : _buffer->tags()) {
+        if (tag.offset >= total_read() && tag.offset < total_read() + num_items) {
+            ret.push_back(tag);
         }
-
-        return ret;
     }
 
-    const std::vector<tag_t>& buffer_reader::tags() const
-    {
-        std::scoped_lock guard(*(_buffer->mutex()));
-        return _buffer->tags();
-    }
+    return ret;
+}
+
+const std::vector<tag_t>& buffer_reader::tags() const
+{
+    std::scoped_lock guard(*(_buffer->mutex()));
+    return _buffer->tags();
+}
 
 
 } // namespace gr

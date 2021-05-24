@@ -58,7 +58,7 @@ protected:
 
 public:
     node() : d_name("") {}
-    node(const std::string& name) : d_name(name) { d_id = nodeid_generator::get_id(); }
+    node(const std::string& name) : d_name(name), d_alias(name) { d_id = nodeid_generator::get_id(); }
     virtual ~node() {}
     typedef std::shared_ptr<node> sptr;
 

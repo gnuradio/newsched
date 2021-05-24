@@ -71,7 +71,6 @@ class edge
 {
 protected:
     node_endpoint _src, _dst;
-    buffer_factory_function _buffer_factory = nullptr;
     std::shared_ptr<buffer_properties> _buffer_properties = nullptr;
 
 public:
@@ -94,10 +93,8 @@ public:
     std::string identifier() const;
     size_t itemsize() const;
 
-    void set_custom_buffer(buffer_factory_function buffer_factory,
-                           std::shared_ptr<buffer_properties> buffer_properties = nullptr)
+    void set_custom_buffer(std::shared_ptr<buffer_properties> buffer_properties)
     {
-        _buffer_factory = buffer_factory;
         _buffer_properties = buffer_properties;
     }
 

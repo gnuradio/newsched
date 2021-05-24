@@ -26,6 +26,7 @@ endif
 
 runtime_sources = [
   'buffer.cc',
+  'buffer_sm.cc',
   'buffer_management.cc',
   'simplebuffer.cc',
   'realtime.cc',
@@ -237,5 +238,5 @@ newsched_runtime_lib = library('newsched-runtime',
     cpp_args : cpp_args)
 
 newsched_runtime_dep = declare_dependency(include_directories : incdir,
-					   dependencies: runtime_deps,
+					  #  dependencies: runtime_deps, // have to disable this for blocklib_blocks_cuda_cu to link
 					   link_with : newsched_runtime_lib)
