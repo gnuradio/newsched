@@ -2,14 +2,12 @@ blocks_sources += [
     blocks_annotator_files,
     blocks_head_files,
     blocks_vector_sink_files,
-    blocks_vector_source_files,   
 ]
 
 blocks_deps += [
     blocks_annotator_deps,
     blocks_head_deps,
     blocks_vector_sink_deps,
-    blocks_vector_source_deps
 ]
 
 blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]

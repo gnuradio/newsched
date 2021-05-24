@@ -1,0 +1,55 @@
+module: blocks
+block: vector_source
+label: Vector Source
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: type # Templated types to support
+    label: IO Type
+    key: T
+    options: 
+        - dtype: uint8_t
+          suffix: b
+        - dtype: int16_t
+          suffix: s
+        - dtype: int32_t
+          suffix: i
+        - dtype: float
+          suffix: f
+        - dtype: gr_complex
+          suffix: c
+
+parameters:
+-   id: data
+    label: Data
+    dtype: std::vector<T>
+    settable: true
+-   id: repeat
+    label: Repeat
+    dtype: bool
+    settable: false
+    default: 0 # for now - false gets interpreted strangely
+-   id: vlen
+    label: Vec. Length
+    dtype: size_t
+    settable: false
+    default: 1
+-   id: tags
+    label: Tags
+    dtype: std::vector<gr::tag_t>
+    settable: true
+    default: std::vector<gr::tag_t>()
+
+ports:
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{args.vlen}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
