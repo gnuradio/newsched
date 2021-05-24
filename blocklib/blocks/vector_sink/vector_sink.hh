@@ -11,13 +11,41 @@ class vector_sink : public sync_block
 {
 public:
     typedef std::shared_ptr<vector_sink> sptr;
-    vector_sink(const size_t vlen, const size_t reserve_items) : sync_block("vector_sink")
+
+    struct block_args {
+        size_t vlen = 1;
+        size_t reserve_items = 1024;
+    };
+
+    vector_sink(const block_args& args) : sync_block("vector_sink")
     {
         add_port(
-            port<T>::make("input", port_direction_t::INPUT, std::vector<size_t>{ vlen }));
+            port<T>::make("input", port_direction_t::INPUT, std::vector<size_t>{ args.vlen }));
     }
 
     virtual std::vector<T> data() = 0;
+
+
+
+    enum class available_impl {
+        CPU,
+        // CUDA
+    };
+    static sptr make(block_args args = {}, available_impl impl = available_impl::CPU)
+    {
+        switch (impl) {
+        case available_impl::CPU:
+            return make_cpu(args);
+            break;
+        // case available_impl::CUDA:
+        //     return make_cuda(args);
+        //     break;
+        default:
+            throw std::invalid_argument(
+                "blocks::copy - invalid implementation specified");
+        }
+    }
+
 
     /**
      * @brief Set the implementation to CPU and return a shared pointer to the block
@@ -25,7 +53,7 @@ public:
      *
      * @return std::shared_ptr<vector_sink>
      */
-    static sptr make_cpu(const size_t vlen = 1, const size_t reserve_items = 1024);
+    static sptr make_cpu(const block_args& args = {});
 };
 
 typedef vector_sink<std::uint8_t> vector_sink_b;

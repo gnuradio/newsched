@@ -5,6 +5,7 @@
 #include <thread>
 
 #include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/blocks/copy.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
@@ -20,7 +21,7 @@ TEST(SchedulerMTTest, TwoSinks)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make_cpu(input_data, false);
+    auto src = blocks::vector_source_f::make_cpu({input_data, false});
     auto snk1 = blocks::vector_sink_f::make_cpu();
     auto snk2 = blocks::vector_sink_f::make_cpu();
 
@@ -55,7 +56,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
         expected_data.push_back(100.0 * 200.0 * d);
     }
 
-    auto src = blocks::vector_source_f::make_cpu(input_data, false);
+    auto src = blocks::vector_source_f::make_cpu({input_data, false});
     auto mult1 = blocks::multiply_const_ff::make_cpu({100.0});
     auto mult2 = blocks::multiply_const_ff::make_cpu({200.0});
     auto snk = blocks::vector_sink_f::make_cpu();
@@ -97,7 +98,7 @@ TEST(SchedulerMTTest, BlockFanout)
     for (auto nblocks : { 2, 8, 16 }) {
     // for (auto nblocks : { 2, }) {
         size_t veclen = 1;
-        auto src = blocks::vector_source_c::make_cpu(input_data);
+        auto src = blocks::vector_source_c::make_cpu({input_data});
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
         std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
@@ -149,10 +150,10 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make(input_data, false);
-    auto copy1 = blocks::copy::make(sizeof(float));
-    auto copy2 = blocks::copy::make(sizeof(float));
-    auto copy3 = blocks::copy::make(sizeof(float));
+    auto src = blocks::vector_source_f::make({input_data, false});
+    auto copy1 = blocks::copy::make({sizeof(float)});
+    auto copy2 = blocks::copy::make({sizeof(float)});
+    auto copy3 = blocks::copy::make({sizeof(float)});
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
 

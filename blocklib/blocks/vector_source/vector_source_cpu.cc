@@ -9,24 +9,21 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-typename vector_source<T>::sptr vector_source<T>::make_cpu(PARAM_LIST)
+typename vector_source<T>::sptr vector_source<T>::make_cpu(const block_args& args)
 {
-    return std::make_shared<vector_source_cpu<T>>(PARAM_VALS);
+    return std::make_shared<vector_source_cpu<T>>(args);
 }
 
 template <class T>
-vector_source_cpu<T>::vector_source_cpu(const std::vector<T>& data,
-                                bool repeat,
-                                unsigned int vlen,
-                                const std::vector<tag_t>& tags)
-    : vector_source<T>(vlen),
-      d_data(data),
-      d_repeat(repeat),
+vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_args& args)
+    : vector_source<T>(args.vlen),
+      d_data(args.data),
+      d_repeat(args.repeat),
       d_offset(0),
-      d_vlen(vlen),
-      d_tags(tags)
+      d_vlen(args.vlen),
+      d_tags(args.tags)
 {
-    if ((data.size() % vlen) != 0)
+    if ((args.data.size() % args.vlen) != 0)
         throw std::invalid_argument("data length must be a multiple of vlen");
 }
 

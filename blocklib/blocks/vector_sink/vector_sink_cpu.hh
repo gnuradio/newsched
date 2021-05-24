@@ -5,14 +5,11 @@
 namespace gr {
 namespace blocks {
 
-#define PARAM_LIST const size_t vlen, const size_t reserve_items
-#define PARAM_VALS vlen, reserve_items
-
 template <class T>
 class vector_sink_cpu : public vector_sink<T>
 {
 public:
-    vector_sink_cpu(const size_t vlen, const size_t reserve_items);
+    vector_sink_cpu(const typename vector_sink<T>::block_args& args);
     
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;

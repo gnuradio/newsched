@@ -15,14 +15,14 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
                                 size_t item_size,
                                 std::shared_ptr<buffer_properties> buffer_properties)
 {
-    auto bp = std::dynamic_pointer_cast<vmcirc_buffer_properties>(buffer_properties);
+    auto bp = std::static_pointer_cast<vmcirc_buffer_properties>(buffer_properties);
     if (bp != nullptr) {
         switch (bp->buffer_type()) {
         case vmcirc_buffer_type::AUTO:
         case vmcirc_buffer_type::SYSV_SHM:
-            return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size));
+            return buffer_sptr(new vmcircbuf_sysv_shm(num_items, item_size, buffer_properties));
         case vmcirc_buffer_type::MMAP_SHM:
-            return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size));
+            return buffer_sptr(new vmcircbuf_mmap_shm_open(num_items, item_size, buffer_properties));
         default:
             throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
@@ -33,8 +33,8 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
     }
 }
 
-vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size)
-    : buffer(num_items, item_size)
+vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+    : buffer(num_items, item_size, buf_properties)
 {
 }
 
@@ -66,10 +66,10 @@ void vmcirc_buffer::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader()
+std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader(std::shared_ptr<buffer_properties> buf_props)
 {
     std::shared_ptr<vmcirc_buffer_reader> r(
-        new vmcirc_buffer_reader(shared_from_this(), _write_index));
+        new vmcirc_buffer_reader(shared_from_this(), buf_props, _write_index));
     _readers.push_back(r.get());
     return r;
 }

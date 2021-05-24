@@ -33,6 +33,7 @@ if get_option('enable_testing')
     e = executable('qa_single_mapped_buffers', 
         srcs, 
         include_directories : incdir, 
+        link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
                     newsched_scheduler_mt_dep,

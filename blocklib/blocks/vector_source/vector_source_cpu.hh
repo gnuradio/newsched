@@ -5,19 +5,11 @@
 namespace gr {
 namespace blocks {
 
-#define PARAM_LIST                                             \
-    const std::vector<T>&data, bool repeat, unsigned int vlen, \
-        const std::vector<tag_t>&tags
-#define PARAM_VALS data, repeat, vlen, tags
-
 template <class T>
 class vector_source_cpu : public vector_source<T>
 {
 public:
-    vector_source_cpu(const std::vector<T>& data,
-                      bool repeat,
-                      unsigned int vlen,
-                      const std::vector<tag_t>& tags);
+    vector_source_cpu(const typename vector_source<T>::block_args& args);
 
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
