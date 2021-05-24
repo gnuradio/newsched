@@ -6,7 +6,6 @@
 
 #include <gnuradio/blocks/annotator.hh>
 #include <gnuradio/blocks/head.hh>
-#include <gnuradio/blocks/multiply_const.hh>
 #include <gnuradio/blocks/null_sink.hh>
 #include <gnuradio/blocks/null_source.hh>
 #include <gnuradio/blocks/vector_sink.hh>
@@ -22,12 +21,12 @@ TEST(SchedulerMTTags, OneToOne)
     int N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make(sizeof(int), N);
-    auto ann0 = gr::blocks::annotator::make(
+    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ONE_TO_ONE);
-    auto ann1 = gr::blocks::annotator::make(
+    auto ann1 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE);
-    auto ann2 = gr::blocks::annotator::make(
+    auto ann2 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE);
     auto snk0 = gr::blocks::null_sink::make(sizeof(int));
     auto snk1 = gr::blocks::null_sink::make(sizeof(int));
@@ -68,16 +67,16 @@ TEST(SchedulerMTTags, t1)
     int N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make(sizeof(int), N);
-    auto ann0 = gr::blocks::annotator::make(
+    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann1 = gr::blocks::annotator::make(
+    auto ann1 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann2 = gr::blocks::annotator::make(
+    auto ann2 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann3 = gr::blocks::annotator::make(
+    auto ann3 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann4 = gr::blocks::annotator::make(
+    auto ann4 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
 
     auto snk0 = gr::blocks::null_sink::make(sizeof(int));
@@ -115,16 +114,16 @@ TEST(SchedulerMTTags,t2)
     int N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make(sizeof(int), N);
-    auto ann0 = gr::blocks::annotator::make(
+    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann1 = gr::blocks::annotator::make(
+    auto ann1 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 2, 3, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann2 = gr::blocks::annotator::make(
+    auto ann2 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann3 = gr::blocks::annotator::make(
+    auto ann3 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann4 = gr::blocks::annotator::make(
+    auto ann4 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
     auto snk0 = gr::blocks::null_sink::make(sizeof(int));
     auto snk1 = gr::blocks::null_sink::make(sizeof(int));
@@ -172,16 +171,16 @@ TEST(SchedulerMTTags, t3)
     int N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make(sizeof(int), N);
-    auto ann0 = gr::blocks::annotator::make(
+    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 2, 2, tag_propagation_policy_t::TPP_ONE_TO_ONE);
-    auto ann1 = gr::blocks::annotator::make(
+    auto ann1 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann2 = gr::blocks::annotator::make(
+    auto ann2 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann3 = gr::blocks::annotator::make(
+    auto ann3 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE);
-    auto ann4 = gr::blocks::annotator::make(
+    auto ann4 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE);
     auto snk0 = gr::blocks::null_sink::make(sizeof(int));
     auto snk1 = gr::blocks::null_sink::make(sizeof(int));
@@ -226,12 +225,12 @@ TEST(SchedulerMTTags, t5)
 
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make(sizeof(int), N);
-    auto ann0 = gr::blocks::annotator::make(
+    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann1 = gr::blocks::annotator::make(
+    auto ann1 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
-    auto ann2 = gr::blocks::annotator::make(
+    auto ann2 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL);
     auto snk0 = gr::blocks::null_sink::make(sizeof(int));
 
