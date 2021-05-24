@@ -1,14 +1,4 @@
-/* -*- c++ -*- */
-/*
- * Copyright 2004,2008,2010,2013,2018 Free Software Foundation, Inc.
- *
- * This file is part of GNU Radio
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- */
-
-#include "vector_source.hh"
+#include "vector_source_cpu.hh"
 #include <algorithm>
 #include <cstring> // for memcpy
 #include <stdexcept>
@@ -19,24 +9,27 @@ namespace gr {
 namespace blocks {
 
 template <class T>
-vector_source<T>::vector_source(const std::vector<T>& data,
-                                bool repeat,
-                                unsigned int vlen,
-                                const std::vector<tag_t>& tags)
-    : sync_block("vector_source"),
-      d_data(data),
-      d_repeat(repeat),
-      d_offset(0),
-      d_vlen(vlen),
-      d_tags(tags)
+typename vector_source<T>::sptr vector_source<T>::make_cpu(const block_args& args)
 {
-    if ((data.size() % vlen) != 0)
+    return std::make_shared<vector_source_cpu<T>>(args);
+}
+
+template <class T>
+vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_args& args)
+    : vector_source<T>(args.vlen),
+      d_data(args.data),
+      d_repeat(args.repeat),
+      d_offset(0),
+      d_vlen(args.vlen),
+      d_tags(args.tags)
+{
+    if ((args.data.size() % args.vlen) != 0)
         throw std::invalid_argument("data length must be a multiple of vlen");
 }
 
 
 template <class T>
-work_return_code_t vector_source<T>::work(std::vector<block_work_input>& work_input,
+work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& work_input,
                                           std::vector<block_work_output>& work_output)
 {
 
