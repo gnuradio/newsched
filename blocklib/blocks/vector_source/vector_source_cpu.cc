@@ -16,7 +16,7 @@ typename vector_source<T>::sptr vector_source<T>::make_cpu(const block_args& arg
 
 template <class T>
 vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_args& args)
-    : vector_source<T>(args.vlen),
+    : vector_source<T>(args),
       d_data(args.data),
       d_repeat(args.repeat),
       d_offset(0),
