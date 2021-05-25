@@ -22,7 +22,7 @@ def main():
     # Set FileSystemLoader path to be dir of yml file and dir of this script
 
     blockdir = os.path.dirname(os.path.realpath(args.yaml_file))
-    print("blockdir is " + blockdir)
+    # print("blockdir is " + blockdir)
 
 
     paths = []
@@ -43,30 +43,34 @@ def main():
 
         blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
         blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
-        full_outputfile = os.path.join(args.build_dir, args.output_file)
+        # full_outputfile = os.path.join(args.build_dir, args.output_file)
 
-        if templated:
-            template = env.get_template('blockname_templated.hh.j2')
+        if (args.output_file.endswith('.hh') ):
+            if templated:
+                template = env.get_template('blockname_templated.hh.j2')
+            else:
+                template = env.get_template('blockname.hh.j2')
+
+            rendered = template.render(d)
+            with open(blockname_h, 'w') as file:
+                print("generating " + blockname_h)
+                file.write(rendered)
+
+            # Copy to the include dir
+            shutil.copyfile(blockname_h, blockname_h_includedir)                
+
         else:
-            template = env.get_template('blockname.hh.j2')
+            blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
+            if templated:
+                template = env.get_template('blockname_templated.cc.j2')
+            else:
+                template = env.get_template('blockname.cc.j2')
+            rendered = template.render(d)
+            with open(blockname_cc, 'w') as file:
+                print("generating " + blockname_cc)
+                file.write(rendered)
 
-        rendered = template.render(d)
-        with open(blockname_h, 'w') as file:
-            print("generating " + blockname_h)
-            file.write(rendered)
 
-        blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
-        if templated:
-            template = env.get_template('blockname_templated.cc.j2')
-        else:
-            template = env.get_template('blockname.cc.j2')
-        rendered = template.render(d)
-        with open(blockname_cc, 'w') as file:
-            print("generating " + blockname_cc)
-            file.write(rendered)
-
-        # Copy to the include dir
-        shutil.copyfile(blockname_h, blockname_h_includedir)
         # shutil.copyfile(blockname_h, full_outputfile)
 
         # for impl in d['implementations']:
