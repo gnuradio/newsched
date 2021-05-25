@@ -13,13 +13,13 @@
 namespace gr {
 namespace blocks {
 
-head::sptr head::make_cpu(size_t itemsize, size_t nitems)
+head::sptr head::make_cpu(const block_args& args)
 {
-    return std::make_shared<head_cpu>(itemsize, nitems);
+    return std::make_shared<head_cpu>(args);
 }
 
-head_cpu::head_cpu(size_t itemsize, size_t nitems)
-    : head(itemsize), d_itemsize(itemsize), d_nitems(nitems)
+head_cpu::head_cpu(const block_args& args)
+    : head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
 {
 }
 

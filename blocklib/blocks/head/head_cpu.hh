@@ -8,7 +8,7 @@ namespace blocks {
 class head_cpu : public head
 {
 public:
-    head_cpu(size_t itemsize, size_t nitems);
+    head_cpu(const block_args& args);
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
 

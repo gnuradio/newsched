@@ -18,10 +18,10 @@ using namespace gr;
 
 TEST(SchedulerMTTags, OneToOne)
 {
-    int N = 40000;
+    size_t N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto head = gr::blocks::head::make_cpu({sizeof(int), N});
     auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ONE_TO_ONE);
     auto ann1 = gr::blocks::annotator::make_cpu(
@@ -64,10 +64,10 @@ TEST(SchedulerMTTags, OneToOne)
 
 TEST(SchedulerMTTags, t1)
 {
-    int N = 40000;
+    size_t N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto head = gr::blocks::head::make_cpu({sizeof(int), N});
     auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ALL_TO_ALL);
     auto ann1 = gr::blocks::annotator::make_cpu(
@@ -111,10 +111,10 @@ TEST(SchedulerMTTags, t1)
 
 TEST(SchedulerMTTags,t2)
 {
-    int N = 40000;
+    size_t N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto head = gr::blocks::head::make_cpu({sizeof(int), N});
     auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 1, 2, tag_propagation_policy_t::TPP_ALL_TO_ALL);
     auto ann1 = gr::blocks::annotator::make_cpu(
@@ -168,10 +168,10 @@ TEST(SchedulerMTTags,t2)
 
 TEST(SchedulerMTTags, t3)
 {
-    int N = 40000;
+    size_t N = 40000;
     auto fg = flowgraph::make();
     auto src = gr::blocks::null_source::make(sizeof(int));
-    auto head = gr::blocks::head::make_cpu(sizeof(int), N);
+    auto head = gr::blocks::head::make_cpu({sizeof(int), N});
     auto ann0 = gr::blocks::annotator::make_cpu(
         10000, sizeof(int), 2, 2, tag_propagation_policy_t::TPP_ONE_TO_ONE);
     auto ann1 = gr::blocks::annotator::make_cpu(
