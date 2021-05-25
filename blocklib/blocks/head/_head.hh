@@ -16,21 +16,11 @@ namespace gr {
 namespace blocks {
 
 /*!
- * \brief 1-to-1 stream head testing block. FOR TESTING PURPOSES ONLY.
- * \ingroup debug_tools_blk
+ * \brief copies the first N items to the output then signals done
+ * \ingroup misc_blk
  *
  * \details
- * This block creates tags to be sent downstream every 10,000
- * items it sees. The tags contain the name and ID of the
- * instantiated block, use "seq" as a key, and have a counter that
- * increments by 1 for every tag produced that is used as the
- * tag's value. The tags are propagated using the 1-to-1 policy.
- *
- * It also stores a copy of all tags it sees flow past it. These
- * tags can be recalled externally with the data() member.
- *
- * Warning: This block is only meant for testing and showing how to use the
- * tags.
+ * Useful for building test cases
  */
 class head : public sync_block
 {
