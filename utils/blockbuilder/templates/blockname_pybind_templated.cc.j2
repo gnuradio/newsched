@@ -1,0 +1,42 @@
+{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+{% set typekey = properties|selectattr("id", "equalto", "type")|map(attribute="key")|first -%}
+#include <pybind11/complex.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+namespace py = pybind11;
+
+#include <gnuradio/{{ module }}/{{ block }}.hh>
+
+template <typename {{typekey}}>
+void bind_{{ block }}_template(py::module& m, const char* classname)
+{
+    // using block_class = gr::{{ module }}::{{ block }}<{{typekey}}>;
+
+    {% if blocktype == 'sync' -%}
+    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::sync_block, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, "{{block}}");
+    {% else -%}
+    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, "{{block}}");
+    {% endif -%}
+
+    py::enum_<typename ::gr::{{ module }}::{{ block }}<{{typekey}}>::available_impl>({{block}}_class, "available_impl")
+    {% for impl in implementations -%}
+        .value("{{ impl['id'] | lower }}", ::gr::{{module}}::{{block}}<{{typekey}}>::available_impl::{{ impl['id'] | upper }}) 
+    {% endfor -%}
+        .export_values();
+
+    {{block}}_class.def(py::init([]({% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}, {%endfor%} typename gr::{{module}}::{{block}}<{{typekey}}>::available_impl impl) {
+                       return ::gr::{{ module }}::{{block}}<{{typekey}}>::make({ {% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%} }, impl);
+                   }),
+        {% for param in parameters -%}
+        py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
+        {% endfor -%}
+                   py::arg("impl") = gr::{{module}}::{{block}}<{{typekey}}>::available_impl::{{ implementations[0]['id'] | upper }});
+}
+
+void bind_{{ block }}(py::module& m)
+{
+    {% for opt in properties|selectattr("id", "equalto", "type")|map(attribute="options")|first -%}
+    bind_{{ block }}_template<{{ opt['dtype'] }}>(m, "{{ block }}_{{ opt['suffix'] }}");
+    {% endfor %}
+}
