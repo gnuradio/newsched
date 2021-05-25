@@ -1,0 +1,52 @@
+# This YAML is currently not used because ports need to support multiplicity
+## As it is currently implemented, the ports are added in the _cpu constructor
+## which we need to be in the top level constructor, but requires extra logic
+
+module: blocks
+block: annotator
+label: Annotator
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: when
+    label: When
+    dtype: uint64_t
+    settable: false
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+-   id: num_inputs
+    label: Num Inputs
+    dtype: size_t
+    settable: false
+-   id: num_outputs
+    label: Num Outputs
+    dtype: size_t
+    settable: false
+-   id: tpp
+    label: Tag Propagation Policy
+    dtype: tag_propagation_policy_t
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: itemsize
+
+-   domain: stream
+    id: out
+    direction: output
+    type: untyped
+    size: itemsize
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
