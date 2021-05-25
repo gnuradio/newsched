@@ -1,0 +1,72 @@
+
+/*
+ * Copyright 2020 Free Software Foundation, Inc.
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
+#include <pybind11/pybind11.h>
+
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <gnuradio/types.hh>
+#include <numpy/arrayobject.h>
+
+namespace py = pybind11;
+
+void bind_tag(py::module&);
+void bind_block_work_io(py::module&);
+void bind_node(py::module&);
+void bind_block(py::module&);
+void bind_sync_block(py::module&);
+void bind_edge(py::module&);
+void bind_graph(py::module&);
+void bind_flowgraph(py::module&);
+void bind_scheduler(py::module&);
+
+// We need this hack because import_array() returns NULL
+// for newer Python versions.
+// This function is also necessary because it ensures access to the C API
+// and removes a warning.
+void* init_numpy()
+{
+    import_array();
+    return NULL;
+}
+
+PYBIND11_MODULE(runtime_python, m)
+{
+    // Initialize the numpy C API
+    // (otherwise we will see segmentation faults)
+    init_numpy();
+
+    // Allow access to base block methods
+    // py::module::import("pmt");
+
+    bind_tag(m);
+    bind_block_work_io(m);
+    bind_node(m);
+    bind_block(m);
+    bind_sync_block(m);
+    bind_edge(m);
+    bind_graph(m);
+    bind_flowgraph(m);
+    bind_scheduler(m);
+    
+    // TODO: Move into gr_types.hpp
+    // %constant int sizeof_char 	= sizeof(char);
+    m.attr("sizeof_char") = sizeof(char);
+    // %constant int sizeof_short	= sizeof(short);
+    m.attr("sizeof_short") = sizeof(short);
+    // %constant int sizeof_int	= sizeof(int);
+    m.attr("sizeof_int") = sizeof(int);
+    // %constant int sizeof_float	= sizeof(float);
+    m.attr("sizeof_float") = sizeof(float);
+    // %constant int sizeof_double	= sizeof(double);
+    m.attr("sizeof_double") = sizeof(double);
+    // %constant int sizeof_gr_complex	= sizeof(gr_complex);
+    m.attr("sizeof_gr_complex") = sizeof(gr_complex);
+}
+
