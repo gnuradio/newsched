@@ -29,3 +29,7 @@ gen_vector_source_cc = custom_target('gen_vector_source_cc',
 
 blocks_deps += declare_dependency(sources : [gen_vector_source_h] ) 
 blocks_sources += [blocks_vector_source_files, gen_vector_source_cc]
+
+if get_option('enable_python')
+    blocks_pybind_sources += files('vector_source_pybind.cc')
+endif

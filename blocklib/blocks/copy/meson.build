@@ -30,3 +30,7 @@ gen_copy_cc = custom_target('gen_copy_cpu_cc',
 
 blocks_deps += declare_dependency(sources : [gen_copy_h])
 blocks_sources += [blocks_copy_files, gen_copy_cc]
+
+if get_option('enable_python')
+    blocks_pybind_sources += files('copy_pybind.cc')
+endif

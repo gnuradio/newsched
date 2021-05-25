@@ -29,3 +29,7 @@ gen_vector_sink_cc = custom_target('gen_vector_sink_cc',
 
 blocks_deps += declare_dependency(sources : [gen_vector_sink_h] ) 
 blocks_sources += [blocks_vector_sink_files, gen_vector_sink_cc]
+
+if get_option('enable_python')
+    blocks_pybind_sources += files('vector_sink_pybind.cc')
+endif

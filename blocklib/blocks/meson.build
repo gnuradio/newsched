@@ -1,6 +1,7 @@
 subdir('include/gnuradio/blocks')
 
 blocks_sources = []
+blocks_pybind_sources = []
 blocks_deps = []
 # Individual block subdirectories
 subdir('copy')
@@ -12,3 +13,6 @@ subdir('vector_source')
 
 
 subdir('lib')
+if (get_option('enable_python'))
+    subdir('python')
+endif
