@@ -30,6 +30,15 @@ gen_vector_sink_cc = custom_target('gen_vector_sink_cc',
 blocks_deps += declare_dependency(sources : [gen_vector_sink_h] ) 
 blocks_sources += [blocks_vector_sink_files, gen_vector_sink_cc]
 
+gen_vector_sink_pybind = custom_target('gen_vector_sink_cpu_pybind',
+                        input : ['vector_sink.yml'],
+                        output : ['vector_sink_pybind.cc'],
+                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
+                            '--yaml_file', '@INPUT@', 
+                            '--output_file', '@OUTPUT@', 
+                            '--build_dir', join_paths(meson.build_root())],
+                        install : false)                    
+
 if get_option('enable_python')
-    blocks_pybind_sources += files('vector_sink_pybind.cc')
+    blocks_pybind_sources += gen_vector_sink_pybind
 endif

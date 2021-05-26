@@ -25,8 +25,8 @@ void bind_{{block}}(py::module& m)
     {% endfor -%}
         .export_values();
 
-    {{block}}_class.def(py::init([]({% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}{%endfor%}, gr::{{module}}::{{block}}::available_impl impl) {
-                       return {{block}}::make({ {% for param in parameters -%}{{ param['id'] }}{%endfor%} }, impl);
+    {{block}}_class.def(py::init([]({% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}, gr::{{module}}::{{block}}::available_impl impl) {
+                       return {{block}}::make({ {% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%} }, impl);
                    }),
         {% for param in parameters -%}
         py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
