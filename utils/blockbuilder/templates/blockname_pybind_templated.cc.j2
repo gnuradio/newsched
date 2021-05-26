@@ -14,9 +14,9 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
     // using block_class = gr::{{ module }}::{{ block }}<{{typekey}}>;
 
     {% if blocktype == 'sync' -%}
-    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::sync_block, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, "{{block}}");
+    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::sync_block, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, classname);
     {% else -%}
-    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, "{{block}}");
+    py::class_<gr::{{ module }}::{{ block }}<{{typekey}}>, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typekey}}>>> {{block}}_class(m, classname);
     {% endif -%}
 
     py::enum_<typename ::gr::{{ module }}::{{ block }}<{{typekey}}>::available_impl>({{block}}_class, "available_impl")
