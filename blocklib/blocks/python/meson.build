@@ -9,10 +9,28 @@
 #     blocks_copy_pybind_files,
 # ]
 
-blocks_pybind_sources += files('blocks_pybind.cc')
+d = {
+  'blocks' : blocks_pybind_names,
+  'module' : 'blocks',
+  'imports' : ['newsched.gr']
+}
+
+message(d)
+
+# blocks_pybind_sources += files('blocks_pybind.cc')
+
+gen_blocks_pybind = custom_target('gen_blocks_pybind',
+                        output : ['blocks_pybind.cc'],
+                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_module_pybind.py'),
+                            '--blocks', d['blocks'],
+                            '--imports', ' '.join(d['imports']),
+                            '--module', d['module'],
+                            '--output_file', '@OUTPUT@', 
+                            '--build_dir', join_paths(meson.build_root())],
+                        install : false)      
 
 newsched_blocklib_blocks_pybind = py3_mod.extension_module('blocks_python',
-    blocks_pybind_sources, 
+    gen_blocks_pybind, 
     dependencies : [newsched_blocklib_blocks_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
     install : true,

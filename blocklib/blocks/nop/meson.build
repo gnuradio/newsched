@@ -33,13 +33,14 @@ blocks_deps += declare_dependency(sources : [gen_nop_h])
 blocks_sources += [blocks_nop_files, gen_nop_cc]
 
 if get_option('enable_python')
-gen_nop_pybind = custom_target('gen_nop_cpu_pybind',
-                        input : ['nop.yml'],
-                        output : ['nop_pybind.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)       
+    gen_nop_pybind = custom_target('gen_nop_cpu_pybind',
+                            input : ['nop.yml'],
+                            output : ['nop_pybind.cc'],
+                            command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
+                                '--yaml_file', '@INPUT@', 
+                                '--output_file', '@OUTPUT@', 
+                                '--build_dir', join_paths(meson.build_root())],
+                            install : false)       
     blocks_pybind_sources += gen_nop_pybind
+    blocks_pybind_names += 'nop'
 endif
