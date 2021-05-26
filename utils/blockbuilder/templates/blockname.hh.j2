@@ -12,6 +12,10 @@
 
 #pragma once
 
+{% for incl in includes %}
+#include <{{incl['include']}}>
+{% endfor %}
+
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 {% if blocktype == 'sync' -%}
 #include <gnuradio/sync_block.hh>
@@ -33,10 +37,20 @@ public:
     {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")
     {
         {% for port in ports %}
+        {% if 'multiplicity' not in port%}
         add_port(untyped_port::make(
             "{{ port['id'] }}", 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
             {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+        {% else %}
+        {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
+        for (size_t i = 0; i < {{m}}; i++) {
+        add_port(untyped_port::make(
+            "{{ port['id'] }}" + std::to_string(i), 
+            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
+            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+        }
+        {% endif %}
         {% endfor %}
     }
 
@@ -51,6 +65,16 @@ public:
      */
     static sptr make_{{impl['id']}}(const block_args& args);
     {% endfor %}
+
+    {% for cb in callbacks -%}
+    virtual  {{cb['return']}} {{cb['id']}} (
+    {% if 'args' in cb -%}
+    {% for arg in cb['args'] -%}
+    {{arg['dtype']}}{{ ", " if not loop.last }}
+    {% endfor %}
+    {% endif %}
+    ) {% if cb['const'] %}const {%endif%} = 0;
+    {% endfor %}     
 };
 
 } // namespace {{ module }}
