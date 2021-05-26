@@ -7,6 +7,7 @@ blocks_deps = []
 subdir('copy')
 subdir('annotator')
 subdir('head')
+subdir('msg_forward')
 subdir('multiply_const')
 subdir('null_sink')
 subdir('null_source')

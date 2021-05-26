@@ -15,7 +15,7 @@
 namespace gr {
 namespace {{module}} {
 
-{{block}}::sptr {{block}}::make(block_args args, available_impl impl)
+{{block}}::sptr {{block}}::make(const block_args& args, available_impl impl)
 {
     switch (impl) {
     {% for impl in implementations %}
