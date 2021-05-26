@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         input_data[i] = gr_complex(i % 256, 256 - i % 256);
 
     auto src = blocks::null_source::make({sizeof(gr_complex) * batch_size});
-    auto snk = blocks::null_sink::make(sizeof(gr_complex) * batch_size);
+    auto snk = blocks::null_sink::make({sizeof(gr_complex) * batch_size});
     auto head = blocks::head::make_cpu({sizeof(gr_complex) * batch_size, samples / batch_size});
 
     auto fg = flowgraph::make();
