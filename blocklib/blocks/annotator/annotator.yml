@@ -29,7 +29,7 @@ parameters:
     settable: false
 -   id: tpp
     label: Tag Propagation Policy
-    dtype: tag_propagation_policy_t
+    dtype: gr::tag_propagation_policy_t
     settable: false
 
 ports:
@@ -38,12 +38,19 @@ ports:
     direction: input
     type: untyped
     size: itemsize
+    multiplicity: num_inputs
 
 -   domain: stream
     id: out
     direction: output
     type: untyped
     size: itemsize
+    multiplicity: num_outputs
+
+callbacks:
+-   id: data
+    return: std::vector<tag_t>
+    const: true
 
 implementations:
 -   id: cpu

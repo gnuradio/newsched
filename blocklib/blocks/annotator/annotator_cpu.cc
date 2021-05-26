@@ -20,33 +20,20 @@ namespace gr {
 namespace blocks {
 
 annotator::sptr
-annotator::make_cpu(uint64_t when, size_t itemsize, size_t num_inputs, size_t num_outputs, tag_propagation_policy_t tpp)
+annotator::make_cpu(const block_args& args)
 {
-    return std::make_shared<annotator_cpu>(when, itemsize, num_inputs, num_outputs, tpp);
+    return std::make_shared<annotator_cpu>(args);
 }
 
-annotator_cpu::annotator_cpu(uint64_t when,
-                     size_t itemsize,
-                     size_t num_inputs,
-                     size_t num_outputs, tag_propagation_policy_t tpp)
-    : sync_block("annotator"),
-      d_when(when),
-      d_num_inputs(num_inputs),
-      d_num_outputs(num_outputs),
-      d_tpp(tpp)
+annotator_cpu::annotator_cpu(const block_args& args)
+    : annotator(args),
+      d_when(args.when),
+      d_num_inputs(args.num_inputs),
+      d_num_outputs(args.num_outputs),
+      d_tpp(args.tpp)
 {
 
-    // TODO : do this with multiplicity
-    for (size_t i = 0; i < num_inputs; i++) {
-        add_port(untyped_port::make(
-            "in" + std::to_string(i), port_direction_t::INPUT, itemsize));
-    }
-    for (size_t i = 0; i < num_outputs; i++) {
-        add_port(untyped_port::make(
-            "out" + std::to_string(i), port_direction_t::OUTPUT, itemsize));
-    }
-
-    set_tag_propagation_policy(tpp);
+    set_tag_propagation_policy(args.tpp);
 
     d_tag_counter = 0;
     // set_relative_rate(1, 1);

@@ -1,9 +1,7 @@
 blocks_sources += [
-    blocks_annotator_files,
 ]
 
 blocks_deps += [
-    blocks_annotator_deps,
 ]
 
 blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
