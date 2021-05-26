@@ -27,19 +27,19 @@ gen_annotator_cc = custom_target('gen_annotator_cpu_cc',
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)        
 
-gen_annotator_pybind = custom_target('gen_annotator_cpu_pybind',
-                        input : ['annotator.yml'],
-                        output : ['annotator_pybind.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)                    
-
 blocks_deps += declare_dependency(sources : [gen_annotator_h])
 blocks_sources += [blocks_annotator_files, gen_annotator_cc]
 
 if get_option('enable_python')
-    #blocks_pybind_sources += files('annotator_pybind.cc')
+    gen_annotator_pybind = custom_target('gen_annotator_cpu_pybind',
+                            input : ['annotator.yml'],
+                            output : ['annotator_pybind.cc'],
+                            command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
+                                '--yaml_file', '@INPUT@', 
+                                '--output_file', '@OUTPUT@', 
+                                '--build_dir', join_paths(meson.build_root())],
+                            install : false)                    
+                            
     blocks_pybind_sources += gen_annotator_pybind
+    blocks_pybind_names += 'annotator'
 endif

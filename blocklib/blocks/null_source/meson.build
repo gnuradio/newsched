@@ -27,19 +27,18 @@ gen_null_source_cc = custom_target('gen_null_source_cpu_cc',
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)        
 
-gen_null_source_pybind = custom_target('gen_null_source_cpu_pybind',
-                        input : ['null_source.yml'],
-                        output : ['null_source_pybind.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)                    
-
 blocks_deps += declare_dependency(sources : [gen_null_source_h])
 blocks_sources += [blocks_null_source_files, gen_null_source_cc]
 
 if get_option('enable_python')
-    #blocks_pybind_sources += files('null_source_pybind.cc')
+    gen_null_source_pybind = custom_target('gen_null_source_cpu_pybind',
+                            input : ['null_source.yml'],
+                            output : ['null_source_pybind.cc'],
+                            command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
+                                '--yaml_file', '@INPUT@', 
+                                '--output_file', '@OUTPUT@', 
+                                '--build_dir', join_paths(meson.build_root())],
+                            install : false)             
     blocks_pybind_sources += gen_null_source_pybind
+    blocks_pybind_names += 'null_source'
 endif

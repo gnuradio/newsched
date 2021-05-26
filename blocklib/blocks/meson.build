@@ -2,6 +2,7 @@ subdir('include/gnuradio/blocks')
 
 blocks_sources = []
 blocks_pybind_sources = []
+blocks_pybind_names = []
 blocks_deps = []
 # Individual block subdirectories
 subdir('copy')
