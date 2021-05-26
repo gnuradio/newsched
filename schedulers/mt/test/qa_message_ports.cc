@@ -16,9 +16,9 @@ TEST(SchedulerMTMessagePassing, Forward)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
 
-    auto blk1 = blocks::msg_forward::make();
-    auto blk2 = blocks::msg_forward::make();
-    auto blk3 = blocks::msg_forward::make();
+    auto blk1 = blocks::msg_forward::make({});
+    auto blk2 = blocks::msg_forward::make({});
+    auto blk3 = blocks::msg_forward::make({});
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(blk1, "out", blk2, "in");
