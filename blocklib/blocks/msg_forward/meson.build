@@ -42,4 +42,5 @@ if get_option('enable_python')
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)                    
     blocks_pybind_sources += gen_msg_forward_pybind
+    blocks_pybind_names += 'msg_forward'
 endif

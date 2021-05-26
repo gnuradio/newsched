@@ -42,4 +42,5 @@ blocks_sources += [blocks_copy_files, gen_copy_cc]
 if get_option('enable_python')
     #blocks_pybind_sources += files('copy_pybind.cc')
     blocks_pybind_sources += gen_copy_pybind
+    blocks_pybind_names += 'copy'
 endif
