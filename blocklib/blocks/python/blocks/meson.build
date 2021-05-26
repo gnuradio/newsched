@@ -4,20 +4,20 @@
 
 # Generate _python.cc for each block
 
-# Compile target for each _python.cc
-# blocks_pybind_sources = [
-#     blocks_copy_pybind_files,
-# ]
+srcs = ['__init__.py']
+
+foreach s: srcs
+configure_file(copy: true,
+    input: s,
+    output: s
+)
+endforeach
 
 d = {
   'blocks' : blocks_pybind_names,
   'module' : 'blocks',
   'imports' : ['newsched.gr']
 }
-
-message(d)
-
-# blocks_pybind_sources += files('blocks_pybind.cc')
 
 gen_blocks_pybind = custom_target('gen_blocks_pybind',
                         output : ['blocks_pybind.cc'],
@@ -29,8 +29,10 @@ gen_blocks_pybind = custom_target('gen_blocks_pybind',
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)      
 
+blocks_pybind_sources += gen_blocks_pybind
+
 newsched_blocklib_blocks_pybind = py3_mod.extension_module('blocks_python',
-    gen_blocks_pybind, 
+    blocks_pybind_sources, 
     dependencies : [newsched_blocklib_blocks_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
     install : true,

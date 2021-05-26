@@ -15,35 +15,23 @@ import os
 
 # Check if the gnuradio package is installed or whether we're attempting to import it from
 # the build directory.
-path_ending = os.path.join('python', 'gnuradio', '__init__.py')
+path_ending = os.path.join('python', 'newsched', '__init__.py')
+print(path_ending)
 path = os.path.abspath(__file__)
 if path.endswith('.pyc'):
     path = path[:-1]
 
+print(path)
+
 if path.endswith(path_ending):
     # We importing it from build directory.
     build_path = os.path.join(path[:-len(path_ending)])
+    print(build_path)
 
     # Place these directories on __path__ so that their contents are
     # part of the gnuradio package.
-    __path__.append(os.path.join(build_path, 'gr-utils', 'src', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-blocks', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-digital', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-filter', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-fft', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-analog', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-dtv', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-trellis', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-wavelet', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-audio', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-qtgui', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-video-sdl', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-vocoder', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-channels', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-fec', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-utils'))
-    __path__.append(os.path.join(build_path, 'gr-uhd', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-pdu', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-network', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-zeromq', 'python'))
-    __path__.append(os.path.join(build_path, 'gr-soapy', 'python'))
+    __path__.append(os.path.join(build_path, 'schedulers', 'mt', 'python'))
+    __path__.append(os.path.join(build_path, 'runtime', 'python'))
+
+    __path__.append(os.path.join(build_path, 'blocklib', 'blocks', 'python'))
+

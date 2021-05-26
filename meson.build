@@ -35,6 +35,6 @@ subdir('blocklib')
 subdir('schedulers')
 subdir('docs')
 if (get_option('enable_python'))
-  subdir('python/gnuradio')
+  subdir('python/newsched')
 endif
 
