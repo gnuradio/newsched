@@ -65,6 +65,8 @@ if get_option('enable_testing')
         install : true)
     test('MT Tags Tests', e)
 
+    test('Basic Python', find_program('qa_basic.py'), env:['PYTHONPATH=' + join_paths(meson.source_root(),'python') + ':$PYTHONPATH'])
+
 endif
 
 if cuda_dep.found() and get_option('enable_cuda')
