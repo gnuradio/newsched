@@ -1,0 +1,30 @@
+module: blocks
+block: msg_forward
+label: Message Forward
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+
+ports:
+-   domain: message
+    id: in
+    direction: input
+    optional: true
+
+-   domain: message
+    id: out
+    direction: output
+    optional: true
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
