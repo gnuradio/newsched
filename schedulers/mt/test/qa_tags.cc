@@ -28,8 +28,8 @@ TEST(SchedulerMTTags, OneToOne)
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE});
     auto ann2 = gr::blocks::annotator::make_cpu(
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE});
-    auto snk0 = gr::blocks::null_sink::make(sizeof(int));
-    auto snk1 = gr::blocks::null_sink::make(sizeof(int));
+    auto snk0 = gr::blocks::null_sink::make({sizeof(int)});
+    auto snk1 = gr::blocks::null_sink::make({sizeof(int)});
 
     // using 1-to-1 tag propagation without having equal number of
     // ins and outs. Make sure this works; will just exit run early.
@@ -79,8 +79,8 @@ TEST(SchedulerMTTags, t1)
     auto ann4 = gr::blocks::annotator::make_cpu(
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL});
 
-    auto snk0 = gr::blocks::null_sink::make(sizeof(int));
-    auto snk1 = gr::blocks::null_sink::make(sizeof(int));
+    auto snk0 = gr::blocks::null_sink::make({sizeof(int)});
+    auto snk1 = gr::blocks::null_sink::make({sizeof(int)});
 
     fg->connect(src, 0, head, 0);
     fg->connect(head, 0, ann0, 0);
@@ -125,9 +125,9 @@ TEST(SchedulerMTTags,t2)
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL});
     auto ann4 = gr::blocks::annotator::make_cpu(
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ALL_TO_ALL});
-    auto snk0 = gr::blocks::null_sink::make(sizeof(int));
-    auto snk1 = gr::blocks::null_sink::make(sizeof(int));
-    auto snk2 = gr::blocks::null_sink::make(sizeof(int));
+    auto snk0 = gr::blocks::null_sink::make({sizeof(int)});
+    auto snk1 = gr::blocks::null_sink::make({sizeof(int)});
+    auto snk2 = gr::blocks::null_sink::make({sizeof(int)});
 
     fg->connect(src, 0, head, 0);
     fg->connect(head, 0, ann0, 0);
@@ -182,8 +182,8 @@ TEST(SchedulerMTTags, t3)
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE});
     auto ann4 = gr::blocks::annotator::make_cpu(
         {10000, sizeof(int), 1, 1, tag_propagation_policy_t::TPP_ONE_TO_ONE});
-    auto snk0 = gr::blocks::null_sink::make(sizeof(int));
-    auto snk1 = gr::blocks::null_sink::make(sizeof(int));
+    auto snk0 = gr::blocks::null_sink::make({sizeof(int)});
+    auto snk1 = gr::blocks::null_sink::make({sizeof(int)});
 
     fg->connect(src, 0, head, 0);
     fg->connect(head, 0, ann0, 0);

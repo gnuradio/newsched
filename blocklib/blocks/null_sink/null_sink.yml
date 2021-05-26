@@ -1,0 +1,32 @@
+module: blocks
+block: null_sink
+label: Null Sink
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+-   id: nports
+    label: Num. Ports
+    dtype: size_t
+    default: 1
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: itemsize
+    multiplicity: nports
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
