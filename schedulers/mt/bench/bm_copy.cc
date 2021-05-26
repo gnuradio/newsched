@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     }
 
     {
-        auto src = blocks::null_source::make(sizeof(gr_complex) * veclen);
+        auto src = blocks::null_source::make({sizeof(gr_complex) * veclen});
         auto head = blocks::head::make_cpu({sizeof(gr_complex) * veclen, samples / veclen});
         auto snk = blocks::null_sink::make(sizeof(gr_complex) * veclen);
         std::vector<blocks::copy::sptr> copy_blks(nblocks);
