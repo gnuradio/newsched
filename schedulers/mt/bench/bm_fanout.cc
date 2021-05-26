@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         std::vector<blocks::copy::sptr> copy_blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
             copy_blks[i] = blocks::copy::make({sizeof(gr_complex) * veclen});
-            sink_blks[i] = blocks::null_sink::make(sizeof(gr_complex) * veclen);
+            sink_blks[i] = blocks::null_sink::make({sizeof(gr_complex) * veclen});
         }
         flowgraph_sptr fg(new flowgraph());
 
