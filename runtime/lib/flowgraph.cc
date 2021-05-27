@@ -3,6 +3,12 @@
 
 namespace gr {
 
+
+flowgraph::flowgraph()
+{
+    set_alias("flowgraph");
+}
+
 void flowgraph::set_scheduler(scheduler_sptr sched)
 {
     d_schedulers = std::vector<scheduler_sptr>{ sched };
@@ -85,15 +91,21 @@ void flowgraph::validate()
     GR_LOG_TRACE(_debug_logger, "validate()");
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
 
-    
     d_flat_graph = flat_graph::make_flat(base());
     check_connections(d_flat_graph);
 
     for (auto sched : d_schedulers)
         sched->initialize(d_flat_graph, d_fgmon);
+
+    _validated = true;
 }
+
 void flowgraph::start()
 {
+    if (!_validated) {
+        validate();
+    }
+
     GR_LOG_TRACE(_debug_logger, "start()");
 
     if (d_schedulers.empty()) {
