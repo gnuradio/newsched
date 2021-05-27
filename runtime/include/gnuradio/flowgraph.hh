@@ -21,12 +21,13 @@ private:
 
     bool _monitor_thread_stopped = false;
     flowgraph_monitor_sptr d_fgmon;
+    bool _validated = false; // TODO - update when connections are added or things are changed
 
 public:
     
     typedef std::shared_ptr<flowgraph> sptr;
     static sptr make() { return std::make_shared<flowgraph>(); }
-    flowgraph() { set_alias("flowgraph"); };
+    flowgraph();
     virtual ~flowgraph() { _monitor_thread_stopped = true; };
     void set_scheduler(scheduler_sptr sched);
     void set_schedulers(std::vector<scheduler_sptr> sched);

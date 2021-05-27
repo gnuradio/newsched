@@ -1,3 +1,4 @@
+#pragma once
 
 #include <gnuradio/domain.hh>
 #include <gnuradio/graph.hh>
