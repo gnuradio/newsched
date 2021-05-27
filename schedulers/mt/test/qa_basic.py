@@ -30,8 +30,6 @@ class test_basic(gr_unittest.TestCase):
         sched = mt.scheduler_mt()
         fg.set_scheduler(sched)
 
-        fg.validate()
-
         fg.start()
         fg.wait()
 
