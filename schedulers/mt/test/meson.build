@@ -65,7 +65,10 @@ if get_option('enable_testing')
         install : true)
     test('MT Tags Tests', e)
 
-    test('Basic Python', find_program('qa_basic.py'), env:['PYTHONPATH=' + join_paths(meson.source_root(),'python') + ':$PYTHONPATH'])
+    env = environment()
+    env.prepend('PYTHONPATH', join_paths('PYTHONPATH', meson.build_root(),'python'))
+    #test('Basic Python', find_program('qa_basic.py'), env:['PYTHONPATH=' + join_paths(meson.source_root(),'python') + ':$PYTHONPATH'])
+    test('Basic Python', find_program('qa_basic.py'), env: env)
 
 endif
 
