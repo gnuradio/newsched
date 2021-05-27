@@ -31,7 +31,11 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
         {% for param in parameters -%}
         py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
         {% endfor -%}
-                   py::arg("impl") = gr::{{module}}::{{block}}<{{typekey}}>::available_impl::{{ implementations[0]['id'] | upper }});
+                   py::arg("impl") = gr::{{module}}::{{block}}<{{typekey}}>::available_impl::{{ implementations[0]['id'] | upper }})
+        {% for cb in callbacks -%}
+        .def("{{cb['id']}}", &gr::{{module}}::{{block}}<{{typekey}}>::{{cb['id']}})
+        {% endfor %} 
+        ;
 }
 
 void bind_{{ block }}(py::module& m)
