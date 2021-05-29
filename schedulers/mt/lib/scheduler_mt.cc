@@ -16,13 +16,15 @@ void scheduler_mt::push_message(scheduler_message_sptr msg)
     }
 }
 
-void scheduler_mt::add_block_group(const std::vector<block_sptr>& blocks, const std::string& name, const std::vector<unsigned int>& affinity_mask)
+void scheduler_mt::add_block_group(const std::vector<block_sptr>& blocks,
+                                   const std::string& name,
+                                   const std::vector<unsigned int>& affinity_mask)
 {
-    _block_groups.push_back(std::move(block_group_properties(blocks, name, affinity_mask)));
+    _block_groups.push_back(
+        std::move(block_group_properties(blocks, name, affinity_mask)));
 }
 
-void scheduler_mt::initialize(flat_graph_sptr fg,
-                              flowgraph_monitor_sptr fgmon)
+void scheduler_mt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
 {
     for (auto& b : fg->calc_used_blocks()) {
         b->set_scheduler(base());
@@ -42,8 +44,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
         std::vector<block_sptr> blocks_for_this_thread;
 
         if (bg.blocks().size()) {
-            auto t = thread_wrapper::make(
-                 id(), bg, bufman, fgmon);
+            auto t = thread_wrapper::make(id(), bg, bufman, fgmon);
             _threads.push_back(t);
 
             std::vector<node_sptr> node_vec;
@@ -69,8 +70,7 @@ void scheduler_mt::initialize(flat_graph_sptr fg,
         std::vector<node_sptr> node_vec;
         node_vec.push_back(b);
 
-        auto t =
-            thread_wrapper::make(id(), block_group_properties({b}), bufman, fgmon);
+        auto t = thread_wrapper::make(id(), block_group_properties({ b }), bufman, fgmon);
         _threads.push_back(t);
 
         for (auto& p : b->all_ports()) {
@@ -111,3 +111,13 @@ void scheduler_mt::run()
 
 } // namespace schedulers
 } // namespace gr
+
+
+// External plugin interface for instantiating out of tree schedulers
+// TODO: name, version, other info methods
+extern "C" {
+std::shared_ptr<gr::scheduler> factory(const std::string& name = "mt", size_t buf_size = 32768)
+{
+    return gr::schedulers::scheduler_mt::make(name, buf_size);
+}
+}

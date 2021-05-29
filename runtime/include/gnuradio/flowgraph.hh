@@ -23,6 +23,11 @@ private:
     flowgraph_monitor_sptr d_fgmon;
     bool _validated = false; // TODO - update when connections are added or things are changed
 
+    // Dynamically Loaded Default Scheduler
+    const std::string s_default_scheduler_name = "mt";
+    scheduler_sptr d_default_scheduler = nullptr;
+    bool d_default_scheduler_inuse = true;
+
 public:
     
     typedef std::shared_ptr<flowgraph> sptr;

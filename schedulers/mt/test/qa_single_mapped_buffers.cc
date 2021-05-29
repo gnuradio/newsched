@@ -44,11 +44,6 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     }
     fg->connect(mult_blks[nblocks - 1], 0, snk, 0);
 
-    auto sched1 = schedulers::scheduler_mt::make("mtsched", 8192);
-    fg->add_scheduler(sched1);
-    fg->validate();
-
-
     fg->start();
     fg->wait();
 
@@ -102,11 +97,6 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
         fg->connect(src, 0, mult_blks[i], 0)->set_custom_buffer(SM_BUFFER_ARGS);
         fg->connect(mult_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(SM_BUFFER_ARGS);
     }
-
-    auto sched1 = schedulers::scheduler_mt::make("mtsched", 8192);
-    fg->add_scheduler(sched1);
-    fg->validate();
-
 
     fg->start();
     fg->wait();

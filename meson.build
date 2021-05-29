@@ -8,6 +8,7 @@ project('newsched', 'cpp',
 
 cc = meson.get_compiler('cpp')
 rt_dep = cc.find_library('rt', required : false)
+libdl_dep = cc.find_library('dl')
 
 cuda_available = add_languages('cuda', required : false)
 
