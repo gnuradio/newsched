@@ -21,17 +21,13 @@ class test_basic(gr_unittest.TestCase):
         snk1 = blocks.vector_sink_f()
         snk2 = blocks.vector_sink_f()
 
-        fg = gr.flowgraph()
-        fg.connect(src, 0, cp1, 0)
-        fg.connect(cp1, 0, snk1, 0)
-        fg.connect(src, 0, cp2, 0)
-        fg.connect(cp2, 0, snk2, 0)
+        self.tb.connect(src, 0, cp1, 0)
+        self.tb.connect(cp1, 0, snk1, 0)
+        self.tb.connect(src, 0, cp2, 0)
+        self.tb.connect(cp2, 0, snk2, 0)
 
-        sched = mt.scheduler_mt()
-        fg.set_scheduler(sched)
-
-        fg.start()
-        fg.wait()
+        self.tb.start()
+        self.tb.wait()
 
         self.assertEqual(input_data, snk1.data())
         self.assertEqual(input_data, snk2.data())

@@ -13,7 +13,7 @@
 #include <gnuradio/vmcircbuf.hh>
 
 using namespace gr;
-#if 0
+
 TEST(SchedulerMTTest, TwoSinks)
 {
     int nsamples = 100000;
@@ -26,17 +26,9 @@ TEST(SchedulerMTTest, TwoSinks)
     auto snk2 = blocks::vector_sink_f::make_cpu();
 
 
-    flowgraph_sptr fg(new flowgraph());
+    auto fg = flowgraph::make();
     fg->connect(src, 0, snk1, 0);
     fg->connect(src, 0, snk2, 0);
-
-    auto sched = schedulers::scheduler_mt::make();
-    fg->set_scheduler(sched);
-
-    // force single threaded operation
-    // sched->add_block_group({src,snk1,snk2});
-
-    fg->validate();
 
     fg->start();
     fg->wait();
@@ -46,7 +38,7 @@ TEST(SchedulerMTTest, TwoSinks)
     EXPECT_EQ(snk1->data(), input_data);
     EXPECT_EQ(snk2->data(), input_data);
 }
-
+#if 0
 TEST(SchedulerMTTest, MultiDomainBasic)
 {
     std::vector<float> input_data{ 1.0, 2.0, 3.0, 4.0, 5.0 };
@@ -123,11 +115,6 @@ TEST(SchedulerMTTest, BlockFanout)
             }
         }
 
-        auto sched1 = schedulers::scheduler_mt::make("mtsched", 8192);
-        fg->add_scheduler(sched1);
-        fg->validate();
-
-
         fg->start();
         fg->wait();
 
@@ -173,14 +160,6 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     fg->connect(copy3, 0, snk2, 0)
         ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
                                 ->set_min_buffer_size(16384));
-
-    std::shared_ptr<schedulers::scheduler_mt> sched(new schedulers::scheduler_mt());
-    fg->set_scheduler(sched);
-
-    // force single threaded operation
-    // sched->add_block_group({src,snk1,snk2});
-
-    fg->validate(); 
 
     // TODO: Validate the buffers that were created
 

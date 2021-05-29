@@ -1,16 +1,40 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/graph_utils.hh>
 
+#include <dlfcn.h>
+
 namespace gr {
 
 
 flowgraph::flowgraph()
 {
     set_alias("flowgraph");
+
+    // Dynamically load the module containing the default scheduler
+    // Search path needs to be set correctly for qa in build dir
+    void* handle = dlopen(("libnewsched-scheduler-" +
+                              s_default_scheduler_name + ".so").c_str(),
+                          RTLD_LAZY);
+    if (!handle) {
+        throw std::runtime_error("Unable to load default scheduler dynamically");
+    }
+
+    // TODO: Make the factory method more universal for any scheduler
+    //  e.g. a json conf string or something generic interface
+    std::shared_ptr<scheduler> (*factory)(const std::string&, size_t) =
+        (std::shared_ptr<scheduler>(*)(const std::string&, size_t))dlsym(handle,
+                                                                         "factory");
+
+    // Instantiate the default scheduler
+    d_default_scheduler = factory(s_default_scheduler_name, 32768);
+    d_schedulers = { d_default_scheduler };
 }
 
 void flowgraph::set_scheduler(scheduler_sptr sched)
 {
+    if (d_default_scheduler_inuse) {
+        d_default_scheduler_inuse = false;
+    }
     d_schedulers = std::vector<scheduler_sptr>{ sched };
 
     // assign ids to the schedulers
@@ -21,6 +45,9 @@ void flowgraph::set_scheduler(scheduler_sptr sched)
 }
 void flowgraph::set_schedulers(std::vector<scheduler_sptr> sched)
 {
+    if (d_default_scheduler_inuse) {
+        d_default_scheduler_inuse = false;
+    }
     d_schedulers = sched;
 
     // assign ids to the schedulers
@@ -31,6 +58,10 @@ void flowgraph::set_schedulers(std::vector<scheduler_sptr> sched)
 }
 void flowgraph::add_scheduler(scheduler_sptr sched)
 {
+    if (d_default_scheduler_inuse) {
+        d_default_scheduler_inuse = false;
+        d_schedulers.clear();
+    }
     d_schedulers.push_back(sched);
     // assign ids to the schedulers
     int idx = 1;
