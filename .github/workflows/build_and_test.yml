@@ -5,26 +5,51 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  linux:
+  linux-docker:
+  # All of these shall depend on the formatting check (needs: check-formatting)
     runs-on: ubuntu-20.04
+    # The GH default is 360 minutes (it's also the max as of Feb-2021). However
+    # we should fail sooner. The only reason to exceed this time is if a test
+    # hangs.
+    timeout-minutes: 120
+    strategy:
+      # Enabling fail-fast would kill all Dockers if one of them fails. We want
+      # maximum output.
+      fail-fast: false
+      matrix:
+        # For every distro we want to test here, add one key 'distro' with a
+        # descriptive name, and one key 'containerid' with the name of the
+        # container (i.e., what you want to docker-pull)
+        include:
+          - distro: 'Ubuntu 20.04'
+            containerid: 'mormj/newsched-ci-docker'
+            cxxflags: -Werror
+          # - distro: 'Fedora 33'
+          #   containerid: 'gnuradio/ci:fedora-33-3.9'
+          #   cxxflags: ''
+          # - distro: 'CentOS 8.3'
+          #   containerid: 'gnuradio/ci:centos-8.3-3.9'
+          #   cxxflags: -Werror
+          # - distro: 'Debian 10'
+          #   containerid: 'gnuradio/ci-debian-10-3.9:1.0'
+          #   cxxflags: -Werror
+    name: ${{ matrix.distro }}
+    container:
+      image: ${{ matrix.containerid }}
+      volumes:
+        - build_data:/build
+      options: --cpus 2
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
-        with:
-          python-version: "3.x"
-      - run: sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev libzmq3-dev doxygen libspdlog-dev libyaml-cpp-dev libgtest-dev libfmt-dev pybind11-dev python3-dev python3-numpy
-      - run: pip install meson ninja mako six jinja2 pyyaml
-      - name: build_volk
-        run: mkdir -p volk && curl -Lo volk.tar.gz https://github.com/gnuradio/volk/archive/v2.2.1.tar.gz && tar xzf volk.tar.gz -C volk --strip-components=1 && cmake -DCMAKE_BUILD_TYPE=Release -S ./volk/ -B build && cd build && cmake --build . && sudo cmake --build . --target install && cd ../ && rm -rf build
-      - name: build_flatc
-        run: git clone https://github.com/google/flatbuffers.git && cd flatbuffers && git checkout aafc5dc9500f01c64 && mkdir build && cd build && cmake ../ && sudo make install -j 
-      - run: meson setup build --buildtype=debugoptimized -Denable_testing=true
-        env:
-          CC: gcc
-      - run: cd build && ninja && ninja
-      - run: cd build && ninja test
-      - uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: Linux_Meson_Testlog
-          path: build/meson-logs/testlog.txt
+    - uses: actions/checkout@v2
+      name: Checkout Project
+    - name: Meson Setup
+      run: 'cd ${GITHUB_WORKSPACE} && meson setup build --buildtype=debugoptimized -Denable_testing=true' 
+    - name: Make
+      run: 'cd ${GITHUB_WORKSPACE}/build && ninja'
+    - name: Make Test
+      run: 'cd ${GITHUB_WORKSPACE}/build && ninja test'
+    - uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: Linux_Meson_Testlog
+        path: build/meson-logs/testlog.txt
