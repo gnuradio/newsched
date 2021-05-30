@@ -11,7 +11,7 @@ runtime_pybind_sources = files([
     'scheduler_pybind.cc'
  ] )
 
-newsched_runtime_pybind = py3_mod.extension_module('runtime_python',
+newsched_runtime_pybind = py3_inst.extension_module('runtime_python',
     runtime_pybind_sources, 
     dependencies : [newsched_runtime_dep, python3_dep, pybind11_dep, pmtf_dep],
     link_language : 'cpp',

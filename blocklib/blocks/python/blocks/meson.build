@@ -31,7 +31,7 @@ gen_blocks_pybind = custom_target('gen_blocks_pybind',
 
 blocks_pybind_sources += gen_blocks_pybind
 
-newsched_blocklib_blocks_pybind = py3_mod.extension_module('blocks_python',
+newsched_blocklib_blocks_pybind = py3_inst.extension_module('blocks_python',
     blocks_pybind_sources, 
     dependencies : [newsched_blocklib_blocks_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
