@@ -5,7 +5,7 @@ blocks_copy_files = files(['copy_cpu.cc'])
 
 if cuda_dep.found() and get_option('enable_cuda')
     blocks_copy_files += files('copy_cuda.cc')
-    blocks_copy_cu_files = files('copy_cuda.cu')
+    blocks_cu_sources += files('copy_cuda.cu')
 endif
 
 gen_copy_h = custom_target('gen_copy_cpu_h',
