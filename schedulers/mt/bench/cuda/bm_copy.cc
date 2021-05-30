@@ -7,7 +7,7 @@
 #include <gnuradio/blocks/null_source.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
-#include <gnuradio/cuda/copy.hh>
+#include <gnuradio/blocks/load.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/logging.hh>
 #include <gnuradio/realtime.hh>
@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
 {
     uint64_t samples;
     int mem_model;
-    int batch_size;
+    size_t batch_size;
     int nblocks;
-    int load;
+    size_t load;
     bool rt_prio = false;
 
     po::options_description desc("CUDA Copy Benchmarking Flowgraph");
@@ -39,9 +39,9 @@ int main(int argc, char* argv[])
         po::value<uint64_t>(&samples)->default_value(15000000),
         "Number of samples")(
         "nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")(
-        "load,l", po::value<int>(&load)->default_value(1), "Num FFT Blocks")(
+        "load,l", po::value<size_t>(&load)->default_value(1), "Num FFT Blocks")(
         "memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")(
-        "veclen,s", po::value<int>(&batch_size)->default_value(1024), "Batch Size");
+        "veclen,s", po::value<size_t>(&batch_size)->default_value(1024), "Batch Size");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -56,9 +56,9 @@ int main(int argc, char* argv[])
     }
 
 
-    std::vector<cuda::copy::sptr> copy_blks(nblocks);
+    std::vector<blocks::load::sptr> copy_blks(nblocks);
     for (int i = 0; i < nblocks; i++) {
-        copy_blks[i] = cuda::copy::make(batch_size, load);
+        copy_blks[i] = blocks::load::make_cuda({sizeof(gr_complex)*batch_size, load});
     }
 
     std::vector<gr_complex> input_data(samples);

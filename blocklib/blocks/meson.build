@@ -1,6 +1,7 @@
 subdir('include/gnuradio/blocks')
 
 blocks_sources = []
+blocks_cu_sources = []
 blocks_pybind_sources = []
 blocks_pybind_names = []
 blocks_deps = []
@@ -8,6 +9,7 @@ blocks_deps = []
 subdir('copy')
 subdir('annotator')
 subdir('head')
+subdir('load')
 subdir('msg_forward')
 subdir('multiply_const')
 subdir('nop')
