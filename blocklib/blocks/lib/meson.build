@@ -1,22 +1,11 @@
-blocks_sources += [
-]
-
-blocks_deps += [
-]
-
 blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 if cuda_dep.found() and get_option('enable_cuda')
     block_cpp_args += '-DHAVE_CUDA'
-    
-    blocks_cu_srcs = [
-        blocks_copy_cu_files,
-        blocks_multiply_const_cu_files
-    ]
 
     newsched_blocklib_blocks_cu = library('newsched-blocklib-blocks-cu', 
-        blocks_cu_srcs, 
+        blocks_cu_sources, 
         include_directories : incdir, 
         install : true, 
         dependencies : [cuda_dep])
