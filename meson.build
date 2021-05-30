@@ -25,7 +25,7 @@ py3_inst = import('python').find_installation('python3')
 pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
 threads_dep = dependency('threads')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
-cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'))
+cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'), modules : ['cufft'])
 
 flatc = find_program('flatc', version : '>=1.12')
 

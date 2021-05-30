@@ -1,1 +1,2 @@
 subdir('blocks')
+subdir('fft')
