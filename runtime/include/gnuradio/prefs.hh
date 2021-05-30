@@ -27,6 +27,23 @@ public:
         return get_instance()._config[name];
     }
 
+    static const char* appdata_path()
+    {
+        const char* path;
+
+        // first case, try HOME environment variable (unix)
+        path = getenv("HOME");
+        if (path)
+            return path;
+
+        // second case, try APPDATA environment variable (windows)
+        path = getenv("APPDATA");
+        if (path)
+            return path;
+
+        // fall-through case, nothing worked
+        return tmp_path();
+    }
 
 private:
     YAML::Node _config;
@@ -44,7 +61,7 @@ private:
         }
     }
 
-    const char* tmp_path()
+    static const char* tmp_path()
     {
         const char* path;
 
@@ -63,24 +80,6 @@ private:
         return "/tmp";
     }
 
-
-    const char* appdata_path()
-    {
-        const char* path;
-
-        // first case, try HOME environment variable (unix)
-        path = getenv("HOME");
-        if (path)
-            return path;
-
-        // second case, try APPDATA environment variable (windows)
-        path = getenv("APPDATA");
-        if (path)
-            return path;
-
-        // fall-through case, nothing worked
-        return tmp_path();
-    }
 
     std::string __userconf_path()
     {

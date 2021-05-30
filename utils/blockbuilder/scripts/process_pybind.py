@@ -37,15 +37,20 @@ def main():
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
-        templated = False
+        templated = 0
         if [x for x in d['properties'] if x['id'] == 'type']:
-            templated = True 
+            templated = 1 
+        elif [x for x in d['properties'] if x['id'] == 'templates']:
+            templated = 2
+
 
         filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_pybind.cc')
         # full_outputfile = os.path.join(args.build_dir, args.output_file)
 
-        if templated:
+        if templated == 1:
             template = env.get_template('blockname_pybind_templated.cc.j2')
+        elif templated == 2:
+            template = env.get_template('blockname_pybind_templated2.cc.j2')
         else:
             template = env.get_template('blockname_pybind.cc.j2')
 
