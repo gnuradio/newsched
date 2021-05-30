@@ -1,0 +1,57 @@
+module: fft
+block: fft
+label: FFT
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: float
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+    - id: forward
+      type: bool 
+      options: 
+        - value: true
+          suffix: fwd
+        - value: false
+          suffix: rev
+
+parameters:
+-   id: fft_size
+    label: FFT Size
+    dtype: size_t
+    settable: false
+-   id: window
+    label: Window
+    dtype: const std::vector<float>&
+    settable: false
+-   id: shift
+    label: Shift
+    dtype: bool
+    default: false
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{args.fft_size}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T 
+    dims: '{args.fft_size}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

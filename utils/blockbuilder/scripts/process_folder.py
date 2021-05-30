@@ -37,17 +37,21 @@ def main():
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
-        templated = False
+        templated = 0
         if [x for x in d['properties'] if x['id'] == 'type']:
-            templated = True 
+            templated = 1 
+        elif [x for x in d['properties'] if x['id'] == 'templates']:
+            templated = 2
 
         blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
         blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
         # full_outputfile = os.path.join(args.build_dir, args.output_file)
 
         if (args.output_file.endswith('.hh') ):
-            if templated:
+            if templated == 1:
                 template = env.get_template('blockname_templated.hh.j2')
+            elif templated == 2:
+                template = env.get_template('blockname_templated2.hh.j2')
             else:
                 template = env.get_template('blockname.hh.j2')
 
@@ -61,8 +65,10 @@ def main():
 
         else:
             blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
-            if templated:
+            if templated == 1:
                 template = env.get_template('blockname_templated.cc.j2')
+            elif templated == 2:
+                template = env.get_template('blockname_templated2.cc.j2')
             else:
                 template = env.get_template('blockname.cc.j2')
             rendered = template.render(d)

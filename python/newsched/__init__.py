@@ -30,8 +30,9 @@ if path.endswith(path_ending):
 
     # Place these directories on __path__ so that their contents are
     # part of the gnuradio package.
-    __path__.append(os.path.join(build_path, 'schedulers', 'mt', 'python'))
     __path__.append(os.path.join(build_path, 'runtime', 'python'))
+    __path__.append(os.path.join(build_path, 'schedulers', 'mt', 'python'))
 
     __path__.append(os.path.join(build_path, 'blocklib', 'blocks', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'fft', 'python'))
 
