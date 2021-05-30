@@ -20,7 +20,6 @@ spdlog_dep = dependency('spdlog', method: 'cmake', modules : ['spdlog::spdlog'])
 python3_dep = dependency('python3', required : get_option('enable_python'))
 
 # Import python3 meson module which is used to find the Python dependencies.
-py3_mod = import('python3')
 py3_inst = import('python').find_installation('python3')
 
 pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
