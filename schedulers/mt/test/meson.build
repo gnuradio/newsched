@@ -5,6 +5,10 @@ incdir = include_directories('../include')
 ###################################################
 
 if get_option('enable_testing')
+    env = environment()
+    env.prepend('LD_LIBRARY_PATH', join_paths( meson.build_root(),'schedulers','mt','lib'))
+    env.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
+
     srcs = ['qa_scheduler_mt.cc']
     e = executable('qa_scheduler_mt', 
         srcs, 
@@ -15,7 +19,7 @@ if get_option('enable_testing')
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
-    test('Multi Threaded Scheduler Tests', e)
+    test('Multi Threaded Scheduler Tests', e, env: env)
 
     srcs = ['qa_block_grouping.cc']
     e = executable('qa_block_grouping', 
@@ -39,7 +43,8 @@ if get_option('enable_testing')
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
-    test('MT Single Mapped Buffers', e)
+
+    test('MT Single Mapped Buffers', e, env: env)
 
     srcs = ['qa_message_ports.cc']
     e = executable('qa_message_ports', 
@@ -65,9 +70,7 @@ if get_option('enable_testing')
         install : true)
     test('MT Tags Tests', e)
 
-    # env = environment()
-    # env.prepend('PYTHONPATH', join_paths('PYTHONPATH', meson.build_root(),'python'))
-    # test('Basic Python', find_program('qa_basic.py'), env: env)
+    test('Basic Python', find_program('qa_basic.py'), env: env)
 
 endif
 
