@@ -18,7 +18,6 @@ load_cuda::load_cuda(block_args args) : load(args), d_itemsize(args.itemsize), d
 {
     load_cu::get_block_and_grid(&d_min_grid_size, &d_block_size);
     GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
-
     cudaStreamCreate(&d_stream);
 }
 
@@ -30,9 +29,12 @@ work_return_code_t load_cuda::work(std::vector<block_work_input>& work_input,
 
     auto noutput_items = work_output[0].n_items;
 
-    load_cu::exec_kernel(
-        in, out, (noutput_items * d_itemsize) / d_block_size, d_block_size, d_load, d_stream);
-    checkCudaErrors(cudaPeekAtLastError());
+    for (int i = 0; i < noutput_items; i++) {
+        load_cu::exec_kernel(
+            in + i*d_itemsize, out + i*d_itemsize, d_itemsize / d_block_size, d_block_size, d_load, d_stream);
+        checkCudaErrors(cudaPeekAtLastError());
+    }
+
     cudaStreamSynchronize(d_stream);
 
 
