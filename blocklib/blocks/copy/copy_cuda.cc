@@ -6,21 +6,23 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+#include <cusp/copy.cuh>
+
 
 namespace gr {
 namespace blocks {
-
-extern void apply_copy(
-    const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream);
-
-extern void get_block_and_grid(int* minGrid, int* minBlock);
 
 copy::sptr copy::make_cuda(const block_args& args) { return std::make_shared<copy_cuda>(args); }
 
 copy_cuda::copy_cuda(block_args args) : copy(args), d_itemsize(args.itemsize)
 
 {
-    get_block_and_grid(&d_min_grid_size, &d_block_size);
+    // get_block_and_grid(&d_min_grid_size, &d_block_size);
+
+    // hardcoded for now until we can get from cusp
+    d_min_grid_size = 40;
+    d_block_size = 1024;
+
     GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
 
     cudaStreamCreate(&d_stream);
@@ -34,9 +36,11 @@ work_return_code_t copy_cuda::work(std::vector<block_work_input>& work_input,
 
     auto noutput_items = work_output[0].n_items;
 
-    apply_copy(
-        in, out, (noutput_items * d_itemsize) / d_block_size, d_block_size, d_stream);
+    cusp::launch_kernel_copy<uint8_t>(in, out, (noutput_items * d_itemsize) / d_block_size, d_block_size,
+                            noutput_items * d_itemsize, d_stream);
+
     checkCudaErrors(cudaPeekAtLastError());
+
     cudaStreamSynchronize(d_stream);
 
 

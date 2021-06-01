@@ -19,11 +19,11 @@ if cuda_dep.found() and get_option('enable_cuda')
         blocks_cu_srcs, 
         include_directories : incdir, 
         install : true, 
-        dependencies : [cuda_dep])
+        dependencies : [cuda_dep, libcusp_dep])
 
     newsched_blocklib_blocks_cu_dep = declare_dependency(include_directories : incdir,
                         link_with : newsched_blocklib_blocks_cu,
-                        dependencies : cuda_dep)
+                        dependencies : [cuda_dep, libcusp_dep])
 
     blocks_deps += [newsched_blocklib_blocks_cu_dep, cuda_dep]
 

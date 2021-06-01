@@ -1,3 +1,6 @@
 [submodule "cusp"]
 	path = cusp
 	url = https://github.com/mormj/cusp
+[submodule "subprojects/cusp"]
+	path = subprojects/cusp
+	url = https://github.com/mormj/cusp
