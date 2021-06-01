@@ -8,7 +8,8 @@ runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, li
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
     'cudabuffer.cu',
-    'cudabuffer_pinned.cu'
+    'cudabuffer_pinned.cu',
+    'cudabuffer_sm.cu'
   ]
 
   newsched_runtime_cu_lib = library('newsched-runtime-cu',

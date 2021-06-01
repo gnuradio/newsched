@@ -3,11 +3,11 @@
 #include <thread>
 
 #include <gnuradio/blocks/head.hh>
+#include <gnuradio/blocks/load.hh>
 #include <gnuradio/blocks/null_sink.hh>
 #include <gnuradio/blocks/null_source.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
-#include <gnuradio/blocks/load.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/logging.hh>
 #include <gnuradio/realtime.hh>
@@ -15,6 +15,7 @@
 
 #include <gnuradio/cudabuffer.hh>
 #include <gnuradio/cudabuffer_pinned.hh>
+#include <gnuradio/cudabuffer_sm.hh>
 #include <gnuradio/simplebuffer.hh>
 #include <gnuradio/vmcircbuf.hh>
 #include <iostream>
@@ -32,6 +33,7 @@ int main(int argc, char* argv[])
     int nblocks;
     size_t load;
     bool rt_prio = false;
+    bool single_mapped = false;
 
     po::options_description desc("CUDA Copy Benchmarking Flowgraph");
     desc.add_options()("help,h", "display help")(
@@ -41,7 +43,9 @@ int main(int argc, char* argv[])
         "nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")(
         "load,l", po::value<size_t>(&load)->default_value(1), "Num FFT Blocks")(
         "memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")(
-        "veclen,s", po::value<size_t>(&batch_size)->default_value(1024), "Batch Size");
+        "veclen,s", po::value<size_t>(&batch_size)->default_value(1024), "Batch Size")(
+        "rt_prio", "Enable Real-time priority")(
+        "sm", "Enable Single Mapped CUDA buffers (for memmodel 0)");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -55,19 +59,23 @@ int main(int argc, char* argv[])
         rt_prio = true;
     }
 
+    if (vm.count("sm")) {
+        single_mapped = true;
+    }
 
     std::vector<blocks::load::sptr> copy_blks(nblocks);
     for (int i = 0; i < nblocks; i++) {
-        copy_blks[i] = blocks::load::make_cuda({sizeof(gr_complex)*batch_size, load});
+        copy_blks[i] = blocks::load::make_cuda({ sizeof(gr_complex) * batch_size, load });
     }
 
-    std::vector<gr_complex> input_data(samples);
-    for (unsigned i = 0; i < samples; i++)
-        input_data[i] = gr_complex(i % 256, 256 - i % 256);
+    // std::vector<gr_complex> input_data(samples);
+    // for (unsigned i = 0; i < samples; i++)
+    //     input_data[i] = gr_complex(i % 256, 256 - i % 256);
 
-    auto src = blocks::null_source::make({sizeof(gr_complex) * batch_size});
-    auto snk = blocks::null_sink::make({sizeof(gr_complex) * batch_size});
-    auto head = blocks::head::make_cpu({sizeof(gr_complex) * batch_size, samples / batch_size});
+    auto src = blocks::null_source::make({ sizeof(gr_complex) * batch_size });
+    auto snk = blocks::null_sink::make({ sizeof(gr_complex) * batch_size });
+    auto head =
+        blocks::head::make_cpu({ sizeof(gr_complex) * batch_size, samples / batch_size });
 
     auto fg = flowgraph::make();
 
@@ -79,13 +87,29 @@ int main(int argc, char* argv[])
     sched->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
     fg->set_scheduler(sched);
     if (mem_model == 0) {
-        fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+        if (single_mapped)
+            fg->connect(head, 0, copy_blks[0], 0)
+                ->set_custom_buffer(CUDA_BUFFER_SM_ARGS_H2D);
+        else
+            fg->connect(head, 0, copy_blks[0], 0)
+                ->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+
         for (int i = 0; i < nblocks - 1; i++) {
-            fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)
-                ->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+            if (single_mapped) {
+                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)
+                    ->set_custom_buffer(CUDA_BUFFER_SM_ARGS_D2D);
+            } else {
+                fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)
+                    ->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+            }
         }
-        fg->connect(copy_blks[nblocks - 1], 0, snk, 0)
-            ->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
+        if (single_mapped) {
+            fg->connect(copy_blks[nblocks - 1], 0, snk, 0)
+                ->set_custom_buffer(CUDA_BUFFER_SM_ARGS_D2H);
+        } else {
+            fg->connect(copy_blks[nblocks - 1], 0, snk, 0)
+                ->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
+        }
 
     } else {
         fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
