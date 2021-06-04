@@ -57,7 +57,18 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             if (ed.size() == 0) {
                 throw std::runtime_error("Edge associated with input port not found");
             }
-            p->set_buffer_reader(ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties()));
+
+            // TODO: more robust way of ensuring readers don't get double-added
+            // If dst block is in this domain, then add the reader to the source port
+            if (std::find(fg->nodes().begin(), fg->nodes().end(), ed[0]->dst().node()) !=
+                fg->nodes().end()) {
+                GR_LOG_INFO(_logger,
+                            "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
+                            ed[0]->identifier(),
+                            ed[0]->src().node()->alias());
+                p->set_buffer_reader(
+                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties()));
+            }
         }
     }
 }
