@@ -115,6 +115,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
         info.scheduler->initialize(d_flat_subgraphs[d_flat_subgraphs.size() - 1],
                                    d_fgmon);
     }
+    _validated = true;
 }
 
 void flowgraph::validate()
