@@ -15,15 +15,31 @@ cufft<T, forward>::cufft(size_t fft_size, size_t batch_size) : d_fft_size(fft_si
     }
 }
 
-
 template <>
-void cufft<gr_complex, true>::execute(gr_complex* in, gr_complex* out)
+void cufft<gr_complex, true>::execute(const gr_complex* in, gr_complex* out)
 {
     if (cufftExecC2C(plan, (cufftComplex *)in, (cufftComplex *)out, CUFFT_FORWARD) != CUFFT_SUCCESS) {
         GR_LOG_ERROR(d_logger, "CUFFT Error: Failed to execute plan");
         return;
     }
 }
+
+template <>
+void cufft<gr_complex, false>::execute(const gr_complex* in, gr_complex* out)
+{
+    if (cufftExecC2C(plan, (cufftComplex *)in, (cufftComplex *)out, CUFFT_INVERSE) != CUFFT_SUCCESS) {
+        GR_LOG_ERROR(d_logger, "CUFFT Error: Failed to execute plan");
+        return;
+    }
+}
+
+template class cufft<gr_complex, true>;
+template class cufft<gr_complex, false>;
+template class cufft<float, true>;
+template class cufft<float, false>;
+
+// template <typename T, bool forward>
+// cufft<T,forward>::~cufft() {};
 
 } // namespace fft
 } // namespace gr
