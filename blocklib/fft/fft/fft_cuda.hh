@@ -1,27 +1,27 @@
 #pragma once
 
-#include <gnuradio/fft/copy.hh>
-
-#include <cuComplex.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include <gnuradio/fft/fft.hh>
+#include <gnuradio/fft/cufft.hh>
 
 namespace gr {
 namespace fft {
 
-class copy_cuda : public copy
+template <class T, bool forward>
+class fft_cuda : public fft<T,forward>
 {
 public:
-    copy_cuda(block_args args);
+    fft_cuda(const typename fft<T,forward>::block_args& args); 
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
 
 protected:
-    size_t d_itemsize;
+    size_t d_fft_size;
+    std::vector<float> d_window;
+    bool d_shift;
 
-    int d_block_size;
-    int d_min_grid_size;
-    cudaStream_t d_stream;
+    cufft<gr_complex, forward> d_fft;
+
+    void fft_and_shift(const T* in, gr_complex* out);
 };
 
 } // namespace fft

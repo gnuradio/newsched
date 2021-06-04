@@ -1,10 +1,9 @@
 yml_file = 'fft.yml'
 
 fft_fft_files = files(['fft_cpu.cc'])
-# fft_fft_files = []
-# if cuda_dep.found() and get_option('enable_cuda')
-#     fft_fft_files += files('fft_cuda.cc')
-# endif
+if cuda_dep.found() and get_option('enable_cuda')
+    fft_fft_files += files('fft_cuda.cc')
+endif
 
 gen_fft_h = custom_target('gen_fft_cpu_h',
                         input : ['fft.yml'],

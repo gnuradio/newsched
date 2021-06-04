@@ -67,18 +67,18 @@ public:
     
     cufft(const cufft&) = delete;
     cufft& operator=(const cufft&) = delete;
-    virtual ~cufft();
+    // virtual ~cufft();
 
     /*!
      * compute FFT. 
      */
-    void execute(typename cufft_inbuf<T, forward>::type* in, typename cufft_outbuf<T, forward>::type* out);
+    void execute(const typename cufft_inbuf<T, forward>::type* in, typename cufft_outbuf<T, forward>::type* out);
 };
 
 using cufft_complex_fwd = cufft<gr_complex, true>;
-// using cufft_complex_rev = cufft<gr_complex, false>;
-// using cufft_real_fwd = cufft<float, true>;
-// using cufft_real_rev = cufft<float, false>;
+using cufft_complex_rev = cufft<gr_complex, false>;
+using cufft_real_fwd = cufft<float, true>;
+using cufft_real_rev = cufft<float, false>;
 
 } /* namespace fft */
 } /*namespace gr */

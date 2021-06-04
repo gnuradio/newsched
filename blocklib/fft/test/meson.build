@@ -8,5 +8,8 @@ if get_option('enable_testing')
     env.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
 
     test('qa_fft', find_program('qa_fft.py'), env: env)
+    if (cuda_available and get_option('enable_cuda'))
+    test('qa_cufft', find_program('qa_cufft.py'), env: env)
+    endif
 
 endif
