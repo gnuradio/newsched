@@ -25,6 +25,10 @@ void bind_edge(py::module&);
 void bind_graph(py::module&);
 void bind_flowgraph(py::module&);
 void bind_scheduler(py::module&);
+void bind_buffer(py::module&);
+#ifdef HAVE_CUDA
+void bind_cudabuffer(py::module&);
+#endif
 
 // We need this hack because import_array() returns NULL
 // for newer Python versions.
@@ -54,6 +58,10 @@ PYBIND11_MODULE(runtime_python, m)
     bind_graph(m);
     bind_flowgraph(m);
     bind_scheduler(m);
+    bind_buffer(m);
+    #ifdef HAVE_CUDA
+    bind_cudabuffer(m);
+    #endif
     
     // TODO: Move into gr_types.hpp
     // %constant int sizeof_char 	= sizeof(char);

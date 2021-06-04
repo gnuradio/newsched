@@ -13,16 +13,14 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/edge.hh>
+#include <gnuradio/buffer.hh>
 // pydoc.h is automatically generated in the build directory
 // #include <edge_pydoc.h>
 
-void bind_edge(py::module& m)
+void bind_buffer(py::module& m)
 {
-    using edge = ::gr::edge;
+    using buffer_properties = ::gr::buffer_properties;
 
-    py::class_<edge, std::shared_ptr<edge>>(m, "edge")
-    .def("set_custom_buffer", &edge::set_custom_buffer)
-        ;
-
+    py::class_<buffer_properties, std::shared_ptr<buffer_properties>>(
+        m, "buffer_properties");
 }
