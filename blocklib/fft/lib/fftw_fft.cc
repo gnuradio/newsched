@@ -111,9 +111,9 @@ static void import_wisdom()
 
 static void config_threading(int nthreads)
 {
-    static int fftw_threads_inited = 0;
-
 #ifdef FFTW3F_THREADS
+    static int fftw_threads_inited = 0;
+    
     if (fftw_threads_inited == 0) {
         fftw_threads_inited = 1;
         fftwf_init_threads();

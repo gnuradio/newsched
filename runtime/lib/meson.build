@@ -20,7 +20,8 @@ if cuda_dep.found() and get_option('enable_cuda')
       include_directories : incdir)
 
   newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,
-              link_with : newsched_runtime_cu_lib)
+              link_with : newsched_runtime_cu_lib,
+              dependencies : [cuda_dep])
 
   runtime_deps += [newsched_runtime_cu_dep]
 endif
