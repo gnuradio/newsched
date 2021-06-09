@@ -40,7 +40,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 break;
 
             if (read_info.n_items < s_min_items_to_process ||
-                (min_read > 0 && read_info.n_items < min_read)) {
+                (min_read > 0 && read_info.n_items < (int)min_read)) {
 
                 p_buf->input_blocked_callback(s_min_items_to_process);
 
@@ -48,7 +48,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 break;
             }
 
-            if (max_read > 0 && read_info.n_items > max_read) {
+            if (max_read > 0 && read_info.n_items > (int)max_read) {
                 read_info.n_items = max_read;
             }
 

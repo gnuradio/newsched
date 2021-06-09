@@ -26,8 +26,8 @@ nop_head_cpu::nop_head_cpu(const block_args& args)
 work_return_code_t nop_head_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
 {
-    auto* iptr = (uint8_t*)work_input[0].items();
-    auto* optr = (uint8_t*)work_output[0].items();
+    // auto* iptr = (uint8_t*)work_input[0].items();
+    // auto* optr = (uint8_t*)work_output[0].items();
 
     if (d_ncopied_items >= d_nitems) {
         work_output[0].n_produced = 0;
