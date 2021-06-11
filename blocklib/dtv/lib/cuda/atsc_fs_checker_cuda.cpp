@@ -192,7 +192,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
                     d_field_num = 0;
                     d_segment_num = 0;
                     if (items_to_copy > 0) {
-                        std::cout << "copy1 " << items_to_copy << std::endl;
+                        // std::cout << "copy1 " << items_to_copy << std::endl;
                         checkCudaErrors(cudaMemcpyAsync(
                             &out[output_produced - items_to_copy],
                             &in[start_item * ATSC_DATA_SEGMENT_LENGTH],
@@ -220,7 +220,7 @@ work_return_code_t atsc_fs_checker_cuda::work(std::vector<block_work_input>& wor
         }
     }
     if (items_to_copy > 0) {
-        std::cout << "copy2 " << items_to_copy << std::endl;
+        // std::cout << "copy2 " << items_to_copy << std::endl;
         checkCudaErrors(
             cudaMemcpyAsync(&out[output_produced - items_to_copy],
                             &in[start_item * ATSC_DATA_SEGMENT_LENGTH],
