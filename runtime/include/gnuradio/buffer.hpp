@@ -150,6 +150,9 @@ public:
     size_t max_buffer_fill() { return _buf_properties ? _buf_properties->max_buffer_fill() : 0; }
     size_t min_buffer_fill() { return _buf_properties ? _buf_properties->min_buffer_fill() : 0; }
 
+    std::vector<buffer_reader*>& readers() { return _readers; }
+
+
     /**
      * @brief Return the pointer into the buffer at the given index
      *
@@ -172,7 +175,9 @@ public:
      * @return true if info is valid
      * @return false if info is not valid (e.g. could not acquire mutex)
      */
-    bool write_info(buffer_info_t& info);
+    virtual bool write_info(buffer_info_t& info);
+    virtual size_t space_available();
+
 
     /**
      * @brief Add Tags onto the tag queue
@@ -230,6 +235,12 @@ public:
     virtual std::shared_ptr<buffer_reader>
     add_reader(std::shared_ptr<buffer_properties> buf_props) = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
+
+    virtual bool output_blocked_callback(bool force = false)
+    {
+        // Only singly mapped buffers need to do anything with this callback
+        return true;
+    }
 };
 
 typedef std::shared_ptr<buffer> buffer_sptr;
@@ -254,6 +265,7 @@ public:
     }
     virtual ~buffer_reader() {}
     size_t read_index() { return _read_index; }
+    void set_read_index(size_t r) { _read_index = r; }
     void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
@@ -262,6 +274,7 @@ public:
     size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
 
 
+    std::mutex* mutex() { return &_rdr_mutex; }
 
     /**
      * @brief Return the number of items available to be read
@@ -278,6 +291,12 @@ public:
      * @return false if info is not valid (e.g. could not acquire mutex)
      */
     virtual bool read_info(buffer_info_t& info);
+
+    virtual bool input_blocked_callback(size_t items_required)
+    {
+        // Only singly mapped buffers need to do anything with this callback
+        return true;
+    }
 
     std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end);
 

@@ -8,7 +8,8 @@ runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep]
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
     'cudabuffer.cu',
-    'cudabuffer_pinned.cu'
+    'cudabuffer_pinned.cu',
+    'cudabuffer_sm.cu'
   ]
 
   newsched_runtime_cu_lib = library('newsched-runtime-cu',
@@ -19,7 +20,8 @@ if cuda_dep.found() and get_option('enable_cuda')
       include_directories : incdir)
 
   newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,
-              link_with : newsched_runtime_cu_lib)
+              link_with : newsched_runtime_cu_lib,
+              dependencies : [cuda_dep])
 
   runtime_deps += [newsched_runtime_cu_dep]
 endif
@@ -29,6 +31,7 @@ runtime_sources = [
   'buffer_management.cpp',
   'simplebuffer.cpp',
   'realtime.cpp',
+  'buffer_sm.cpp',
   'thread.cpp',
   'parameter_types.cpp',
   'edge.cpp',
