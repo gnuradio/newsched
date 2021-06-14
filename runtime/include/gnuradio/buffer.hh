@@ -146,10 +146,22 @@ public:
     std::mutex* mutex() { return &_buf_mutex; }
 
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_size() { return _buf_properties ? _buf_properties->max_buffer_size() : 0; }
-    size_t min_buffer_size() { return _buf_properties ? _buf_properties->min_buffer_size() : 0; }
-    size_t max_buffer_fill() { return _buf_properties ? _buf_properties->max_buffer_fill() : 0; }
-    size_t min_buffer_fill() { return _buf_properties ? _buf_properties->min_buffer_fill() : 0; }
+    size_t max_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_size() : 0;
+    }
+    size_t min_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_size() : 0;
+    }
+    size_t max_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_fill() : 0;
+    }
+    size_t min_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_fill() : 0;
+    }
 
     std::vector<buffer_reader*>& readers() { return _readers; }
 
@@ -271,8 +283,14 @@ public:
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_read() { return _buf_properties ? _buf_properties->max_buffer_read() : 0; }
-    size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
+    size_t max_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_read() : 0;
+    }
+    size_t min_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_read() : 0;
+    }
 
 
     std::mutex* mutex() { return &_rdr_mutex; }

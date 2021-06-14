@@ -86,6 +86,31 @@ public:
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
+    
+    // /**
+    //  * @brief Basic step function which just calls into the work function. 
+    //  * This provides an API into blocks that's more stand-alone.
+    //  * 
+    //  * @note This does not belong in this header file as part of the exposed API 
+    //  * 
+    //  * @param buffer 
+    //  * @param num_items 
+    //  */
+    // virtual std::vector<block_work_output>& step(void* data, size_t num_items, size_t item_size) {
+    //     // efficiently create a block_work_input
+    //     auto buf_props = std::make_shared<buffer_properties>();
+    //     auto buf = std::make_shared<buffer>(num_items, item_size, buf_props);
+    //     auto buf_reader = std::make_shared<buffer_reader>(buf, buf_props, 0);
+    //     block_work_input input = block_work_input(num_items, buf_reader);
+
+    //     // efficiently create a block_work_output
+    //     // this requires some instrospection from the block to understand 
+    //     // what kind of block_work_output it would need to be able to handle the input
+
+    //     // call the work function using the input/output
+
+    //     // return the block_work_output
+    // };
 
     /**
      * @brief Wrapper for work to perform special checks and take care of special

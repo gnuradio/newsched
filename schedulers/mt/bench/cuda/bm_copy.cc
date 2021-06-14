@@ -17,7 +17,7 @@
 #include <gnuradio/cudabuffer_pinned.hh>
 #include <gnuradio/cudabuffer_sm.hh>
 #include <gnuradio/simplebuffer.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_vmcirc.hh>
 #include <iostream>
 
 #include <boost/program_options.hpp>

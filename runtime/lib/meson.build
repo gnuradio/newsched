@@ -7,9 +7,9 @@ runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, li
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
-    'cudabuffer.cu',
-    'cudabuffer_pinned.cu',
-    'cudabuffer_sm.cu'
+    'buffer_cuda.cu',
+    'buffer_cuda_pinned.cu',
+    'buffer_cuda_sm.cu'
   ]
 
   newsched_runtime_cu_lib = library('newsched-runtime-cu',
@@ -26,12 +26,12 @@ if cuda_dep.found() and get_option('enable_cuda')
   runtime_deps += [newsched_runtime_cu_dep]
 endif
 
+# mmap requires librt - FIXME - handle this a conditional dependency
 runtime_sources = [
   'buffer.cc',
   'buffer_sm.cc',
   'buffer_management.cc',
-  'simplebuffer.cc',
-  'buffer_sm.cc',
+  'buffer_cpu_simple.cc',
   'realtime.cc',
   'thread.cc',
   'parameter_types.cc',
@@ -44,10 +44,9 @@ runtime_sources = [
   'logging.cc',
   'pagesize.cc',
   'sys_paths.cc',
-  'vmcircbuf.cc',
-  'vmcircbuf_sysv_shm.cc',
-  # mmap requires librt - FIXME - handle this a conditional dependency
-  'vmcircbuf_mmap_shm_open.cc'
+  'buffer_cpu_vmcirc.cc',
+  'buffer_cpu_vmcirc_sysv_shm.cc',
+  'buffer_cpu_vmcirc_mmap_shm.cc',
 ]
 
 cpp_args = []

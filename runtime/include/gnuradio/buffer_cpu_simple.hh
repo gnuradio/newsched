@@ -10,15 +10,15 @@
 
 namespace gr {
 
-class simplebuffer_reader;
-class simplebuffer : public buffer
+class buffer_cpu_simple_reader;
+class buffer_cpu_simple : public buffer
 {
 private:
     std::vector<uint8_t> _buffer;
 
 public:
-    typedef std::shared_ptr<simplebuffer> sptr;
-    simplebuffer(size_t num_items,
+    typedef std::shared_ptr<buffer_cpu_simple> sptr;
+    buffer_cpu_simple(size_t num_items,
                  size_t item_size,
                  std::shared_ptr<buffer_properties> buf_properties)
         : buffer(num_items, item_size, buf_properties)
@@ -26,14 +26,14 @@ public:
         _buffer.resize(_buf_size * 2); // double circular buffer
         _write_index = 0;
 
-        set_type("simplebuffer");
+        set_type("buffer_cpu_simple");
     }
 
     static buffer_sptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties)
     {
-        return buffer_sptr(new simplebuffer(num_items, item_size, buffer_properties));
+        return buffer_sptr(new buffer_cpu_simple(num_items, item_size, buffer_properties));
     }
 
     void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
@@ -70,10 +70,10 @@ public:
     add_reader(std::shared_ptr<buffer_properties> buf_props);
 };
 
-class simplebuffer_reader : public buffer_reader
+class buffer_cpu_simple_reader : public buffer_reader
 {
 public:
-    simplebuffer_reader(buffer_sptr buffer,
+    buffer_cpu_simple_reader(buffer_sptr buffer,
                         std::shared_ptr<buffer_properties> buf_props,
                         size_t read_index = 0)
         : buffer_reader(buffer, buf_props, read_index)

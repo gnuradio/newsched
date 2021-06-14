@@ -1,4 +1,4 @@
-#include "vmcircbuf_mmap_shm_open.hh"
+#include "buffer_cpu_vmcirc_mmap_shm.hh"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -18,17 +18,17 @@
 
 
 namespace gr {
-vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
+buffer_cpu_vmcirc_mmap_shm::buffer_cpu_vmcirc_mmap_shm(
     size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
-    : vmcirc_buffer(num_items, item_size, buf_properties)
+    : buffer_cpu_vmcirc(num_items, item_size, buf_properties)
 {
-    set_type("vmcircbuf_mmap_shm_open");
+    set_type("buffer_cpu_vmcirc_mmap_shm");
 
 #if !defined(HAVE_MMAP) || !defined(HAVE_SHM_OPEN)
     std::stringstream error_msg;
     error_msg << "mmap or shm_open is not available";
     GR_LOG_ERROR(d_logger, error_msg.str());
-    throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+    throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
 #else
     std::scoped_lock guard(s_vm_mutex);
 
@@ -38,7 +38,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
 
     if (_buf_size <= 0 || (_buf_size % pagesize) != 0) {
         // GR_LOG_ERROR(d_logger, boost::format("invalid _buf_size = %d") % _buf_size);
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
 
@@ -78,7 +78,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
             static std::string msg =
                 str(boost::format("shm_open [%s] failed") % seg_name);
             // GR_LOG_ERROR(d_logger, msg.c_str());
-            throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+            throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
         }
         break;
     }
@@ -88,7 +88,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
     if (ftruncate(shm_fd, (off_t)2 * _buf_size) == -1) {
         close(shm_fd); // cleanup
         // GR_LOG_ERROR(d_logger, "ftruncate failed");
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
     void* first_copy =
@@ -97,14 +97,14 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
     if (first_copy == MAP_FAILED) {
         close(shm_fd); // cleanup
         // GR_LOG_ERROR(d_logger, "mmap (1) failed");
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
     // unmap the 2nd half
     if (munmap((char*)first_copy + _buf_size, _buf_size) == -1) {
         close(shm_fd); // cleanup
         // GR_LOG_ERROR(d_logger, "munmap (1) failed");
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
     // map the first half into the now available hole where the
@@ -119,7 +119,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
     if (second_copy == MAP_FAILED) {
         close(shm_fd); // cleanup
         // GR_LOG_ERROR(d_logger, "mmap (2) failed");
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
 #if 0 // OS/X doesn't allow you to resize the segment
@@ -127,8 +127,8 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
     // cut the shared memory segment down to size
     if(ftruncate(shm_fd, (off_t)size) == -1) {
       close(shm_fd);						// cleanup
-      perror("gr::vmcircbuf_mmap_shm_open: ftruncate (2)");
-      throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+      perror("gr::buffer_cpu_vmcirc_mmap_shm: ftruncate (2)");
+      throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 #endif
 
@@ -136,7 +136,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
 
     if (shm_unlink(seg_name.c_str()) == -1) { // unlink the seg_name.
         // GR_LOG_ERROR(d_logger, "shm_unlink failed");
-        throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm");
     }
 
     // Now remember the important stuff
@@ -145,7 +145,7 @@ vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(
 #endif
 }
 
-vmcircbuf_mmap_shm_open::~vmcircbuf_mmap_shm_open()
+buffer_cpu_vmcirc_mmap_shm::~buffer_cpu_vmcirc_mmap_shm()
 {
 #if defined(HAVE_MMAP)
     std::scoped_lock guard(s_vm_mutex);

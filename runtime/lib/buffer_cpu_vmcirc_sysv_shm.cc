@@ -1,4 +1,4 @@
-#include "vmcircbuf_sysv_shm.hh"
+#include "buffer_cpu_vmcirc_sysv_shm.hh"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -19,16 +19,16 @@
 #define MAX_SYSV_SHM_ATTEMPTS 3
 
 namespace gr {
-vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(size_t num_items,
+buffer_cpu_vmcirc_sysv_shm::buffer_cpu_vmcirc_sysv_shm(size_t num_items,
                                        size_t item_size,
                                        std::shared_ptr<buffer_properties> buf_properties)
-    : vmcirc_buffer(num_items, item_size, buf_properties)
+    : buffer_cpu_vmcirc(num_items, item_size, buf_properties)
 {
     set_type("vmcircbuf_sysv_shm");
 
 #if !defined(HAVE_SYS_SHM_H)
     GR_LOG_ERROR(d_logger, "sysv shared memory is not available");
-    throw std::runtime_error("gr::vmcircbuf_sysv_shm");
+    throw std::runtime_error("gr::buffer_cpu_vmcirc_sysv_shm");
 #else
 
     std::scoped_lock guard(s_vm_mutex);
@@ -37,7 +37,7 @@ vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(size_t num_items,
 
     if (_buf_size <= 0 || (_buf_size % pagesize) != 0) {
         // GR_LOG_ERROR(d_logger, boost::format("invalid _buf_size = %d") % _buf_size);
-        throw std::runtime_error("gr::vmcircbuf_sysv_shm");
+        throw std::runtime_error("gr::buffer_cpu_vmcirc_sysv_shm");
     }
 
     // Attempt to allocate buffers (handle bad_alloc errors)
@@ -143,7 +143,7 @@ vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(size_t num_items,
 #endif
 }
 
-vmcircbuf_sysv_shm::~vmcircbuf_sysv_shm()
+buffer_cpu_vmcirc_sysv_shm::~buffer_cpu_vmcirc_sysv_shm()
 {
 #if defined(HAVE_SYS_SHM_H)
     std::scoped_lock guard(s_vm_mutex);

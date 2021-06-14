@@ -2,11 +2,13 @@ runtime_headers = [
     'block.hh',
     'block_work_io.hh',
     'buffer.hh',
+    'buffer_sm.hh',
     'buffer_management.hh',
+    'buffer_cpu_simple.hh',
+    'buffer_cuda_pinned.hh',
+    'buffer_cuda.hh',
     'block_group_properties.hh',
     'concurrent_queue.hh',
-    'cudabuffer.hh',
-    'cudabuffer_pinned.hh',
     'domain.hh',
     'flat_graph.hh',
     'flowgraph.hh',
@@ -21,11 +23,10 @@ runtime_headers = [
     'prefs.hh',
     'scheduler.hh',
     'scheduler_message.hh',
-    'simplebuffer.hh',
     'sync_block.hh',
     'tag.hh',
     'types.hh',
-    'vmcircbuf.hh'
+    'buffer_cpu_vmcirc.hh'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')
