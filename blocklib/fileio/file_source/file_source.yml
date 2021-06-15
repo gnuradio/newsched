@@ -13,7 +13,7 @@ parameters:
     settable: false
 -   id: filename
     label: File Name
-    dtype: const std::string&
+    dtype: const char *
     settable: false
 -   id: repeat
     label: Repeat
