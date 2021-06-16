@@ -13,11 +13,14 @@ void bind_{{block}}(py::module& m)
 {
     using {{block}} = ::gr::{{module}}::{{block}};
 
+    py::class_<{{block}},
     {% if blocktype == 'sync' -%}
-    py::class_<{{block}}, gr::sync_block, gr::block, gr::node, std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}");
+    gr::sync_block, gr::block, gr::node, 
     {% else -%}
-    py::class_<{{block}}, gr::block, gr::node, std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}");
+    gr::block, gr::node,
     {% endif -%}
+    {# {% for b in properties|selectattr("id", "equalto", "base_class") %} {{ b['value'] }}, {% endfor -%} #}
+    std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}");
 
     py::enum_<::gr::{{module}}::{{block}}::available_impl>({{block}}_class, "available_impl")
     {% for impl in implementations -%}

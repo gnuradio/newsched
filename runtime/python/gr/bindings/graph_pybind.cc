@@ -21,5 +21,6 @@ namespace py = pybind11;
 void bind_graph(py::module& m)
 {
     py::class_<gr::graph, gr::node, std::shared_ptr<gr::graph>>(m, "graph")
-        .def("connect", py::overload_cast<std::shared_ptr<gr::node>, unsigned int, std::shared_ptr<gr::node>, unsigned int>(&gr::graph::connect));
+        .def("connect", py::overload_cast<std::shared_ptr<gr::node>, unsigned int, std::shared_ptr<gr::node>, unsigned int>(&gr::graph::connect))
+        .def("connect", py::overload_cast<std::shared_ptr<gr::node>, std::shared_ptr<gr::node>>(&gr::graph::connect));
 }

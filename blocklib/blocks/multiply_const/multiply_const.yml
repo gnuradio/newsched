@@ -1,22 +1,23 @@
 module: blocks
 block: multiply_const
-label: Multiply Const
+label: Multiply Constant
 
 properties:
 -   id: blocktype
     value: sync
--   id: type # Templated types to support
-    label: IO Type
-    key: T
-    options: 
-        - dtype: int16_t
-          suffix: ss 
-        - dtype: int32_t
-          suffix: ii
-        - dtype: float
-          suffix: ff
-        - dtype: gr_complex
-          suffix: cc
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: int16_t
+          suffix: ss   
+        - value: int32_t 
+          suffix: ii 
+        - value: float
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
 
 parameters:
 -   id: k

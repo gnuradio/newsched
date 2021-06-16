@@ -83,9 +83,9 @@ public:
     virtual  {{cb['return']}} {{cb['id']}} (
     {% if 'args' in cb -%}
     {% for arg in cb['args'] -%}
-    {{arg['dtype']}}{{ ", " if not loop.last }}
-    {% endfor %}
-    {% endif %}
+    {{arg['dtype']}} {{arg['id']}}{{ ", " if not loop.last }}
+    {% endfor -%}
+    {% endif -%}
     ) {% if cb['const'] %}const {%endif%} = 0;
     {% endfor %}     
 

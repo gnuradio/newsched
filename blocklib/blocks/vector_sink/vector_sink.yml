@@ -5,20 +5,21 @@ label: Vector Sink
 properties:
 -   id: blocktype
     value: sync
--   id: type # Templated types to support
-    label: IO Type
-    key: T
-    options: 
-        - dtype: uint8_t
-          suffix: b
-        - dtype: int16_t
-          suffix: s
-        - dtype: int32_t
-          suffix: i
-        - dtype: float
-          suffix: f
-        - dtype: gr_complex
-          suffix: c
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: uint8_t
+          suffix: b   
+        - value: int16_t
+          suffix: s   
+        - value: int32_t 
+          suffix: i 
+        - value: float
+          suffix: f   
+        - value: gr_complex 
+          suffix: c 
 
 parameters:
 -   id: vlen
