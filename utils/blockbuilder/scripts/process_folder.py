@@ -38,10 +38,10 @@ def main():
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
         templated = 0
-        if [x for x in d['properties'] if x['id'] == 'type']:
-            templated = 1 
-        elif [x for x in d['properties'] if x['id'] == 'templates']:
-            templated = 2
+        template_prop = [x for x in d['properties'] if x['id'] == 'templates']
+        if (len(template_prop) > 0):
+            templated = len(template_prop[0]['keys'])
+
 
         blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
         blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
@@ -57,7 +57,7 @@ def main():
 
             rendered = template.render(d)
             with open(blockname_h, 'w') as file:
-                print("generating " + blockname_h)
+                print("generating " + blockname_h + " with " + str(templated))
                 file.write(rendered)
 
             # Copy to the include dir
