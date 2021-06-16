@@ -2,9 +2,9 @@ dtv_deps += [newsched_runtime_dep, newsched_blocklib_filter_dep, newsched_blockl
 
 sources = [
     'atsc_plinfo.cc',
-    'atsc_fpll.cc',
-    'atsc_sync.cc',
-    'atsc_fs_checker.cc',
+    # 'atsc_fpll.cc',
+    # 'atsc_sync.cc',
+    # 'atsc_fs_checker.cc',
     'atsc_equalizer.cc',
     'atsc_single_viterbi.cc',
     'atsc_viterbi_decoder.cc',

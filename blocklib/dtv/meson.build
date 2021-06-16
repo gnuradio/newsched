@@ -6,6 +6,9 @@ dtv_pybind_sources = []
 dtv_pybind_names = []
 dtv_deps = []
 # Individual block subdirectories
+subdir('atsc_fpll')
+subdir('atsc_sync')
+subdir('atsc_fs_checker')
 
 subdir('lib')
 # if (get_option('enable_python'))

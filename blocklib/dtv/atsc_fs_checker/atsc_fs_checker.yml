@@ -1,0 +1,37 @@
+module: dtv
+block: atsc_fs_checker
+label: ATSC FS Checker
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: rate 
+    label: Rate
+    dtype: float
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: float
+
+-   domain: stream
+    id: out
+    direction: output
+    type: float
+
+-   domain: stream
+    id: plinfo
+    direction: output
+    type: untyped
+    size: 2
+
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
