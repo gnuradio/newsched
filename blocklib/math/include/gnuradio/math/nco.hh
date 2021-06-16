@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <gnuradio/types.hpp>
-#include <gnuradio/math/math.hpp>
-#include <gnuradio/math/sincos.hpp>
+#include <gnuradio/types.hh>
+#include <gnuradio/math/math.hh>
+#include <gnuradio/math/sincos.hh>
 
 #include <cmath>
 #include <vector>
