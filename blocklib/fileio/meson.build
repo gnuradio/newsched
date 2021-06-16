@@ -14,4 +14,4 @@ if (get_option('enable_python'))
     subdir('python/fileio')
 endif
 
-# subdir('test')
+subdir('test')
