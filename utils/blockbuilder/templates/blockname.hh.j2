@@ -38,19 +38,33 @@ public:
     {
         {% for port in ports %}
         {% if port['domain'] == 'stream' -%}
-        {% if 'multiplicity' not in port%}
+        {% if 'multiplicity' not in port%}     
+        {% if port['type'] == 'untyped'%}                                  
         add_port(untyped_port::make(
             "{{ port['id'] }}", 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+            {{ 'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
+        {% else %}
+        add_port(port<{{port['type']}}>::make("{{ port['id'] }}", 
+                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
+                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
+        {% endif %}
         {% else %}
         {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
+        {% if port['type'] == 'untyped'%}   
         for (size_t i = 0; i < {{m}}; i++) {
         add_port(untyped_port::make(
             "{{ port['id'] }}" + std::to_string(i), 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+            {{'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
         }
+        {% else %}
+        for (size_t i = 0; i < {{m}}; i++) {
+        add_port(port<{{port['type']}}>::make("{{ port['id'] }}" + std::to_string(i), 
+                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
+                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
+        }
+        {% endif %}
         {% endif -%}
         {% else %}
         {% if port['direction'] == 'input' %}
