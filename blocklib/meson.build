@@ -1,3 +1,4 @@
+subdir('math')
 subdir('blocks')
 subdir('analog')
 subdir('fft')
