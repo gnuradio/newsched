@@ -7,6 +7,7 @@ fileio_pybind_names = []
 fileio_deps = []
 # Individual block subdirectories
 subdir('file_source')
+subdir('file_sink')
 
 subdir('lib')
 if (get_option('enable_python'))
