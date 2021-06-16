@@ -1,8 +1,6 @@
 sources = [
     'moving_averager.cc',
-    'fir_filter.cc',
-    'mmse_fir_interpolator_ff.cc',
-    'mmse_interpolator_ff.cc'
+    'fir_filter.cc'
 ]
 
 filter_sources += sources
