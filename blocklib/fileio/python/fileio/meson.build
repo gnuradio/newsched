@@ -2,7 +2,9 @@
 #  Python Bindings ###
 ######################
 
-# Generate _python.cc for each block
+# Manually created noblock sources
+fileio_pybind_sources = ['bindings/file_sink_base_pybind.cc'] + fileio_pybind_sources
+fileio_pybind_names = ['file_sink_base'] + fileio_pybind_names
 
 srcs = ['__init__.py']
 

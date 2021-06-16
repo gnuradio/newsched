@@ -11,14 +11,14 @@
 import os
 import tempfile
 import array
-from newsched import gr, gr_unittest, blocks
+from newsched import gr, gr_unittest, blocks, fileio
 
 
 class test_file_sink(gr_unittest.TestCase):
 
     def setUp(self):
         os.environ['GR_CONF_CONTROLPORT_ON'] = 'False'
-        self.tb = gr.top_block()
+        self.tb = gr.flowgraph()
 
     def tearDown(self):
         self.tb = None
@@ -29,8 +29,8 @@ class test_file_sink(gr_unittest.TestCase):
 
         with tempfile.NamedTemporaryFile() as temp:
             src = blocks.vector_source_f(data)
-            snk = blocks.file_sink(gr.sizeof_float, temp.name)
-            snk.set_unbuffered(True)
+            snk = fileio.file_sink(gr.sizeof_float, temp.name)
+            snk.set_unbuffered(True) # FIXME: comes from base class no pybind yet
             self.tb.connect(src, snk)
             self.tb.run()
 
