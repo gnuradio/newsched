@@ -13,11 +13,13 @@ ports:
     id: in
     direction: input
     type: float
+    dims: '{832}'
 
 -   domain: stream
     id: out
     direction: output
     type: float
+    dims: '{832}'
 
 -   domain: stream
     id: plinfo
