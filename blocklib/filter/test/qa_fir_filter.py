@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2008,2010,2012,2013 Free Software Foundation, Inc.
 #
@@ -9,7 +9,7 @@
 #
 
 
-from gnuradio import gr, gr_unittest, filter, blocks
+from newsched import gr, gr_unittest, filter, blocks
 
 
 def fir_filter(x, taps, decim=1):

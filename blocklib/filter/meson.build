@@ -13,3 +13,5 @@ subdir('lib')
 if (get_option('enable_python'))
     subdir('python/filter')
 endif
+
+subdir('test')
