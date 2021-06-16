@@ -1,0 +1,46 @@
+module: filter
+block: dc_blocker
+label: Multiply Constant
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: float
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+parameters:
+-   id: D
+    label: Delay Line Length
+    dtype: int
+    settable: true
+-   id: long_form
+    label: Long Form
+    dtype: bool
+    settable: false
+    default: 'true'
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{1}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{1}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

@@ -7,7 +7,7 @@ filter_pybind_names = []
 filter_deps = []
 
 # Individual block subdirectories
-
+subdir('dc_blocker')
 subdir('lib')
 
 if (get_option('enable_python'))
