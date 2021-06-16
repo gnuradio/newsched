@@ -5,7 +5,7 @@ sources = [
     # 'atsc_fpll.cc',
     # 'atsc_sync.cc',
     # 'atsc_fs_checker.cc',
-    'atsc_equalizer.cc',
+    # 'atsc_equalizer.cc',
     'atsc_single_viterbi.cc',
     'atsc_viterbi_decoder.cc',
     'atsc_deinterleaver.cc',
