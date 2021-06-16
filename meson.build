@@ -10,6 +10,7 @@ cc = meson.get_compiler('cpp')
 rt_dep = cc.find_library('rt', required : false)
 libdl_dep = cc.find_library('dl')
 
+c_available = add_languages('c', required : true)
 cuda_available = add_languages('cuda', required : false)
 
 boost_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')
