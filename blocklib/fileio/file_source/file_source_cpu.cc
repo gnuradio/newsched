@@ -246,6 +246,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
 
     // No items remaining - all done
     if (d_items_remaining == 0) {
+        work_output[0].n_produced = 0;
         return work_return_code_t::WORK_DONE;
     }
 

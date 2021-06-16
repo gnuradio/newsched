@@ -19,14 +19,17 @@ parameters:
     label: Repeat
     dtype: bool
     settable: false
+    default: 'false'
 -   id: offset
     label: Offset
     dtype: uint64_t
     settable: false
+    default: 0
 -   id: len
     label: Length
     dtype: uint64_t
     settable: false
+    default: 0
 
 ports:
 -   domain: stream
@@ -34,6 +37,15 @@ ports:
     direction: output
     type: untyped
     size: itemsize
+
+callbacks:
+-   id: seek
+    return: bool
+    args:
+    - id: seek_point
+      dtype: int64_t
+    - id: whence
+      dtype: int
 
 implementations:
 -   id: cpu
