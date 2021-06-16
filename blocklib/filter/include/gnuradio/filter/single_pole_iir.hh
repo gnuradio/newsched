@@ -15,6 +15,7 @@
 
 namespace gr {
 namespace filter {
+namespace kernel {
 
 /*!
  * \brief class template for single pole IIR filter
@@ -160,8 +161,6 @@ gr_complex single_pole_iir<gr_complex, i_type, double>::filter(const i_type inpu
     return (gr_complex)output;
 }
 
-// Do we need to specialize this, although it is the same as the general case?
-
 template <class i_type>
 void single_pole_iir<gr_complex, i_type, double>::filterN(gr_complex output[],
                                                           const i_type input[],
@@ -171,6 +170,6 @@ void single_pole_iir<gr_complex, i_type, double>::filterN(gr_complex output[],
         output[i] = filter(input[i]);
 }
 
+} // namespace kernel
 } /* namespace filter */
 } /* namespace gr */
-
