@@ -1,6 +1,6 @@
 module: dtv
-block: atsc_equalizer
-label: ATSC Equalizer
+block: atsc_viterbi_decoder
+label: ATSC Viterbi Decoder
 
 properties:
 -   id: blocktype
@@ -8,7 +8,6 @@ properties:
 
 parameters:
 
- 
 ports:
 -   domain: stream
     id: in
@@ -25,8 +24,8 @@ ports:
 -   domain: stream
     id: out
     direction: output
-    type: float
-    dims: '{832}'
+    type: uint8_t
+    dims: '{207}'
 
 -   domain: stream
     id: plinfo
