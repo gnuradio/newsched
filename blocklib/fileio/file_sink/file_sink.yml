@@ -5,6 +5,8 @@ label: File Sink
 properties:
 -   id: blocktype
     value: sync
+-   id: base_class
+    value: gr::fileio::file_sink_base
 
 parameters:
 -   id: itemsize
@@ -19,6 +21,7 @@ parameters:
     label: Append
     dtype: bool
     settable: false
+    default: 'false'
 
 ports:
 -   domain: stream
@@ -26,6 +29,13 @@ ports:
     direction: input
     type: untyped
     size: itemsize
+
+callbacks:
+-   id: set_unbuffered
+    return: void
+    args:
+    - id: unbuffered
+      dtype: bool
 
 implementations:
 -   id: cpu
