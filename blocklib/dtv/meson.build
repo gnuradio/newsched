@@ -9,6 +9,7 @@ dtv_deps = []
 subdir('atsc_fpll')
 subdir('atsc_sync')
 subdir('atsc_fs_checker')
+subdir('atsc_equalizer')
 
 subdir('lib')
 # if (get_option('enable_python'))

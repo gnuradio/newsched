@@ -29,9 +29,9 @@ class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {
 public:
     struct block_args {
-        {% for param in parameters -%}
+        {% if parameters %} {% for param in parameters -%}
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% endfor -%}};
+        {% endfor -%}{% endif %}};
     
     typedef std::shared_ptr<{{ block }}> sptr;
     {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")

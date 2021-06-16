@@ -1,18 +1,25 @@
 module: dtv
-block: atsc_fs_checker
-label: ATSC FS Checker
+block: atsc_equalizer
+label: ATSC Equalizer
 
 properties:
 -   id: blocktype
     value: sync
 
 parameters:
+
  
 ports:
 -   domain: stream
     id: in
     direction: input
     type: float
+
+-   domain: stream
+    id: plinfo
+    direction: input
+    type: untyped
+    size: 2
 
 -   domain: stream
     id: out
@@ -24,7 +31,6 @@ ports:
     direction: output
     type: untyped
     size: 2
-
 
 implementations:
 -   id: cpu
