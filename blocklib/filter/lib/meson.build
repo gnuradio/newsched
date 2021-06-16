@@ -1,5 +1,5 @@
 sources = [
-    'dc_blocker.cc',
+    'moving_averager.cc',
     'fir_filter.cc',
     'mmse_fir_interpolator_ff.cc',
     'mmse_interpolator_ff.cc'
