@@ -1,0 +1,40 @@
+module: dtv
+block: atsc_derandomizer
+label: ATSC Derandomizer
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: float
+    dims: '{207}'
+
+-   domain: stream
+    id: plinfo
+    direction: input
+    type: untyped
+    size: 2
+
+-   domain: stream
+    id: out
+    direction: output
+    type: uint8_t
+    dims: '{207}'
+
+-   domain: stream
+    id: plinfo
+    direction: output
+    type: untyped
+    size: 2
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
