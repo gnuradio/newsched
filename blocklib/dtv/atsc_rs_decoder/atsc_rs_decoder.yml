@@ -12,14 +12,14 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: float
+    type: uint8_t
     dims: '{207}'
 
 -   domain: stream
     id: plinfo
     direction: input
     type: untyped
-    size: 2
+    size: 4
 
 -   domain: stream
     id: out
@@ -31,7 +31,7 @@ ports:
     id: plinfo
     direction: output
     type: untyped
-    size: 2
+    size: 4
 
 implementations:
 -   id: cpu
