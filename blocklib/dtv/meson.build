@@ -13,6 +13,7 @@ subdir('atsc_equalizer')
 subdir('atsc_viterbi_decoder')
 subdir('atsc_deinterleaver')
 subdir('atsc_derandomizer')
+subdir('atsc_rs_decoder')
 
 subdir('lib')
 # if (get_option('enable_python'))
