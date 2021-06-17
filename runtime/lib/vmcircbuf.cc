@@ -4,7 +4,7 @@
 #include "vmcircbuf_sysv_shm.hh"
 #include <cstring>
 #include <mutex>
-
+#include <numeric>
 // Doubly mapped circular buffer class
 
 namespace gr {
@@ -33,9 +33,34 @@ buffer_sptr vmcirc_buffer::make(size_t num_items,
     }
 }
 
-vmcirc_buffer::vmcirc_buffer(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+vmcirc_buffer::vmcirc_buffer(size_t num_items,
+                             size_t item_size,
+                             size_t granularity,
+                             std::shared_ptr<buffer_properties> buf_properties)
     : buffer(num_items, item_size, buf_properties)
 {
+    // This is the code from gnuradio that forces buffers to align with items
+
+    auto min_buffer_items = granularity / std::gcd(item_size, granularity);
+    if (num_items % min_buffer_items != 0)
+        num_items = ((num_items / min_buffer_items) + 1) * min_buffer_items;
+
+    // Add warning
+
+    // Ensure that the instantiated buffer is a multiple of the granularity
+    auto requested_size = num_items * item_size;
+    auto npages = requested_size / granularity;
+    if (requested_size != granularity * npages) {
+        npages++;
+    }
+    auto actual_size = granularity * npages;
+
+    // _num_items = num_items;
+    _num_items = actual_size / item_size;
+    _item_size = item_size;
+    // _buf_size = _num_items * _item_size;
+    _buf_size = actual_size;
+    _write_index = 0;
 }
 
 void* vmcirc_buffer::write_ptr() { return (void*)&_buffer[_write_index]; }
