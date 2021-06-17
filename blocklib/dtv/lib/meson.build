@@ -11,7 +11,7 @@ sources = [
     # 'atsc_deinterleaver.cc',
     'atsc_rs_decoder.cc',
     'atsc_randomize.cc',
-    'atsc_derandomizer.cc'
+    # 'atsc_derandomizer.cc'
 ]
 
 dtv_sources += sources
