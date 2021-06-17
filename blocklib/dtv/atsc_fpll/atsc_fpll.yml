@@ -16,7 +16,7 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: float
+    type: gr_complex
 
 -   domain: stream
     id: out

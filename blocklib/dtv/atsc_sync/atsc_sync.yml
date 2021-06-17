@@ -4,7 +4,7 @@ label: ATSC Sync
 
 properties:
 -   id: blocktype
-    value: sync
+    value: general
 
 parameters:
 -   id: rate

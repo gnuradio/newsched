@@ -16,8 +16,8 @@ subdir('atsc_derandomizer')
 subdir('atsc_rs_decoder')
 
 subdir('lib')
-# if (get_option('enable_python'))
-#     subdir('python/dtv')
-# endif
+if (get_option('enable_python'))
+    subdir('python/dtv')
+endif
 
 subdir('test')

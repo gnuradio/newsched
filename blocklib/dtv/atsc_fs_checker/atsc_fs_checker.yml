@@ -4,7 +4,7 @@ label: ATSC FS Checker
 
 properties:
 -   id: blocktype
-    value: sync
+    value: general
 
 parameters:
  
@@ -25,7 +25,7 @@ ports:
     id: plinfo
     direction: output
     type: untyped
-    size: 2
+    size: 4
 
 
 implementations:
