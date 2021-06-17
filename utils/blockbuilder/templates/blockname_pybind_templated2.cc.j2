@@ -27,12 +27,12 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
     {% endfor -%}
         .export_values();
 
-    {{block}}_class.def(py::init([]({% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}, {%endfor%} typename gr::{{module}}::{{block}}<{{typestr}}>::available_impl impl) {
-                       return ::gr::{{ module }}::{{block}}<{{typestr}}>::make({ {% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%} }, impl);
+    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}, {%endfor%}{%endif%} typename gr::{{module}}::{{block}}<{{typestr}}>::available_impl impl) {
+                       return ::gr::{{ module }}::{{block}}<{{typestr}}>::make({ {% if parameters %}{% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}{%endif%} }, impl);
                    }),
-        {% for param in parameters -%}
+        {% if parameters %} {% for param in parameters -%}
         py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{ param['default']|lower if param['dtype'] == 'bool' else param['default'] }}{% endif %},
-        {% endfor -%}
+        {% endfor -%} {% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}<{{typestr}}>::{{cb['id']}})

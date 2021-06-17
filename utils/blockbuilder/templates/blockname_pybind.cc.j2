@@ -28,12 +28,12 @@ void bind_{{block}}(py::module& m)
     {% endfor -%}
         .export_values();
 
-    {{block}}_class.def(py::init([]({% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}, gr::{{module}}::{{block}}::available_impl impl) {
-                       return {{block}}::make({ {% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%} }, impl);
+    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }},{%endfor%}{%endif%} gr::{{module}}::{{block}}::available_impl impl) {
+                       return {{block}}::make({ {% if parameters %}{% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}{%endif%} }, impl);
                    }),
-        {% for param in parameters -%}
+        {% if parameters %} {% for param in parameters -%}
         py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
-        {% endfor -%}
+        {% endfor -%}{% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
