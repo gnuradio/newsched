@@ -34,7 +34,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
             GR_LOG_DEBUG(
-                _debug_logger, "read_info {} - {}", b->alias(), read_info.n_items);
+                _debug_logger, "read_info {} - {} - {}", b->alias(), read_info.n_items, read_info.item_size);
 
             if (!ready)
                 break;
@@ -146,7 +146,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     per_block_status[b->id()] = executor_iteration_status::READY;
                     break;
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
-                    work_output[0].n_items >>= 1;
+                    if (b->output_multiple_set()) {
+                        work_output[0].n_items -= b->output_multiple();
+                    } else {
+                        work_output[0].n_items >>= 1;
+                    }
                     if (work_output[0].n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
