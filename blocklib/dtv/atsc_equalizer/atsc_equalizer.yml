@@ -4,7 +4,7 @@ label: ATSC Equalizer
 
 properties:
 -   id: blocktype
-    value: sync
+    value: general
 
 parameters:
 
@@ -20,7 +20,7 @@ ports:
     id: plinfo
     direction: input
     type: untyped
-    size: 2
+    size: 4
 
 -   domain: stream
     id: out
@@ -32,7 +32,7 @@ ports:
     id: plinfo
     direction: output
     type: untyped
-    size: 2
+    size: 4
 
 implementations:
 -   id: cpu
