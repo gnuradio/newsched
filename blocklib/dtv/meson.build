@@ -11,6 +11,7 @@ subdir('atsc_sync')
 subdir('atsc_fs_checker')
 subdir('atsc_equalizer')
 subdir('atsc_viterbi_decoder')
+subdir('atsc_deinterleaver')
 
 subdir('lib')
 # if (get_option('enable_python'))

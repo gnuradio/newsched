@@ -8,7 +8,7 @@ sources = [
     # 'atsc_equalizer.cc',
     'atsc_single_viterbi.cc',
     # 'atsc_viterbi_decoder.cc',
-    'atsc_deinterleaver.cc',
+    # 'atsc_deinterleaver.cc',
     'atsc_rs_decoder.cc',
     'atsc_randomize.cc',
     'atsc_derandomizer.cc'
