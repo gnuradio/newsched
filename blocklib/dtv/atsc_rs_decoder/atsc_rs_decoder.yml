@@ -1,6 +1,6 @@
 module: dtv
-block: atsc_derandomizer
-label: ATSC Derandomizer
+block: atsc_rs_decoder
+label: ATSC Reed-Solomon Decoder
 
 properties:
 -   id: blocktype
@@ -13,7 +13,7 @@ ports:
     id: in
     direction: input
     type: float
-    dims: '{188}'
+    dims: '{207}'
 
 -   domain: stream
     id: plinfo
@@ -26,6 +26,12 @@ ports:
     direction: output
     type: uint8_t
     dims: '{188}'
+
+-   domain: stream
+    id: plinfo
+    direction: output
+    type: untyped
+    size: 2
 
 implementations:
 -   id: cpu
