@@ -12,7 +12,9 @@ namespace gr {
  * @brief Struct for passing all information needed for input data to block::work
  *
  */
-struct block_work_input {
+class block_work_input
+{
+public:
     int n_items;
     buffer_reader_sptr buffer;
     int n_consumed; // output the number of items that were consumed on the work() call
@@ -37,10 +39,11 @@ struct block_work_input {
  * @brief Struct for passing all information needed for output data from block::work
  *
  */
-struct block_work_output {
+class block_work_output
+{
     int n_items;
-    buffer_sptr buffer;
     int n_produced; // output the number of items that were consumed on the work() call
+    buffer_sptr buffer;
 
     block_work_output(int _n_items, buffer_sptr p_buf_)
         : n_items(_n_items), buffer(p_buf_), n_produced(-1)

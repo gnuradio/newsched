@@ -29,10 +29,9 @@ buffer_sm::buffer_sm(size_t num_items,
     // _debug_logger = logging::get_logger(_type + "_dbg", "debug");
 }
 
-buffer_sptr
-buffer_sm::make(size_t num_items,
-                size_t item_size,
-                std::shared_ptr<buffer_properties> buffer_properties)
+buffer_sptr buffer_sm::make(size_t num_items,
+                            size_t item_size,
+                            std::shared_ptr<buffer_properties> buffer_properties)
 {
     return buffer_sptr(new buffer_sm(num_items, item_size, buffer_properties));
 }
@@ -58,8 +57,7 @@ void buffer_sm::post_write(int num_items)
     _total_written += num_items;
 }
 
-bool buffer_sm::output_blocked_callback_logic(bool force,
-                                              memmove_func_t memmove_func)
+bool buffer_sm::output_blocked_callback_logic(bool force, memmove_func_t memmove_func)
 {
     auto space_avail = space_available();
 
@@ -247,7 +245,7 @@ void buffer_sm_reader::post_read(int num_items)
     std::scoped_lock guard(_rdr_mutex);
 
     // GR_LOG_DEBUG(
-        // _debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
+    // _debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
 
     // advance the read pointer
     _read_index += num_items * _buffer->item_size();

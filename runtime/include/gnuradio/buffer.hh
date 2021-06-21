@@ -5,6 +5,8 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+
+
 namespace gr {
 
 /**
@@ -30,7 +32,6 @@ class buffer_properties;
 typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>
     buffer_factory_function;
-
 
 /**
  * @brief Base class for passing custom buffer properties into factory method
@@ -99,6 +100,7 @@ protected:
 
     buffer_factory_function _bff = nullptr;
 };
+
 
 /**
  * @brief Abstract buffer class

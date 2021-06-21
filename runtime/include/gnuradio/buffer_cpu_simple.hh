@@ -19,8 +19,8 @@ private:
 public:
     typedef std::shared_ptr<buffer_cpu_simple> sptr;
     buffer_cpu_simple(size_t num_items,
-                 size_t item_size,
-                 std::shared_ptr<buffer_properties> buf_properties)
+                      size_t item_size,
+                      std::shared_ptr<buffer_properties> buf_properties)
         : buffer(num_items, item_size, buf_properties)
     {
         _buffer.resize(_buf_size * 2); // double circular buffer
@@ -33,7 +33,8 @@ public:
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties)
     {
-        return buffer_sptr(new buffer_cpu_simple(num_items, item_size, buffer_properties));
+        return buffer_sptr(
+            new buffer_cpu_simple(num_items, item_size, buffer_properties));
     }
 
     void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
@@ -74,8 +75,8 @@ class buffer_cpu_simple_reader : public buffer_reader
 {
 public:
     buffer_cpu_simple_reader(buffer_sptr buffer,
-                        std::shared_ptr<buffer_properties> buf_props,
-                        size_t read_index = 0)
+                             std::shared_ptr<buffer_properties> buf_props,
+                             size_t read_index = 0)
         : buffer_reader(buffer, buf_props, read_index)
     {
     }
