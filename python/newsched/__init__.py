@@ -34,6 +34,7 @@ if path.endswith(path_ending):
     __path__.append(os.path.join(build_path, 'schedulers', 'mt', 'python'))
 
     __path__.append(os.path.join(build_path, 'blocklib', 'blocks', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'math', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'fileio', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'streamops', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'analog', 'python'))
