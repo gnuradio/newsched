@@ -7,6 +7,8 @@ math_deps = []
 subdir('include/gnuradio/math')
 
 subdir('conjugate')
+subdir('complex_to_mag_squared')
+subdir('multiply')
 
 
 subdir('lib')
