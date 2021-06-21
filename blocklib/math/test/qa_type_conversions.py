@@ -11,7 +11,7 @@
 
 from newsched import gr, gr_unittest, blocks, math
 
-# from math import sqrt, atan2
+from math import sqrt, atan2
 
 
 class test_type_conversions(gr_unittest.TestCase):
@@ -117,15 +117,16 @@ class test_type_conversions(gr_unittest.TestCase):
     #     self.tb.run()
     #     self.assertFloatTuplesAlmostEqual(expected_data, dst.data())
 
-    # def test_complex_to_mag(self):
-    #     src_data = (1 + 2j, 3 - 4j, 5 + 6j, 7 - 8j, -9 + 10j)
-    #     expected_data = [sqrt(5), sqrt(25), sqrt(61), sqrt(113), sqrt(181)]
-    #     src = blocks.vector_source_c(src_data)
-    #     op = blocks.complex_to_mag()
-    #     dst = blocks.vector_sink_f()
-    #     self.tb.connect(src, op, dst)
-    #     self.tb.run()
-    #     self.assertFloatTuplesAlmostEqual(expected_data, dst.data(), 5)
+    def test_complex_to_mag(self):
+        src_data = (1 + 2j, 3 - 4j, 5 + 6j, 7 - 8j, -9 + 10j)
+        expected_data = [sqrt(5), sqrt(25), sqrt(61), sqrt(113), sqrt(181)]
+        src = blocks.vector_source_c(src_data)
+        op = math.complex_to_mag()
+        dst = blocks.vector_sink_f()
+        self.tb.connect(src, op)
+        self.tb.connect(op, dst)
+        self.tb.run()
+        self.assertFloatTuplesAlmostEqual(expected_data, dst.data(), 5)
 
     def test_complex_to_mag_squared(self):
         src_data = (1 + 2j, 3 - 4j, 5 + 6j, 7 - 8j, -9 + 10j)
