@@ -1,9 +1,9 @@
 streamops_interleaved_short_to_complex_files = files(['interleaved_short_to_complex_cpu.cc'])
 
-if cuda_dep.found() and get_option('enable_cuda')
-    streamops_interleaved_short_to_complex_files += files('interleaved_short_to_complex_cuda.cc')
-    streamops_cu_sources += files('interleaved_short_to_complex_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     streamops_interleaved_short_to_complex_files += files('interleaved_short_to_complex_cuda.cc')
+#     streamops_cu_sources += files('interleaved_short_to_complex_cuda.cu')
+# endif
 
 gen_interleaved_short_to_complex_h = custom_target('gen_interleaved_short_to_complex_h',
                         input : ['interleaved_short_to_complex.yml'],

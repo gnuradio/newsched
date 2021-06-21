@@ -3,10 +3,10 @@ yml_file = 'atsc_fpll.yml'
 dtv_atsc_fpll_files = files(['atsc_fpll_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_fpll_files += files('atsc_fpll_cuda.cc')
-    dtv_cu_sources += files('atsc_fpll_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_fpll_files += files('atsc_fpll_cuda.cc')
+#     dtv_cu_sources += files('atsc_fpll_cuda.cu')
+# endif
 
 gen_atsc_fpll_h = custom_target('gen_atsc_fpll_cpu_h',
                         input : ['atsc_fpll.yml'],

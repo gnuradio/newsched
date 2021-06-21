@@ -3,10 +3,10 @@ yml_file = 'atsc_deinterleaver.yml'
 dtv_atsc_deinterleaver_files = files(['atsc_deinterleaver_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_deinterleaver_files += files('atsc_deinterleaver_cuda.cc')
-    dtv_cu_sources += files('atsc_deinterleaver_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_deinterleaver_files += files('atsc_deinterleaver_cuda.cc')
+#     dtv_cu_sources += files('atsc_deinterleaver_cuda.cu')
+# endif
 
 gen_atsc_deinterleaver_h = custom_target('gen_atsc_deinterleaver_cpu_h',
                         input : ['atsc_deinterleaver.yml'],

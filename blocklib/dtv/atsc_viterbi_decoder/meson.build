@@ -3,10 +3,10 @@ yml_file = 'atsc_viterbi_decoder.yml'
 dtv_atsc_viterbi_decoder_files = files(['atsc_viterbi_decoder_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_viterbi_decoder_files += files('atsc_viterbi_decoder_cuda.cc')
-    dtv_cu_sources += files('atsc_viterbi_decoder_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_viterbi_decoder_files += files('atsc_viterbi_decoder_cuda.cc')
+#     dtv_cu_sources += files('atsc_viterbi_decoder_cuda.cu')
+# endif
 
 gen_atsc_viterbi_decoder_h = custom_target('gen_atsc_viterbi_decoder_cpu_h',
                         input : ['atsc_viterbi_decoder.yml'],
