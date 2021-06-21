@@ -1,0 +1,33 @@
+module: math
+block: complex_to_mag_squared
+label: Complex to Magnitude Squared
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: vlen
+    label: Vector Length
+    dtype: size_t
+    settable: false
+    default: 1
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: gr_complex
+    dims: '{args.vlen}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: float
+    dims: '{args.vlen}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
