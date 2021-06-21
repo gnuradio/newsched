@@ -262,12 +262,12 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     #     result_data = dst.data()
     #     self.assertEqual(expected_result, result_data)
 
-    # def test_div_ff(self):
-    #     src1_data = [5, 9, -15, 1024]
-    #     src2_data = [10, 3, -5, 64]
-    #     expected_result = [0.5, 3, 3, 16]
-    #     op = blocks.divide_ff()
-    #     self.help_ff((src1_data, src2_data), expected_result, op)
+    def test_div_ff(self):
+        src1_data = [5, 9, -15, 1024]
+        src2_data = [10, 3, -5, 64]
+        expected_result = [0.5, 3, 3, 16]
+        op = math.divide_ff()
+        self.help_ff((src1_data, src2_data), expected_result, op)
 
 
 if __name__ == '__main__':
