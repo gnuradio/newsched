@@ -3,10 +3,10 @@ yml_file = 'atsc_equalizer.yml'
 dtv_atsc_equalizer_files = files(['atsc_equalizer_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_equalizer_files += files('atsc_equalizer_cuda.cc')
-    dtv_cu_sources += files('atsc_equalizer_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_equalizer_files += files('atsc_equalizer_cuda.cc')
+#     dtv_cu_sources += files('atsc_equalizer_cuda.cu')
+# endif
 
 gen_atsc_equalizer_h = custom_target('gen_atsc_equalizer_cpu_h',
                         input : ['atsc_equalizer.yml'],

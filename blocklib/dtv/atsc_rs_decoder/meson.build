@@ -3,10 +3,10 @@ yml_file = 'atsc_rs_decoder.yml'
 dtv_atsc_rs_decoder_files = files(['atsc_rs_decoder_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_rs_decoder_files += files('atsc_rs_decoder_cuda.cc')
-    dtv_cu_sources += files('atsc_rs_decoder_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_rs_decoder_files += files('atsc_rs_decoder_cuda.cc')
+#     dtv_cu_sources += files('atsc_rs_decoder_cuda.cu')
+# endif
 
 gen_atsc_rs_decoder_h = custom_target('gen_atsc_rs_decoder_cpu_h',
                         input : ['atsc_rs_decoder.yml'],

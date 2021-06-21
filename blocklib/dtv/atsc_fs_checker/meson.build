@@ -3,10 +3,10 @@ yml_file = 'atsc_fs_checker.yml'
 dtv_atsc_fs_checker_files = files(['atsc_fs_checker_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_fs_checker_files += files('atsc_fs_checker_cuda.cc')
-    dtv_cu_sources += files('atsc_fs_checker_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_fs_checker_files += files('atsc_fs_checker_cuda.cc')
+#     dtv_cu_sources += files('atsc_fs_checker_cuda.cu')
+# endif
 
 gen_atsc_fs_checker_h = custom_target('gen_atsc_fs_checker_cpu_h',
                         input : ['atsc_fs_checker.yml'],

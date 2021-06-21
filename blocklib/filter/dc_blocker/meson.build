@@ -1,9 +1,9 @@
 filter_dc_blocker_files = files(['dc_blocker_cpu.cc'])
 
-if cuda_dep.found() and get_option('enable_cuda')
-    filter_dc_blocker_files += files('dc_blocker_cuda.cc')
-    filter_cu_sources += files('dc_blocker_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     filter_dc_blocker_files += files('dc_blocker_cuda.cc')
+#     filter_cu_sources += files('dc_blocker_cuda.cu')
+# endif
 
 gen_dc_blocker_h = custom_target('gen_dc_blocker_h',
                         input : ['dc_blocker.yml'],

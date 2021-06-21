@@ -3,10 +3,10 @@ yml_file = 'atsc_derandomizer.yml'
 dtv_atsc_derandomizer_files = files(['atsc_derandomizer_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    dtv_atsc_derandomizer_files += files('atsc_derandomizer_cuda.cc')
-    dtv_cu_sources += files('atsc_derandomizer_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     dtv_atsc_derandomizer_files += files('atsc_derandomizer_cuda.cc')
+#     dtv_cu_sources += files('atsc_derandomizer_cuda.cu')
+# endif
 
 gen_atsc_derandomizer_h = custom_target('gen_atsc_derandomizer_cpu_h',
                         input : ['atsc_derandomizer.yml'],
