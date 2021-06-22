@@ -32,8 +32,8 @@ public:
             {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
         {% else %}
         add_port(port<{{key1['id']}}>::make("{{ port['id'] }}", 
-                                    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-                                    std::vector<size_t>{{ port['dims'] }}));
+                                    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
+                                    {{ ', std::vector<size_t>'+port['dims'] if port['dims']}}));
         {% endif %}
         {% else %}
         {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}

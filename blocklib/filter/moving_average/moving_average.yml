@@ -1,6 +1,6 @@
-module: math
-block: divide
-label: Divide
+module: filter
+block: moving_average
+label: Moving Average
 
 properties:
 -   id: blocktype
@@ -10,40 +10,46 @@ properties:
     - id: T
       type: class
       options: 
-        - value: int16_t
-          suffix: ss   
         - value: int32_t
-          suffix: ii 
-        - value: float
+          suffix: ii
+        - value: int16_t
+          suffix: ss 
+        - value: float 
           suffix: ff   
         - value: gr_complex 
           suffix: cc 
 
 parameters:
--   id: num_inputs
-    label: Number of Inputs
+-   id: length
+    label: Length
+    dtype: size_t
+    settable: true
+-   id: scale
+    label: Scale
+    dtype: T
+    settable: true
+-   id: max_iter
+    label: Max Iter
     dtype: size_t
     settable: false
-    default: 2
+    default: 4096
 -   id: vlen
-    label: Vec. Length
+    label: Vector Length
     dtype: size_t
     settable: false
     default: 1
+
 
 ports:
 -   domain: stream
     id: in
     direction: input
     type: T
-    dims: '{args.vlen}'
-    multiplicity: num_inputs
 
 -   domain: stream
     id: out
     direction: output
     type: T
-    dims: '{args.vlen}'
 
 implementations:
 -   id: cpu
