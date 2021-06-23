@@ -22,6 +22,7 @@
 
 
 from newsched import gr, gr_unittest, blocks, filter
+import numpy as np
 
 import math, random
 
@@ -110,11 +111,59 @@ class test_moving_average(gr_unittest.TestCase):
 
         dst_data = dst.data()
 
-        # print(dst_data)
-        # print('=====================')
-        # print(expected_result)
+        self.assertFloatTuplesAlmostEqual(expected_result, dst_data, 4)
+
+    def test_moving_sum2(self):
+        tb = self.tb
+
+        
+        filt_len = 3
+        data = list(range(1,11))
+        expected_result = []
+        for ii in range(10):
+            sum = 0.0
+            for jj in range(filt_len):
+                if (ii - jj ) >= 0:
+                    sum += data[ii-jj]
+            expected_result.append(sum)
+
+        src = blocks.vector_source_f(data, False)
+        op  = filter.moving_average_ff(filt_len, 1.0, 4)
+        dst = blocks.vector_sink_f()
+
+        tb.connect(src, op)
+        tb.connect(op, dst)
+        tb.run()
+
+        dst_data = dst.data()
 
         self.assertFloatTuplesAlmostEqual(expected_result, dst_data, 4)
+
+    def test_moving_avg3(self):
+        tb = self.tb
+
+        N = 100000
+        filt_len = 64
+        data = list(make_random_float_tuple(N, scale=1))
+        expected_result = []
+        for ii in range(N):
+            sum = 0.0
+            for jj in range(filt_len):
+                if (ii - jj ) >= 0:
+                    sum += data[ii-jj]
+            expected_result.append(float(sum / N))
+
+        src = blocks.vector_source_f(data, False)
+        op  = filter.moving_average_ff(filt_len, 1.0 / N, 4000)
+        dst = blocks.vector_sink_f()
+
+        tb.connect(src, op)
+        tb.connect(op, dst)
+        tb.run()
+
+        dst_data = dst.data()
+
+        self.assertFloatTuplesAlmostEqual(expected_result, dst_data, 7)
 
     # This tests implement own moving average to verify correct behaviour of the block
 

@@ -27,6 +27,23 @@ divide_cpu<T>::divide_cpu(const typename divide<T>::block_args& args)
 }
 
 template <>
+divide_cpu<float>::divide_cpu(const typename divide<float>::block_args& args)
+    : divide<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+{
+    const int alignment_multiple = volk_get_alignment() / sizeof(float);
+    set_output_multiple(std::max(1, alignment_multiple));
+}
+
+template <>
+divide_cpu<gr_complex>::divide_cpu(const typename divide<gr_complex>::block_args& args)
+    : divide<gr_complex>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+{
+    const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
+    set_output_multiple(std::max(1, alignment_multiple));
+}
+
+
+template <>
 work_return_code_t
 divide_cpu<float>::work(std::vector<block_work_input>& work_input,
                                 std::vector<block_work_output>& work_output)
