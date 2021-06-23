@@ -30,7 +30,7 @@ parameters:
     label: Repeat
     dtype: bool
     settable: false
-    default: 0 # for now - false gets interpreted strangely
+    default: 'false'
 -   id: vlen
     label: Vec. Length
     dtype: size_t
