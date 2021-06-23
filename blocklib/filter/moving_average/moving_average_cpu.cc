@@ -61,9 +61,8 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
         for (size_t elem = 0; elem < d_vlen; elem++) {
             d_sum[elem] += in[i * d_vlen + elem];
             out[i * d_vlen + elem] = d_sum[elem] * d_scale;
-
-            if (i >= d_length - 1) {
-                d_sum[elem] -= in[(i - d_length + 1) * d_vlen + elem];
+            if (i >= (d_length - 1)) {
+                d_sum[elem] -= in[(i - (d_length - 1)) * d_vlen + elem];
             } else {
                 d_sum[elem] -= d_history[i * d_vlen + elem];
             }
@@ -71,11 +70,14 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
     }
 
     // Stash the history (since GR 4.0 no longer has block history)
+    // TODO: don't consume all the inputs, and don't copy here
+    //  -- but still need to handle the first buffer that has no unused inputs
     memcpy(
-        d_history.data(), &in[num_iter - d_length], d_vlen * sizeof(T) * (d_length - 1));
+        d_history.data(), &in[num_iter - d_length + 1], d_vlen * sizeof(T) * (d_length - 1));
 
 
     work_output[0].n_produced = num_iter;
+    work_input[0].n_consumed = num_iter;
     return work_return_code_t::WORK_OK;
 }
 

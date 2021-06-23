@@ -21,7 +21,7 @@ public:
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}} {% endif %};
         {% endfor -%}};
     typedef std::shared_ptr<{{ block }}> sptr;
-    {{ block }}(block_args args) : sync_block("{{ block }}")
+    {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")
     {
         {% for port in ports %}
         {% if 'multiplicity' not in port%}     
