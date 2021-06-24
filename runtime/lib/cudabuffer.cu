@@ -74,7 +74,7 @@ void cuda_buffer_reader::post_read(int num_items)
 {
     std::lock_guard<std::mutex> guard(_rdr_mutex);
     // advance the read pointer
-    _read_index += num_items * _buffer->item_size();
+    _read_index += num_items * _itemsize;
     if (_read_index >= _buffer->buf_size()) {
         _read_index -= _buffer->buf_size();
     }
@@ -148,10 +148,10 @@ void cuda_buffer::post_write(int num_items)
 }
 
 std::shared_ptr<buffer_reader>
-cuda_buffer::add_reader(std::shared_ptr<buffer_properties> buf_props)
+cuda_buffer::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
     std::shared_ptr<cuda_buffer_reader> r(
-        new cuda_buffer_reader(shared_from_this(), buf_props, _write_index));
+        new cuda_buffer_reader(shared_from_this(), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }

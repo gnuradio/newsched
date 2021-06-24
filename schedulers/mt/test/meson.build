@@ -71,6 +71,7 @@ if get_option('enable_testing')
     test('MT Tags Tests', e)
 
     test('Basic Python', find_program('qa_basic.py'), env: env)
+    test('Varying Vector Sizes', find_program('qa_mismatch.py'), env: env)
 
 endif
 

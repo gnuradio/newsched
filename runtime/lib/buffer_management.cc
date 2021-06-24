@@ -67,7 +67,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                             ed[0]->identifier(),
                             ed[0]->src().node()->alias());
                 p->set_buffer_reader(
-                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties()));
+                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
             }
         }
     }
