@@ -71,7 +71,7 @@ public:
     virtual void post_read(int num_items) override;
 
     virtual bool input_blocked_callback(size_t items_required);
-    virtual size_t items_available() override;
+    virtual size_t bytes_available() override;
 };
 
 

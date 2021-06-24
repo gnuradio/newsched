@@ -299,7 +299,7 @@ bool buffer_sm_reader::input_blocked_callback(size_t items_required)
     return false;
 }
 
-size_t buffer_sm_reader::items_available()
+size_t buffer_sm_reader::bytes_available()
 {
     // Can only read up to to the write_index, or the end of the buffer
     // there is no wraparound
@@ -310,11 +310,11 @@ size_t buffer_sm_reader::items_available()
     size_t r = _read_index;
 
     if (w < r) {
-        ret = (_buffer->buf_size() - r) / _itemsize; //_buffer->item_size();
+        ret = (_buffer->buf_size() - r);
     } else if (w == r && total_read() < _buffer->total_written()) {
-        ret = (_buffer->buf_size() - r) / _itemsize; //_buffer->item_size();
+        ret = (_buffer->buf_size() - r); 
     } else {
-        ret = (w - r) / _itemsize; // _buffer->item_size();
+        ret = (w - r);
     }
 
     // return ret;
@@ -328,7 +328,7 @@ size_t buffer_sm_reader::items_available()
     //              total_read(),
     //              _buffer->total_written());
 
-    if (_buffer->total_written() - total_read() < ret) {
+    if (_buffer->total_written() - total_read() < ret * _itemsize) {
         // GR_LOG_DEBUG(_debug_logger,
         //              "check_math {} {} {} {}",
         //              _buffer->total_written() - total_read(),
@@ -337,7 +337,7 @@ size_t buffer_sm_reader::items_available()
         //              _buffer->total_written());
     }
 
-    return ret;
+    return ret; // in bytes
 }
 
 
