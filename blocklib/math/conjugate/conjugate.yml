@@ -21,6 +21,6 @@ ports:
 
 implementations:
 -   id: cpu
-# -   id: cuda
+-   id: cuda
 
 file_format: 1

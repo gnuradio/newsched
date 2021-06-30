@@ -1,5 +1,5 @@
 option('enable_testing', type : 'boolean', value : true)
-option('enable_cuda', type : 'boolean', value : false)
+option('enable_cuda', type : 'boolean', value : true)
 option('enable_python', type : 'boolean', value : true)
 
 option('enable_gr_blocks', type : 'boolean', value : true)

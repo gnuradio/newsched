@@ -1,27 +1,27 @@
 #pragma once
 
-#include <gnuradio/math/multiply_const.hh>
+#include <gnuradio/math/complex_to_mag.hh>
 
-#include <cuComplex.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-namespace gr {
-namespace blocks {
+#include <cusp/complex_to_mag.cuh>
 
-template <class T>
-class multiply_const_cuda : public multiply_const<T>
+namespace gr {
+namespace math {
+
+class complex_to_mag_cuda : public complex_to_mag
 {
 public:
-    multiply_const_cuda(const typename multiply_const<T>::block_args& args);
+    complex_to_mag_cuda(const typename complex_to_mag::block_args& args);
     
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
 
 protected:
-    T d_k;
     size_t d_vlen;
 
+    std::shared_ptr<cusp::complex_to_mag> p_kernel;
     int d_block_size;
     int d_min_grid_size;
     cudaStream_t d_stream;

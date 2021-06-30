@@ -1,9 +1,8 @@
 math_divide_files = files(['divide_cpu.cc'])
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     math_divide_files += files('divide_cuda.cc')
-#     math_cu_sources += files('divide_cuda.cu')
-# endif
+if cuda_dep.found() and get_option('enable_cuda')
+     math_divide_files += files('divide_cuda.cc')
+endif
 
 gen_divide_h = custom_target('gen_divide_h',
                         input : ['divide.yml'],

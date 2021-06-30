@@ -3,10 +3,9 @@ yml_file = 'complex_to_mag.yml'
 math_complex_to_mag_files = files(['complex_to_mag_cpu.cc'])
 
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     math_complex_to_mag_files += files('complex_to_mag_cuda.cc')
-#     math_cu_sources += files('complex_to_mag_cuda.cu')
-# endif
+if cuda_dep.found() and get_option('enable_cuda')
+     math_complex_to_mag_files += files('complex_to_mag_cuda.cc')
+endif
 
 gen_complex_to_mag_h = custom_target('gen_complex_to_mag_cpu_h',
                         input : ['complex_to_mag.yml'],

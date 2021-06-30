@@ -3,7 +3,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
@@ -28,10 +28,10 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             size_t veclen = 1;
             auto src = blocks::vector_source_c::make_cpu( blocks::vector_source_c::block_args{ input_data,false});
             auto snk = blocks::vector_sink_c::make_cpu();
-            std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks * ngroups);
+            std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks * ngroups);
 
             for (int i = 0; i < nblocks * ngroups; i++) {
-                mult_blks[i] = blocks::multiply_const_cc::make({k, veclen});
+                mult_blks[i] = math::multiply_const_cc::make({k, veclen});
             }
 
             flowgraph_sptr fg(new flowgraph());

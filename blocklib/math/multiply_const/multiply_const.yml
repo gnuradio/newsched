@@ -1,4 +1,4 @@
-module: blocks
+module: math
 block: multiply_const
 label: Multiply Constant
 

@@ -2,8 +2,14 @@ env = environment()
 env.prepend('LD_LIBRARY_PATH', join_paths( meson.build_root(),'schedulers','mt','lib'))
 env.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
 
+test('qa_multiply_const', find_program('qa_multiply_const.py'), env: env)
+test('qa_multiply', find_program('qa_multiply.py'), env: env)
+test('qa_divide', find_program('qa_divide.py'), env: env)
+test('qa_complex_to_mag', find_program('qa_complex_to_mag.py'), env: env)
+test('qa_complex_to_mag_squared', find_program('qa_complex_to_mag_squared.py'), env: env)
 test('qa_conjugate', find_program('qa_conjugate.py'), env: env)
 test('qa_type_conversions(math)', find_program('qa_type_conversions.py'), env: env)
-# if (cuda_available and get_option('enable_cuda'))
-# test('qa_cufft', find_program('qa_cufft.py'), env: env)
-# endif
+test('qa_add_mult_div_sub', find_program('qa_add_mult_div_sub.py'), env: env)
+if (cuda_available and get_option('enable_cuda'))
+subdir('cuda')
+endif

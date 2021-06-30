@@ -14,7 +14,7 @@ if cuda_dep.found() and get_option('enable_cuda')
                         link_with : newsched_blocklib_blocks_cu,
                         dependencies : cuda_dep)
 
-    blocks_deps += [newsched_blocklib_blocks_cu_dep, cuda_dep]
+    blocks_deps += [newsched_blocklib_blocks_cu_dep, cuda_dep, cusp_dep]
 
 endif
 

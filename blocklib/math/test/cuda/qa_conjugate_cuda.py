@@ -12,7 +12,7 @@
 from newsched import gr, gr_unittest, blocks, math
 
 
-class test_conjugate (gr_unittest.TestCase):
+class test_conjugate_cuda(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
@@ -20,25 +20,26 @@ class test_conjugate (gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-    def test_conjugate(self):
+    def test_conjugate_cuda(self):
+        tb = self.tb
         src_data = [-2 - 2j, -1 - 1j, -2 + 2j, -1 + 1j,
                     2 - 2j, 1 - 1j, 2 + 2j, 1 + 1j,
                     0 + 0j]
 
-        exp_data = [-2 + 2j, -1 + 1j, -2 - 2j, -1 - 1j,
+        expected_data = [-2 + 2j, -1 + 1j, -2 - 2j, -1 - 1j,
                     2 + 2j, 1 + 1j, 2 - 2j, 1 - 1j,
                     0 - 0j]
 
         src = blocks.vector_source_c(src_data)
-        op = math.conjugate()
+        op = math.conjugate(impl=math.conjugate.cuda)
         dst = blocks.vector_sink_c()
 
-        self.tb.connect(src, op)
-        self.tb.connect(op, dst)
-        self.tb.run()
-        result_data = dst.data()
-        self.assertEqual(exp_data, result_data)
+        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.run()
+        dst_data = dst.data()
+        self.assertEqual(expected_data, dst_data)
 
 
 if __name__ == '__main__':
-    gr_unittest.run(test_conjugate)
+    gr_unittest.run(test_conjugate_cuda)
