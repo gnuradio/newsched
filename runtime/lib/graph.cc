@@ -11,7 +11,8 @@ edge_sptr graph::connect(const node_endpoint& src,
         std::stringstream msg;
         msg << "itemsize mismatch: " << src << " using " << src.port()->itemsize() << ", " << dst
             << " using " << dst.port()->itemsize();
-        throw std::invalid_argument(msg.str());
+        //throw std::invalid_argument(msg.str());
+        GR_LOG_WARN(_logger, msg.str());
     }
 
     // If not untyped ports, check that data types are the same

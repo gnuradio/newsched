@@ -68,16 +68,6 @@ void* cuda_buffer_sm::write_ptr()
     }
 }
 
-// void cuda_buffer_sm_reader::post_read(int num_items)
-// {
-//     std::lock_guard<std::mutex> guard(_rdr_mutex);
-//     // advance the read pointer
-//     _read_index += num_items * _buffer->item_size();
-//     if (_read_index >= _buffer->buf_size()) {
-//         _read_index -= _buffer->buf_size();
-//     }
-//     _total_read += num_items;
-// }
 void cuda_buffer_sm::post_write(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);
@@ -118,10 +108,10 @@ void cuda_buffer_sm::post_write(int num_items)
 }
 
 std::shared_ptr<buffer_reader>
-cuda_buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props)
+cuda_buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
     std::shared_ptr<cuda_buffer_sm_reader> r(
-        new cuda_buffer_sm_reader(std::dynamic_pointer_cast<cuda_buffer_sm>(shared_from_this()), buf_props, _write_index));
+        new cuda_buffer_sm_reader(std::dynamic_pointer_cast<cuda_buffer_sm>(shared_from_this()), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }

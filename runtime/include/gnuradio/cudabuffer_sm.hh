@@ -39,7 +39,7 @@ public:
     virtual void post_write(int num_items);
 
     virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props);
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 
     static void* cuda_memcpy(void* dest, const void* src, std::size_t count);
     static void* cuda_memmove(void* dest, const void* src, std::size_t count);
@@ -70,8 +70,9 @@ private:
 public:
     cuda_buffer_sm_reader(std::shared_ptr<cuda_buffer_sm> buffer,
                           std::shared_ptr<buffer_properties> buf_props,
+                          size_t itemsize,
                           size_t read_index)
-        : buffer_sm_reader(buffer, buf_props, read_index)
+        : buffer_sm_reader(buffer, itemsize, buf_props, read_index)
     {
         _cuda_buffer_sm = buffer;
         // _logger = logging::get_logger("cudabuffer_sm_reader", "default");

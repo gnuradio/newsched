@@ -4,22 +4,22 @@ namespace gr {
 
 size_t buffer::space_available()
 {
-    // Find the max number of items available across readers
+    // Find the max number of bytes available across readers
     uint64_t n_available = 0;
     for (auto& r : _readers) {
-        auto n = r->items_available();
+        auto n = r->bytes_available();
         if (n > n_available) {
             n_available = n;
         }
     }
 
-    int space = _num_items - n_available - 1;
+    int space_in_items = (_num_items * _item_size - n_available) / _item_size - 1;
 
-    if (space < 0)
-        space = 0;
-    space = std::min(space, (int)(_num_items / 2)); // move to a max_fill parameter
+    if (space_in_items < 0)
+        space_in_items = 0;
+    space_in_items = std::min(space_in_items, (int)(_num_items / 2)); // move to a max_fill parameter
 
-    return space;
+    return space_in_items;
 }
 bool buffer::write_info(buffer_info_t& info)
 {
@@ -114,12 +114,17 @@ void buffer::prune_tags()
 
 size_t buffer_reader::items_available()
 {
+    return bytes_available() / _itemsize;
+}
+
+size_t buffer_reader::bytes_available()
+{
     size_t w = _buffer->write_index();
     size_t r = _read_index;
 
     if (w < r)
         w += _buffer->buf_size();
-    return (w - r) / _buffer->item_size();
+    return (w - r);
 }
 
 bool buffer_reader::read_info(buffer_info_t& info)
@@ -128,7 +133,7 @@ bool buffer_reader::read_info(buffer_info_t& info)
 
     info.ptr = _buffer->read_ptr(_read_index);
     info.n_items = items_available();
-    info.item_size = _buffer->item_size();
+    info.item_size = _itemsize; //  _buffer->item_size();
     info.total_items = _total_read;
 
     return true;
