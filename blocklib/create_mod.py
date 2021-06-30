@@ -4,12 +4,12 @@ import argparse
 import os
 import shutil
 
+# Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a new module within blocklib using newmod template')
-parser.add_argument('create_mod', metavar='mod_name', type=str,
-                    nargs='?', help='create new module given provided module name')
+parser.add_argument('create_mod', metavar='mod_name', type=str, help='create new module given provided module name')
 
 args = parser.parse_args()
-mod_name = args.create_mod
+mod_name = args.create_mod # name of new module to be created
 
 # get current working directory
 path = os.getcwd()
@@ -50,37 +50,6 @@ for path, subdirs, files in os.walk(new_mod_dir):
         fin.write(data)
         fin.close()
 
-"""
-# import the os module
-import os
-import sys
+# add new module path to newsched/python/newsched/__init__.py
 
-# get current working directory
-path = os.getcwd()
-print("The current working directory is %s" % path)
-
-# get name of new module
-mod_name = sys.argv[1]
-
-# create new module
-path = os.path.join(path, mod_name)
-try:
-    os.mkdir(path)
-except OSError:
-    print("Creation of the module %s failed" % mod_name)
-else:
-    print("Successfully created the module %s" % mod_name)
-
-# create subdirectories in new module
-directories = ['include/gnuradio/'+mod_name, 'lib', 'python/'+mod_name, 'test']
-for directory in directories:
-    try:
-        os.makedirs(os.path.join(path, directory))
-    except OSError:
-        print("Creation of the directory %s failed" % directory)
-    else:
-        print("Successfully created the directory %s" % directory)
-
-# add meson.builds to all directories
-"""
 
