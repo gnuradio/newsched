@@ -46,6 +46,7 @@ public:
     pmt_string(const std::string& val);
     pmt_string(const uint8_t* buf);
     pmt_string(const pmtf::Pmt *fb_pmt);
+    void print(std::ostream& os) { os << value(); }
 };
 
 

@@ -79,6 +79,15 @@ public:
     const T* elements();
 
     flatbuffers::Offset<void> rebuild_data(flatbuffers::FlatBufferBuilder& fbb);
+    bool is_vector() const { return true; }
+    void print(std::ostream& os) {
+        os << "[";
+        auto elems = elements();
+        for (size_t i = 0; i < size(); i++) {
+            os << elems[i] << ", ";
+        }
+        os << "]";
+    }
 };
 
 

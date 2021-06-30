@@ -51,8 +51,8 @@ TEST(Pmt, PmtMapTests)
 
     // Lookup values in the PMT map and compare with what was put in there
     auto vv1 = map_pmt["key1"];
-    std::cout << vv1.ptr()->value() << std::endl;
-    EXPECT_EQ(vv1, val1);
+    std::cout << vv1 << std::endl;
+    EXPECT_EQ(get_scalar<std::complex<float>>(vv1), val1);
 
     /*auto vv2 = map_pmt["key2"];
     EXPECT_EQ(vv2, val2);*/

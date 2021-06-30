@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <vector>
 
+#include <pmt/pmtf.hpp>
 #include <pmt/pmtf_wrap.hpp>
 
 // What if this was just a map?
@@ -140,7 +141,13 @@ public:
 
     flatbuffers::Offset<void> rebuild_data(flatbuffers::FlatBufferBuilder& fbb);
 
-    
+    void print(std::ostream& os) {
+        os << "{";
+        for (const auto& [k, v]: *this) {
+            os << k << ": " << v << ", "; 
+        }
+        os << "}";
+    } 
 
 
 private:
