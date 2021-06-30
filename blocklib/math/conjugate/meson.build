@@ -3,10 +3,9 @@ yml_file = 'conjugate.yml'
 math_conjugate_files = files(['conjugate_cpu.cc'])
 
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     math_conjugate_files += files('conjugate_cuda.cc')
-#     math_cu_sources += files('conjugate_cuda.cu')
-# endif
+if cuda_dep.found() and get_option('enable_cuda')
+    math_conjugate_files += files('conjugate_cuda.cc')
+endif
 
 gen_conjugate_h = custom_target('gen_conjugate_cpu_h',
                         input : ['conjugate.yml'],

@@ -1,8 +1,7 @@
-blocks_multiply_const_files = files(['multiply_const_cpu.cc'])
+math_multiply_const_files = files(['multiply_const_cpu.cc'])
 
 if cuda_dep.found() and get_option('enable_cuda')
-    blocks_multiply_const_files += files('multiply_const_cuda.cc')
-    blocks_cu_sources += files('multiply_const_cuda.cu')
+    math_multiply_const_files += files('multiply_const_cuda.cc')
 endif
 
 gen_multiply_const_h = custom_target('gen_multiply_const_h',
@@ -13,7 +12,7 @@ gen_multiply_const_h = custom_target('gen_multiply_const_h',
                             '--output_file', '@OUTPUT@', 
                             '--build_dir', join_paths(meson.build_root())],
                         install : true,
-                        install_dir : 'include/gnuradio/blocks')
+                        install_dir : 'include/gnuradio/math')
 
 gen_multiply_const_cc = custom_target('gen_multiply_const_cc',
                         input : ['multiply_const.yml'],
@@ -23,10 +22,10 @@ gen_multiply_const_cc = custom_target('gen_multiply_const_cc',
                             '--output_file', '@OUTPUT@', 
                             '--build_dir', join_paths(meson.build_root())],
                         install : true,
-                        install_dir : 'include/gnuradio/blocks')
+                        install_dir : 'include/gnuradio/math')
 
-blocks_deps += declare_dependency(sources : [gen_multiply_const_h] ) 
-blocks_sources += [blocks_multiply_const_files, gen_multiply_const_cc]
+math_deps += declare_dependency(sources : [gen_multiply_const_h] ) 
+math_sources += [math_multiply_const_files, gen_multiply_const_cc]
 
 if get_option('enable_python')
     gen_multiply_const_pybind = custom_target('gen_multiply_const_cpu_pybind',
@@ -38,6 +37,6 @@ if get_option('enable_python')
                                 '--build_dir', join_paths(meson.build_root())],
                             install : false)   
                             
-    blocks_pybind_sources += gen_multiply_const_pybind
-    blocks_pybind_names += 'multiply_const'
+    math_pybind_sources += gen_multiply_const_pybind
+    math_pybind_names += 'multiply_const'
 endif

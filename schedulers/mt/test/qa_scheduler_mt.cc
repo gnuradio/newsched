@@ -5,7 +5,7 @@
 #include <thread>
 
 #include <gnuradio/blocks/copy.hh>
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
@@ -49,8 +49,8 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     }
 
     auto src = blocks::vector_source_f::make_cpu({input_data, false});
-    auto mult1 = blocks::multiply_const_ff::make_cpu({100.0});
-    auto mult2 = blocks::multiply_const_ff::make_cpu({200.0});
+    auto mult1 = math::multiply_const_ff::make_cpu({100.0});
+    auto mult2 = math::multiply_const_ff::make_cpu({200.0});
     auto snk = blocks::vector_sink_f::make_cpu();
 
     flowgraph_sptr fg(new flowgraph());
@@ -92,10 +92,10 @@ TEST(SchedulerMTTest, BlockFanout)
         size_t veclen = 1;
         auto src = blocks::vector_source_c::make_cpu({input_data});
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
-        std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
+        std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks);
 
         for (int i = 0; i < nblocks; i++) {
-            mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
+            mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
             sink_blks[i] = blocks::vector_sink_c::make_cpu();
         }
         flowgraph_sptr fg(new flowgraph());

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/buffer_sm.hh>
@@ -29,10 +29,10 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     size_t veclen = 1;
     auto src = blocks::vector_source_c::make({input_data});
     auto snk = blocks::vector_sink_c::make();
-    std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
+    std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
+        mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
     }
 
     auto fg = flowgraph::make();
@@ -85,10 +85,10 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
     size_t veclen = 1;
     auto src = blocks::vector_source_c::make({input_data});
     std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
-    std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
+    std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
+        mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
         sink_blks[i] = blocks::vector_sink_c::make();
     }
     flowgraph_sptr fg(new flowgraph());

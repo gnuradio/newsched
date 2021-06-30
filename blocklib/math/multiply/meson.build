@@ -1,9 +1,8 @@
 math_multiply_files = files(['multiply_cpu.cc'])
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     math_multiply_files += files('multiply_cuda.cc')
-#     math_cu_sources += files('multiply_cuda.cu')
-# endif
+if cuda_dep.found() and get_option('enable_cuda')
+     math_multiply_files += files('multiply_cuda.cc')
+endif
 
 gen_multiply_h = custom_target('gen_multiply_h',
                         input : ['multiply.yml'],
