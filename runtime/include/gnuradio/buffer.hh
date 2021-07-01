@@ -283,6 +283,7 @@ public:
     void set_read_index(size_t r) { _read_index = r; }
     void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
+    size_t num_items() { return _buffer->num_items(); }
     uint64_t total_read() const { return _total_read; }
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
     size_t max_buffer_read()

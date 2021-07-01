@@ -10,7 +10,8 @@ runtime_pybind_sources = files([
     'runtime_pybind.cc',
     'scheduler_pybind.cc',
     'buffer_pybind.cc',
- ] )
+    'utils_pybind.cc'
+])
 
 cpp_args = []
 runtime_pybind_deps = [newsched_runtime_dep, python3_dep, pybind11_dep, pmtf_dep]

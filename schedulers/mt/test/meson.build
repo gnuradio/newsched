@@ -70,7 +70,20 @@ if get_option('enable_testing')
         install : true)
     test('MT Tags Tests', e)
 
+    srcs = ['qa_block_direct.cc']
+    e = executable('qa_block_direct', 
+        srcs, 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: [newsched_runtime_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_scheduler_mt_dep,
+                    gtest_dep], 
+        install : true)
+    test('Direct Block Tests', e)
+
     test('Basic Python', find_program('qa_basic.py'), env: env)
+    test('Python Direct Interface', find_program('qa_block_direct.py'), env: env)
 
 endif
 

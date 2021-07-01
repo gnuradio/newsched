@@ -8,9 +8,9 @@
 #include <gnuradio/blocks/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
-#include <gnuradio/buffer_cpu_vmcirc.hh>
 
 using namespace gr;
 
@@ -21,7 +21,7 @@ TEST(SchedulerMTTest, TwoSinks)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make_cpu({input_data, false});
+    auto src = blocks::vector_source_f::make_cpu({ input_data, false });
     auto snk1 = blocks::vector_sink_f::make_cpu();
     auto snk2 = blocks::vector_sink_f::make_cpu();
 
@@ -48,9 +48,9 @@ TEST(SchedulerMTTest, MultiDomainBasic)
         expected_data.push_back(100.0 * 200.0 * d);
     }
 
-    auto src = blocks::vector_source_f::make_cpu({input_data, false});
-    auto mult1 = blocks::multiply_const_ff::make_cpu({100.0});
-    auto mult2 = blocks::multiply_const_ff::make_cpu({200.0});
+    auto src = blocks::vector_source_f::make_cpu({ input_data, false });
+    auto mult1 = blocks::multiply_const_ff::make_cpu({ 100.0 });
+    auto mult2 = blocks::multiply_const_ff::make_cpu({ 200.0 });
     auto snk = blocks::vector_sink_f::make_cpu();
 
     flowgraph_sptr fg(new flowgraph());
@@ -88,14 +88,14 @@ TEST(SchedulerMTTest, BlockFanout)
     }
 
     for (auto nblocks : { 2, 8, 16 }) {
-    // for (auto nblocks : { 2, }) {
+        // for (auto nblocks : { 2, }) {
         size_t veclen = 1;
-        auto src = blocks::vector_source_c::make_cpu({input_data});
+        auto src = blocks::vector_source_c::make_cpu({ input_data });
         std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
         std::vector<blocks::multiply_const_cc::sptr> mult_blks(nblocks);
 
         for (int i = 0; i < nblocks; i++) {
-            mult_blks[i] = blocks::multiply_const_cc::make_cpu({k, veclen});
+            mult_blks[i] = blocks::multiply_const_cc::make_cpu({ k, veclen });
             sink_blks[i] = blocks::vector_sink_c::make_cpu();
         }
         flowgraph_sptr fg(new flowgraph());
@@ -109,9 +109,9 @@ TEST(SchedulerMTTest, BlockFanout)
         } else {
             for (int i = 0; i < nblocks; i++) {
                 fg->connect(src, 0, mult_blks[i], 0)
-                    ->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                    ->set_custom_buffer(BUFFER_VMCIRC_ARGS);
                 fg->connect(mult_blks[i], 0, sink_blks[i], 0)
-                    ->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                    ->set_custom_buffer(BUFFER_VMCIRC_ARGS);
             }
         }
 
@@ -137,10 +137,10 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make({input_data, false});
-    auto copy1 = blocks::copy::make({sizeof(float)});
-    auto copy2 = blocks::copy::make({sizeof(float)});
-    auto copy3 = blocks::copy::make({sizeof(float)});
+    auto src = blocks::vector_source_f::make({ input_data, false });
+    auto copy1 = blocks::copy::make({ sizeof(float) });
+    auto copy2 = blocks::copy::make({ sizeof(float) });
+    auto copy3 = blocks::copy::make({ sizeof(float) });
     auto snk1 = blocks::vector_sink_f::make();
     auto snk2 = blocks::vector_sink_f::make();
 
@@ -148,18 +148,22 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, copy1, 0);
     fg->connect(copy1, 0, copy2, 0)
-        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
-                                ->set_buffer_size(4096));
+        ->set_custom_buffer(
+            buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
+                ->set_buffer_size(4096));
     fg->connect(copy2, 0, snk1, 0)
-        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
-                                ->set_min_buffer_size(4096)
-                                ->set_max_buffer_size(8192));
+        ->set_custom_buffer(
+            buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
+                ->set_min_buffer_size(4096)
+                ->set_max_buffer_size(8192));
     fg->connect(copy1, 0, copy3, 0)
-        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
-                                ->set_buffer_size(16384));
+        ->set_custom_buffer(
+            buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
+                ->set_buffer_size(16384));
     fg->connect(copy3, 0, snk2, 0)
-        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
-                                ->set_min_buffer_size(16384));
+        ->set_custom_buffer(
+            buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
+                ->set_min_buffer_size(16384));
 
     // TODO: Validate the buffers that were created
 

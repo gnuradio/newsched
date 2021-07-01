@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <gnuradio/buffer.hh>
+#include <gnuradio/buffer_cpu_simple.hh>
 
 namespace gr {
 
@@ -15,24 +16,36 @@ namespace gr {
 class block_work_input
 {
 public:
-    int n_items;
-    buffer_reader_sptr buffer;
-    int n_consumed; // output the number of items that were consumed on the work() call
-
     block_work_input(int n_items_, buffer_reader_sptr p_buf_)
-        : n_items(n_items_), buffer(p_buf_), n_consumed(-1)
+        : n_items(n_items_), buffer(p_buf_), n_consumed(-1){};
+
+    block_work_input(int n_items_, int item_size, void* buf)
+        : n_items(n_items_), n_consumed(-1)
     {
-    }
+        auto inbuf_props = std::make_shared<buffer_properties>();
+        inbuf_props->set_buffer_size(2 * n_items);
+        auto inbuf = std::make_shared<buffer_cpu_simple>(n_items, item_size, inbuf_props);
+        std::memcpy(inbuf->read_ptr(0), buf, item_size * n_items);
+        buffer = std::make_shared<buffer_cpu_simple_reader>(inbuf, inbuf_props);
+    };
+
+    static std::shared_ptr<block_work_input> make(int num_items, int item_size, void* buf)
+    {
+        return std::make_shared<block_work_input>(num_items, item_size, buf);
+    };
 
     void* items() { return buffer->read_ptr(); }
     uint64_t nitems_read() { return buffer->total_read(); }
-
     void consume(int num) { n_consumed = num; }
 
     std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
     {
         return buffer->tags_in_window(item_start, item_end);
     }
+
+    int n_items;
+    buffer_reader_sptr buffer;
+    int n_consumed; // output the number of items that were consumed on the work() call
 };
 
 /**
@@ -41,14 +54,24 @@ public:
  */
 class block_work_output
 {
-    int n_items;
-    int n_produced; // output the number of items that were consumed on the work() call
-    buffer_sptr buffer;
-
+public:
     block_work_output(int _n_items, buffer_sptr p_buf_)
-        : n_items(_n_items), buffer(p_buf_), n_produced(-1)
+        : n_items(_n_items), n_produced(-1), buffer(p_buf_){};
+
+    block_work_output(int n_items_, int item_size, void* buf)
+        : n_items(n_items_), n_produced(-1)
     {
-    }
+        auto outbuf_props = std::make_shared<buffer_properties>();
+        outbuf_props->set_buffer_size(n_items);
+        buffer = std::make_shared<buffer_cpu_simple>(n_items, item_size, outbuf_props);
+    };
+
+    static std::shared_ptr<block_work_output>
+    make(int num_items, int item_size, void* buf)
+    {
+        return std::make_shared<block_work_output>(num_items, item_size, buf);
+    };
+
 
     void* items() { return buffer->write_ptr(); }
     uint64_t nitems_written() { return buffer->total_written(); }
@@ -62,6 +85,10 @@ class block_work_output
     {
         buffer->add_tag(offset, key, value, srcid);
     }
+
+    int n_items;
+    int n_produced; // output the number of items that were consumed on the work() call
+    buffer_sptr buffer;
 };
 
 /**

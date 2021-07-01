@@ -82,8 +82,7 @@ void thread_bind_to_processor(unsigned int n);
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_bind_to_processor(gr_thread_t thread,
-                                             const std::vector<unsigned int>& mask);
+void thread_bind_to_processor(gr_thread_t thread, const std::vector<unsigned int>& mask);
 
 
 /*! \brief Convenience function to bind the a thread to a single core.
