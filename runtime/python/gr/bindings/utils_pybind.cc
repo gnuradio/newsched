@@ -9,7 +9,6 @@
 
 #include "utils_pybind.hh"
 
-
 namespace gr {
 /**
  * @brief
@@ -18,30 +17,36 @@ namespace gr {
  * @return std::vector<gr::block_work_input>
  */
 template <typename T>
-gr::block_work_input array_to_work_input(T input)
+gr::block_work_input array_to_input(T input)
 {
-    return gr::block_work_input::make(
+    return gr::block_work_input(
         input.size(), input.itemsize(), reinterpret_cast<void*>(input.mutable_data()));
 }
 
-std::vector<gr::block_work_input> list_to_work_inputs(py::list arrays)
+template gr::block_work_input array_to_input(numpy_byte_array_t input);
+template gr::block_work_input array_to_input(numpy_short_array_t input);
+template gr::block_work_input array_to_input(numpy_int_array_t input);
+template gr::block_work_input array_to_input(numpy_float_array_t input);
+template gr::block_work_input array_to_input(numpy_complex_float_array_t input);
+
+std::vector<gr::block_work_input> list_to_inputs(py::list arrays)
 {
     std::vector<gr::block_work_input> inputs;
     for (const auto& array : arrays) {
         if (py::isinstance<py::array_t<uint8_t>>(array)) {
             inputs.push_back(
-                array_to_work_input<numpy_byte_array_t>(pybind11::array::ensure(array)));
+                array_to_input<numpy_byte_array_t>(pybind11::array::ensure(array)));
         } else if (py::isinstance<py::array_t<int16_t>>(array)) {
             inputs.push_back(
-                array_to_work_input<numpy_short_array_t>(pybind11::array::ensure(array)));
+                array_to_input<numpy_short_array_t>(pybind11::array::ensure(array)));
         } else if (py::isinstance<py::array_t<int32_t>>(array)) {
             inputs.push_back(
-                array_to_work_input<numpy_int_array_t>(pybind11::array::ensure(array)));
+                array_to_input<numpy_int_array_t>(pybind11::array::ensure(array)));
         } else if (py::isinstance<py::array_t<float>>(array)) {
             inputs.push_back(
-                array_to_work_input<numpy_float_array_t>(pybind11::array::ensure(array)));
+                array_to_input<numpy_float_array_t>(pybind11::array::ensure(array)));
         } else if (py::isinstance<py::array_t<std::complex<float>>>(array)) {
-            inputs.push_back(array_to_work_input<numpy_complex_float_array_t>(
+            inputs.push_back(array_to_input<numpy_complex_float_array_t>(
                 pybind11::array::ensure(array)));
         } else {
             std::cerr << "Error in converting inputs to block_work_input" << std::endl;
@@ -51,8 +56,7 @@ std::vector<gr::block_work_input> list_to_work_inputs(py::list arrays)
 }
 
 
-std::vector<block_work_output> generate_block_work_outputs(block gr_block,
-                                                           size_t num_items)
+std::vector<block_work_output> generate_outputs(block& gr_block, size_t num_items)
 {
     std::vector<block_work_output> outputs;
     for (unsigned int i = 0; i < gr_block.output_ports().size(); i++) {
@@ -67,7 +71,52 @@ std::vector<block_work_output> generate_block_work_outputs(block gr_block,
     return outputs;
 }
 
-std::vector<tag_t> dict_to_tags(py::dict dict){
+std::vector<block_work_output> try_block_work(block& gr_block,
+                                              std::vector<gr::block_work_input> inputs)
+{
+    unsigned int output_buffer_size = inputs[0].n_items;
+    auto outputs = generate_outputs(gr_block, output_buffer_size);
+    auto work_status = gr_block.work(inputs, outputs);
+
+    // Double the output buffer size until it runs.
+    while (work_status == gr::work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
+        work_status = gr_block.work(inputs, outputs);
+        outputs = generate_outputs(gr_block, output_buffer_size);
+        output_buffer_size <<= 2;
+    }
+
+    return outputs;
+}
+
+
+py::list outputs_to_list(std::vector<block_work_output> outputs)
+{
+    py::list data;
+    for (const auto& output : outputs) {
+        auto array =
+            py::array_t<float>(py::buffer_info(output.buffer->read_ptr(0),
+                                               sizeof(float),
+                                               py::format_descriptor<float>::format(),
+                                               output.buffer->num_items(),
+                                               true));
+        data.append(array);
+    }
+
+    return data;
+}
+
+
+std::vector<std::vector<tag_t>> list_to_tags(py::list list_of_tags)
+{
+    std::vector<std::vector<tag_t>> tags;
+    for (const py::dict& item : list_of_tags) {
+        tags.push_back(dict_to_tag(item));
+    }
+    return tags;
+}
+
+std::vector<tag_t> dict_to_tag(py::dict dict)
+{
 
     // Essentially I need to convert from py::dict to PMTs
     // TODO [GV]: I think converting tags can be done later because it's not
@@ -83,8 +132,24 @@ std::vector<tag_t> dict_to_tags(py::dict dict){
     //      } else if (pybind11::float_(key, true).check()) {
     //      }
     //  }
-};
+}
 
-py::dict tags_to_dict(std::vector<tag_t> tags){};
+
+py::dict tag_to_dict(std::vector<tag_t> tags)
+{
+    py::dict tag_dict;
+    for (const auto& tag : tags) {
+        // convert each item in the vector to an entry in the dict.
+    }
+}
+
+
+py::list tags_to_list(std::vector<std::vector<tag_t>> tag_vector)
+{
+    py::list tag_list;
+    for (const auto& tags : tag_vector)
+        tag_list.append(tag_to_dict(tags));
+    return tag_list;
+}
 
 } // namespace gr

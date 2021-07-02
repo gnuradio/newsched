@@ -1,0 +1,51 @@
+module: math
+block: multiply
+label: Multiply
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: int16_t
+          suffix: ss   
+        - value: int32_t 
+          suffix: ii 
+        - value: float
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+parameters:
+-   id: num_inputs
+    label: Number of Inputs
+    dtype: size_t
+    settable: false
+-   id: vlen
+    label: Vec. Length
+    dtype: size_t
+    settable: false
+    default: 1
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{args.vlen}'
+    multiplicity: num_inputs
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{args.vlen}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

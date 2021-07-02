@@ -1,0 +1,58 @@
+module: filter
+block: moving_average
+label: Moving Average
+
+properties:
+-   id: blocktype
+    value: general
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: int32_t
+          suffix: ii
+        - value: int16_t
+          suffix: ss 
+        - value: float 
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+parameters:
+-   id: length
+    label: Length
+    dtype: size_t
+    settable: true
+-   id: scale
+    label: Scale
+    dtype: T
+    settable: true
+-   id: max_iter
+    label: Max Iter
+    dtype: size_t
+    settable: false
+    default: 4096
+-   id: vlen
+    label: Vector Length
+    dtype: size_t
+    settable: false
+    default: 1
+
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

@@ -1,0 +1,31 @@
+module: dtv
+block: atsc_sync
+label: ATSC Sync
+
+properties:
+-   id: blocktype
+    value: general
+
+parameters:
+-   id: rate
+    label: Rate
+    dtype: float
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: float
+
+-   domain: stream
+    id: out
+    direction: output
+    type: float
+    dims: '{832}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

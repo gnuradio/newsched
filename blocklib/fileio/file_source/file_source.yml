@@ -1,0 +1,53 @@
+module: fileio
+block: file_source
+label: File Source
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+-   id: filename
+    label: File Name
+    dtype: const char *
+    settable: false
+-   id: repeat
+    label: Repeat
+    dtype: bool
+    settable: false
+    default: 'false'
+-   id: offset
+    label: Offset
+    dtype: uint64_t
+    settable: false
+    default: 0
+-   id: len
+    label: Length
+    dtype: uint64_t
+    settable: false
+    default: 0
+
+ports:
+-   domain: stream
+    id: out
+    direction: output
+    type: untyped
+    size: itemsize
+
+callbacks:
+-   id: seek
+    return: bool
+    args:
+    - id: seek_point
+      dtype: int64_t
+    - id: whence
+      dtype: int
+
+implementations:
+-   id: cpu
+
+file_format: 1

@@ -1,0 +1,49 @@
+module: analog
+block: agc
+label: AGC
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: float
+          suffix: ff  
+        - value: gr_complex 
+          suffix: cc 
+
+# float rate = 1e-4, float reference = 1.0, float gain = 1.0)
+parameters:
+-   id: rate
+    label: Rate
+    dtype: float
+    default: 1e-4
+-   id: reference
+    label: Reference
+    dtype: float
+    default: 1.0
+-   id: gain
+    label: Gain
+    dtype: float
+    default: 1.0
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{1}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{1}'
+
+implementations:
+-   id: cpu
+
+file_format: 1

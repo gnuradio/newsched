@@ -1,0 +1,41 @@
+module: dtv
+block: atsc_equalizer
+label: ATSC Equalizer
+
+properties:
+-   id: blocktype
+    value: general
+
+parameters:
+
+ 
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: float
+    dims: '{832}'
+
+-   domain: stream
+    id: plinfo
+    direction: input
+    type: untyped
+    size: 4
+
+-   domain: stream
+    id: out
+    direction: output
+    type: float
+    dims: '{832}'
+
+-   domain: stream
+    id: plinfo
+    direction: output
+    type: untyped
+    size: 4
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

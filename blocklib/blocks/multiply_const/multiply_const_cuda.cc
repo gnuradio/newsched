@@ -40,7 +40,6 @@ multiply_const_cuda<gr_complex>::multiply_const_cuda(
     cudaStreamCreate(&d_stream);
 }
 
-
 template <class T>
 work_return_code_t
 multiply_const_cuda<T>::work(std::vector<block_work_input>& work_input,
@@ -53,7 +52,7 @@ multiply_const_cuda<T>::work(std::vector<block_work_input>& work_input,
     auto noutput_items = work_output[0].n_items;
 
     multiply_const_cu::exec_kernel(
-        in, out, d_k, (noutput_items * d_vlen) / d_block_size, d_block_size, d_stream);
+        in, out, d_k, (noutput_items + d_block_size - 1) * d_vlen / d_block_size, d_block_size, d_stream);
 
     work_output[0].n_produced = work_output[0].n_items;
     work_input[0].n_consumed = work_input[0].n_items;
@@ -74,7 +73,7 @@ multiply_const_cuda<gr_complex>::work(std::vector<block_work_input>& work_input,
     auto k_cufc = make_cuFloatComplex(real(d_k), imag(d_k));
 
     multiply_const_cu::exec_kernel(
-        in, out, k_cufc, (noutput_items * d_vlen) / d_block_size, d_block_size, d_stream);
+        in, out, k_cufc, (noutput_items + d_block_size - 1) * d_vlen / d_block_size, d_block_size, d_stream);
 
     work_output[0].n_produced = work_output[0].n_items;
     work_input[0].n_consumed = work_input[0].n_items;

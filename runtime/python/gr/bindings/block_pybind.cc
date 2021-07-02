@@ -32,26 +32,24 @@ void bind_block(py::module& m)
              &block::work,
              py::arg("work_input_items"),
              py::arg("work_output_items"))
-        .def("step", [](gr::block& gr_block, py::list arrays) {
-            auto inputs = gr::list_to_work_inputs(arrays);
-            auto outputs = gr::generate_block_work_outputs(gr_block, inputs[0].n_items);
+        .def("step", [](gr::block& gr_block, py::list arrays, py::list tags) {
+            auto inputs = gr::list_to_inputs(arrays);
+            auto pmt_tags = gr::list_to_tags(tags);
+            // pmt_tags need to be added onto the inputs vector
 
-            // We attempt to run the block. If the block cannot be run with a certain
-            // size of buffers, we simply double the size. This is the part where we
-            // are playing the role of the scheduler by having to
-            // allocate/de-allocate stuff.
-            unsigned int multiple = 1;
-            auto work_status = gr_block.work(inputs, outputs);
-            while (work_status ==
-                   gr::work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
-                work_status = gr_block.work(inputs, outputs);
-                outputs = gr::generate_block_work_outputs(gr_block,
-                                                          multiple * inputs[0].n_items);
-                multiple *= 2;
-            }
+            auto outputs = gr::try_block_work(gr_block, inputs);
 
-            // Finally, we want to convert everything back to numpy arrays here.
+            // At the moment, we cannot access the tags that have been appended/added to
+            // the gr_block_outputs to be returned back to Python, so I suppose inputs and
+            // outputs both need that functionality. I don't see why it would be harmful
+            // for inputs/outputs to both have the ability to get/set all tag stuff.
 
-            return outputs;
+            // std::vector<std::vector<tag_t>> output_tags;
+            // for (unsigned int i = 0; i < gr_block.output_ports().size(); i++) {
+            //     output_tags.push_back(outputs[i]);
+            // }
+            auto output_tags =
+                gr::tag_to_dict(inputs[0].tags_in_window(0, inputs[0].nitems_read()));
+            return py::make_tuple(outputs_to_list(outputs), output_tags);
         });
 }

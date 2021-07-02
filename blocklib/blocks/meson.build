@@ -7,6 +7,7 @@ blocks_pybind_names = []
 blocks_deps = []
 # Individual block subdirectories
 subdir('copy')
+subdir('delay')
 subdir('annotator')
 subdir('head')
 subdir('load')
@@ -24,4 +25,8 @@ subdir('vector_source')
 subdir('lib')
 if (get_option('enable_python'))
     subdir('python/blocks')
+endif
+
+if (get_option('enable_testing'))
+    subdir('test')
 endif
