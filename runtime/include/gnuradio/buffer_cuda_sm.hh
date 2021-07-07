@@ -10,23 +10,23 @@
 #include <cuda_runtime.h>
 
 namespace gr {
-enum class cuda_buffer_sm_type { D2D, H2D, D2H, UNKNOWN };
+enum class buffer_cuda_sm_type { D2D, H2D, D2H, UNKNOWN };
 
-class cuda_buffer_sm : public buffer_sm
+class buffer_cuda_sm : public buffer_sm
 {
 private:
     uint8_t* _host_buffer;
     uint8_t* _device_buffer;
-    cuda_buffer_sm_type _type = cuda_buffer_sm_type::UNKNOWN;
+    buffer_cuda_sm_type _type = buffer_cuda_sm_type::UNKNOWN;
     cudaStream_t stream;
 
 public:
-    typedef std::shared_ptr<cuda_buffer_sm> sptr;
-    cuda_buffer_sm(size_t num_items,
+    typedef std::shared_ptr<buffer_cuda_sm> sptr;
+    buffer_cuda_sm(size_t num_items,
                    size_t item_size,
-                   cuda_buffer_sm_type type,
+                   buffer_cuda_sm_type type,
                    std::shared_ptr<buffer_properties> buf_properties);
-    ~cuda_buffer_sm();
+    ~buffer_cuda_sm();
 
     static buffer_sptr make(size_t num_items,
                             size_t item_size,
@@ -34,7 +34,7 @@ public:
 
     void* read_ptr(size_t read_index);
     void* write_ptr();
-    cuda_buffer_sm_type type() { return _type; }
+    buffer_cuda_sm_type type() { return _type; }
 
     virtual void post_write(int num_items);
 
@@ -48,10 +48,10 @@ public:
     {
         switch(_type)
         {
-            case cuda_buffer_sm_type::H2D:
+            case buffer_cuda_sm_type::H2D:
                 return output_blocked_callback_logic(force, std::memmove);
-            case cuda_buffer_sm_type::D2D:
-            case cuda_buffer_sm_type::D2H:
+            case buffer_cuda_sm_type::D2D:
+            case buffer_cuda_sm_type::D2H:
                 return output_blocked_callback_logic(force, cuda_memmove);
             default:
                 return false;
@@ -59,21 +59,18 @@ public:
     }
 };
 
-class cuda_buffer_sm_reader : public buffer_sm_reader
+class buffer_cuda_sm_reader : public buffer_sm_reader
 {
 private:
-    // logger_sptr _logger;
-    // logger_sptr _debug_logger;
-
-    std::shared_ptr<cuda_buffer_sm> _cuda_buffer_sm;
+    std::shared_ptr<buffer_cuda_sm> _buffer_cuda_sm;
 
 public:
-    cuda_buffer_sm_reader(std::shared_ptr<cuda_buffer_sm> buffer,
+    buffer_cuda_sm_reader(std::shared_ptr<buffer_cuda_sm> buffer,
                           std::shared_ptr<buffer_properties> buf_props,
                           size_t read_index)
         : buffer_sm_reader(buffer, buf_props, read_index)
     {
-        _cuda_buffer_sm = buffer;
+        _buffer_cuda_sm = buffer;
         // _logger = logging::get_logger("cudabuffer_sm_reader", "default");
         // _debug_logger = logging::get_logger("cudabuffer_sm_reader_dbg", "debug");
     }
@@ -107,12 +104,12 @@ public:
         if (items_avail < items_required && _buffer->write_index() < read_index()) {
             // GR_LOG_DEBUG(_debug_logger, "Calling adjust_buffer_data ");
 
-            switch (_cuda_buffer_sm->type()) {
-            case cuda_buffer_sm_type::H2D:
-            case cuda_buffer_sm_type::D2D:
-                return _buffer_sm->adjust_buffer_data(cuda_buffer_sm::cuda_memcpy,
-                                                      cuda_buffer_sm::cuda_memmove);
-            case cuda_buffer_sm_type::D2H:
+            switch (_buffer_cuda_sm->type()) {
+            case buffer_cuda_sm_type::H2D:
+            case buffer_cuda_sm_type::D2D:
+                return _buffer_sm->adjust_buffer_data(buffer_cuda_sm::cuda_memcpy,
+                                                      buffer_cuda_sm::cuda_memmove);
+            case buffer_cuda_sm_type::D2H:
                 return _buffer_sm->adjust_buffer_data(std::memcpy, std::memmove);
             default:
                 return false;
@@ -123,30 +120,30 @@ public:
     }
 };
 
-class cuda_buffer_sm_properties : public buffer_properties
+class buffer_cuda_sm_properties : public buffer_properties
 {
 public:
     // typedef sptr std::shared_ptr<buffer_properties>;
-    cuda_buffer_sm_properties(cuda_buffer_sm_type buffer_type_)
+    buffer_cuda_sm_properties(buffer_cuda_sm_type buffer_type_)
         : buffer_properties(), _buffer_type(buffer_type_)
     {
-        _bff = cuda_buffer_sm::make;
+        _bff = buffer_cuda_sm::make;
     }
-    cuda_buffer_sm_type buffer_type() { return _buffer_type; }
+    buffer_cuda_sm_type buffer_type() { return _buffer_type; }
     static std::shared_ptr<buffer_properties>
-    make(cuda_buffer_sm_type buffer_type_ = cuda_buffer_sm_type::D2D)
+    make(buffer_cuda_sm_type buffer_type_ = buffer_cuda_sm_type::D2D)
     {
         return std::static_pointer_cast<buffer_properties>(
-            std::make_shared<cuda_buffer_sm_properties>(buffer_type_));
+            std::make_shared<buffer_cuda_sm_properties>(buffer_type_));
     }
 
 private:
-    cuda_buffer_sm_type _buffer_type;
+    buffer_cuda_sm_type _buffer_type;
 };
 
 
 } // namespace gr
 
-#define CUDA_BUFFER_SM_ARGS_H2D cuda_buffer_sm_properties::make(cuda_buffer_sm_type::H2D)
-#define CUDA_BUFFER_SM_ARGS_D2H cuda_buffer_sm_properties::make(cuda_buffer_sm_type::D2H)
-#define CUDA_BUFFER_SM_ARGS_D2D cuda_buffer_sm_properties::make(cuda_buffer_sm_type::D2D)
+#define BUFFER_CUDA_SM_ARGS_H2D buffer_cuda_sm_properties::make(buffer_cuda_sm_type::H2D)
+#define BUFFER_CUDA_SM_ARGS_D2H buffer_cuda_sm_properties::make(buffer_cuda_sm_type::D2H)
+#define BUFFER_CUDA_SM_ARGS_D2D buffer_cuda_sm_properties::make(buffer_cuda_sm_type::D2D)

@@ -12,7 +12,7 @@
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 
 using namespace gr;
 

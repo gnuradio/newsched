@@ -5,6 +5,8 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+
+
 namespace gr {
 
 /**
@@ -30,7 +32,6 @@ class buffer_properties;
 typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>
     buffer_factory_function;
-
 
 /**
  * @brief Base class for passing custom buffer properties into factory method
@@ -100,6 +101,7 @@ protected:
     buffer_factory_function _bff = nullptr;
 };
 
+
 /**
  * @brief Abstract buffer class
  *
@@ -146,10 +148,22 @@ public:
     std::mutex* mutex() { return &_buf_mutex; }
 
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_size() { return _buf_properties ? _buf_properties->max_buffer_size() : 0; }
-    size_t min_buffer_size() { return _buf_properties ? _buf_properties->min_buffer_size() : 0; }
-    size_t max_buffer_fill() { return _buf_properties ? _buf_properties->max_buffer_fill() : 0; }
-    size_t min_buffer_fill() { return _buf_properties ? _buf_properties->min_buffer_fill() : 0; }
+    size_t max_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_size() : 0;
+    }
+    size_t min_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_size() : 0;
+    }
+    size_t max_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_fill() : 0;
+    }
+    size_t min_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_fill() : 0;
+    }
 
     std::vector<buffer_reader*>& readers() { return _readers; }
 
@@ -269,10 +283,17 @@ public:
     void set_read_index(size_t r) { _read_index = r; }
     void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
+    size_t num_items() { return _buffer->num_items(); }
     uint64_t total_read() const { return _total_read; }
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_read() { return _buf_properties ? _buf_properties->max_buffer_read() : 0; }
-    size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
+    size_t max_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_read() : 0;
+    }
+    size_t min_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_read() : 0;
+    }
 
 
     std::mutex* mutex() { return &_rdr_mutex; }

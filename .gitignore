@@ -139,3 +139,4 @@ perf.data
 trace.dat
 core
 **/__pycache__/
+utils/blockbuilder/*

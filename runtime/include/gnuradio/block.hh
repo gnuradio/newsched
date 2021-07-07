@@ -6,8 +6,8 @@
 #include <vector>
 
 #include <gnuradio/block_work_io.hh>
-#include <gnuradio/node.hh>
 #include <gnuradio/gpdict.hh>
+#include <gnuradio/node.hh>
 
 namespace gr {
 

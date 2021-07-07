@@ -29,42 +29,28 @@ class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {
 public:
     struct block_args {
-        {% if parameters %} {% for param in parameters -%}
+        {% for param in parameters -%}
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% endfor -%}{% endif %}};
+        {% endfor -%}};
     
     typedef std::shared_ptr<{{ block }}> sptr;
     {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")
     {
         {% for port in ports %}
         {% if port['domain'] == 'stream' -%}
-        {% if 'multiplicity' not in port%}     
-        {% if port['type'] == 'untyped'%}                                  
+        {% if 'multiplicity' not in port%}
         add_port(untyped_port::make(
             "{{ port['id'] }}", 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{ 'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
-        {% else %}
-        add_port(port<{{port['type']}}>::make("{{ port['id'] }}", 
-                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
-        {% endif %}
+            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
         {% else %}
         {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
-        {% if port['type'] == 'untyped'%}   
         for (size_t i = 0; i < {{m}}; i++) {
         add_port(untyped_port::make(
             "{{ port['id'] }}" + std::to_string(i), 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
+            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
         }
-        {% else %}
-        for (size_t i = 0; i < {{m}}; i++) {
-        add_port(port<{{port['type']}}>::make("{{ port['id'] }}" + std::to_string(i), 
-                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
-        }
-        {% endif %}
         {% endif -%}
         {% else %}
         {% if port['direction'] == 'input' %}
@@ -97,9 +83,9 @@ public:
     virtual  {{cb['return']}} {{cb['id']}} (
     {% if 'args' in cb -%}
     {% for arg in cb['args'] -%}
-    {{arg['dtype']}} {{arg['id']}}{{ ", " if not loop.last }}
-    {% endfor -%}
-    {% endif -%}
+    {{arg['dtype']}}{{ ", " if not loop.last }}
+    {% endfor %}
+    {% endif %}
     ) {% if cb['const'] %}const {%endif%} = 0;
     {% endfor %}     
 

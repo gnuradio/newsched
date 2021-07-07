@@ -15,18 +15,14 @@
 
 namespace gr {
 cuda_buffer_sm::cuda_buffer_sm(size_t num_items,
-                         size_t item_size,
-                         cuda_buffer_sm_type type,
-                         std::shared_ptr<buffer_properties> buf_properties)
+                               size_t item_size,
+                               cuda_buffer_sm_type type,
+                               std::shared_ptr<buffer_properties> buf_properties)
     : gr::buffer_sm(num_items, item_size, buf_properties), _type(type)
 {
     // _host_buffer.resize(_buf_size * 2); // double circular buffer
-    cudaMallocHost(
-        &_host_buffer,
-        _buf_size);
-    cudaMalloc(
-        &_device_buffer,
-        _buf_size);
+    cudaMallocHost(&_host_buffer, _buf_size);
+    cudaMalloc(&_device_buffer, _buf_size);
     set_type("cuda_buffer_sm_" + std::to_string((int)_type));
 
     cudaStreamCreate(&stream);
@@ -38,13 +34,13 @@ cuda_buffer_sm::~cuda_buffer_sm()
 }
 
 buffer_sptr cuda_buffer_sm::make(size_t num_items,
-                              size_t item_size,
-                              std::shared_ptr<buffer_properties> buffer_properties)
+                                 size_t item_size,
+                                 std::shared_ptr<buffer_properties> buffer_properties)
 {
     auto cbp = std::static_pointer_cast<cuda_buffer_sm_properties>(buffer_properties);
     if (cbp != nullptr) {
-        return buffer_sptr(
-            new cuda_buffer_sm(num_items, item_size, cbp->buffer_type(), buffer_properties));
+        return buffer_sptr(new cuda_buffer_sm(
+            num_items, item_size, cbp->buffer_type(), buffer_properties));
     } else {
         throw std::runtime_error(
             "Failed to cast buffer properties to cuda_buffer_sm_properties");
@@ -103,7 +99,7 @@ void cuda_buffer_sm::post_write(int num_items)
                         bytes_written,
                         cudaMemcpyDeviceToHost,
                         stream);
-    } 
+    }
 
     // advance the write pointer
     _write_index += bytes_written;
@@ -120,8 +116,10 @@ void cuda_buffer_sm::post_write(int num_items)
 std::shared_ptr<buffer_reader>
 cuda_buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props)
 {
-    std::shared_ptr<cuda_buffer_sm_reader> r(
-        new cuda_buffer_sm_reader(std::dynamic_pointer_cast<cuda_buffer_sm>(shared_from_this()), buf_props, _write_index));
+    std::shared_ptr<cuda_buffer_sm_reader> r(new cuda_buffer_sm_reader(
+        std::dynamic_pointer_cast<cuda_buffer_sm>(shared_from_this()),
+        buf_props,
+        _write_index));
     _readers.push_back(r.get());
     return r;
 }

@@ -1,7 +1,6 @@
 #pragma once
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-{% set typekeys = properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first %}
-{%set key1 = typekeys|first %}
+{% set typekey = properties|selectattr("id", "equalto", "type")|map(attribute="key")|first %}
 {% if blocktype == 'sync' -%}
 #include <gnuradio/sync_block.hh>
 {% elif blocktype == 'general' -%}
@@ -12,7 +11,7 @@
 namespace gr {
 namespace {{module}} {
 
-template <{% for key in properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+template <class {{typekey}}>
 class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {
 public:
@@ -21,35 +20,12 @@ public:
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}} {% endif %};
         {% endfor -%}};
     typedef std::shared_ptr<{{ block }}> sptr;
-    {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")
+    {{ block }}(block_args args) : sync_block("{{ block }}")
     {
         {% for port in ports %}
-        {% if 'multiplicity' not in port%}     
-        {% if port['type'] == 'untyped' %}
-        add_port(untyped_port::make(
-            "{{ port['id'] }}", 
-            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
-        {% else %}
-        add_port(port<{{key1['id']}}>::make("{{ port['id'] }}", 
-                                    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                                    {{ ', std::vector<size_t>'+port['dims'] if port['dims']}}));
-        {% endif %}
-        {% else %}
-        {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
-        for (size_t i = 0; i < {{m}}; i++) {
-        {% if port['type'] == 'untyped' %}
-        add_port(untyped_port::make(
-            "{{ port['id'] }}" + std::to_string(i), 
-            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
-        {% else %}
-        add_port(port<{{key1['id']}}>::make("{{ port['id'] }}" + std::to_string(i), 
+        add_port(port<{{typekey}}>::make("{{ port['id'] }}", 
                                     {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
                                     std::vector<size_t>{{ port['dims'] }}));
-        {% endif %}
-        }
-        {% endif %}
         {% endfor %}
     }
 
@@ -76,11 +52,9 @@ public:
     {% endfor %} 
 };
 
-{%set key1 = typekeys|first %}
-{% for opt in key1['options'] -%}
-typedef {{block}}<{{ opt['value']}}> {{block}}_{{ opt['suffix'] }};
+{% for opt in properties|selectattr("id", "equalto", "type")|map(attribute="options")|first -%}
+typedef {{block}}<{{ opt['dtype']}}> {{block}}_{{ opt['suffix'] }};
 {% endfor -%}
-
 
 } // namespace {{ module }}
 } // namespace gr

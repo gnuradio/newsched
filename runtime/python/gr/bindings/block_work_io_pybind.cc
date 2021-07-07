@@ -8,6 +8,7 @@
  */
 
 #include <pybind11/complex.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -21,22 +22,53 @@ void bind_block_work_io(py::module& m)
 {
     py::enum_<gr::work_return_code_t>(m, "work_return_t")
         .value("WORK_ERROR", gr::work_return_code_t::WORK_ERROR) // -100
-        .value("WORK_INSUFFICIENT_OUTPUT_ITEMS", gr::work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS)                     // -3
-        .value("WORK_INSUFFICIENT_INPUT_ITEMS", gr::work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS)                     // -2
-        .value("WORK_DONE", gr::work_return_code_t::WORK_DONE)                     // -1
-        .value("WORK_OK", gr::work_return_code_t::WORK_OK)                     //  0
+        .value("WORK_INSUFFICIENT_OUTPUT_ITEMS",
+               gr::work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) // -3
+        .value("WORK_INSUFFICIENT_INPUT_ITEMS",
+               gr::work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) // -2
+        .value("WORK_DONE", gr::work_return_code_t::WORK_DONE)        // -1
+        .value("WORK_OK", gr::work_return_code_t::WORK_OK)            //  0
         .export_values();
 
-    py::class_<gr::block_work_output, std::shared_ptr<gr::block_work_output>>(m, "block_work_output")
+    py::class_<gr::block_work_output, std::shared_ptr<gr::block_work_output>>(
+        m, "block_work_output")
         .def_readwrite("n_items", &gr::block_work_output::n_items)
         .def_readwrite("buffer", &gr::block_work_output::buffer)
         .def_readwrite("n_produced", &gr::block_work_output::n_produced)
-    ;
+        .def(py::init(
+            [](py::array_t<float, py::array::c_style | py::array::forcecast> input) {
+                return gr::block_work_output::make(
+                    input.size(),
+                    input.itemsize(),
+                    reinterpret_cast<void*>(input.mutable_data()));
+            }))
+        .def("numpy", [](gr::block_work_output& output) {
+            return py::array_t<float>(
+                py::buffer_info(output.buffer->read_ptr(0),
+                                sizeof(float),
+                                py::format_descriptor<float>::format(),
+                                output.buffer->num_items(),
+                                true));
+        });
 
-    py::class_<gr::block_work_input, std::shared_ptr<gr::block_work_input>>(m, "block_work_input")
+    py::class_<gr::block_work_input, std::shared_ptr<gr::block_work_input>>(
+        m, "block_work_input")
         .def_readwrite("n_items", &gr::block_work_input::n_items)
         .def_readwrite("buffer", &gr::block_work_input::buffer)
         .def_readwrite("n_consumed", &gr::block_work_input::n_consumed)
-    ;
-
+        .def(py::init(
+            [](py::array_t<float, py::array::c_style | py::array::forcecast> input) {
+                return gr::block_work_input::make(
+                    input.size(),
+                    input.itemsize(),
+                    reinterpret_cast<void*>(input.mutable_data()));
+            }))
+        .def("numpy", [](gr::block_work_input& input) {
+            return py::array_t<float>(
+                py::buffer_info(input.buffer->read_ptr(),
+                                sizeof(float),
+                                py::format_descriptor<float>::format(),
+                                input.buffer->num_items(),
+                                true));
+        });
 }
