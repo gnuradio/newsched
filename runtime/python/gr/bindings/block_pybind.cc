@@ -33,23 +33,16 @@ void bind_block(py::module& m)
              py::arg("work_input_items"),
              py::arg("work_output_items"))
         .def("step", [](gr::block& gr_block, py::list arrays, py::list tags) {
-            auto inputs = gr::list_to_inputs(arrays);
-            auto pmt_tags = gr::list_to_tags(tags);
+            auto inputs = gr::list_to_inputs(gr_block, arrays);
+            // auto pmt_tags = gr::list_to_tags(tags);
             // pmt_tags need to be added onto the inputs vector
 
             auto outputs = gr::try_block_work(gr_block, inputs);
 
-            // At the moment, we cannot access the tags that have been appended/added to
-            // the gr_block_outputs to be returned back to Python, so I suppose inputs and
-            // outputs both need that functionality. I don't see why it would be harmful
-            // for inputs/outputs to both have the ability to get/set all tag stuff.
-
-            // std::vector<std::vector<tag_t>> output_tags;
+            std::vector<std::vector<gr::tag_t>> output_tags;
             // for (unsigned int i = 0; i < gr_block.output_ports().size(); i++) {
-            //     output_tags.push_back(outputs[i]);
+            //     output_tags.push_back(outputs[i].buffer->tags());
             // }
-            auto output_tags =
-                gr::tag_to_dict(inputs[0].tags_in_window(0, inputs[0].nitems_read()));
-            return py::make_tuple(outputs_to_list(outputs), output_tags);
+            return py::make_tuple(outputs_to_list(gr_block, outputs), output_tags);
         });
 }

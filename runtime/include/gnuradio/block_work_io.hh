@@ -15,6 +15,11 @@ namespace gr {
  */
 class block_work_input
 {
+private:
+    int n_items;
+    buffer_reader_sptr buffer;
+    int n_consumed; // output the number of items that were consumed on the work() call
+
 public:
     block_work_input(int n_items_, buffer_reader_sptr p_buf_)
         : n_items(n_items_), buffer(p_buf_), n_consumed(-1){};
@@ -42,10 +47,6 @@ public:
     {
         return buffer->tags_in_window(item_start, item_end);
     }
-
-    int n_items;
-    buffer_reader_sptr buffer;
-    int n_consumed; // output the number of items that were consumed on the work() call
 };
 
 /**

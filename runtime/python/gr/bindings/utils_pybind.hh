@@ -22,6 +22,8 @@ namespace py = pybind11;
 
 // typedefs for handling multiple types of arrays
 typedef py::array_t<int8_t, py::array::c_style | py::array::forcecast> numpy_byte_array_t;
+typedef py::array_t<uint8_t, py::array::c_style | py::array::forcecast>
+    numpy_signed_char_array;
 typedef py::array_t<int16_t, py::array::c_style | py::array::forcecast>
     numpy_short_array_t;
 typedef py::array_t<int32_t, py::array::c_style | py::array::forcecast> numpy_int_array_t;
@@ -47,7 +49,7 @@ gr::block_work_input array_to_input(T input);
  * @param arrays
  * @return std::vector<gr::block_work_input>
  */
-std::vector<gr::block_work_input> list_to_inputs(py::list arrays);
+std::vector<gr::block_work_input> list_to_inputs(block& gr_block, py::list arrays);
 
 /**
  * @brief
@@ -68,13 +70,15 @@ std::vector<block_work_output> generate_outputs(block& gr_block, size_t num_item
  */
 std::vector<block_work_output> try_block_work(block& gr_block,
                                               std::vector<gr::block_work_input> inputs);
+
 /**
  * @brief
  *
+ * @param gr_block
  * @param outputs
  * @return py::list
  */
-py::list outputs_to_list(std::vector<block_work_output> outputs);
+py::list outputs_to_list(block& gr_block, std::vector<block_work_output> outputs);
 
 
 /**
