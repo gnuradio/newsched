@@ -162,6 +162,19 @@ private:
 
 typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_function;
 
+template <> struct cpp_type<Data::VectorInt8> { using type=int8_t; };
+template <> struct cpp_type<Data::VectorInt16> { using type=int16_t; };
+template <> struct cpp_type<Data::VectorInt32> { using type=int32_t; };
+template <> struct cpp_type<Data::VectorInt64> { using type=int64_t; };
+template <> struct cpp_type<Data::VectorUInt8> { using type=uint8_t; };
+template <> struct cpp_type<Data::VectorUInt16> { using type=uint16_t; };
+template <> struct cpp_type<Data::VectorUInt32> { using type=uint32_t; };
+template <> struct cpp_type<Data::VectorUInt64> { using type=uint64_t; };
+template <> struct cpp_type<Data::VectorFloat32> { using type=float; };
+template <> struct cpp_type<Data::VectorFloat64> { using type=double; };
+template <> struct cpp_type<Data::VectorComplex64> { using type=std::complex<float>; };
+template <> struct cpp_type<Data::VectorComplex128> { using type=std::complex<double>; };
+template <> struct cpp_type<Data::VectorBool> { using type=bool; };
 
 #define IMPLEMENT_PMT_VECTOR(datatype, fbtype)                                        \
     template <>                                                                       \

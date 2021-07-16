@@ -160,4 +160,11 @@ private:
 
 };
 
+/*pmt_map<std::string> get_map(const pmt_wrap& x) {
+    if (x.ptr()->data_type() == Data::PmtMap)
+        return pmt_map<std::string>(std::dynamic_pointer_cast<pmt_map<std::string>>(x.ptr()));
+    else
+        throw std::runtime_error("Cannot convert to map");
+}*/
+
 }

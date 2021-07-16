@@ -110,5 +110,9 @@ protected:
 
 typedef pmt_base::sptr pmt_sptr;
 
+template <Data T>
+struct cpp_type {
+};
+
 
 } // namespace pmtf

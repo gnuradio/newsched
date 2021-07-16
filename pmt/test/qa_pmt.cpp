@@ -52,10 +52,29 @@ TEST(Pmt, PmtMapTests)
     // Lookup values in the PMT map and compare with what was put in there
     auto vv1 = map_pmt["key1"];
     std::cout << vv1 << std::endl;
-    EXPECT_EQ(get_scalar<std::complex<float>>(vv1), val1);
+    EXPECT_EQ(get_pmt_scalar<std::complex<float>>(vv1), val1);
 
     /*auto vv2 = map_pmt["key2"];
     EXPECT_EQ(vv2, val2);*/
+}
+
+TEST(Pmt, PmtWrap)
+{
+    pmt_wrap x = int8_t(4);
+    get_pmt_scalar<int8_t>(x);
+    get_scalar<int8_t>(x);
+}
+TEST(pmt, CanBe)
+{
+    pmt_wrap x = int32_t(257);
+    assert(can_be<int8_t>(x) == true);
+    assert(can_be<uint64_t>(x) == true);
+    assert(can_be<float>(x) == true);
+    assert(can_be<std::complex<double>>(x) == true);
+    assert(can_be<bool>(x) == true);
+    assert(can_be<std::string>(x) == false);
+    assert(can_be<pmt_scalar<int32_t>>(x) == true);
+    assert(can_be<pmt_scalar<int8_t>>(x) == true);
 }
 
 /*TEST(Pmt, VectorWrites)
