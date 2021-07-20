@@ -63,7 +63,7 @@ public:
     // void deserialize(std::streambuf& sb) override;
     std::vector<T> value() const; // returns a copy of the data stored in the flatbuffer
     const T* data();
-    size_t size();
+    size_t size() const;
 
     void operator=(const std::vector<T>& other) // copy assignment
     {
@@ -76,11 +76,11 @@ public:
     T ref(size_t k);           // overload operator []
     void set(size_t k, T val); // overload [] =
     T* writable_elements();
-    const T* elements();
+    const T* elements() const;
 
     flatbuffers::Offset<void> rebuild_data(flatbuffers::FlatBufferBuilder& fbb);
-    bool is_vector() const { return true; }
-    void print(std::ostream& os) {
+    bool is_vector() const noexcept { return true; }
+    void print(std::ostream& os) const {
         os << "[";
         auto elems = elements();
         for (size_t i = 0; i < size(); i++) {
@@ -263,7 +263,7 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    size_t pmt_vector_value<datatype>::size()                                               \
+    size_t pmt_vector_value<datatype>::size() const                                               \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -291,7 +291,7 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         fb_vec->Mutate(k, val);                                                       \
     }                                                                                 \
     template <>                                                                       \
-    const datatype* pmt_vector_value<datatype>::elements()                                  \
+    const datatype* pmt_vector_value<datatype>::elements() const                                \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
@@ -390,7 +390,7 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
             fb_vec->Data(); /* no good native conversions in API, just cast here*/      \
     }                                                                                   \
     template <>                                                                         \
-    size_t pmt_vector_value<datatype>::size()                                                 \
+    size_t pmt_vector_value<datatype>::size() const                                     \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
@@ -406,7 +406,7 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         return *((datatype*)(*fb_vec)[k]); /* hacky cast */                             \
     }                                                                                   \
     template <>                                                                         \
-    const datatype* pmt_vector_value<datatype>::elements()                                    \
+    const datatype* pmt_vector_value<datatype>::elements() const                        \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
         auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \

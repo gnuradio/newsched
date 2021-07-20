@@ -31,7 +31,7 @@ public:
 
 
     void set_value(const std::string& val);
-    std::string value();
+    std::string value() const;
 
     void operator=(const std::string& other) // copy assignment
     {
@@ -46,7 +46,7 @@ public:
     pmt_string(const std::string& val);
     pmt_string(const uint8_t* buf);
     pmt_string(const pmtf::Pmt *fb_pmt);
-    void print(std::ostream& os) { os << value(); }
+    void print(std::ostream& os) const { os << value(); }
 };
 
 

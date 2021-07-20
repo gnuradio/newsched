@@ -122,8 +122,10 @@ public:
     * Iterators
     **************************************************************************/
     typename map_type::iterator begin() noexcept { return _map.begin(); }
+    typename map_type::const_iterator begin() const noexcept { return _map.begin(); }
     //typename std::map<T, pmt_sptr>::const_iterator begin() const noexcept { return _map.begin(); }
     typename map_type::iterator end() noexcept { return _map.end(); }
+    typename map_type::const_iterator end() const noexcept { return _map.end(); }
     //typename const std::map<T, pmt_sptr>::iterator end() const noexcept { return _map.end(); }
 
     /**************************************************************************
@@ -141,7 +143,7 @@ public:
 
     flatbuffers::Offset<void> rebuild_data(flatbuffers::FlatBufferBuilder& fbb);
 
-    void print(std::ostream& os) {
+    void print(std::ostream& os) const {
         os << "{";
         for (const auto& [k, v]: *this) {
             os << k << ": " << v << ", "; 

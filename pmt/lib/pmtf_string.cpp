@@ -36,7 +36,7 @@ pmt_string::pmt_string(const pmtf::Pmt* fb_pmt)
     set_value(*((const std::string*)data));
 }
 
-std::string pmt_string::value()
+std::string pmt_string::value() const
 {
     auto pmt = GetSizePrefixedPmt(_fbb.GetBufferPointer());
     return std::string(pmt->data_as_PmtString()->value()->str());

@@ -29,6 +29,37 @@ TEST(Pmt, BasicPmtTests)
     EXPECT_EQ(cf_pmt_vec.data_type(), Data::VectorComplex64);
 }
 
+TEST(Pmt, PmtScalarValueTests)
+{
+    auto x = pmt_scalar_value<int>(4);
+    EXPECT_EQ(x, 4);
+    pmt_scalar_value<int> y(4);
+    EXPECT_EQ(x, y);
+    x = 5;
+    EXPECT_EQ(x, 5.0);
+    y = x;
+    EXPECT_EQ(x, y);
+    pmt_scalar_value<int> z = 4;
+    int a = x.value();
+    EXPECT_EQ(a, 5.0);
+}
+
+TEST(Pmt, PmtScalarTests) {
+    auto x = pmt_scalar<int>(4);
+    EXPECT_EQ(x, 4);
+    pmt_scalar<int> y(4);
+    EXPECT_EQ(x, y);
+    x = 5;
+    EXPECT_EQ(x, 5.0);
+    y = x;
+    EXPECT_EQ(x, y);
+    pmt_scalar<int> z = 4;
+    int a = int(x);
+    EXPECT_EQ(a, 5.0);
+    float b = float(x);
+    EXPECT_EQ(b, 5.0);
+}
+
 TEST(Pmt, PmtStringTests)
 {
     auto str_pmt = pmt_string::make("hello");

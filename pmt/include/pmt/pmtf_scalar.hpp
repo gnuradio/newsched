@@ -8,10 +8,19 @@
 #include <memory>
 #include <typeindex>
 #include <typeinfo>
+#include <type_traits>
 
 
 namespace pmtf {
 
+/**
+ * @brief Class holds the implementation of a scalar pmt.
+ *
+ * The scalar types are defined in pmtf_scalar.cpp.  This class should not be
+ * used directly. It would be nice to move it to the .cpp and instantiate all
+ * of the templates in there. This would involve a fairly large refactoring of
+ * the code.
+ */
 template <class T>
 class pmt_scalar_value : public pmt_base
 {
@@ -43,53 +52,45 @@ public:
         return *this;
     }
 
-    bool operator==(const T& other) { return other == value(); }
-    bool operator!=(const T& other) { return other != value(); }
-
     flatbuffers::Offset<void> rebuild_data(flatbuffers::FlatBufferBuilder& fbb);
 
     pmt_scalar_value(const T& val);
     pmt_scalar_value(const uint8_t* buf);
     pmt_scalar_value(const pmtf::Pmt* fb_pmt);
 
-    bool is_scalar() const { return true; }
-    void print(std::ostream& os) { os << value(); }
+    bool is_scalar() const noexcept { return true; }
+    void print(std::ostream& os) const { os << value(); }
     
 };
 
-// Things that I need to be able to match on.
-// 1) Arithmetic type
-//      Just get the value and ask if it is equal.
-// 2) Complex type or other type that will match on equals.
-//      I think the same.  May need to check if it is complex.
-// 3) pmt_scalar_value
-//      If a.value == b.value
-// 4) pmt_scalar
-//        a.value == b
-// 5) pmt_wrap
-//      if is_arithmetic<U>() and 
+// These structures allow us to see if a arbitrary type is a pmt_scalar_value
+// or not.
+template <class T>
+struct is_pmt_scalar_value : std::false_type {};
 
+template <class T>
+struct is_pmt_scalar_value<pmt_scalar_value<T>> : std::true_type {};
+
+/**
+ * @brief compare pmt_scalar_value against something else
+ *
+ * Allow for comparisons against other pmt scalars and other types.
+ * For example pmt_scalar_value<int>(4) == 4.0 will be true.
+ */
 template <class T, class U>
-bool operator==(const pmt_scalar_value<T>& x, const U y) {
-    // Right now this only works on scalar match exactly.  I would like to fix that. 
-    if constexpr(std::is_same_v<T, U>())
-        return x == y;
-    else if constexpr(std::is_convertible_v<U, T>())
-        return x == T(y);
+bool operator==(const pmt_scalar_value<T>& x, const U& y) {
+    if constexpr(std::is_same_v<T, U>)
+        return x.value() == y;
+    else if constexpr(is_pmt_scalar_value<U>::value)
+        return x.value() == y.value();
+    else if constexpr(std::is_convertible_v<U, T>)
+        return x.value() == T(y);
     return false;
 }
 
-/*template <class T, class U>
-bool try1(const pmt_scalar<T>& x, const U& y) {
-    if (std::is_convertible_v<U,T>())
-        return x->value() == y;
-    else if (is_pmt_scalar_v<U>()) {
-        return x->value() == y->value();
-    else if (std::is_same<U, pmt_wrap>()) {
-        // Call it again to resolve the other side.
-        return try_every_equal(y, x->value()
-}*/
-
+// These structures allow us to write template functions that depend on the
+// flatbuffer data type.  This allows us to do things like verify that the
+// datatype is correct when we want to interpret a pmt as another type.
 template <> struct cpp_type<Data::ScalarInt8> { using type=int8_t; };
 template <> struct cpp_type<Data::ScalarInt16> { using type=int16_t; };
 template <> struct cpp_type<Data::ScalarInt32> { using type=int32_t; };
@@ -104,48 +105,34 @@ template <> struct cpp_type<Data::ScalarComplex64> { using type=std::complex<flo
 template <> struct cpp_type<Data::ScalarComplex128> { using type=std::complex<double>; };
 template <> struct cpp_type<Data::ScalarBool> { using type=bool; };
 
-// What functions do I need like this?
-// == 
-// get (throw if doesn't match exactly) maybe???
-// as (convert if possible, else throw)
-// can_be (can convert)
-// It would be nice If I didn't need to write something like this for every one.
-/*void try_every_equal(x, const U& y) {
-    //Can probably put this in an array and then loop over it.
-    // Would need a way to do the types properly.
-    if (x.data_type() == Data::ScalarInt8) {
-        //return try1(get_scalar<int8_t>(x), y);
-    } else if (x.data_type() == Data::ScalarUInt8) {
-    } else if (x.data_type() == Data::ScalarInt16) {
-    } else if (x.data_type() == Data::ScalarUInt16) {
-    } else if (x.data_type() == Data::ScalarInt32) {
-    } else if (x.data_type() == Data::ScalarUInt32) {
-    } else if (x.data_type() == Data::ScalarInt64) {
-    } else if (x.data_type() == Data::ScalarUInt64) {
-    } else if (x.data_type() == Data::ScalarBool) {
-    } else if (x.data_type() == Data::ScalarFloat) {
-    } else if (x.data_type() == Data::ScalarDouble) {
-    } else if (x.data_type() == Data::ScalarComplex64) {
-    } else if (x.data_type() == Data::ScalarComplex128) {
-    }
-}*/
-
+/**
+ * @brief "Print" out a pmt_scalar_value
+ */
 template <class T>
 std::ostream& operator<<(std::ostream& os, const pmt_scalar_value<T>& value) {
     os << value;
     return os;
 }
 
+/**
+ * @brief Wrapper class around a smart pointer to a pmt_scalar_value.
+ *
+ * This is the interface that should be used for dealing with scalar values.
+ */
 template <class T>
 class pmt_scalar {
 public:
     using sptr = typename pmt_scalar_value<T>::sptr;
+    //! Construct a pmt_scalar from a scalar value
     pmt_scalar(const T& val): d_ptr(pmt_scalar_value<T>::make(val)) {}
+    //! Construct a pmt_scalar from a pmt_scalar_value pointer.
     pmt_scalar(sptr ptr):
         d_ptr(ptr) {}
+    //! Copy constructor.
     pmt_scalar(const pmt_scalar<T>& x):
         d_ptr(x.d_ptr) {}
    
+    //! Get at the smart pointer.
     sptr ptr() const { return d_ptr; }
     bool operator==(const T& val) const { return *d_ptr == val;}
     bool operator==(const pmt_scalar<T>& val) const { return *d_ptr == *val.d_ptr; }
@@ -154,7 +141,16 @@ public:
 
     // Make it act like a pointer.  Probably need a better way
     // to think about it.
-    T& operator*() const { return *d_ptr; } 
+    T& operator*() const { return *d_ptr; }
+    // Cast operators
+    //! Cast to a T value.
+    //! Explicit means that the user must do something like T(pmt_scalar<T>(val));
+    //! Implicit conversions can cause lots of problems, so we are avoiding them.
+    explicit operator T() const { return d_ptr->value(); }
+    //! Cast to another type
+    //! Will cause a compilation failure if we can't do the cast.
+    template <class U>
+    explicit operator U() const { return U(d_ptr->value()); }
     
 private:
     sptr d_ptr;

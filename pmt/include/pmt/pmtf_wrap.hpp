@@ -5,6 +5,12 @@
 
 namespace pmtf {
 
+/**
+ * @brief Class to hold any kind of pmt object.
+ * 
+ * It really holds a pointer to a pmt object.  It has convenience functions to
+ * make it easier to interact with the pmt.
+*/
 class pmt_wrap {
   // Generic class to wrap a pmt.
   // Should accept the following types in the constructor:
@@ -13,45 +19,46 @@ class pmt_wrap {
   //  3) Almost any object that can be used to construct one of the pmt classes.
   //      I don't want to deal with initializer lists.
   public:
+    /**
+     * @ brief Construct an empty pmt_wrap.
+     *
+     * Note that is has a nullptr, not a null pmt.  Don't try to access it.
+     */
     pmt_wrap() : d_ptr(nullptr) {}
+    /**
+     * @ brief Construct a pmt_wrap from a std::vector.
+     *
+     * Copy an std::vector into a pmt_vector.
+     * When we upgrade to c++20, allow for span.  That way it can be more types.
+     */
     template <class T, class alloc>
     pmt_wrap(const std::vector<T, alloc>& x) {
         auto value = pmt_vector(x);
         d_ptr = value.ptr();
     }
-    pmt_wrap(pmt_base::sptr x): d_ptr(x) {}
-    //template <class T>
-    //pmt_wrap(const std::map<std::string, T>& x);
+    
+    /**
+     * @ brief Construct a pmt_wrap from a "scalar" value.
+     *
+     * A scalar is any type defined in pmtf_scalar.hpp.  (e.g. float)
+     * Note that this is a catch all, and it will fail if, for example a std::deque
+     * is passed in.
+     * When we upgrade to c++20, use a concept to limit this constructor.
+     */
     template <class T>
     pmt_wrap(const T& x) {
         auto value = pmt_scalar(x);
         d_ptr = value.ptr();  
     };
+    pmt_wrap(pmt_base::sptr x): d_ptr(x) {}
+    //template <class T>
+    //pmt_wrap(const std::map<std::string, T>& x);
     operator typename pmt_base::sptr() const { return d_ptr; }
     typename pmt_base::sptr ptr() const { return d_ptr; }
   private:
         pmt_base::sptr d_ptr;
 };
 
-
-// Fix this later with SFINAE
-/*template <class T, Data dt>
-T _get_as(const pmt_wrap& x) {
-    auto value = get_scalar<typename cpp_type<dt>::type>(x);
-    if constexpr(std::is_convertible_v<typename cpp_type<dt>::type, T>)
-        return T(value.ptr()->value());
-    else
-        throw std::runtime_error("Cannot convert types");
-}*/
-
-/*template <class T, Data dt>
-T _get_as_vector(const pmt_wrap& x) {
-    auto value = get_vector<typename cpp_type<dt>::type>(x);
-    if constexpr(std::is_same_v<typename cpp_type<dt>::type, T>)
-        return T(value.ptr()->value());
-    else
-        throw std::runtime_error("Cannot convert vector types");
-}*/
 
 template <class T, Data dt>
 pmt_scalar<T> _get_pmt_scalar(const pmt_wrap& x) {
@@ -127,37 +134,6 @@ pmt_vector<T> get_pmt_vector(const pmt_wrap& x) {
         throw std::runtime_erro("Cannot convert to map");
 }*/
 
-/*template <class T>
-T get_as(const pmt_wrap& x) {
-    switch(auto dt = x.ptr()->data_type()) {
-        case Data::ScalarFloat32: return _get_as<T, Data::ScalarFloat32>(x);
-        case Data::ScalarFloat64: return _get_as<T, Data::ScalarFloat64>(x);
-        case Data::ScalarComplex64: return _get_as<T, Data::ScalarComplex64>(x);
-        case Data::ScalarComplex128: return _get_as<T, Data::ScalarComplex128>(x);
-        case Data::ScalarInt8: return _get_as<T, Data::ScalarInt8>(x);
-        case Data::ScalarInt16: return _get_as<T, Data::ScalarInt16>(x);
-        case Data::ScalarInt32: return _get_as<T, Data::ScalarInt32>(x);
-        case Data::ScalarInt64: return _get_as<T, Data::ScalarInt64>(x);
-        case Data::ScalarUInt8: return _get_as<T, Data::ScalarUInt8>(x);
-        case Data::ScalarUInt16: return _get_as<T, Data::ScalarUInt16>(x);
-        case Data::ScalarUInt32: return _get_as<T, Data::ScalarUInt32>(x);
-        case Data::ScalarUInt64: return _get_as<T, Data::ScalarUInt64>(x);
-        case Data::ScalarBool: return _get_as<T, Data::ScalarBool>(x);
-        case Data::VectorFloat32: return _get_as<T, Data::VectorFloat32>(x);
-        case Data::VectorFloat64: return _get_as<T, Data::VectorFloat64>(x);
-        case Data::VectorComplex64: return _get_as<T, Data::VectorComplex64>(x);
-        case Data::VectorComplex128: return _get_as<T, Data::VectorComplex128>(x);
-        case Data::VectorInt8: return _get_as<T, Data::VectorInt8>(x);
-        case Data::VectorInt16: return _get_as<T, Data::VectorInt16>(x);
-        case Data::VectorInt32: return _get_as<T, Data::VectorInt32>(x);
-        case Data::VectorInt64: return _get_as<T, Data::VectorInt64>(x);
-        case Data::VectorUInt8: return _get_as<T, Data::VectorUInt8>(x);
-        case Data::VectorUInt16: return _get_as<T, Data::VectorUInt16>(x);
-        case Data::VectorUInt32: return _get_as<T, Data::VectorUInt32>(x);
-        case Data::VectorUInt64: return _get_as<T, Data::VectorUInt64>(x);
-        case Data::VectorBool: return _get_as<T, Data::VectorBool>(x);
-    }
-}*/
 
 // Fix this later with SFINAE
 template <class T, Data dt>
@@ -193,6 +169,34 @@ bool can_be(const pmt_wrap& x) {
         default: return false;
     }
     
+}
+
+template <class T, Data dt>
+T _get_as(const pmt_wrap& x) {
+    auto value = get_scalar<typename cpp_type<dt>::type>(x);
+    if constexpr(std::is_convertible_v<typename cpp_type<dt>::type, T>)
+        return T(value.ptr()->value());
+    else
+        throw std::runtime_error("Cannot convert types");
+}
+
+template <class T>
+T get_as(const pmt_wrap& x) {
+    switch(auto dt = x.ptr()->data_type()) {
+        case Data::ScalarFloat32: return _get_as<T, Data::ScalarFloat32>(x);
+        case Data::ScalarFloat64: return _get_as<T, Data::ScalarFloat64>(x);
+        case Data::ScalarComplex64: return _get_as<T, Data::ScalarComplex64>(x);
+        case Data::ScalarComplex128: return _get_as<T, Data::ScalarComplex128>(x);
+        case Data::ScalarInt8: return _get_as<T, Data::ScalarInt8>(x);
+        case Data::ScalarInt16: return _get_as<T, Data::ScalarInt16>(x);
+        case Data::ScalarInt32: return _get_as<T, Data::ScalarInt32>(x);
+        case Data::ScalarInt64: return _get_as<T, Data::ScalarInt64>(x);
+        case Data::ScalarUInt8: return _get_as<T, Data::ScalarUInt8>(x);
+        case Data::ScalarUInt16: return _get_as<T, Data::ScalarUInt16>(x);
+        case Data::ScalarUInt32: return _get_as<T, Data::ScalarUInt32>(x);
+        case Data::ScalarUInt64: return _get_as<T, Data::ScalarUInt64>(x);
+        case Data::ScalarBool: return _get_as<T, Data::ScalarBool>(x);
+    }
 }
 
 template <class T>
