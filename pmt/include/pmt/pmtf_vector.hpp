@@ -56,6 +56,12 @@ public:
      * @param buf
      */
     pmt_vector_value(const uint8_t* buf);
+    /**
+     * @ brief Copy constructor
+     *
+     * @param val
+     */
+    pmt_vector_value(const pmt_vector_value<T>& val);
     pmt_vector_value(const pmtf::Pmt* fb_pmt);
 
     void set_value(const std::vector<T>& val);
@@ -145,21 +151,30 @@ public:
     size_type size() const { return d_ptr->size(); }
     auto data_type() { return d_ptr->data_type(); }
     
-    // When we switch to c++20, make this a concept.
-    template <class U>
-    bool operator==(U&& other) const {
-        if (other.size() != size()) return false;
-        auto my_val = begin();
-        for (auto&& val : other) {
-            if (*my_val != val) return false;
-            my_val++;
-        }
-        return true;
-    }
 private:
     sptr d_ptr;
 };
 
+// When we switch to c++20, make this a concept.
+template <class T, class U>
+bool operator==(const pmt_vector<T>& x, const U& other) {
+    if (other.size() != x.size()) return false;
+    auto my_val = x.begin();
+    for (auto&& val : other) {
+        if (*my_val != val) return false;
+        my_val++;
+    }
+    return true;
+}
+
+template <class T>
+std::ostream& operator<<(std::ostream& os, const pmt_vector<T>& value) {
+    os << "[ ";
+    for (auto& v: value)
+        os << v << " ";
+    os << "]";
+    return os;
+}
 typedef std::function<std::shared_ptr<pmt_base>(uint8_t*)> pmt_from_buffer_function;
 
 template <> struct cpp_type<Data::VectorInt8> { using type=int8_t; };
@@ -227,6 +242,28 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
+    size_t pmt_vector_value<datatype>::size() const                                            \
+    {                                                                                 \
+        auto pmt = GetSizePrefixedPmt(_buf);                                          \
+        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
+        return fb_vec->size();                                                        \
+    }                                                                                 \
+                                                                                      \
+    template <>                                                                       \
+    const datatype* pmt_vector_value<datatype>::elements() const                                \
+    {                                                                                 \
+        auto pmt = GetSizePrefixedPmt(_buf);                                          \
+        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
+        return (datatype*)(fb_vec->Data());                                           \
+    }                                                                                 \
+    template <>                                                                       \
+    pmt_vector_value<datatype>::pmt_vector_value(const pmt_vector_value<datatype>& val)                \
+        : pmt_base(Data::Vector##fbtype)                                              \
+    {                                                                                 \
+        set_value(val.elements(), val.size());                                        \
+    }                                                                                 \
+                                                                                      \
+    template <>                                                                       \
     pmt_vector_value<datatype>::pmt_vector_value(const uint8_t* buf)                              \
         : pmt_base(Data::Vector##fbtype)                                              \
     {                                                                                 \
@@ -263,14 +300,6 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
     }                                                                                 \
                                                                                       \
     template <>                                                                       \
-    size_t pmt_vector_value<datatype>::size() const                                               \
-    {                                                                                 \
-        auto pmt = GetSizePrefixedPmt(_buf);                                          \
-        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
-        return fb_vec->size();                                                        \
-    }                                                                                 \
-                                                                                      \
-    template <>                                                                       \
     datatype pmt_vector_value<datatype>::ref(size_t k)                                      \
     {                                                                                 \
         auto pmt = GetSizePrefixedPmt(_buf);                                          \
@@ -289,13 +318,6 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         if (k >= fb_vec->size())                                                      \
             throw std::runtime_error("PMT Vector index out of range");                \
         fb_vec->Mutate(k, val);                                                       \
-    }                                                                                 \
-    template <>                                                                       \
-    const datatype* pmt_vector_value<datatype>::elements() const                                \
-    {                                                                                 \
-        auto pmt = GetSizePrefixedPmt(_buf);                                          \
-        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                         \
-        return (datatype*)(fb_vec->Data());                                           \
     }                                                                                 \
     template <>                                                                       \
     datatype* pmt_vector_value<datatype>::writable_elements()                               \
@@ -342,6 +364,20 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         build();                                                                        \
     }                                                                                   \
     template <>                                                                         \
+    size_t pmt_vector_value<datatype>::size() const \
+    {                                                                                   \
+        auto pmt = GetSizePrefixedPmt(_buf);                                            \
+        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
+        return fb_vec->size();                                                          \
+    }                                                                                   \
+    template <>                                                                         \
+    const datatype* pmt_vector_value<datatype>::elements() const                        \
+    {                                                                                   \
+        auto pmt = GetSizePrefixedPmt(_buf);                                            \
+        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
+        return (datatype*)(fb_vec->Data()); /* hacky cast*/                             \
+    }                                                                                   \
+    template <>                                                                         \
     pmt_vector_value<datatype>::pmt_vector_value(const std::vector<datatype>& val)                  \
         : pmt_base(Data::Vector##fbtype)                                                \
     {                                                                                   \
@@ -361,6 +397,12 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         size_t len = data->size();                                                      \
         set_value((const datatype*)data->Data(), len);                                  \
     }                                                                                   \
+    template <>                                                                       \
+    pmt_vector_value<datatype>::pmt_vector_value(const pmt_vector_value<datatype>& val)                \
+        : pmt_base(Data::Vector##fbtype)                                              \
+    {                                                                                 \
+        set_value(val.elements(), val.size());                                        \
+    }                                                                                 \
     template <>                                                                         \
     pmt_vector_value<datatype>::pmt_vector_value(const pmtf::Pmt* fb_pmt)                           \
         : pmt_base(Data::Vector##fbtype)                                                \
@@ -390,13 +432,6 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
             fb_vec->Data(); /* no good native conversions in API, just cast here*/      \
     }                                                                                   \
     template <>                                                                         \
-    size_t pmt_vector_value<datatype>::size() const                                     \
-    {                                                                                   \
-        auto pmt = GetSizePrefixedPmt(_buf);                                            \
-        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
-        return fb_vec->size();                                                          \
-    }                                                                                   \
-    template <>                                                                         \
     datatype pmt_vector_value<datatype>::ref(size_t k)                                        \
     {                                                                                   \
         auto pmt = GetSizePrefixedPmt(_buf);                                            \
@@ -404,13 +439,6 @@ template <> struct cpp_type<Data::VectorBool> { using type=bool; };
         if (k >= fb_vec->size())                                                        \
             throw std::runtime_error("PMT Vector index out of range");                  \
         return *((datatype*)(*fb_vec)[k]); /* hacky cast */                             \
-    }                                                                                   \
-    template <>                                                                         \
-    const datatype* pmt_vector_value<datatype>::elements() const                        \
-    {                                                                                   \
-        auto pmt = GetSizePrefixedPmt(_buf);                                            \
-        auto fb_vec = pmt->data_as_Vector##fbtype()->value();                           \
-        return (datatype*)(fb_vec->Data()); /* hacky cast*/                             \
     }                                                                                   \
     template <>                                                                         \
     void pmt_vector_value<datatype>::set(size_t k, datatype val)                              \

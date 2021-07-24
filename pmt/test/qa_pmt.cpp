@@ -60,6 +60,35 @@ TEST(Pmt, PmtScalarTests) {
     EXPECT_EQ(b, 5.0);
 }
 
+TEST(Pmt, PmtVectorValueTests) {
+    auto x = pmt_vector_value<std::complex<float>>({{1, -1}, {2.1, 3.0}});
+    std::vector<std::complex<float>> y({{1, -1}, {2.1, 3.0}});
+    EXPECT_EQ(x == y, true );
+    auto z =  pmt_vector_value<std::complex<float>>(y);
+    auto a =  pmt_vector_value<std::complex<float>>(x);
+}
+
+TEST(Pmt, PmtVectorTests) {
+    // Init from values
+    auto x = pmt_vector<std::complex<float>>({{1, -1}, {2.1, 3.0}});
+    std::vector<std::complex<float>> y({{1, -1}, {2.1, 3.0}});
+    // Do they equal each other
+    EXPECT_EQ(x, y );
+    // Init from vector
+    auto z =  pmt_vector<std::complex<float>>(y);
+    // Copy constructor
+    auto a =  pmt_vector<std::complex<float>>(x);
+    // Assignment operator
+    a = x;
+    // TODO: Add in Move contstructor
+    // Make sure we can do a range based for loop
+    for (auto& xx : x) {
+        xx += 1;
+    }
+    // Print
+    std::cout << x << std::endl;
+}
+
 TEST(Pmt, PmtStringTests)
 {
     auto str_pmt = pmt_string::make("hello");
@@ -68,7 +97,7 @@ TEST(Pmt, PmtStringTests)
 }
 
 
-TEST(Pmt, PmtMapTests)
+/*TEST(Pmt, PmtMapTests)
 {
     std::complex<float> val1(1.2, -3.4);
     std::vector<int32_t> val2{ 44, 34563, -255729, 4402 };
@@ -85,9 +114,9 @@ TEST(Pmt, PmtMapTests)
     std::cout << vv1 << std::endl;
     EXPECT_EQ(get_pmt_scalar<std::complex<float>>(vv1), val1);
 
-    /*auto vv2 = map_pmt["key2"];
-    EXPECT_EQ(vv2, val2);*/
-}
+    auto vv2 = map_pmt["key2"];
+    EXPECT_EQ(vv2, val2);
+}*/
 
 TEST(Pmt, PmtWrap)
 {
