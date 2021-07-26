@@ -17,11 +17,8 @@
 {% endfor %}
 
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-{% if blocktype == 'sync' -%}
-#include <gnuradio/sync_block.hh>
-{% elif blocktype == 'general' -%}
-#include <gnuradio/block.hh>
-{% endif -%}
+{% import 'blocktype.j2' as bl %}
+{{ bl.set_block(blocktype) }}
 namespace gr {
 namespace {{module}} {
 
@@ -29,9 +26,8 @@ class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {
 public:
     struct block_args {
-        {% for param in parameters -%}
-        {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% endfor -%}};
+        {% import 'parameters.j2' as param %}
+        {{ param.set_parameters(parameters) }} };
     
     typedef std::shared_ptr<{{ block }}> sptr;
     {{ block }}(block_args args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}")
@@ -39,11 +35,8 @@ public:
         {% for port in ports %}
         {% if port['domain'] == 'stream' -%}
         {% if 'multiplicity' not in port%}
-        add_port(untyped_port::make(
-            "{{ port['id'] }}", 
-            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
-        {% else %}
+        {% from 'add_port.j2' import add_port as add_port %}
+        {{ add_port(port, properties) }}
         {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
         for (size_t i = 0; i < {{m}}; i++) {
         add_port(untyped_port::make(
@@ -67,27 +60,8 @@ public:
         {% endfor %}
     }
 
-    enum class available_impl { {% for impl in implementations %}{{ impl['id'] | upper }}{{ ", " if not loop.last }}{% endfor %} };
-    static sptr make(const block_args& args, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
-
-    {% for impl in implementations %}
-    /**
-     * @brief Set the implementation to {{ impl['id'] | upper }} and return a shared pointer to the block instance
-     * 
-     * @return std::shared_ptr<{{ block }}> 
-     */
-    static sptr make_{{impl['id']}}(const block_args& args);
-    {% endfor %}
-
-    {% for cb in callbacks -%}
-    virtual  {{cb['return']}} {{cb['id']}} (
-    {% if 'args' in cb -%}
-    {% for arg in cb['args'] -%}
-    {{arg['dtype']}} {{arg['id']}}{{ ", " if not loop.last }}
-    {% endfor -%}
-    {% endif -%}
-    ) {% if cb['const'] %}const {%endif%} = 0;
-    {% endfor %}     
+    {% import 'implementations_hh.j2' as impl %}
+    {{ impl.set_implementations(implementations, callbacks) }}    
 
     protected:
     {% for port in ports %}{% if port['domain'] == 'message' -%}

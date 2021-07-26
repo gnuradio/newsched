@@ -1,0 +1,67 @@
+Macros for .hh files
+
+{% macro set_block(properties) %}
+{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+{% set typekeys = properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first %}
+{%set key1 = typekeys|first %}
+{% if blocktype == 'sync' -%}
+#include <gnuradio/sync_block.hh>
+{% elif blocktype == 'general' -%}
+#include <gnuradio/block.hh>
+{% endif -%}
+{%- endmacro -%}
+
+{% macro set_parameters(parameters) -%}
+{% for param in parameters -%}
+{{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}} {% endif %};
+{% endfor -%}
+{%- endmacro -%}
+
+{% macro add_port(port, properties) %}
+add_port(untyped_port::make(
+    "{{ port['id'] }}", 
+    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
+    {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+{% else %}
+{%- endmacro -%}
+
+{% macro set_implementations(implementations, callbacks) %}
+enum class available_impl { {% for impl in implementations %}{{ impl['id'] | upper }}{{ ", " if not loop.last }}{% endfor %} };
+static sptr make(const block_args& args = {}, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
+
+{% for impl in implementations %}
+/**
+* @brief Set the implementation to {{ impl['id'] | upper }} and return a shared pointer to the block instance
+* 
+* @return std::shared_ptr<{{ block }}> 
+*/
+static sptr make_{{impl['id']}}(const block_args& args);
+{% endfor %}
+    
+{% for cb in callbacks -%}
+virtual  {{cb['return']}} {{cb['id']}} (
+{% if 'args' in cb -%}
+{% for arg in cb['args'] -%}
+{{arg['dtype']}} {{arg['id']}}{{ ", " if not loop.last }}
+{% endfor -%}
+{% endif -%}
+) {% if cb['const'] %}const {%endif%} = 0;
+{% endfor %}
+{%- endmacro -%}
+
+Macros for .cc files
+
+{% macro set_implementations(implementations) %}
+switch (impl) {
+{% for impl in implementations %}
+#ifdef HAVE_{{ impl['id'] | upper }}
+case available_impl::{{ impl['id'] | upper }}:
+    return make_{{ impl['id'] | lower }}(args);
+    break;
+#endif
+{% endfor %}
+default:
+    throw std::invalid_argument(
+        "invalid implementation specified");
+}
+{%- endmacro -%}

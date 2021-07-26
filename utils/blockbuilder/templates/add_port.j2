@@ -1,0 +1,7 @@
+{% macro add_port(port, properties) %}
+add_port(untyped_port::make(
+    "{{ port['id'] }}", 
+    {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
+    {{'args.' if properties|selectattr("id", "equalto", port['size'])}}{{ port['size'] }}));
+{% else %}
+{%- endmacro -%}

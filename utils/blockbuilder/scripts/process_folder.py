@@ -28,13 +28,16 @@ def main():
     paths = []
     paths.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','templates'))
     paths.append(os.path.dirname(os.path.realpath(args.yaml_file)))
+    print(paths)
     env = Environment(loader = FileSystemLoader(paths))
 
     
     blockname = os.path.basename(os.path.dirname(os.path.realpath(args.yaml_file)))
+
+    yaml_file = os.path.join(args.build_dir, args.yaml_file)
     
 
-    with open(args.yaml_file) as file:
+    with open(yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
         templated = 0
@@ -43,7 +46,9 @@ def main():
             templated = len(template_prop[0]['keys'])
 
 
-        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
+        #blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
+        blockname_h = os.path.join(args.build_dir, args.output_file)
+        #blockname_h = '/home/smandayam/newsched/blocklib/blocks/multiply_const2/multiply_const.hh'
         blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
         # full_outputfile = os.path.join(args.build_dir, args.output_file)
 
@@ -64,7 +69,8 @@ def main():
             shutil.copyfile(blockname_h, blockname_h_includedir)                
 
         else:
-            blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
+            #blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
+            blockname_cc = os.path.join(args.build_dir, args.output_file)
             if templated == 1:
                 template = env.get_template('blockname_templated.cc.j2')
             elif templated == 2:

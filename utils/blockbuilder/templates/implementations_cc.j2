@@ -1,0 +1,14 @@
+{% macro set_implementations(implementations) %}
+switch (impl) {
+{% for impl in implementations %}
+#ifdef HAVE_{{ impl['id'] | upper }}
+case available_impl::{{ impl['id'] | upper }}:
+    return make_{{ impl['id'] | lower }}(args);
+    break;
+#endif
+{% endfor %}
+default:
+    throw std::invalid_argument(
+        "invalid implementation specified");
+}
+{%- endmacro -%}

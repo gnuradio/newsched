@@ -18,18 +18,9 @@ namespace {{module}} {
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::sptr {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::make(const block_args& args, available_impl impl)
 {
-    switch (impl) {
-    {% for impl in implementations %}
-    #ifdef HAVE_{{ impl['id'] | upper }}
-    case available_impl::{{ impl['id'] | upper }}:
-        return make_{{ impl['id'] | lower }}(args);
-        break;
-    #endif
-    {% endfor %}
-    default:
-        throw std::invalid_argument(
-            "invalid implementation specified");
-    }
+    {% import 'implementations_cc.j2' as impl %}
+    {{ impl.set_implementations(implementations) }}
+    
 }
 
 {%set key1 = typekeys|first %}

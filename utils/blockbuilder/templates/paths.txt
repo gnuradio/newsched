@@ -1,0 +1,9 @@
+yml file
+multiply_const.yml
+
+Output file
+multiply_const.hh
+multiply_const.cc
+
+Directory
+/home/smandayam/newsched/blocklib/blocks/multiply_const2

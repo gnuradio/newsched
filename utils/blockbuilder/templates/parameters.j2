@@ -1,0 +1,5 @@
+{% macro set_parameters(parameters) -%}
+{% for param in parameters -%}
+{{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}} {% endif %};
+{% endfor -%}
+{%- endmacro -%}

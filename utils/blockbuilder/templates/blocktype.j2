@@ -1,0 +1,7 @@
+{% macro set_block(blocktype) %}
+{% if blocktype == 'sync' -%}
+#include <gnuradio/sync_block.hh>
+{% elif blocktype == 'general' -%}
+#include <gnuradio/block.hh>
+{% endif -%}
+{%- endmacro -%}
