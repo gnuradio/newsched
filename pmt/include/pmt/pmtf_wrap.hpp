@@ -96,7 +96,7 @@ T get_scalar(const pmt_wrap& x) {
 }
     
 template <class T, Data dt>
-pmt_scalar<T> _get_pmt_vector(const pmt_wrap& x) {
+pmt_vector<T> _get_pmt_vector(const pmt_wrap& x) {
     if constexpr(std::is_same_v<typename cpp_type<dt>::type, T>)
         return pmt_vector<T>(std::dynamic_pointer_cast<pmt_vector_value<T>>(x.ptr()));
     else
