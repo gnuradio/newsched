@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <pmt/pmtf.hpp>
+#include <pmt/pmtf_wrap.hpp>
 
 namespace pmtf {
 
@@ -190,6 +191,88 @@ template <> struct cpp_type<Data::VectorFloat64> { using type=double; };
 template <> struct cpp_type<Data::VectorComplex64> { using type=std::complex<float>; };
 template <> struct cpp_type<Data::VectorComplex128> { using type=std::complex<double>; };
 template <> struct cpp_type<Data::VectorBool> { using type=bool; };
+
+template <class T>
+inline Data pmt_vector_type();
+template <> inline Data pmt_vector_type<int8_t>() { return Data::VectorInt8; }
+template <> inline Data pmt_vector_type<int16_t>() { return Data::VectorInt16; }
+template <> inline Data pmt_vector_type<int32_t>() { return Data::VectorInt32; }
+template <> inline Data pmt_vector_type<int64_t>() { return Data::VectorInt64; }
+template <> inline Data pmt_vector_type<uint8_t>() { return Data::VectorUInt8; }
+template <> inline Data pmt_vector_type<uint16_t>() { return Data::VectorUInt16; }
+template <> inline Data pmt_vector_type<uint32_t>() { return Data::VectorUInt32; }
+template <> inline Data pmt_vector_type<uint64_t>() { return Data::VectorUInt64; }
+template <> inline Data pmt_vector_type<float>() { return Data::VectorFloat32; }
+template <> inline Data pmt_vector_type<double>() { return Data::VectorFloat64; }
+template <> inline Data pmt_vector_type<std::complex<float>>() { return Data::VectorComplex64; }
+template <> inline Data pmt_vector_type<std::complex<double>>() { return Data::VectorComplex128; }
+
+template <class T, Data dt>
+pmt_vector<T> _get_pmt_vector(const pmt_wrap& x) {
+    if constexpr(std::is_same_v<typename cpp_type<dt>::type, T>)
+        return pmt_vector<T>(std::dynamic_pointer_cast<pmt_vector_value<T>>(x.ptr()));
+    else
+        throw std::runtime_error("Cannot convert vector types");
+}
+
+template <class T>
+pmt_vector<T> get_pmt_vector(const pmt_wrap& x) {
+    // TODO: I can flip this around and make functions to convert T to a dt at compile time.
+    //   Then just check if vector_data_type<T> == x.ptr()->data_type()
+    // Make sure that this is the right type.
+    switch(auto dt = x.ptr()->data_type()) {
+        case Data::VectorFloat32: return _get_pmt_vector<T, Data::VectorFloat32>(x);
+        case Data::VectorFloat64: return _get_pmt_vector<T, Data::VectorFloat64>(x);
+        case Data::VectorComplex64: return _get_pmt_vector<T, Data::VectorComplex64>(x);
+        case Data::VectorComplex128: return _get_pmt_vector<T, Data::VectorComplex128>(x);
+        case Data::VectorInt8: return _get_pmt_vector<T, Data::VectorInt8>(x);
+        case Data::VectorInt16: return _get_pmt_vector<T, Data::VectorInt16>(x);
+        case Data::VectorInt32: return _get_pmt_vector<T, Data::VectorInt32>(x);
+        case Data::VectorInt64: return _get_pmt_vector<T, Data::VectorInt64>(x);
+        case Data::VectorUInt8: return _get_pmt_vector<T, Data::VectorUInt8>(x);
+        case Data::VectorUInt16: return _get_pmt_vector<T, Data::VectorUInt16>(x);
+        case Data::VectorUInt32: return _get_pmt_vector<T, Data::VectorUInt32>(x);
+        case Data::VectorUInt64: return _get_pmt_vector<T, Data::VectorUInt64>(x);
+        case Data::VectorBool: return _get_pmt_vector<T, Data::VectorBool>(x);
+        default:
+            throw std::runtime_error("Cannot convert non scalar pmt.");
+    }
+}
+
+template <class T>
+bool is_pmt_vector(const pmt_wrap& x) {
+    return x.ptr()->data_type() == pmt_vector_type<T>();
+}
+
+// I hate macros, but I'm going to use one here.
+#define Apply(func) \
+func(uint8_t) \
+func(uint16_t) \
+func(uint32_t) \
+func(uint64_t) \
+func(int8_t) \
+func(int16_t) \
+func(int32_t) \
+func(int64_t) \
+func(float) \
+func(double) \
+func(std::complex<float>)
+
+#define VectorWrap(T) template <> pmt_wrap::pmt_wrap<std::vector<T>>(const std::vector<T>& x);
+#define VectorWrapPmt(T) template <> pmt_wrap::pmt_wrap<pmt_vector<T>>(const pmt_vector<T>& x);
+#define VectorEquals(T) \
+    template <> bool operator==<std::vector<T>>(const pmt_wrap& x, const std::vector<T>& other);
+#define VectorEqualsPmt(T) \
+    template <> bool operator==<pmt_vector<T>>(const pmt_wrap& x, const pmt_vector<T>& other);
+Apply(VectorWrap)
+Apply(VectorWrapPmt)
+Apply(VectorEquals)
+Apply(VectorEqualsPmt)
+#undef VectorWrap
+#undef VectorWrapPmt
+#undef VectorEquals
+#undef VectorEqualsPmt
+#undef Apply
 
 #define IMPLEMENT_PMT_VECTOR(datatype, fbtype)                                        \
     template <>                                                                       \

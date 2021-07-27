@@ -3,7 +3,7 @@
 
 #include <pmt/pmtf.hpp>
 #include <pmt/pmtf_vector.hpp>
-#include <pmt/pmtf_wrap.hpp>
+#include <pmt/pmtf_scalar.hpp>
 
 using namespace pmtf;
 

@@ -2,6 +2,7 @@
 
 #include <pmt/pmt_generated.h>
 #include <pmt/pmtf.hpp>
+#include <pmt/pmtf_wrap.hpp>
 #include <complex>
 #include <ostream>
 #include <map>
@@ -137,6 +138,7 @@ public:
     bool operator==(const T& val) const { return *d_ptr == val;}
     bool operator==(const pmt_scalar<T>& val) const { return *d_ptr == *val.d_ptr; }
     auto data_type() { return d_ptr->data_type(); }
+    T value() const { return d_ptr->value(); }
 
 
     // Make it act like a pointer.  Probably need a better way
@@ -161,6 +163,139 @@ std::ostream& operator<<(std::ostream& os, const pmt_scalar<T>& value) {
     os << *(value.ptr());
     return os;
 }
+
+template <class T, Data dt>
+pmt_scalar<T> _get_pmt_scalar(const pmt_wrap& x) {
+    if constexpr(std::is_same_v<typename cpp_type<dt>::type, T>)
+        return pmt_scalar<T>(std::dynamic_pointer_cast<pmt_scalar_value<T>>(x.ptr()));
+    else
+        throw std::runtime_error("Cannot convert scalar types");
+}
+
+template <class T>
+pmt_scalar<T> get_pmt_scalar(const pmt_wrap& x) {
+    // Make sure that this is the right type.
+    switch(auto dt = x.ptr()->data_type()) {
+        case Data::ScalarFloat32: return _get_pmt_scalar<T, Data::ScalarFloat32>(x);
+        case Data::ScalarFloat64: return _get_pmt_scalar<T, Data::ScalarFloat64>(x);
+        case Data::ScalarComplex64: return _get_pmt_scalar<T, Data::ScalarComplex64>(x);
+        case Data::ScalarComplex128: return _get_pmt_scalar<T, Data::ScalarComplex128>(x);
+        case Data::ScalarInt8: return _get_pmt_scalar<T, Data::ScalarInt8>(x);
+        case Data::ScalarInt16: return _get_pmt_scalar<T, Data::ScalarInt16>(x);
+        case Data::ScalarInt32: return _get_pmt_scalar<T, Data::ScalarInt32>(x);
+        case Data::ScalarInt64: return _get_pmt_scalar<T, Data::ScalarInt64>(x);
+        case Data::ScalarUInt8: return _get_pmt_scalar<T, Data::ScalarUInt8>(x);
+        case Data::ScalarUInt16: return _get_pmt_scalar<T, Data::ScalarUInt16>(x);
+        case Data::ScalarUInt32: return _get_pmt_scalar<T, Data::ScalarUInt32>(x);
+        case Data::ScalarUInt64: return _get_pmt_scalar<T, Data::ScalarUInt64>(x);
+        case Data::ScalarBool: return _get_pmt_scalar<T, Data::ScalarBool>(x);
+        default:
+            throw std::runtime_error("Cannot convert non scalar pmt.");
+    }
+}
+
+template <class T>
+T get_scalar(const pmt_wrap& x) {
+    return get_pmt_scalar<T>(x).ptr()->value();
+}
+// Fix this later with SFINAE
+template <class T, Data dt>
+bool _can_be(const pmt_wrap& x) {
+    auto value = get_pmt_scalar<typename cpp_type<dt>::type>(x);
+    return std::is_convertible_v<typename cpp_type<dt>::type, T>;
+}
+
+template <class T>
+bool can_be(const pmt_wrap& x) {
+    switch(auto dt = x.ptr()->data_type()) {
+        case Data::ScalarFloat32: return _can_be<T, Data::ScalarFloat32>(x);
+        case Data::ScalarFloat64: return _can_be<T, Data::ScalarFloat64>(x);
+        case Data::ScalarComplex64: return _can_be<T, Data::ScalarComplex64>(x);
+        case Data::ScalarComplex128: return _can_be<T, Data::ScalarComplex128>(x);
+        case Data::ScalarInt8: return _can_be<T, Data::ScalarInt8>(x);
+        case Data::ScalarInt16: return _can_be<T, Data::ScalarInt16>(x);
+        case Data::ScalarInt32: return _can_be<T, Data::ScalarInt32>(x);
+        case Data::ScalarInt64: return _can_be<T, Data::ScalarInt64>(x);
+        case Data::ScalarUInt8: return _can_be<T, Data::ScalarUInt8>(x);
+        case Data::ScalarUInt16: return _can_be<T, Data::ScalarUInt16>(x);
+        case Data::ScalarUInt32: return _can_be<T, Data::ScalarUInt32>(x);
+        case Data::ScalarUInt64: return _can_be<T, Data::ScalarUInt64>(x);
+        case Data::ScalarBool: return _can_be<T, Data::ScalarBool>(x);
+        //case Data::PmtString: return _can_be<T, Data::PmtString>(x);
+        default: return false;
+    }
+    
+}
+
+template <class T, Data dt>
+T _get_as(const pmt_wrap& x) {
+    auto value = get_scalar<typename cpp_type<dt>::type>(x);
+    if constexpr(std::is_convertible_v<typename cpp_type<dt>::type, T>)
+        return T(value.ptr()->value());
+    else
+        throw std::runtime_error("Cannot convert types");
+}
+
+template <class T>
+T get_as(const pmt_wrap& x) {
+    switch(auto dt = x.ptr()->data_type()) {
+        case Data::ScalarFloat32: return _get_as<T, Data::ScalarFloat32>(x);
+        case Data::ScalarFloat64: return _get_as<T, Data::ScalarFloat64>(x);
+        case Data::ScalarComplex64: return _get_as<T, Data::ScalarComplex64>(x);
+        case Data::ScalarComplex128: return _get_as<T, Data::ScalarComplex128>(x);
+        case Data::ScalarInt8: return _get_as<T, Data::ScalarInt8>(x);
+        case Data::ScalarInt16: return _get_as<T, Data::ScalarInt16>(x);
+        case Data::ScalarInt32: return _get_as<T, Data::ScalarInt32>(x);
+        case Data::ScalarInt64: return _get_as<T, Data::ScalarInt64>(x);
+        case Data::ScalarUInt8: return _get_as<T, Data::ScalarUInt8>(x);
+        case Data::ScalarUInt16: return _get_as<T, Data::ScalarUInt16>(x);
+        case Data::ScalarUInt32: return _get_as<T, Data::ScalarUInt32>(x);
+        case Data::ScalarUInt64: return _get_as<T, Data::ScalarUInt64>(x);
+        case Data::ScalarBool: return _get_as<T, Data::ScalarBool>(x);
+    }
+}
+
+// Define constructors for pmt_wrap for the scalar types
+// In c++20, I think we could do this with a concept.
+// I'm struggling to get SFINAE working.  I'm not sure if it is possible here, so I'm using macros.  Sorry.
+// Construct a pmt_wrap from a scalar type
+#define WrapConstruct(type) \
+    template <> pmt_wrap::pmt_wrap<type>(const type& x);
+// Construct a pmt_wrap from a pmt_scalar
+#define WrapConstructPmt(type) \
+    template <> pmt_wrap::pmt_wrap<pmt_scalar<type>>(const pmt_scalar<type>& x);
+
+#define Equals(type) \
+    template <> bool operator==<type>(const pmt_wrap& x, const type& other);
+
+#define EqualsPmt(type) \
+    template <> bool operator==<pmt_scalar<type>>(const pmt_wrap& x, const pmt_scalar<type>& other);
+
+#define Apply(func) \
+func(uint8_t) \
+func(uint16_t) \
+func(uint32_t) \
+func(uint64_t) \
+func(int8_t) \
+func(int16_t) \
+func(int32_t) \
+func(int64_t) \
+func(bool) \
+func(float) \
+func(double) \
+func(std::complex<float>) \
+func(std::complex<double>)
+
+Apply(WrapConstruct)
+Apply(WrapConstructPmt)
+Apply(Equals)
+Apply(EqualsPmt)
+
+#undef WrapConstruct
+#undef WrapConstantPmt
+#undef Equals
+#undef EqualsPmt
+#undef Apply
 
 #define IMPLEMENT_PMT_SCALAR(datatype, fbtype)                      \
     template <>                                                     \
