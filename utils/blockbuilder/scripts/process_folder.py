@@ -49,7 +49,6 @@ def main():
 
         #blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
         blockname_h = os.path.join(args.build_dir, args.output_file)
-        #blockname_h = '/home/smandayam/newsched/blocklib/blocks/multiply_const2/multiply_const.hh'
         #blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
         blockname_h_includedir = os.path.join('/home/smandayam/newsched/blocklib', args.module, 'include', 'gnuradio', args.module, args.output_file)
         # full_outputfile = os.path.join(args.build_dir, args.output_file)
