@@ -9,6 +9,7 @@ def argParse():
     desc='Scrape the doxygen generated xml for docstrings to insert into python bindings'
     parser = argparse.ArgumentParser(description=desc)
     
+    parser.add_argument("--module")
     parser.add_argument("--yaml_file")
     parser.add_argument("--output_file")
     parser.add_argument("--build_dir")
@@ -49,7 +50,8 @@ def main():
         #blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
         blockname_h = os.path.join(args.build_dir, args.output_file)
         #blockname_h = '/home/smandayam/newsched/blocklib/blocks/multiply_const2/multiply_const.hh'
-        blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
+        #blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
+        blockname_h_includedir = os.path.join('/home/smandayam/newsched/blocklib', args.module, 'include', 'gnuradio', args.module, args.output_file)
         # full_outputfile = os.path.join(args.build_dir, args.output_file)
 
         if (args.output_file.endswith('.hh') ):
