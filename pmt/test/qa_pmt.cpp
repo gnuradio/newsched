@@ -97,7 +97,7 @@ TEST(Pmt, PmtStringTests)
 }
 
 
-/*TEST(Pmt, PmtMapTests)
+TEST(Pmt, PmtMapTests)
 {
     std::complex<float> val1(1.2, -3.4);
     std::vector<int32_t> val2{ 44, 34563, -255729, 4402 };
@@ -116,7 +116,7 @@ TEST(Pmt, PmtStringTests)
 
     auto vv2 = map_pmt["key2"];
     EXPECT_EQ(vv2, val2);
-}*/
+}
 
 TEST(Pmt, PmtWrap)
 {
@@ -214,7 +214,7 @@ TEST(Pmt, VectorWrapper) {
 
     pmt_vector<uint32_t> vec4(vec3);
     EXPECT_EQ(vec3.ptr(), vec4.ptr());
-}
+}*/
 
 TEST(Pmt, MapWrapper) {
     pmt_map<std::string> x;
@@ -225,7 +225,7 @@ TEST(Pmt, MapWrapper) {
     }
 }
 
-TEST(Pmt, PmtWrap) {
+/*TEST(Pmt, PmtWrap) {
     pmt_wrap x(4);
     pmt_wrap y(std::vector({1,2,3,4}));
 }*/

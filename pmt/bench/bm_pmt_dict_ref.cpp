@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
             starting_map[key] = value;
         }
 
-        auto d = pmt_map(starting_map);
+        auto d = pmt_map<std::string>(starting_map);
 
         auto t1 = std::chrono::steady_clock::now();
 

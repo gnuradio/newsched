@@ -65,6 +65,11 @@ class pmt_wrap {
         d_ptr = value.ptr();  
     };*/
     pmt_wrap(pmt_base::sptr x): d_ptr(x) {}
+
+    bool operator==(const pmt_wrap& other) const {
+        return *d_ptr == *other.ptr();
+    }
+    bool operator!=(const pmt_wrap& other) const { return !(*this == other); }
     //template <class T>
     //pmt_wrap(const std::map<std::string, T>& x);
     operator typename pmt_base::sptr() const { return d_ptr; }

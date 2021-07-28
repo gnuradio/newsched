@@ -26,7 +26,7 @@ bool run_test(const int times, uint64_t nitems)
 
             starting_map[key] = value;
         }
-        auto d_in = pmt_map(starting_map);
+        auto d_in = pmt_map<std::string>(starting_map);
         #else
         auto d_in = pmt_map<std::string>::make(starting_map);
         for (int k = 0; k < nitems; k++) {
