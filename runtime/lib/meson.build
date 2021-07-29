@@ -3,12 +3,13 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
     'cudabuffer.cu',
-    'cudabuffer_pinned.cu'
+    'cudabuffer_pinned.cu',
+    'cudabuffer_sm.cu'
   ]
 
   newsched_runtime_cu_lib = library('newsched-runtime-cu',
@@ -19,31 +20,34 @@ if cuda_dep.found() and get_option('enable_cuda')
       include_directories : incdir)
 
   newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,
-              link_with : newsched_runtime_cu_lib)
+              link_with : newsched_runtime_cu_lib,
+              dependencies : [cuda_dep])
 
   runtime_deps += [newsched_runtime_cu_dep]
 endif
 
 runtime_sources = [
-  'buffer.cpp',
-  'buffer_management.cpp',
-  'simplebuffer.cpp',
-  'realtime.cpp',
-  'thread.cpp',
-  'parameter_types.cpp',
-  'edge.cpp',
-  'graph.cpp',
-  'graph_utils.cpp',
-  'flat_graph.cpp',
-  'flowgraph_monitor.cpp',
-  'flowgraph.cpp',
-  'logging.cpp',
-  'pagesize.cpp',
-  'sys_paths.cpp',
-  'vmcircbuf.cpp',
-  'vmcircbuf_sysv_shm.cpp',
+  'buffer.cc',
+  'buffer_sm.cc',
+  'buffer_management.cc',
+  'simplebuffer.cc',
+  'buffer_sm.cc',
+  'realtime.cc',
+  'thread.cc',
+  'parameter_types.cc',
+  'edge.cc',
+  'graph.cc',
+  'graph_utils.cc',
+  'flat_graph.cc',
+  'flowgraph_monitor.cc',
+  'flowgraph.cc',
+  'logging.cc',
+  'pagesize.cc',
+  'sys_paths.cc',
+  'vmcircbuf.cc',
+  'vmcircbuf_sysv_shm.cc',
   # mmap requires librt - FIXME - handle this a conditional dependency
-  'vmcircbuf_mmap_shm_open.cpp'
+  'vmcircbuf_mmap_shm_open.cc'
 ]
 
 cpp_args = []

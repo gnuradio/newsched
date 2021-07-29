@@ -1,0 +1,42 @@
+{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+#include <pybind11/complex.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+namespace py = pybind11;
+
+#include <gnuradio/{{module}}/{{block}}.hh>
+// pydoc.h is automatically generated in the build directory
+// #include <{{block}}_pydoc.h>
+
+void bind_{{block}}(py::module& m)
+{
+    using {{block}} = ::gr::{{module}}::{{block}};
+
+    py::class_<{{block}},
+    {% if blocktype == 'sync' -%}
+    gr::sync_block, gr::block, gr::node, 
+    {% else -%}
+    gr::block, gr::node,
+    {% endif -%}
+    {# {% for b in properties|selectattr("id", "equalto", "base_class") %} {{ b['value'] }}, {% endfor -%} #}
+    std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}");
+
+    py::enum_<::gr::{{module}}::{{block}}::available_impl>({{block}}_class, "available_impl")
+    {% for impl in implementations -%}
+        .value("{{ impl['id'] | lower }}", ::gr::{{module}}::{{block}}::available_impl::{{ impl['id'] | upper }}) 
+    {% endfor -%}
+        .export_values();
+
+    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }},{%endfor%}{%endif%} gr::{{module}}::{{block}}::available_impl impl) {
+                       return {{block}}::make({ {% if parameters %}{% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}{%endif%} }, impl);
+                   }),
+        {% if parameters %} {% for param in parameters -%}
+        py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
+        {% endfor -%}{% endif %}
+                   py::arg("impl") = gr::{{module}}::{{block}}::available_impl::{{ implementations[0]['id'] | upper }})
+        {% for cb in callbacks -%}
+        .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
+        {% endfor %} 
+                   ;
+}

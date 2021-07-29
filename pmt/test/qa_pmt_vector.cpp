@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <complex>
 
-#include <pmt/pmtf.hpp>
-#include <pmt/pmtf_vector.hpp>
-#include <pmt/pmtf_scalar.hpp>
+#include <pmt/pmtf.hh>
+#include <pmt/pmtf_vector.hh>
+#include <pmt/pmtf_scalar.hh>
 
 using namespace pmtf;
 

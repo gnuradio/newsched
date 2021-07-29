@@ -1,0 +1,36 @@
+module: blocks
+block: nop_head
+label: Nop Head
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+-   id: nitems
+    label: Num. Items
+    dtype: size_t
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: itemsize
+
+-   domain: stream
+    id: out
+    direction: output
+    type: untyped
+    size: itemsize
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

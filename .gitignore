@@ -137,3 +137,5 @@ builddir
 callgrind.out.*
 perf.data
 trace.dat
+core
+**/__pycache__/

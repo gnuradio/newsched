@@ -1,0 +1,50 @@
+module: blocks
+block: multiply_const
+label: Multiply Constant
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        - value: int16_t
+          suffix: ss   
+        - value: int32_t 
+          suffix: ii 
+        - value: float
+          suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+parameters:
+-   id: k
+    label: Constant
+    dtype: T
+    settable: true
+-   id: vlen
+    label: Vec. Length
+    dtype: size_t
+    settable: false
+    default: 1
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{args.vlen}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{args.vlen}'
+
+implementations:
+-   id: cpu
+-   id: cuda
+
+file_format: 1

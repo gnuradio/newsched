@@ -1,0 +1,38 @@
+module: streamops
+block: interleaved_short_to_complex
+label: Interleaved Short to Complex
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: swap
+    label: Swap I and Q
+    dtype: bool
+    settable: false
+    default: 'false'
+-   id: scale_factor
+    label: Scale Factor
+    dtype: float
+    settable: true
+    default: 1.0
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: int16_t
+    dims: '{2}'
+
+-   domain: stream
+    id: out
+    direction: output
+    type: gr_complex
+    dims: '{1}'
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
