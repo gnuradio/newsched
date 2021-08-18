@@ -41,10 +41,5 @@ if path.endswith(path_ending):
     __path__.append(os.path.join(build_path, 'blocklib', 'streamops', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'analog', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'fft', 'python'))
-<<<<<<< HEAD
     __path__.append(os.path.join(build_path, 'blocklib', 'filter', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'dtv', 'python'))
-=======
-    ###BLOCKLIB###
->>>>>>> create_block and create_mod
-
