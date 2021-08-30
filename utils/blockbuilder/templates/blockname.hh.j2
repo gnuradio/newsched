@@ -70,7 +70,7 @@ public:
         {% if port['direction'] == 'input' %}
         _msg_{{port['id']}} = message_port::make(
             "{{port['id']}}", port_direction_t::INPUT);
-        _msg_{{port['id']}}->register_callback([this](pmtf::pmt_sptr msg) { this->handle_msg_{{port['id']}}(msg); });
+        _msg_{{port['id']}}->register_callback([this](pmt::pmt_t msg) { this->handle_msg_{{port['id']}}(msg); });
         add_port(_msg_{{port['id']}});
         {% else %}
         _msg_{{port['id']}} = message_port::make(
@@ -108,7 +108,7 @@ public:
         message_port_sptr _msg_{{port['id']}};
     {% endif %}{% endfor %}
     {% for port in ports %}{% if port['domain'] == 'message' and port['direction'] == 'input' -%}
-    virtual void handle_msg_{{port['id']}}(pmtf::pmt_sptr msg) = 0;
+    virtual void handle_msg_{{port['id']}}(pmt::pmt_t msg) = 0;
     {% endif %}{% endfor%}
 };
 

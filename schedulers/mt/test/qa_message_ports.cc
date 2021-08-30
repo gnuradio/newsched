@@ -9,6 +9,8 @@
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 
 #include <pmt/pmtf_string.hh>
+#include <thread>
+#include <chrono>
 
 using namespace gr;
 
@@ -32,10 +34,33 @@ TEST(SchedulerMTMessagePassing, Forward)
     auto src_port = blk1->get_message_port("out");
     for (int i=0; i<10; i++)
     {
-        src_port->post(pmtf::pmt_string::make("message"));
+        src_port->post(pmt::intern("message"));
     }
 
     fg->start();
-    fg->wait();
+
+    auto start = std::chrono::steady_clock::now();
+  
+
+    size_t cnt = 0;
+    int num_iters = 0;
+    while(true)
+    {
+        cnt = blk3->message_count();
+        auto end = std::chrono::steady_clock::now();
+        if (cnt >= 10)
+        {
+            break;
+        }
+        std::this_thread::sleep_for (std::chrono::seconds(1));
+        num_iters++;
+        if (num_iters >= 5)
+        {
+            break;
+        }
+    }
+
+    EXPECT_EQ(cnt, 10);
+    fg->stop();
 
 }
