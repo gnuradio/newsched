@@ -1,4 +1,4 @@
-analog_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
+analog_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep]
 
 analog_sources += 'kernel/agc.cc'
 block_cpp_args = ['-DHAVE_CPU']

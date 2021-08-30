@@ -23,6 +23,10 @@ ports:
     direction: output
     optional: true
 
+callbacks:
+-   id: message_count
+    return: size_t
+
 implementations:
 -   id: cpu
 # -   id: cuda

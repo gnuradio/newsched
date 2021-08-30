@@ -6,8 +6,7 @@
 #include <stdexcept>
 #include <fcntl.h>
 
-#include <pmt/pmtf_scalar.hh>
-#include <pmt/pmtf_string.hh>
+#include <pmt/pmt.h>
 
 #ifdef _MSC_VER
 #define GR_FSEEK _fseeki64
@@ -47,7 +46,7 @@ file_source_cpu::file_source_cpu(const file_source::block_args& args) : file_sou
 
     std::stringstream str;
     str << name() << id();
-    _id = pmtf::pmt_string::make(str.str());
+    _id = pmt::intern(str.str());
 }
 
 
@@ -229,7 +228,7 @@ void file_source_cpu::do_update()
     }
 }
 
-void file_source_cpu::set_begin_tag(pmtf::pmt_sptr val) { d_add_begin_tag = val; }
+void file_source_cpu::set_begin_tag(pmt::pmt_t val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
@@ -257,7 +256,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
             work_output[0].buffer->add_tag(work_output[0].buffer->total_written() +
                                                noutput_items - size,
                                            d_add_begin_tag,
-                                           pmtf::pmt_scalar<unsigned long>::make(d_repeat_cnt),
+                                           pmt::from_long(d_repeat_cnt),
                                            _id);
 
             d_file_begin = false;
