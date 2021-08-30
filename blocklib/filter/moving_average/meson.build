@@ -1,9 +1,9 @@
 filter_moving_average_files = files(['moving_average_cpu.cc'])
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     filter_moving_average_files += files('moving_average_cuda.cc')
+if cuda_dep.found() and get_option('enable_cuda')
+    filter_moving_average_files += files('moving_average_cuda.cc')
 #     filter_cu_sources += files('moving_average_cuda.cu')
-# endif
+endif
 
 gen_moving_average_h = custom_target('gen_moving_average_h',
                         input : ['moving_average.yml'],
