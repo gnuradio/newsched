@@ -18,10 +18,11 @@ protected:
     size_t d_fft_size;
     std::vector<float> d_window;
     bool d_shift;
+    cudaStream_t d_stream;
 
     cufft<gr_complex, forward> d_fft;
 
-    void fft_and_shift(const T* in, gr_complex* out);
+    void fft_and_shift(const T* in, gr_complex* out, int batch);
 };
 
 } // namespace fft
