@@ -30,16 +30,16 @@ template <>
 multiply_cpu<float>::multiply_cpu(const typename multiply<float>::block_args& args)
     : multiply<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
-    const int alignment_multiple = volk_get_alignment() / sizeof(float);
-    set_output_multiple(std::max(1, alignment_multiple));
+    // const int alignment_multiple = volk_get_alignment() / sizeof(float);
+    // set_output_multiple(std::max(1, alignment_multiple));
 }
 
 template <>
 multiply_cpu<gr_complex>::multiply_cpu(const typename multiply<gr_complex>::block_args& args)
     : multiply<gr_complex>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
-    const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
-    set_output_multiple(std::max(1, alignment_multiple));
+    // const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
+    // set_output_multiple(std::max(1, alignment_multiple));
 }
 
 template <>
