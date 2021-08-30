@@ -12,6 +12,7 @@ libdl_dep = cc.find_library('dl')
 
 c_available = add_languages('c', required : true)
 cuda_available = add_languages('cuda', required : false)
+USE_CUDA = cuda_available and get_option('enable_cuda')
 
 boost_dep = dependency('boost', modules : ['program_options','thread'], version : '>=1.65')
 volk_dep = dependency('volk', version : '>=2.2')
@@ -26,7 +27,11 @@ py3_inst = import('python').find_installation('python3')
 pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
 threads_dep = dependency('threads')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
-cuda_dep = dependency('cuda', version : '>=10.1', required : cuda_available and get_option('enable_cuda'), modules : ['cufft'])
+cuda_dep = dependency('cuda', version : '>=10.1', required : USE_CUDA, modules : ['cufft'])
+
+if USE_CUDA
+cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
+endif
 
 flatc = find_program('flatc', version : '>=1.12')
 

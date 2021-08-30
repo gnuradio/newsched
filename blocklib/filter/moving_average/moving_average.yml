@@ -10,10 +10,10 @@ properties:
     - id: T
       type: class
       options: 
-        - value: int32_t
-          suffix: ii
-        - value: int16_t
-          suffix: ss 
+        # - value: int32_t
+        #   suffix: ii
+        # - value: int16_t
+        #   suffix: ss 
         - value: float 
           suffix: ff   
         - value: gr_complex 
@@ -53,6 +53,6 @@ ports:
 
 implementations:
 -   id: cpu
-# -   id: cuda
+-   id: cuda
 
 file_format: 1
