@@ -5,13 +5,21 @@ namespace gr {
 namespace fft {
 
 template <typename T, bool forward>
-cufft<T, forward>::cufft(size_t fft_size, size_t batch_size) : d_fft_size(fft_size), d_batch_size(batch_size)
+cufft<T, forward>::cufft(size_t fft_size, size_t batch_size, cudaStream_t stream) : d_fft_size(fft_size), d_batch_size(batch_size), d_stream(stream)
 {
     d_logger = gr::logging::get_logger("cufft", "default");
     d_debug_logger = gr::logging::get_logger("cufft(dbg)", "debug");
     if (cufftPlan1d(&plan, d_fft_size, CUFFT_C2C, d_batch_size) != CUFFT_SUCCESS) {
         GR_LOG_ERROR(d_logger, "CUFFT error: Plan creation failed");
         return;
+    }
+    if (d_stream)
+    {
+        if ( cufftSetStream(plan, d_stream) != CUFFT_SUCCESS)
+        {
+        GR_LOG_ERROR(d_logger, "CUFFT error: Stream Association failed");
+        return;
+        }
     }
 }
 
