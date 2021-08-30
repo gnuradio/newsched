@@ -61,9 +61,10 @@ private:
     // void initialize_plan(int fft_size);
     size_t d_fft_size;
     size_t d_batch_size;
+    cudaStream_t d_stream;
 
 public:
-    cufft(size_t fft_size, size_t batch_size);
+    cufft(size_t fft_size, size_t batch_size, cudaStream_t stream = nullptr);
     
     cufft(const cufft&) = delete;
     cufft& operator=(const cufft&) = delete;

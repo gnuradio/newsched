@@ -1,5 +1,13 @@
 #include "fft_cuda.hh"
 
+
+extern void exec_fft_shift(const cuFloatComplex* in,
+                    cuFloatComplex* out,
+                    int n,
+                    int grid_size,
+                    int block_size,
+                    cudaStream_t stream);
+
 namespace gr {
 namespace fft {
 
@@ -14,7 +22,7 @@ fft_cuda<T, forward>::fft_cuda(const typename fft<T, forward>::block_args& args)
     : fft<T, forward>(args),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
-      d_fft(args.fft_size, 1)
+      d_fft(args.fft_size, 64)
 {
     if (args.window.empty() || args.window.size() == d_fft_size) {
         d_window = args.window;
@@ -22,29 +30,41 @@ fft_cuda<T, forward>::fft_cuda(const typename fft<T, forward>::block_args& args)
         throw std::runtime_error("fft: window not the same length as fft_size");
     }
 
+    
+    cudaStreamCreate(&d_stream);
+    // this->set_output_multiple(64);
+
 }
 
 
 template <>
-void fft_cuda<gr_complex, true>::fft_and_shift(const gr_complex* in, gr_complex* out)
+void fft_cuda<gr_complex, true>::fft_and_shift(const gr_complex* in, gr_complex* out, int batch)
 {
+    int blockSize = 1024;
+    int gridSize = (batch*d_fft_size + blockSize - 1) / blockSize;
+    if (d_shift)
+        exec_fft_shift((cuFloatComplex *)in, (cuFloatComplex *)in, batch*d_fft_size, gridSize, blockSize, d_stream);
     d_fft.execute(in, out);
 }
 
 template <>
-void fft_cuda<gr_complex, false>::fft_and_shift(const gr_complex* in, gr_complex* out)
+void fft_cuda<gr_complex, false>::fft_and_shift(const gr_complex* in, gr_complex* out, int batch)
 {
+    int blockSize = 1024;
+    int gridSize = (batch*d_fft_size + blockSize - 1) / blockSize;
+    if (d_shift)
+        exec_fft_shift((cuFloatComplex *)in, (cuFloatComplex *)in, batch*d_fft_size, gridSize, blockSize, d_stream);
     d_fft.execute(in, out);
 }
 
 template <>
-void fft_cuda<float, true>::fft_and_shift(const float* in, gr_complex* out)
+void fft_cuda<float, true>::fft_and_shift(const float* in, gr_complex* out, int batch)
 {
     
 }
 
 template <>
-void fft_cuda<float, false>::fft_and_shift(const float* in, gr_complex* out)
+void fft_cuda<float, false>::fft_and_shift(const float* in, gr_complex* out, int batch)
 {
 
 }
@@ -65,15 +85,24 @@ work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input>& wor
 
     int count = 0;
 
-    while (count++ < noutput_items) {
+    while (count < noutput_items) {
 
-        fft_and_shift(in, out);
+        fft_and_shift(in, out, 64);
+        // cudaDeviceSynchronize();
 
-        in += d_fft_size;
-        out += d_fft_size;
+        // T host_in[d_fft_size];
+        // T host_out[d_fft_size];
+
+        // cudaMemcpy(host_in, in, d_fft_size*sizeof(T), cudaMemcpyDeviceToHost);
+        // cudaMemcpy(host_out, out, d_fft_size*sizeof(T), cudaMemcpyDeviceToHost);
+
+
+        in += d_fft_size * 64;
+        out += d_fft_size * 64;
+        count += 64;
     }
 
-
+    cudaStreamSynchronize(d_stream);
     work_output[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }

@@ -2,7 +2,9 @@
 #  Python Bindings ###
 ######################
 
-# Generate _python.cc for each block
+# Manually created noblock sources
+fft_pybind_sources = ['bindings/window_pybind.cc'] + fft_pybind_sources
+fft_pybind_names = ['window'] + fft_pybind_names
 
 srcs = ['__init__.py']
 
@@ -43,9 +45,6 @@ newsched_blocklib_fft_pybind_dep = declare_dependency(include_directories : incd
 					   link_with : newsched_blocklib_fft_pybind,
                        dependencies : fft_deps)
 
-# Generate python_bindings.cc
-
-# Compile target for python_bindings.cc
 
 # Target for pure python
-py3_inst.install_sources(files('__init__.py'), subdir : join_paths('newsched','fft'))
+py3_inst.install_sources(srcs, subdir : join_paths('newsched','fft'))
