@@ -1,0 +1,51 @@
+module: filter
+block: pfb_channelizer
+label: Multiply Constant
+
+properties:
+-   id: blocktype
+    value: sync
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        # - value: float
+        #   suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+parameters:
+-   id: numchans
+    label: Number of Channels
+    dtype: size_t
+    settable: false
+-   id: taps
+    label: Filter Taps
+    dtype: std::vector<float>
+    settable: false
+-   id: oversample_rate
+    label: Oversample Rate
+    dtype: float
+    settable: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: T
+    dims: '{1}'
+    multiplicity: numchans
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{1}'
+    multiplicity: numchans
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
