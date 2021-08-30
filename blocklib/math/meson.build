@@ -11,6 +11,7 @@ subdir('complex_to_mag')
 subdir('complex_to_mag_squared')
 subdir('multiply')
 subdir('divide')
+subdir('add')
 
 
 subdir('lib')

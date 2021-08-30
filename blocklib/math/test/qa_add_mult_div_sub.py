@@ -60,35 +60,35 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 
-    # # add_XX
+    # add_XX
 
-    # def test_add_ss(self):
-    #     src1_data = [1, 2, 3, 4, 5]
-    #     src2_data = [8, -3, 4, 8, 2]
-    #     expected_result = [9, -1, 7, 12, 7]
-    #     op = blocks.add_ss()
-    #     self.help_ss((src1_data, src2_data), expected_result, op)
+    def test_add_ss(self):
+        src1_data = [1, 2, 3, 4, 5]
+        src2_data = [8, -3, 4, 8, 2]
+        expected_result = [9, -1, 7, 12, 7]
+        op = math.add_ss(2)
+        self.help_ss((src1_data, src2_data), expected_result, op)
 
-    # def test_add_ii(self):
-    #     src1_data = [1, 2, 3, 4, 5]
-    #     src2_data = [8, -3, 4, 8, 2]
-    #     expected_result = [9, -1, 7, 12, 7]
-    #     op = blocks.add_ii()
-    #     self.help_ii((src1_data, src2_data), expected_result, op)
+    def test_add_ii(self):
+        src1_data = [1, 2, 3, 4, 5]
+        src2_data = [8, -3, 4, 8, 2]
+        expected_result = [9, -1, 7, 12, 7]
+        op = math.add_ii(2)
+        self.help_ii((src1_data, src2_data), expected_result, op)
 
-    # def test_add_ff(self):
-    #     src1_data = [1.0, 2.0, 3.0, 4.0, 5.0]
-    #     src2_data = [8.0, -3.0, 4.0, 8.0, 2.0]
-    #     expected_result = [9.0, -1.0, 7.0, 12.0, 7.0]
-    #     op = blocks.add_ff()
-    #     self.help_ff((src1_data, src2_data), expected_result, op)
+    def test_add_ff(self):
+        src1_data = [1.0, 2.0, 3.0, 4.0, 5.0]
+        src2_data = [8.0, -3.0, 4.0, 8.0, 2.0]
+        expected_result = [9.0, -1.0, 7.0, 12.0, 7.0]
+        op = math.add_ff(2)
+        self.help_ff((src1_data, src2_data), expected_result, op)
 
-    # def test_add_cc(self):
-    #     src1_data = [1 + 1j, 2 + 2j, 3 + 3j, 4 + 4j, 5 + 5j]
-    #     src2_data = [8 + 8j, -3 - 3j, 4 + 4j, 8 + 8j, 2 + 2j]
-    #     expected_result = [9 + 9j, -1 - 1j, 7 + 7j, 12 + 12j, 7 + 7j]
-    #     op = blocks.add_cc()
-    #     self.help_cc((src1_data, src2_data), expected_result, op)
+    def test_add_cc(self):
+        src1_data = [1 + 1j, 2 + 2j, 3 + 3j, 4 + 4j, 5 + 5j]
+        src2_data = [8 + 8j, -3 - 3j, 4 + 4j, 8 + 8j, 2 + 2j]
+        expected_result = [9 + 9j, -1 - 1j, 7 + 7j, 12 + 12j, 7 + 7j]
+        op = math.add_cc(2)
+        self.help_cc((src1_data, src2_data), expected_result, op)
 
     # # add_const_XX
 

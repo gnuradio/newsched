@@ -30,8 +30,8 @@ template <>
 divide_cpu<float>::divide_cpu(const typename divide<float>::block_args& args)
     : divide<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
-    const int alignment_multiple = volk_get_alignment() / sizeof(float);
-    set_output_multiple(std::max(1, alignment_multiple));
+    // const int alignment_multiple = volk_get_alignment() / sizeof(float);
+    // set_output_multiple(std::max(1, alignment_multiple));
 }
 
 template <>

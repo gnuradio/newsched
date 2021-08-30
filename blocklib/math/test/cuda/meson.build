@@ -1,0 +1,1 @@
+test('qa_add_mult_div_sub (cuda)', find_program('qa_add_mult_div_sub.py'), env: env)
