@@ -103,10 +103,6 @@ work_return_code_t atsc_fs_checker_cpu::work(std::vector<block_work_input>& work
                 d_field_num = 0;
                 d_segment_num = 0;
             } else {
-                // work_output[0].add_tag(
-                //     work_output[0].nitems_written() + output_produced,
-                //     tag_pmt,
-                //     pmtf::pmt_scalar<uint32_t>::make(pli_out.get_tag_value()));
                 plout[output_produced++] = pli_out;                
             }
         }

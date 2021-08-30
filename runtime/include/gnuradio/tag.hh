@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pmt/pmtf.hh>
+#include <pmt/pmt.h>
 #include <string>
 
 namespace gr {
@@ -19,17 +19,29 @@ enum class tag_propagation_policy_t {
 class tag_t
 {
 public:
-    uint64_t offset;
-    pmtf::pmt_sptr key;
-    pmtf::pmt_sptr value;
-    pmtf::pmt_sptr srcid;
+    uint64_t offset = 0;
+    pmt::pmt_t key = nullptr;
+    pmt::pmt_t value = nullptr;
+    pmt::pmt_t srcid = nullptr;
+    bool modified = false;
+    tag_t() {}
     tag_t(uint64_t offset,
-          pmtf::pmt_sptr key,
-          pmtf::pmt_sptr value,
-          pmtf::pmt_sptr srcid = nullptr)
+          pmt::pmt_t key,
+          pmt::pmt_t value,
+          pmt::pmt_t srcid = nullptr)
         : offset(offset), key(key), value(value), srcid(srcid)
     {
     }
+
+    /*!
+     * Comparison function to test which tag, \p x or \p y, came
+     * first in time
+     */
+    static inline bool offset_compare(const tag_t& x, const tag_t& y)
+    {
+        return x.offset < y.offset;
+    }
+
     bool operator==(const tag_t& rhs) const
     {
         return (rhs.key == key && rhs.value == value && rhs.srcid == srcid);
