@@ -1,4 +1,5 @@
 runtime_headers = [
+    'attributes.h',
     'block.hh',
     'block_work_io.hh',
     'buffer.hh',
@@ -11,11 +12,13 @@ runtime_headers = [
     'flat_graph.hh',
     'flowgraph.hh',
     'flowgraph_monitor.hh',
+    'gpdict.hh',
     'graph.hh',
     'graph_utils.hh',
     'logging.hh',
     'neighbor_interface.hh',
     'node.hh',
+    'nodeid_generator.hh',
     'parameter_types.hh',
     'port.hh',
     'prefs.hh',
@@ -25,7 +28,9 @@ runtime_headers = [
     'sync_block.hh',
     'tag.hh',
     'types.hh',
-    'vmcircbuf.hh'
+    'vmcircbuf.hh',
+    'helper_cuda.h',
+    'helper_string.h'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')

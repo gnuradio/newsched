@@ -1,9 +1,10 @@
 files = [
-    'pmtf.hh',
-    'pmtf_scalar.hh',
-    'pmtf_vector.hh',
-    'pmtf_string.hh',
-    'pmtf_map.hh'
+    'api.h',
+    'attributes.h',
+    'pmt.h',
+    'pmt_pool.h',
+    'pmt_serial_tags.h',
+    'pmt_sugar.h'
 ]
 install_headers(files, subdir : 'pmt')
 
