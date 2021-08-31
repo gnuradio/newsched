@@ -48,7 +48,7 @@ public:
 
     virtual bool write_info(buffer_info_t& info) override;
     virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props) override;
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
 
     bool adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t memmove_func);
 };
@@ -64,13 +64,14 @@ protected:
 
 public:
     buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
+                     size_t itemsize,
                      std::shared_ptr<buffer_properties> buf_props = nullptr,
                      size_t read_index = 0);
 
     virtual void post_read(int num_items) override;
 
     virtual bool input_blocked_callback(size_t items_required);
-    virtual size_t items_available() override;
+    virtual size_t bytes_available() override;
 };
 
 

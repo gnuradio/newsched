@@ -230,11 +230,13 @@ public:
 
     /**
      * @brief Create a reader object and reference to this buffer
-     *
+     * 
+     * @param buf_props 
+     * @param itemsize itemsize in bytes on the destination side
      * @return std::shared_ptr<buffer_reader>
      */
     virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props) = 0;
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) = 0;
     // void drop_reader(std::shared_ptr<buffer_reader>);
 
     virtual bool output_blocked_callback(bool force = false)
@@ -253,6 +255,7 @@ protected:
     buffer_sptr _buffer; // the buffer that owns this reader
     std::shared_ptr<buffer_properties> _buf_properties;
     uint64_t _total_read = 0;
+    size_t _itemsize;
     size_t _read_index = 0;
     std::mutex _rdr_mutex;
 
@@ -260,8 +263,9 @@ protected:
 public:
     buffer_reader(buffer_sptr buffer,
                   std::shared_ptr<buffer_properties> buf_props,
+                  size_t itemsize,
                   size_t read_index = 0)
-        : _buffer(buffer), _buf_properties(buf_props), _read_index(read_index)
+        : _buffer(buffer), _buf_properties(buf_props), _itemsize(itemsize), _read_index(read_index)
     {
     }
     virtual ~buffer_reader() {}
@@ -273,7 +277,8 @@ public:
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
     size_t max_buffer_read() { return _buf_properties ? _buf_properties->max_buffer_read() : 0; }
     size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
-
+    size_t item_size() { return _itemsize; }
+    size_t buffer_item_size() { return _buffer->item_size(); }
 
     std::mutex* mutex() { return &_rdr_mutex; }
 

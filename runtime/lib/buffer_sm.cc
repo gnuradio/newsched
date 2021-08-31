@@ -5,10 +5,11 @@
 namespace gr {
 
 std::shared_ptr<buffer_reader>
-buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props)
+buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
     std::shared_ptr<buffer_sm_reader> r(
         new buffer_sm_reader(std::dynamic_pointer_cast<buffer_sm>(shared_from_this()),
+                             itemsize,
                              buf_props,
                              _write_index));
     _readers.push_back(r.get());
@@ -29,10 +30,9 @@ buffer_sm::buffer_sm(size_t num_items,
     // _debug_logger = logging::get_logger(_type + "_dbg", "debug");
 }
 
-buffer_sptr
-buffer_sm::make(size_t num_items,
-                size_t item_size,
-                std::shared_ptr<buffer_properties> buffer_properties)
+buffer_sptr buffer_sm::make(size_t num_items,
+                            size_t item_size,
+                            std::shared_ptr<buffer_properties> buffer_properties)
 {
     return buffer_sptr(new buffer_sm(num_items, item_size, buffer_properties));
 }
@@ -58,8 +58,7 @@ void buffer_sm::post_write(int num_items)
     _total_written += num_items;
 }
 
-bool buffer_sm::output_blocked_callback_logic(bool force,
-                                              memmove_func_t memmove_func)
+bool buffer_sm::output_blocked_callback_logic(bool force, memmove_func_t memmove_func)
 {
     auto space_avail = space_available();
 
@@ -234,9 +233,10 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
 
 
 buffer_sm_reader::buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
+                                    size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props,
                                    size_t read_index)
-    : buffer_reader(buffer, buf_props, read_index), _buffer_sm(buffer)
+    : buffer_reader(buffer, buf_props, itemsize, read_index), _buffer_sm(buffer)
 {
     // _logger = logging::get_logger("buffer_sm_reader", "default");
     // _debug_logger = logging::get_logger("buffer_sm_reader_dbg", "debug");
@@ -247,10 +247,10 @@ void buffer_sm_reader::post_read(int num_items)
     std::scoped_lock guard(_rdr_mutex);
 
     // GR_LOG_DEBUG(
-        // _debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
+    // _debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
 
     // advance the read pointer
-    _read_index += num_items * _buffer->item_size();
+    _read_index += num_items * _itemsize; //_buffer->item_size();
     _total_read += num_items;
     if (_read_index == _buffer->buf_size()) {
         _read_index = 0;
@@ -299,7 +299,7 @@ bool buffer_sm_reader::input_blocked_callback(size_t items_required)
     return false;
 }
 
-size_t buffer_sm_reader::items_available()
+size_t buffer_sm_reader::bytes_available()
 {
     // Can only read up to to the write_index, or the end of the buffer
     // there is no wraparound
@@ -310,11 +310,11 @@ size_t buffer_sm_reader::items_available()
     size_t r = _read_index;
 
     if (w < r) {
-        ret = (_buffer->buf_size() - r) / _buffer->item_size();
+        ret = (_buffer->buf_size() - r);
     } else if (w == r && total_read() < _buffer->total_written()) {
-        ret = (_buffer->buf_size() - r) / _buffer->item_size();
+        ret = (_buffer->buf_size() - r); 
     } else {
-        ret = (w - r) / _buffer->item_size();
+        ret = (w - r);
     }
 
     // return ret;
@@ -328,7 +328,7 @@ size_t buffer_sm_reader::items_available()
     //              total_read(),
     //              _buffer->total_written());
 
-    if (_buffer->total_written() - total_read() < ret) {
+    if (_buffer->total_written() - total_read() < ret * _itemsize) {
         // GR_LOG_DEBUG(_debug_logger,
         //              "check_math {} {} {} {}",
         //              _buffer->total_written() - total_read(),
@@ -337,7 +337,7 @@ size_t buffer_sm_reader::items_available()
         //              _buffer->total_written());
     }
 
-    return ret;
+    return ret; // in bytes
 }
 
 
