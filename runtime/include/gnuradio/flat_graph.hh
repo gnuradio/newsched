@@ -68,6 +68,11 @@ public:
             }
         }
 
+        for (auto n : _orphan_nodes) {
+            tmp.push_back(std::static_pointer_cast<block>(n));
+        }
+
+
         return unique_vector<block_sptr>(tmp);
     }
 

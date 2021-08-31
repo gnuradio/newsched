@@ -122,6 +122,23 @@ public:
         return std::dynamic_pointer_cast<message_port>(p);
     }
 
+    message_port_sptr get_first_message_port(port_direction_t direction)
+    {
+        auto pred = [direction](port_sptr p) {
+            return (p->type() == port_type_t::MESSAGE && p->direction() == direction);
+        };
+
+        std::vector<port_sptr>::iterator it =
+            std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);
+
+        if (it != std::end(d_all_ports)) {
+            return std::dynamic_pointer_cast<message_port>(*it);
+        } else {
+            // port was not found
+            return nullptr;
+        }
+    }
+
     port_sptr get_port(unsigned int index, port_type_t type, port_direction_t direction)
     {
         auto pred = [index, type, direction](port_sptr p) {

@@ -285,6 +285,13 @@ public:
     virtual uint64_t items_available();
 
     /**
+     * @brief Return the number of bytes available to be read
+     *
+     * @return uint64_t
+     */
+    virtual uint64_t bytes_available();
+
+    /**
      * @brief Return current buffer state for reading
      *
      * @param info Reference to \buffer_info_t struct
