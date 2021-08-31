@@ -30,15 +30,16 @@ public:
     virtual void post_write(int num_items);
 
     virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props);
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 };
 class cuda_buffer_pinned_reader : public buffer_reader
 {
 public:
     cuda_buffer_pinned_reader(buffer_sptr buffer,
                               std::shared_ptr<buffer_properties> buf_props,
+                              size_t itemsize,
                               size_t read_index)
-        : buffer_reader(buffer, buf_props, read_index)
+        : buffer_reader(buffer, buf_props, itemsize, read_index)
     {
     }
 

@@ -34,7 +34,7 @@ graph_utils::partition(graph_sptr input_graph,
             // Store the block to scheduler mapping for later use
             block_to_scheduler_map[b->id()] = sched;
 
-            for (auto input_port : b->input_stream_ports()) {
+            for (auto input_port : b->input_ports()) {
                 auto edges = input_graph->find_edge(input_port);
                 // There should only be one edge connected to an input port
                 // Crossings associated with the downstream port

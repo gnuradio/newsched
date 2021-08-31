@@ -4,22 +4,23 @@ namespace gr {
 
 size_t buffer::space_available()
 {
-    // Find the max number of items available across readers
+    // Find the max number of bytes available across readers
     uint64_t n_available = 0;
     for (auto& r : _readers) {
-        auto n = r->items_available();
+        auto n = r->bytes_available();
         if (n > n_available) {
             n_available = n;
         }
     }
 
-    int space = _num_items - n_available - 1;
+    int space_in_items = (_num_items * _item_size - n_available) / _item_size - 1;
 
-    if (space < 0)
-        space = 0;
-    space = std::min(space, (int)(_num_items / 2)); // move to a max_fill parameter
+    if (space_in_items < 0)
+        space_in_items = 0;
+    space_in_items =
+        std::min(space_in_items, (int)(_num_items / 2)); // move to a max_fill parameter
 
-    return space;
+    return space_in_items;
 }
 bool buffer::write_info(buffer_info_t& info)
 {
@@ -47,19 +48,6 @@ void buffer::add_tags(size_t num_items, std::vector<tag_t>& tags)
     }
 }
 
-std::vector<tag_t> buffer_reader::tags_in_window(const uint64_t item_start,
-                                                 const uint64_t item_end)
-{
-    std::scoped_lock guard(*(_buffer->mutex()));
-
-    std::vector<tag_t> ret;
-    for (auto& t : _buffer->tags()) {
-        if (t.offset >= total_read() + item_start && t.offset < total_read() + item_end) {
-            ret.push_back(t);
-        }
-    }
-    return ret;
-}
 
 void buffer::add_tag(tag_t tag)
 {
@@ -77,12 +65,21 @@ void buffer::add_tag(uint64_t offset,
 
 void buffer::propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed)
 {
+    double relative_rate = (double)p_in_buf->item_size() / (double)p_in_buf->buffer_item_size();
     std::scoped_lock guard(_buf_mutex);
     for (auto& t : p_in_buf->tags()) {
+        uint64_t new_offset = t.offset;
+        if (relative_rate != 1.0) {
+            new_offset = t.offset / relative_rate;
+        }
         // Propagate the tags that occurred in the processed window
-        if (t.offset >= total_written() && t.offset < total_written() + n_consumed) {
+        if (new_offset >= total_written() && new_offset < total_written() + n_consumed) {
             // std::cout << "adding tag" << std::endl;
             _tags.push_back(t);
+
+            if (relative_rate != 1.0) {
+                _tags[_tags.size() - 1].offset = new_offset;
+            }
         }
     }
 }
@@ -112,14 +109,16 @@ void buffer::prune_tags()
     }
 }
 
-size_t buffer_reader::items_available()
+size_t buffer_reader::items_available() { return bytes_available() / _itemsize; }
+
+size_t buffer_reader::bytes_available()
 {
     size_t w = _buffer->write_index();
     size_t r = _read_index;
 
     if (w < r)
         w += _buffer->buf_size();
-    return (w - r) / _buffer->item_size();
+    return (w - r);
 }
 
 bool buffer_reader::read_info(buffer_info_t& info)
@@ -128,7 +127,7 @@ bool buffer_reader::read_info(buffer_info_t& info)
 
     info.ptr = _buffer->read_ptr(_read_index);
     info.n_items = items_available();
-    info.item_size = _buffer->item_size();
+    info.item_size = _itemsize; //  _buffer->item_size();
     info.total_items = _total_read;
 
     return true;
@@ -145,15 +144,50 @@ bool buffer_reader::read_info(buffer_info_t& info)
 std::vector<tag_t> buffer_reader::get_tags(size_t num_items)
 {
     std::scoped_lock guard(*(_buffer->mutex()));
+    double relative_rate = (double)_itemsize / (double)_buffer->item_size();
 
     // Find all the tags from total_read to total_read+offset
     std::vector<tag_t> ret;
-    for (auto& tag : _buffer->tags()) {
-        if (tag.offset >= total_read() && tag.offset < total_read() + num_items) {
-            ret.push_back(tag);
+    for (auto& t : _buffer->tags()) {
+        uint64_t new_offset = t.offset;
+        if (relative_rate != 1.0) {
+            new_offset = t.offset / relative_rate;
+        }
+        if (new_offset >= total_read() && new_offset < total_read() + num_items) {
+            ret.push_back(t);
+
+            if (relative_rate != 1.0) {
+                ret[ret.size() - 1].offset = new_offset;
+            }
         }
     }
 
+    return ret;
+}
+
+
+std::vector<tag_t> buffer_reader::tags_in_window(const uint64_t item_start,
+                                                 const uint64_t item_end)
+{
+    std::scoped_lock guard(*(_buffer->mutex()));
+
+    double relative_rate = (double)_itemsize / (double)_buffer->item_size();
+
+    std::vector<tag_t> ret;
+    for (auto& t : _buffer->tags()) {
+        uint64_t new_offset = t.offset;
+        if (relative_rate != 1.0) {
+            new_offset = t.offset / relative_rate;
+        }
+        if (new_offset >= total_read() + item_start &&
+            new_offset < total_read() + item_end) {
+            ret.push_back(t);
+
+            if (relative_rate != 1.0) {
+                ret[ret.size() - 1].offset = new_offset;
+            }
+        }
+    }
     return ret;
 }
 

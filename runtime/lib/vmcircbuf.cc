@@ -70,7 +70,7 @@ void vmcirc_buffer_reader::post_read(int num_items)
     std::scoped_lock guard(_rdr_mutex);
 
     // advance the read pointer
-    _read_index += num_items * _buffer->item_size();
+    _read_index += num_items * _itemsize;
     if (_read_index >= _buffer->buf_size()) {
         _read_index -= _buffer->buf_size();
     }
@@ -91,7 +91,7 @@ void vmcirc_buffer::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader(std::shared_ptr<buffer_properties> buf_props)
+std::shared_ptr<buffer_reader> vmcirc_buffer::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
     std::shared_ptr<vmcirc_buffer_reader> r(
         new vmcirc_buffer_reader(shared_from_this(), buf_props, _write_index));
