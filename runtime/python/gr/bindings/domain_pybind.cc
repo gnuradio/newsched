@@ -13,15 +13,17 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/buffer.hh>
+#include <gnuradio/domain.hh>
 // pydoc.h is automatically generated in the build directory
 // #include <edge_pydoc.h>
 
-void bind_buffer(py::module& m)
+void bind_domain(py::module& m)
 {
-    using buffer_properties = ::gr::buffer_properties;
+    using domain_conf = ::gr::domain_conf;
 
-    py::class_<buffer_properties, std::shared_ptr<buffer_properties>>(
-        m, "buffer_properties")
-        .def("set_buffer_size", &buffer_properties::set_buffer_size);
+    py::class_<domain_conf, std::shared_ptr<domain_conf>>(
+        m, "domain_conf")
+        .def(py::init<std::shared_ptr<::gr::scheduler> ,
+                std::vector<std::shared_ptr<::gr::node>> >())
+        ;
 }

@@ -6,7 +6,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                                         std::shared_ptr<buffer_properties> buf_props)
 {
     // not all edges may be used
-    for (auto e : fg->edges()) {
+    for (auto e : fg->stream_edges()) {
         // every edge needs a buffer
         auto num_items = get_buffer_num_items(e, fg);
 
@@ -67,7 +67,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                             ed[0]->identifier(),
                             ed[0]->src().node()->alias());
                 p->set_buffer_reader(
-                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties()));
+                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
             }
         }
     }
@@ -100,7 +100,7 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         }
     }
 
-    size_t nitems = (buf_size * 2) / item_size;
+    size_t nitems = item_size == 0 ?  0 : (buf_size * 2) / item_size;
 
     auto grblock = std::dynamic_pointer_cast<block>(e->src().node());
     if (grblock == nullptr) // might be a domain adapter, not a block

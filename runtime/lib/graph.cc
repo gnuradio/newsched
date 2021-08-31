@@ -19,6 +19,11 @@ edge_sptr graph::connect(const node_endpoint& src,
     
     auto newedge = edge::make(src, dst);
     _edges.push_back(newedge);
+    if (src.port()->type() == gr::port_type_t::STREAM)
+    {
+        _stream_edges.push_back(newedge);
+    }
+
     _nodes = calc_used_nodes();
 
     std::map<std::string, int> name_count;

@@ -26,8 +26,11 @@ void bind_graph(py::module&);
 void bind_flowgraph(py::module&);
 void bind_scheduler(py::module&);
 void bind_buffer(py::module&);
+void bind_vmcircbuf(py::module&);
+void bind_domain(py::module&);
 #ifdef HAVE_CUDA
 void bind_cudabuffer(py::module&);
+void bind_cudabuffer_sm(py::module&);
 #endif
 
 // We need this hack because import_array() returns NULL
@@ -55,12 +58,16 @@ PYBIND11_MODULE(runtime_python, m)
     bind_block(m);
     bind_sync_block(m);
     bind_edge(m);
+    bind_domain(m);
     bind_graph(m);
     bind_flowgraph(m);
     bind_scheduler(m);
     bind_buffer(m);
+    bind_vmcircbuf(m);
+    
     #ifdef HAVE_CUDA
     bind_cudabuffer(m);
+    bind_cudabuffer_sm(m);
     #endif
     
     // TODO: Move into gr_types.hpp

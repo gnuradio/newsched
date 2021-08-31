@@ -67,7 +67,7 @@ public:
     }
 
     virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props);
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 };
 
 class simplebuffer_reader : public buffer_reader
@@ -75,8 +75,9 @@ class simplebuffer_reader : public buffer_reader
 public:
     simplebuffer_reader(buffer_sptr buffer,
                         std::shared_ptr<buffer_properties> buf_props,
+                        size_t itemsize,
                         size_t read_index = 0)
-        : buffer_reader(buffer, buf_props, read_index)
+        : buffer_reader(buffer, buf_props, itemsize, read_index)
     {
     }
 
@@ -85,7 +86,7 @@ public:
         std::scoped_lock guard(_rdr_mutex);
 
         // advance the read pointer
-        _read_index += num_items * _buffer->item_size();
+        _read_index += num_items * _itemsize; // _buffer->item_size();
         if (_read_index >= _buffer->buf_size()) {
             _read_index -= _buffer->buf_size();
         }
