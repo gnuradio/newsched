@@ -8,7 +8,7 @@ sources = [
 
 filter_sources += sources
 filter_deps += [newsched_runtime_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmt_dep]
-
+link_args = []
 block_cpp_args = ['-DHAVE_CPU']
 if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
@@ -24,6 +24,7 @@ if USE_CUDA
 #                         dependencies : cuda_dep)
 
     filter_deps += [cuda_dep, cusp_dep]
+    link_args += ['-lcusp']
 endif
 
 
@@ -34,7 +35,7 @@ newsched_blocklib_filter_lib = library('newsched-blocklib-filter',
     install : true,
     link_language: 'cpp',
     dependencies : filter_deps,
-    link_args : '-lcusp',  # why is this necesary???
+    link_args : link_args,  # why is this necesary???
     cpp_args : block_cpp_args)
 
 newsched_blocklib_filter_dep = declare_dependency(include_directories : incdir,
