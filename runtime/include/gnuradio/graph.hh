@@ -25,6 +25,7 @@ class graph : public node, public std::enable_shared_from_this<graph>
 protected:
     node_vector_t _nodes;
     edge_vector_t _edges;
+    edge_vector_t _stream_edges;
     node_vector_t _orphan_nodes;
 
 public:
@@ -34,6 +35,7 @@ public:
     ~graph() {}
     std::shared_ptr<graph> base() { return shared_from_this(); }
     edge_vector_t& edges() { return _edges; }
+    edge_vector_t& stream_edges() { return _stream_edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
     node_vector_t& nodes() { return _nodes; }
     edge_sptr connect(const node_endpoint& src,
