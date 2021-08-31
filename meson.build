@@ -35,12 +35,16 @@ endif
 
 flatc = find_program('flatc', version : '>=1.12')
 
+
+
+cmake = import('cmake')
+
 subdir('pmt')
 subdir('runtime')
 subdir('blocklib')
 subdir('schedulers')
 subdir('docs')
+subdir('utils')
 if (get_option('enable_python'))
   subdir('python/newsched')
 endif
-

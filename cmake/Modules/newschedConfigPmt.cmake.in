@@ -1,0 +1,32 @@
+if(NOT PKG_CONFIG_FOUND)
+    INCLUDE(FindPkgConfig)
+endif()
+PKG_CHECK_MODULES(PC_NEWSCHED newsched)
+
+FIND_PATH(
+    NEWSCHED_INCLUDE_DIRS
+    NAMES pmt/pmt.h
+    HINTS $ENV{NEWSCHED_DIR}/include
+        ${PC_NEWSCHED_INCLUDEDIR}
+    PATHS ${CMAKE_INSTALL_PREFIX}/include
+          /usr/local/include
+          /usr/include
+)
+
+FIND_LIBRARY(
+    NEWSCHED_LIBRARIES
+    NAMES cusp
+    HINTS $ENV{NEWSCHED_DIR}/lib
+        ${PC_NEWSCHED_LIBDIR}
+    PATHS ${CMAKE_INSTALL_PREFIX}/lib
+          ${CMAKE_INSTALL_PREFIX}/lib64
+          /usr/local/lib
+          /usr/local/lib64
+          /usr/lib
+          /usr/lib64
+          @libdir@
+          )
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(NEWSCHED DEFAULT_MSG NEWSCHED_LIBRARIES NEWSCHED_INCLUDE_DIRS)
+MARK_AS_ADVANCED(NEWSCHED_LIBRARIES NEWSCHED_INCLUDE_DIRS)
