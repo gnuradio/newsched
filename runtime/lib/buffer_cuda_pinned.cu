@@ -8,29 +8,29 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/cudabuffer_pinned.hh>
+#include <gnuradio/buffer_cuda_pinned.hh>
 
 namespace gr {
-cuda_buffer_pinned::cuda_buffer_pinned(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+buffer_cuda_pinned::buffer_cuda_pinned(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
     : buffer(num_items, item_size, buf_properties)
 {
     if (!cudaHostAlloc((void**)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
         throw std::runtime_error("Failed to allocate CUDA pinned memory");
     }
 }
-cuda_buffer_pinned::~cuda_buffer_pinned() { cudaFree(_pinned_buffer); }
+buffer_cuda_pinned::~buffer_cuda_pinned() { cudaFree(_pinned_buffer); }
 
-buffer_sptr cuda_buffer_pinned::make(size_t num_items,
+buffer_sptr buffer_cuda_pinned::make(size_t num_items,
                                      size_t item_size,
                                      std::shared_ptr<buffer_properties> buffer_properties)
 {
-    return buffer_sptr(new cuda_buffer_pinned(num_items, item_size, buffer_properties));
+    return buffer_sptr(new buffer_cuda_pinned(num_items, item_size, buffer_properties));
 }
 
-void* cuda_buffer_pinned::read_ptr(size_t index) { return (void*)&_pinned_buffer[index]; }
-void* cuda_buffer_pinned::write_ptr() { return (void*)&_pinned_buffer[_write_index]; }
+void* buffer_cuda_pinned::read_ptr(size_t index) { return (void*)&_pinned_buffer[index]; }
+void* buffer_cuda_pinned::write_ptr() { return (void*)&_pinned_buffer[_write_index]; }
 
-void cuda_buffer_pinned_reader::post_read(int num_items)
+void buffer_cuda_pinned_reader::post_read(int num_items)
 {
     std::lock_guard<std::mutex> guard(_rdr_mutex);
     // advance the read pointer
@@ -41,7 +41,7 @@ void cuda_buffer_pinned_reader::post_read(int num_items)
     _total_read += num_items;
 }
 
-void cuda_buffer_pinned::post_write(int num_items)
+void buffer_cuda_pinned::post_write(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
@@ -65,10 +65,10 @@ void cuda_buffer_pinned::post_write(int num_items)
     }
 }
 
-std::shared_ptr<buffer_reader> cuda_buffer_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+std::shared_ptr<buffer_reader> buffer_cuda_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
-    std::shared_ptr<cuda_buffer_pinned_reader> r(
-        new cuda_buffer_pinned_reader(shared_from_this(), buf_props, itemsize, _write_index));
+    std::shared_ptr<buffer_cuda_pinned_reader> r(
+        new buffer_cuda_pinned_reader(shared_from_this(), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }

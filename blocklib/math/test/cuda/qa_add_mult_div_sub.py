@@ -23,9 +23,9 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     def help_ii(self, src_data, exp_data, op):
         for s in zip(list(range(len(src_data))), src_data):
             src = blocks.vector_source_i(s[1])
-            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
+            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         dst = blocks.vector_sink_i()
-        self.tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        self.tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         self.tb.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
@@ -33,9 +33,9 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     def help_ss(self, src_data, exp_data, op):
         for s in zip(list(range(len(src_data))), src_data):
             src = blocks.vector_source_s(s[1])
-            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
+            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         dst = blocks.vector_sink_s()
-        self.tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        self.tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         self.tb.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
@@ -43,9 +43,9 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     def help_ff(self, src_data, exp_data, op):
         for s in zip(list(range(len(src_data))), src_data):
             src = blocks.vector_source_f(s[1])
-            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
+            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         dst = blocks.vector_sink_f()
-        self.tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        self.tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         self.tb.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
@@ -53,9 +53,9 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     def help_cc(self, src_data, exp_data, op):
         for s in zip(list(range(len(src_data))), src_data):
             src = blocks.vector_source_c(s[1])
-            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
+            self.tb.connect(src, 0, op, s[0]).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         dst = blocks.vector_sink_c()
-        self.tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        self.tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         self.tb.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)

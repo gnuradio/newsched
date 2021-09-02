@@ -13,9 +13,9 @@
 #include <gnuradio/realtime.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 
-#include <gnuradio/cudabuffer.hh>
-#include <gnuradio/cudabuffer_pinned.hh>
-#include <gnuradio/cudabuffer_sm.hh>
+#include <gnuradio/buffer_cuda.hh>
+#include <gnuradio/buffer_cuda_pinned.hh>
+#include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <iostream>
