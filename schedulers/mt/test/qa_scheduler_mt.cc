@@ -10,7 +10,7 @@
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 
 using namespace gr;
 
@@ -109,9 +109,9 @@ TEST(SchedulerMTTest, BlockFanout)
         } else {
             for (int i = 0; i < nblocks; i++) {
                 fg->connect(src, 0, mult_blks[i], 0)
-                    ->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                    ->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
                 fg->connect(mult_blks[i], 0, sink_blks[i], 0)
-                    ->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                    ->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
             }
         }
 
@@ -148,17 +148,17 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, 0, copy1, 0);
     fg->connect(copy1, 0, copy2, 0)
-        ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
                                 ->set_buffer_size(4096));
     fg->connect(copy2, 0, snk1, 0)
-        ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
                                 ->set_min_buffer_size(4096)
                                 ->set_max_buffer_size(8192));
     fg->connect(copy1, 0, copy3, 0)
-        ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
                                 ->set_buffer_size(16384));
     fg->connect(copy3, 0, snk2, 0)
-        ->set_custom_buffer(vmcirc_buffer_properties::make(vmcirc_buffer_type::AUTO)
+        ->set_custom_buffer(buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
                                 ->set_min_buffer_size(16384));
 
     // TODO: Validate the buffers that were created

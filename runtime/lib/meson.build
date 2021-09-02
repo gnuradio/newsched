@@ -44,10 +44,10 @@ runtime_sources = [
   'logging.cc',
   'pagesize.cc',
   'sys_paths.cc',
-  'vmcircbuf.cc',
-  'vmcircbuf_sysv_shm.cc',
+  'buffer_cpu_vmcirc.cc',
+  'buffer_cpu_vmcirc_sysv_shm.cc',
   # mmap requires librt - FIXME - handle this a conditional dependency
-  'vmcircbuf_mmap_shm_open.cc'
+  'buffer_cpu_vmcirc_mmap_shm_open.cc'
 ]
 
 cpp_args = []
