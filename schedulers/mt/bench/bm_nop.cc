@@ -10,7 +10,7 @@
 #include <gnuradio/realtime.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 
 #include <iostream>
 
@@ -80,19 +80,19 @@ int main(int argc, char* argv[])
             fg->connect(blks[nblocks - 1], 0, snk, 0);
 
         } else {
-            fg->connect(src, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
-            fg->connect(head, 0, blks[0], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+            fg->connect(src, 0, head, 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
+            fg->connect(head, 0, blks[0], 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
             for (int i = 0; i < nblocks - 1; i++) {
-                fg->connect(blks[i], 0, blks[i + 1], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                fg->connect(blks[i], 0, blks[i + 1], 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
             }
-            fg->connect(blks[nblocks - 1], 0, snk, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+            fg->connect(blks[nblocks - 1], 0, snk, 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
         }
 
         auto sched = schedulers::scheduler_mt::make("mt", 32768);
         fg->add_scheduler(sched);
 
         if (buffer_type == 1) {
-            sched->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
+            sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
         }
 
         if (nthreads > 0) {

@@ -32,7 +32,7 @@ runtime_headers = [
     'tag.hh',
     'thread.hh',
     'types.hh',
-    'vmcircbuf.hh',
+    'buffer_cpu_vmcirc.hh',
     'helper_cuda.h',
     'helper_string.h'
 ]
