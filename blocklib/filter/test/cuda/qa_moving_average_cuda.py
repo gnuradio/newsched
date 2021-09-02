@@ -63,8 +63,8 @@ class test_moving_average(gr_unittest.TestCase):
         op  = filter.moving_average_ff(100, 0.001, impl=filter.moving_average_ff.cuda)
         dst = blocks.vector_sink_f()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
 
         dst_data = dst.data()
@@ -83,8 +83,8 @@ class test_moving_average(gr_unittest.TestCase):
         op  = filter.moving_average_cc(100, 0.001, impl=filter.moving_average_cc.cuda)
         dst = blocks.vector_sink_c()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
 
         dst_data = dst.data()
@@ -105,8 +105,8 @@ class test_moving_average(gr_unittest.TestCase):
         op  = filter.moving_average_ff(filt_len, 1.0, impl=filter.moving_average_ff.cuda)
         dst = blocks.vector_sink_f()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
 
         dst_data = dst.data()
@@ -131,8 +131,8 @@ class test_moving_average(gr_unittest.TestCase):
         op  = filter.moving_average_ff(filt_len, 1.0, 4, impl=filter.moving_average_ff.cuda)
         dst = blocks.vector_sink_f()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
 
         dst_data = dst.data()
@@ -157,8 +157,8 @@ class test_moving_average(gr_unittest.TestCase):
         op  = filter.moving_average_ff(filt_len, 1.0 / N, 4000, impl=filter.moving_average_ff.cuda)
         dst = blocks.vector_sink_f()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
 
         dst_data = dst.data()

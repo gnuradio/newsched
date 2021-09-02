@@ -8,9 +8,9 @@
 #include <gnuradio/blocks/vector_source.hh>
 // #include <gnuradio/cuda/copy.hh>
 #include <gnuradio/blocks/copy.hh>
-#include <gnuradio/cudabuffer.hh>
-#include <gnuradio/cudabuffer_sm.hh>
-#include <gnuradio/cudabuffer_pinned.hh>
+#include <gnuradio/buffer_cuda.hh>
+#include <gnuradio/buffer_cuda_sm.hh>
+#include <gnuradio/buffer_cuda_pinned.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 

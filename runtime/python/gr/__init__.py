@@ -10,6 +10,6 @@ except ImportError:
 
 # CUDA specific python code will exception out as these objects aren't compiled in
 try:
-    cuda_buffer_properties.__init__ = cuda_buffer_properties.make
+    buffer_cuda_properties.__init__ = buffer_cuda_properties.make
 except:
     pass

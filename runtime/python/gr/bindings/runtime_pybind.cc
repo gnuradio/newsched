@@ -29,8 +29,8 @@ void bind_buffer(py::module&);
 void bind_vmcircbuf(py::module&);
 void bind_domain(py::module&);
 #ifdef HAVE_CUDA
-void bind_cudabuffer(py::module&);
-void bind_cudabuffer_sm(py::module&);
+void bind_buffer_cuda(py::module&);
+void bind_buffer_cuda_sm(py::module&);
 #endif
 
 // We need this hack because import_array() returns NULL
@@ -66,8 +66,8 @@ PYBIND11_MODULE(runtime_python, m)
     bind_vmcircbuf(m);
     
     #ifdef HAVE_CUDA
-    bind_cudabuffer(m);
-    bind_cudabuffer_sm(m);
+    bind_buffer_cuda(m);
+    bind_buffer_cuda_sm(m);
     #endif
     
     // TODO: Move into gr_types.hpp

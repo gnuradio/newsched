@@ -29,8 +29,8 @@ class test_multiply_const(gr_unittest.TestCase):
         op = blocks.multiply_const_ff(k, impl=blocks.multiply_const_ff.cuda)
         dst = blocks.vector_sink_f()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
         dst_data = dst.data()
         self.assertEqual(expected_data, dst_data)
@@ -45,8 +45,8 @@ class test_multiply_const(gr_unittest.TestCase):
         op = blocks.multiply_const_cc(k, impl=blocks.multiply_const_cc.cuda)
         dst = blocks.vector_sink_c()
 
-        tb.connect(src, op).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.H2D))
-        tb.connect(op, dst).set_custom_buffer(gr.cuda_buffer_properties.make(gr.cuda_buffer_type.D2H))
+        tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
+        tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
         tb.run()
         dst_data = dst.data()
         self.assertEqual(expected_data, dst_data)
