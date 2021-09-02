@@ -5,6 +5,7 @@ runtime_headers = [
     'buffer.hh',
     'buffer_management.hh',
     'block_group_properties.hh',
+    'clonable_block.hh',
     'concurrent_queue.hh',
     'cudabuffer.hh',
     'cudabuffer_pinned.hh',
