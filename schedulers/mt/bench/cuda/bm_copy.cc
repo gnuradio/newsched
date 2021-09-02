@@ -16,7 +16,7 @@
 #include <gnuradio/cudabuffer.hh>
 #include <gnuradio/cudabuffer_pinned.hh>
 #include <gnuradio/cudabuffer_sm.hh>
-#include <gnuradio/simplebuffer.hh>
+#include <gnuradio/buffer_cpu_simple.hh>
 #include <gnuradio/vmcircbuf.hh>
 #include <iostream>
 

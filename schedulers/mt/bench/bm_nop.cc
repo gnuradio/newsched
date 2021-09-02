@@ -9,7 +9,7 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/realtime.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
-#include <gnuradio/simplebuffer.hh>
+#include <gnuradio/buffer_cpu_simple.hh>
 #include <gnuradio/vmcircbuf.hh>
 
 #include <iostream>
