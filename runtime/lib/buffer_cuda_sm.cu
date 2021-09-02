@@ -8,15 +8,15 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/cudabuffer_sm.hh>
+#include <gnuradio/buffer_cuda_sm.hh>
 
 
 // typedef boost::unique_lock<boost::mutex> scoped_lock;
 
 namespace gr {
-cuda_buffer_sm::cuda_buffer_sm(size_t num_items,
+buffer_cuda_sm::buffer_cuda_sm(size_t num_items,
                          size_t item_size,
-                         cuda_buffer_sm_type type,
+                         buffer_cuda_sm_type type,
                          std::shared_ptr<buffer_properties> buf_properties)
     : gr::buffer_sm(num_items, item_size, buf_properties), _type(type)
 {
@@ -27,48 +27,48 @@ cuda_buffer_sm::cuda_buffer_sm(size_t num_items,
     cudaMalloc(
         &_device_buffer,
         _buf_size);
-    set_type("cuda_buffer_sm_" + std::to_string((int)_type));
+    set_type("buffer_cuda_sm_" + std::to_string((int)_type));
 
     cudaStreamCreate(&stream);
 }
-cuda_buffer_sm::~cuda_buffer_sm()
+buffer_cuda_sm::~buffer_cuda_sm()
 {
     cudaFree(_device_buffer);
     cudaFree(_host_buffer);
 }
 
-buffer_sptr cuda_buffer_sm::make(size_t num_items,
+buffer_sptr buffer_cuda_sm::make(size_t num_items,
                               size_t item_size,
                               std::shared_ptr<buffer_properties> buffer_properties)
 {
-    auto cbp = std::static_pointer_cast<cuda_buffer_sm_properties>(buffer_properties);
+    auto cbp = std::static_pointer_cast<buffer_cuda_sm_properties>(buffer_properties);
     if (cbp != nullptr) {
         return buffer_sptr(
-            new cuda_buffer_sm(num_items, item_size, cbp->buffer_type(), buffer_properties));
+            new buffer_cuda_sm(num_items, item_size, cbp->buffer_type(), buffer_properties));
     } else {
         throw std::runtime_error(
-            "Failed to cast buffer properties to cuda_buffer_sm_properties");
+            "Failed to cast buffer properties to buffer_cuda_sm_properties");
     }
 }
 
-void* cuda_buffer_sm::read_ptr(size_t index)
+void* buffer_cuda_sm::read_ptr(size_t index)
 {
-    if (_type == cuda_buffer_sm_type::D2H) {
+    if (_type == buffer_cuda_sm_type::D2H) {
         return (void*)&_host_buffer[index];
     } else {
         return (void*)&_device_buffer[index];
     }
 }
-void* cuda_buffer_sm::write_ptr()
+void* buffer_cuda_sm::write_ptr()
 {
-    if (_type == cuda_buffer_sm_type::H2D) {
+    if (_type == buffer_cuda_sm_type::H2D) {
         return (void*)&_host_buffer[_write_index];
     } else {
         return (void*)&_device_buffer[_write_index];
     }
 }
 
-void cuda_buffer_sm::post_write(int num_items)
+void buffer_cuda_sm::post_write(int num_items)
 {
     std::lock_guard<std::mutex> guard(_buf_mutex);
 
@@ -80,14 +80,14 @@ void cuda_buffer_sm::post_write(int num_items)
 
     size_t num_bytes_1 = std::min(_buf_size - wi1, bytes_written);
 
-    if (_type == cuda_buffer_sm_type::H2D) {
+    if (_type == buffer_cuda_sm_type::H2D) {
         cudaMemcpyAsync(&_device_buffer[wi1],
                         &_host_buffer[wi1],
                         bytes_written,
                         cudaMemcpyHostToDevice,
                         stream);
 
-    } else if (_type == cuda_buffer_sm_type::D2H) {
+    } else if (_type == buffer_cuda_sm_type::D2H) {
         cudaMemcpyAsync(&_host_buffer[wi1],
                         &_device_buffer[wi1],
                         bytes_written,
@@ -108,15 +108,15 @@ void cuda_buffer_sm::post_write(int num_items)
 }
 
 std::shared_ptr<buffer_reader>
-cuda_buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+buffer_cuda_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
-    std::shared_ptr<cuda_buffer_sm_reader> r(
-        new cuda_buffer_sm_reader(std::dynamic_pointer_cast<cuda_buffer_sm>(shared_from_this()), buf_props, itemsize, _write_index));
+    std::shared_ptr<buffer_cuda_sm_reader> r(
+        new buffer_cuda_sm_reader(std::dynamic_pointer_cast<buffer_cuda_sm>(shared_from_this()), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }
 
-void* cuda_buffer_sm::cuda_memcpy(void* dest, const void* src, std::size_t count)
+void* buffer_cuda_sm::cuda_memcpy(void* dest, const void* src, std::size_t count)
 {
     cudaError_t rc = cudaSuccess;
     rc = cudaMemcpy(dest, src, count, cudaMemcpyDeviceToDevice);
@@ -130,7 +130,7 @@ void* cuda_buffer_sm::cuda_memcpy(void* dest, const void* src, std::size_t count
     return dest;
 }
 
-void* cuda_buffer_sm::cuda_memmove(void* dest, const void* src, std::size_t count)
+void* buffer_cuda_sm::cuda_memmove(void* dest, const void* src, std::size_t count)
 {
     // Would a kernel that checks for overlap and then copies front-to-back or
     // back-to-front be faster than using cudaMemcpy with a temp buffer?
