@@ -27,7 +27,7 @@ runtime_headers = [
     'prefs.hh',
     'scheduler.hh',
     'scheduler_message.hh',
-    'simplebuffer.hh',
+    'buffer_cpu_simple.hh',
     'sync_block.hh',
     'tag.hh',
     'thread.hh',

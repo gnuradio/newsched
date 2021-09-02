@@ -30,7 +30,7 @@ runtime_sources = [
   'buffer.cc',
   'buffer_sm.cc',
   'buffer_management.cc',
-  'simplebuffer.cc',
+  'buffer_cpu_simple.cc',
   'buffer_sm.cc',
   'realtime.cc',
   'thread.cc',
