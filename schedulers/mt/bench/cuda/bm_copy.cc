@@ -17,7 +17,7 @@
 #include <gnuradio/cudabuffer_pinned.hh>
 #include <gnuradio/cudabuffer_sm.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <iostream>
 
 #include <boost/program_options.hpp>
@@ -79,12 +79,12 @@ int main(int argc, char* argv[])
 
     auto fg = flowgraph::make();
 
-    fg->connect(src, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+    fg->connect(src, 0, head, 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
     auto sched = schedulers::scheduler_mt::make(
         "sched",
         sizeof(gr_complex) * batch_size *
             2); // This sizing should be handled in buffer_managment but it is not yet
-    sched->set_default_buffer_factory(VMCIRC_BUFFER_ARGS);
+    sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
     fg->set_scheduler(sched);
     if (mem_model == 0) {
         if (single_mapped)

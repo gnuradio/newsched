@@ -10,7 +10,7 @@
 #include <gnuradio/realtime.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/vmcircbuf.hh>
+#include <gnuradio/buffer_cpu_vmcirc.hh>
 
 #include <iostream>
 
@@ -74,11 +74,11 @@ int main(int argc, char* argv[])
             }
 
         } else {
-            fg->connect(src, 0, head, 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+            fg->connect(src, 0, head, 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
 
             for (int i = 0; i < nblocks; i++) {
-                fg->connect(head, 0, copy_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
-                fg->connect(copy_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(VMCIRC_BUFFER_ARGS);
+                fg->connect(head, 0, copy_blks[i], 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
+                fg->connect(copy_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
             }
         }
 
