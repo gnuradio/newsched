@@ -33,8 +33,6 @@ if USE_CUDA
 cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
 endif
 
-flatc = find_program('flatc', version : '>=1.12')
-
 
 
 cmake = import('cmake')

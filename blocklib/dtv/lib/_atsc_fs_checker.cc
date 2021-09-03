@@ -13,8 +13,6 @@
 #include "atsc_types.hh"
 #include "gnuradio/dtv/atsc_consts.hh"
 #include <gnuradio/dtv/atsc_fs_checker.hh>
-#include <pmt/pmtf_scalar.hh>
-#include <pmt/pmtf_string.hh>
 #include <string>
 
 #define ATSC_SEGMENTS_PER_DATA_FIELD 313
@@ -121,10 +119,6 @@ work_return_code_t atsc_fs_checker::work(std::vector<block_work_input>& work_inp
                 d_field_num = 0;
                 d_segment_num = 0;
             } else {
-                // work_output[0].add_tag(
-                //     work_output[0].nitems_written() + output_produced,
-                //     tag_pmt,
-                //     pmtf::pmt_scalar<uint32_t>::make(pli_out.get_tag_value()));
                 plout[output_produced++] = pli_out;                
             }
         }

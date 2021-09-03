@@ -8,7 +8,6 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/mt/scheduler_mt.hh>
 
-#include <pmt/pmtf_string.hh>
 #include <thread>
 #include <chrono>
 
@@ -39,7 +38,7 @@ TEST(SchedulerMTMessagePassing, Forward)
 
     fg->start();
 
-    auto start = std::chrono::steady_clock::now();
+    // auto start = std::chrono::steady_clock::now();
   
 
     size_t cnt = 0;
@@ -47,7 +46,7 @@ TEST(SchedulerMTMessagePassing, Forward)
     while(true)
     {
         cnt = blk3->message_count();
-        auto end = std::chrono::steady_clock::now();
+        // auto end = std::chrono::steady_clock::now();
         if (cnt >= 10)
         {
             break;
