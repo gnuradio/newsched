@@ -14,7 +14,7 @@ c_available = add_languages('c', required : true)
 cuda_available = add_languages('cuda', required : false)
 USE_CUDA = cuda_available and get_option('enable_cuda')
 
-boost_dep = dependency('boost', modules : ['program_options','thread'], version : '>=1.65')
+boost_dep = dependency('boost', modules : ['system','program_options','thread'], version : '>=1.65')
 volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
