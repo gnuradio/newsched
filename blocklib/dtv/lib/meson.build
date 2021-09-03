@@ -1,4 +1,4 @@
-dtv_deps += [newsched_runtime_dep, newsched_blocklib_filter_dep, newsched_blocklib_math_dep, newsched_blocklib_fec_dep, volk_dep, fmt_dep, pmtf_dep]
+dtv_deps += [newsched_runtime_dep, newsched_blocklib_filter_dep, newsched_blocklib_math_dep, newsched_blocklib_fec_dep, volk_dep, fmt_dep, pmt_dep]
 
 sources = [
     'atsc_plinfo.cc',
