@@ -232,6 +232,17 @@ if compiler.compiles(code, name : 'HAVE_SCHED_SETSCHEDULER', dependencies : [thr
   cpp_args += '-DHAVE_SCHED_SETSCHEDULER'
 endif
 
+code = '''#include <filesystem>
+            int main(){
+            namespace fs = std::filesystem;
+            return 0;
+        }
+'''
+if compiler.compiles(code, name : 'HAVE_STD_FILESYSTEM')
+  cpp_args += '-DHAVE_STD_FILESYSTEM'
+endif
+
+
 newsched_runtime_lib = library('newsched-runtime', 
     runtime_sources, 
     install : true, 
