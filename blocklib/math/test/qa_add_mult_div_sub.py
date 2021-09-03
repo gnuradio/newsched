@@ -155,31 +155,31 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
     # def test_multiply_const_ss(self):
     #     src_data = [-1, 0, 1, 2, 3]
     #     expected_result = [-5, 0, 5, 10, 15]
-    #     op = blocks.multiply_const_ss(5)
+    #     op = math.multiply_const_ss(5)
     #     self.help_ss((src_data,), expected_result, op)
 
     # def test_multiply_const_ii(self):
     #     src_data = [-1, 0, 1, 2, 3]
     #     expected_result = [-5, 0, 5, 10, 15]
-    #     op = blocks.multiply_const_ii(5)
+    #     op = math.multiply_const_ii(5)
     #     self.help_ii((src_data,), expected_result, op)
 
     # def test_multiply_const_ff(self):
     #     src_data = [-1, 0, 1, 2, 3]
     #     expected_result = [-5, 0, 5, 10, 15]
-    #     op = blocks.multiply_const_ff(5)
+    #     op = math.multiply_const_ff(5)
     #     self.help_ff((src_data,), expected_result, op)
 
     # def test_multiply_const_cc(self):
     #     src_data = [-1 - 1j, 0 + 0j, 1 + 1j, 2 + 2j, 3 + 3j]
     #     expected_result = [-5 - 5j, 0 + 0j, 5 + 5j, 10 + 10j, 15 + 15j]
-    #     op = blocks.multiply_const_cc(5)
+    #     op = math.multiply_const_cc(5)
     #     self.help_cc((src_data,), expected_result, op)
 
     # def test_multiply_const_cc2(self):
     #     src_data = [-1 - 1j, 0 + 0j, 1 + 1j, 2 + 2j, 3 + 3j]
     #     expected_result = [-3 - 7j, 0 + 0j, 3 + 7j, 6 + 14j, 9 + 21j]
-    #     op = blocks.multiply_const_cc(5 + 2j)
+    #     op = math.multiply_const_cc(5 + 2j)
     #     self.help_cc((src_data,), expected_result, op)
 
     # def test_sub_ii(self):

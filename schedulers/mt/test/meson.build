@@ -16,6 +16,7 @@ if get_option('enable_testing')
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
@@ -28,6 +29,7 @@ if get_option('enable_testing')
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
@@ -40,6 +42,7 @@ if get_option('enable_testing')
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
@@ -53,6 +56,7 @@ if get_option('enable_testing')
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)
@@ -65,6 +69,7 @@ if get_option('enable_testing')
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
                     newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
                     newsched_scheduler_mt_dep,
                     gtest_dep], 
         install : true)

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 
 namespace gr {
-namespace blocks {
+namespace math {
 
 #define PARAM_LIST T k, size_t vlen
 #define PARAM_VALS k, vlen
@@ -23,5 +23,5 @@ protected:
 };
 
 
-} // namespace blocks
+} // namespace math
 } // namespace gr
