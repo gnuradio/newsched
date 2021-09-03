@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 
 #include <cuComplex.h>
 #include <cuda.h>

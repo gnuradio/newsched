@@ -10,6 +10,7 @@ subdir('conjugate')
 subdir('complex_to_mag')
 subdir('complex_to_mag_squared')
 subdir('multiply')
+subdir('multiply_const')
 subdir('divide')
 subdir('add')
 
