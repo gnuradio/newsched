@@ -7,7 +7,7 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks
+from newsched import gr, gr_unittest, blocks, math
 # import pmt
 
 
@@ -26,7 +26,7 @@ class test_multiply_const(gr_unittest.TestCase):
         expected_data = [k * float(x) for x in range(0, 100)]
 
         src = blocks.vector_source_f(src_data)
-        op = blocks.multiply_const_ff(k, impl=blocks.multiply_const_ff.cuda)
+        op = math.multiply_const_ff(k, impl=math.multiply_const_ff.cuda)
         dst = blocks.vector_sink_f()
 
         tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
@@ -42,7 +42,7 @@ class test_multiply_const(gr_unittest.TestCase):
         expected_data = [k * x for x in src_data]
 
         src = blocks.vector_source_c(src_data)
-        op = blocks.multiply_const_cc(k, impl=blocks.multiply_const_cc.cuda)
+        op = math.multiply_const_cc(k, impl=math.multiply_const_cc.cuda)
         dst = blocks.vector_sink_c()
 
         tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))

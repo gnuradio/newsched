@@ -12,7 +12,7 @@
 #include <volk/volk.h>
 
 namespace gr {
-namespace blocks {
+namespace math {
 
 template <class T>
 typename multiply_const<T>::sptr multiply_const<T>::make_cpu(const block_args& args)
@@ -93,5 +93,5 @@ template class multiply_const<std::int32_t>;
 template class multiply_const<float>;
 template class multiply_const<gr_complex>;
 
-} /* namespace blocks */
+} /* namespace math */
 } /* namespace gr */

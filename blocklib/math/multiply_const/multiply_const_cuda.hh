@@ -1,13 +1,11 @@
 #pragma once
 
-#include <gnuradio/blocks/multiply_const.hh>
+#include <gnuradio/math/multiply_const.hh>
 
-#include <cuComplex.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include <cusp/multiply_const.cuh>
 
 namespace gr {
-namespace blocks {
+namespace math {
 
 template <class T>
 class multiply_const_cuda : public multiply_const<T>
@@ -22,11 +20,10 @@ protected:
     T d_k;
     size_t d_vlen;
 
-    int d_block_size;
-    int d_min_grid_size;
     cudaStream_t d_stream;
+    std::shared_ptr<cusp::multiply_const<T>> p_kernel;
 };
 
 
-} // namespace blocks
+} // namespace math
 } // namespace gr
