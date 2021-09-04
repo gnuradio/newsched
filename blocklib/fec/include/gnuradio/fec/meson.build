@@ -1,4 +1,5 @@
 headers = [
+    'api.h',
     'rs.h'
 ]
 
