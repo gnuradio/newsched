@@ -5,6 +5,7 @@ streamops_sources += sources
 streamops_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
+link_args = []
 if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 
@@ -19,6 +20,7 @@ if USE_CUDA
     #                     dependencies : cuda_dep)
 
     streamops_deps += [cuda_dep, cusp_dep]
+    link_args += ['-lcusp']
 
 endif
 
@@ -28,7 +30,7 @@ newsched_blocklib_streamops_lib = library('newsched-blocklib-streamops',
     include_directories : incdir, 
     install : true,
     link_language: 'cpp',
-    link_args : '-lcusp',
+    link_args : link_args,
     dependencies : streamops_deps,
     cpp_args : block_cpp_args)
 
