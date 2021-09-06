@@ -71,10 +71,14 @@ class benchmark_pfb_channelizer(gr.flowgraph):
             for ii in range(nchans):
                 blk = blocks.null_sink(gr.sizeof_gr_complex*1)
                 nsnks.append(blk)
-                self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H).set_buffer_size(bufsize))
-                self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2D).set_buffer_size(bufsize))
+                # self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H).set_buffer_size(bufsize))
+                # self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2D).set_buffer_size(bufsize))
+                self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
+                self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
+
             # self.connect(self.channelizer, self.nsnk)
-            self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D).set_buffer_size(bufsize))   
+            # self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D).set_buffer_size(bufsize))   
+            self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))               
             self.connect(self.nsrc, 0, self.hd, 0).set_custom_buffer(gr.buffer_cpu_vmcirc_properties.make(gr.buffer_cpu_vmcirc_type.AUTO).set_buffer_size(bufsize))
 
 
