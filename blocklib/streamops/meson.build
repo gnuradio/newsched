@@ -8,6 +8,7 @@ streamops_deps = []
 
 # Individual block subdirectories
 subdir('interleaved_short_to_complex')
+subdir('stream_to_streams')
 subdir('lib')
 
 if (get_option('enable_python'))
