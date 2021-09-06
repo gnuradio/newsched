@@ -1,9 +1,9 @@
 filter_pfb_channelizer_files = files(['pfb_channelizer_cpu.cc'])
 
-# if cuda_dep.found() and get_option('enable_cuda')
-#     filter_pfb_channelizer_files += files('pfb_channelizer_cuda.cc')
+if USE_CUDA
+    filter_pfb_channelizer_files += files('pfb_channelizer_cuda.cc')
 #     filter_cu_sources += files('pfb_channelizer_cuda.cu')
-# endif
+endif
 
 gen_pfb_channelizer_h = custom_target('gen_pfb_channelizer_h',
                         input : ['pfb_channelizer.yml'],
