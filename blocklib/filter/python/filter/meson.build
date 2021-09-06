@@ -5,6 +5,8 @@
 # Generate _python.cc for each block
 
 srcs = ['__init__.py']
+filter_pybind_sources = ['bindings/firdes_pybind.cc'] + filter_pybind_sources
+filter_pybind_names = ['firdes'] + filter_pybind_names
 
 foreach s: srcs
 configure_file(copy: true,
@@ -16,14 +18,14 @@ endforeach
 d = {
   'blocks' : filter_pybind_names,
   'module' : 'filter',
-  'imports' : ['newsched.gr']
+  'imports' : ['newsched.gr', 'newsched.fft']
 }
 
 gen_filter_pybind = custom_target('gen_filter_pybind',
                         output : ['filter_pybind.cc'],
                         command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_module_pybind.py'),
                             '--blocks', d['blocks'],
-                            '--imports', ' '.join(d['imports']),
+                            '--imports', d['imports'],
                             '--module', d['module'],
                             '--output_file', '@OUTPUT@', 
                             '--build_dir', join_paths(meson.build_root())],
