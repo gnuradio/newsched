@@ -30,6 +30,7 @@ void bind_vmcircbuf(py::module&);
 void bind_domain(py::module&);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
+void bind_buffer_cuda_pinned(py::module&);
 void bind_buffer_cuda_sm(py::module&);
 #endif
 
@@ -67,6 +68,7 @@ PYBIND11_MODULE(runtime_python, m)
     
     #ifdef HAVE_CUDA
     bind_buffer_cuda(m);
+    bind_buffer_cuda_pinned(m);
     bind_buffer_cuda_sm(m);
     #endif
     
