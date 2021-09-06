@@ -26,61 +26,35 @@ template <class T>
 pfb_channelizer_cuda<T>::pfb_channelizer_cuda(
     const typename pfb_channelizer<T>::block_args& args)
     : pfb_channelizer<T>(args),
-      d_oversample_rate(args.oversample_rate),
-      d_nfilts(args.numchans),
-      d_fft(args.numchans)
+    d_nchans(args.numchans)
 {
-    d_dev_taps.resize(d_nfilts);
+    d_in_items.resize(d_nchans);
+    d_out_items.resize(d_nchans);
 
-    set_taps(args.taps);
-
-    checkCudaErrors(cudaMalloc(d_dev_fftbuf, sizeof(gr_complex)*d_nfilts));
-    d_host_fftbuf.resize(d_nfilts);
-
-    // because we need a stream_to_streams block for the input,
-    // only send tags from in[i] -> out[i].
-    this->set_tag_propagation_policy(tag_propagation_policy_t::TPP_ONE_TO_ONE);
-}
-
-template <class T>
-work_return_code_t pfb_channelizer_cuda<T>::set_taps(const std::vector<float>& taps)
-{
-    unsigned int i, j;
-    unsigned int ntaps = taps.size();
-    d_taps_per_filter = (unsigned int)ceil((double)ntaps / (double)d_nfilts);
-
-    // Create d_numchan vectors to store each channel's taps
-    d_taps.resize(d_nfilts);
-
-    // Make a vector of the taps plus fill it out with 0's to fill
-    // each polyphase filter with exactly d_taps_per_filter
-    std::vector<float> tmp_taps = taps;
-    while ((float)(tmp_taps.size()) < d_nfilts * d_taps_per_filter) {
-        tmp_taps.push_back(0.0);
+    auto new_taps = std::vector<gr_complex>(args.taps.size());
+    for (size_t i = 0; i < args.taps.size(); i++) {
+        new_taps[i] = gr_complex(args.taps[i], 0);
     }
 
-    // Partition the filter
-    for (i = 0; i < d_nfilts; i++) {
-        // Each channel uses all d_taps_per_filter with 0's if not enough taps to fill out
-        d_taps[i] = std::vector<float>(d_taps_per_filter, 0);
-        for (j = 0; j < d_taps_per_filter; j++) {
-            d_taps[i][j] = tmp_taps[i + j * d_nfilts];
-        }
+    // quantize the overlap to the nchans
+    d_overlap = d_nchans * ((args.taps.size() + d_nchans - 1) / d_nchans);
+    checkCudaErrors(cudaMalloc(&d_dev_tail, d_overlap * sizeof(gr_complex)));
+    checkCudaErrors(cudaMemset(d_dev_tail, 0, d_overlap * sizeof(gr_complex)));
 
-        // Set the filter taps for each channel
-        // d_fir_filters[i].set_taps(d_taps[i]);
-        std::reverse(d_taps[i].begin(), d_taps[i].end());
+    checkCudaErrors(
+        cudaMalloc(&d_dev_buf, 16 * 1024 * 1024 * sizeof(gr_complex))); // 4M items max ??
 
-        // Copy to GPU memory
-        if (d_dev_taps[i]) {
-            checkCudaErrors(cudaFree(d_dev_taps[i]))
-        }
-        checkCudaErrors(cudaMalloc(d_dev_taps[i], d_taps_per_filter * sizeof(float)));
-        checkCudaErrors(cudaMemcpy(
-            d_dev_taps[i], d_taps[i].data(), d_taps_per_filter * sizeof(float)));
-    }
+    p_channelizer =
+        std::make_shared<cusp::channelizer<gr_complex>>(new_taps, d_nchans);
+    cudaStreamCreate(&d_stream);
+    p_channelizer->set_stream(d_stream);
 
-    d_history = d_nfilts - 1;
+    p_deinterleaver =
+        std::make_shared<cusp::deinterleave>(d_nchans, 1, sizeof(gr_complex));
+
+    p_deinterleaver->set_stream(d_stream);
+    // set_output_multiple(nchans);
+    // set_min_noutput_items(d_overlap+1024);
 }
 
 template <class T>
@@ -88,50 +62,32 @@ work_return_code_t
 pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
                               std::vector<block_work_output>& work_output)
 {
-    std::scoped_lock guard(d_mutex);
+    // std::scoped_lock guard(d_mutex);
 
     const T* in = (const T*)work_input[0].items();
     T* out = (T*)work_output[0].items();
     auto noutput_items = work_output[0].n_items;
 
-    int n = 1, i = -1, j = 0, oo = 0, last;
-    int toconsume = (int)rintf(noutput_items / d_oversample_rate) - (d_history - 1);
-    while (n <= toconsume) {
-        j = 0;
-        i = (i + d_rate_ratio) % d_nfilts;
-        last = i;
-        while (i >= 0) {
-            in = (gr_complex*)work_input[j].items();
-            d_host_fftbuf[d_idxlut[j]] = d_fir_filters[i].filter(&in[n]);
-            j++;
-            i--;
-        }
-
-        i = d_nfilts - 1;
-        while (i > last) {
-            in = (gr_complex*)work_input[j].items();
-            d_host_fftbuf[d_idxlut[j]] = d_fir_filters[i].filter(&in[n - 1]);
-            j++;
-            i--;
-        }
-
-        n += (i + d_rate_ratio) >= (int)d_nfilts;
-
-        // despin through FFT
-        checkCudaErrors(cudaMemcpyAsync(d_dev_fft_buf, d_host_fft_buf.data(), sizeof(gr_complex)*d_nfilts, cudaMemcpyHostToDevice));
-        d_fft.execute(d_dev_fft_buf, out);
-
-        // Send to output channels
-        for (unsigned int nn = 0; nn < noutputs; nn++) {
-            out = (gr_complex*)work_output[nn].items();
-            out[oo] = d_fft.get_outbuf()[d_channel_map[nn]];
-        }
-        oo++;
+    size_t idx = 0;
+    for (auto& wi : work_input) {
+        d_in_items[idx++] = wi.items();
     }
 
+    idx = 0;
+    for (auto& wo : work_output) {
+        d_out_items[idx++] = wo.items();
+    }
 
-    this->consume_each(toconsume, work_input);
-    this->produce_each(noutput_items - (d_history - 1), work_output);
+    checkCudaErrors(p_channelizer->launch_default_occupancy(
+        d_in_items, { d_dev_buf }, (noutput_items + d_overlap / d_nchans)));
+
+    checkCudaErrors(p_deinterleaver->launch_default_occupancy(
+        { (gr_complex*)d_dev_buf + d_overlap }, d_out_items, noutput_items * d_nchans));
+
+    cudaStreamSynchronize(d_stream);
+
+    this->consume_each(noutput_items * d_nchans, work_input);
+    this->produce_each(noutput_items, work_output);
     return work_return_code_t::WORK_OK;
 }
 
