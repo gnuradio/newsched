@@ -1,17 +1,14 @@
 #pragma once
 
 #include <gnuradio/filter/pfb_channelizer.hh>
-#include <gnuradio/fft/cufft.hh>
-
-
-#include <mutex>
+#include <cusp/channelizer.cuh>
+#include <cusp/deinterleave.cuh>
 
 namespace gr {
 namespace filter {
 
 template <class T>
-class pfb_channelizer_cuda : public pfb_channelizer<T>,
-                                            kernel::polyphase_filterbank
+class pfb_channelizer_cuda : public pfb_channelizer<T>
 {
 public:
     pfb_channelizer_cuda(const typename pfb_channelizer<T>::block_args& args);
@@ -21,18 +18,19 @@ public:
 
 
 private:
-    void set_taps(const std::vector<float>& taps);
-    cufft_complex_rev d_fft;
-    std::vector<float *> d_dev_taps;
-    gr_complex *d_dev_fftbuf;
-    std::vector<gr_complex> d_host_fftbuf;
+  size_t d_nchans;
+  size_t d_taps;
+  size_t d_overlap;
 
-    size_t d_taps_per_filter;
-    size_t d_nfilts;
+  void *d_dev_buf;
+  void *d_dev_tail;
+  cudaStream_t d_stream;
 
-    size_t d_history = 1;
-    std::vector<std::vector<float>> d_taps;
-    std::vector<std::shared_ptr<cusp::dot_product<float>>> d_filters;
+  std::shared_ptr<cusp::channelizer<gr_complex>> p_channelizer;
+  std::shared_ptr<cusp::deinterleave> p_deinterleaver;
+
+  std::vector<const void *> d_in_items;
+  std::vector<void *> d_out_items;
 };
 
 
