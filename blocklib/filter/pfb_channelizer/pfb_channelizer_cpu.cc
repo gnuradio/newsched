@@ -105,7 +105,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
     auto noutput_items = work_output[0].n_items;
     auto ninput_items = work_input[0].n_items;
 
-    if (ninput_items < (noutput_items * d_nchans + d_history) )
+    if ((size_t)ninput_items < (noutput_items * d_nchans + d_history) )
     {
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
