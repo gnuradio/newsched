@@ -10,7 +10,7 @@
 
 from newsched import gr, blocks, streamops, fft
 from newsched.filter import firdes
-from newsched.schedulers import mt
+from newsched.schedulers import nbt
 import sys
 import signal
 from argparse import ArgumentParser
@@ -85,7 +85,7 @@ class benchmark_pfb_channelizer(gr.flowgraph):
             # self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))               
             self.connect(self.nsrc, 0, self.hd, 0).set_custom_buffer(gr.buffer_cpu_vmcirc_properties.make(gr.buffer_cpu_vmcirc_type.AUTO).set_buffer_size(bufsize))
 
-        # sched = mt.scheduler_mt("mtsched")
+        # sched = nbt.scheduler_nbt("nbtsched")
         # self.add_scheduler(sched)
         # sched.add_block_group([x.base() for x in nsnks])
 
