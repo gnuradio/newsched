@@ -22,11 +22,13 @@ pfb_channelizer<T>::make_cpu(const pfb_channelizer<T>::block_args& args)
 }
 
 template <class T>
-pfb_channelizer_cpu<T>::pfb_channelizer_cpu(const typename pfb_channelizer<T>::block_args& args)
+pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
+    const typename pfb_channelizer<T>::block_args& args)
     : pfb_channelizer<T>(args),
 
       polyphase_filterbank(args.numchans, args.taps),
-      d_oversample_rate(args.oversample_rate)
+      d_oversample_rate(args.oversample_rate),
+      d_nchans(args.numchans)
 {
 
     // The over sampling rate must be rationally related to the number of channels
@@ -64,12 +66,12 @@ pfb_channelizer_cpu<T>::pfb_channelizer_cpu(const typename pfb_channelizer<T>::b
         d_idxlut[i] = d_nfilts - ((i + d_rate_ratio) % d_nfilts) - 1;
     }
 
-    // Calculate the number of filtering rounds to do to evenly
-    // align the input vectors with the output channels
-    d_output_multiple = 1;
-    while ((d_output_multiple * d_rate_ratio) % d_nfilts != 0)
-        d_output_multiple++;
-    this->set_output_multiple(d_output_multiple);
+    // // Calculate the number of filtering rounds to do to evenly
+    // // align the input vectors with the output channels
+    // d_output_multiple = 1;
+    // while ((d_output_multiple * d_rate_ratio) % d_nfilts != 0)
+    //     d_output_multiple++;
+    // this->set_output_multiple(d_output_multiple);
 
     // Use set_taps to also set the history requirement
     set_taps(args.taps);
@@ -77,37 +79,55 @@ pfb_channelizer_cpu<T>::pfb_channelizer_cpu(const typename pfb_channelizer<T>::b
     // because we need a stream_to_streams block for the input,
     // only send tags from in[i] -> out[i].
     this->set_tag_propagation_policy(tag_propagation_policy_t::TPP_ONE_TO_ONE);
-
-
 }
 
 template <class T>
 void pfb_channelizer_cpu<T>::set_taps(const std::vector<float>& taps)
 {
-    std::scoped_lock guard(d_mutex);
+    // std::scoped_lock guard(d_mutex);
 
     polyphase_filterbank::set_taps(taps);
     // set_history(d_taps_per_filter + 1);
-    d_history = d_taps_per_filter + 1;
+    d_history = d_nchans * (d_taps_per_filter + 1);
     d_updated = true;
 }
 
 
 template <class T>
-work_return_code_t pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                           std::vector<block_work_output>& work_output)
+work_return_code_t
+pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
+                             std::vector<block_work_output>& work_output)
 {
-    std::scoped_lock guard(d_mutex);
+    // std::scoped_lock guard(d_mutex);
 
     const T* in = (const T*)work_input[0].items();
     T* out = (T*)work_output[0].items();
     auto noutput_items = work_output[0].n_items;
+    auto ninput_items = work_input[0].n_items;
+
+    if (ninput_items < (noutput_items * d_nchans + d_history) )
+    {
+        return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
+    }
 
     if (d_updated) {
         d_updated = false;
         this->consume_each(0, work_input);
         this->produce_each(0, work_output);
         return work_return_code_t::WORK_OK; // history requirements may have changed.
+    }
+
+    std::vector<std::vector<T>> deinterleaved(d_nchans);
+
+    auto total_items = std::min(ninput_items / d_nchans, (size_t)noutput_items);
+
+    for (size_t j = 0; j < d_nchans; j++) {
+        if (deinterleaved[j].size() < total_items) {
+            deinterleaved[j].resize(total_items);
+        }
+        for (size_t i = 0; i < total_items; i++) {
+            deinterleaved[j][i] = in[i * d_nchans + j];
+        }
     }
 
     size_t noutputs = work_output.size();
@@ -125,22 +145,24 @@ work_return_code_t pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& w
     // Systems. Upper Saddle River, NJ: Prentice Hall, 2004.
 
     int n = 1, i = -1, j = 0, oo = 0, last;
-    int toconsume = (int)rintf(noutput_items / d_oversample_rate) - (d_history - 1);
+    int toconsume = (int)rintf((noutput_items * d_nchans) / d_oversample_rate) - (d_history - 1);
     while (n <= toconsume) {
         j = 0;
         i = (i + d_rate_ratio) % d_nfilts;
         last = i;
         while (i >= 0) {
-            in = (gr_complex*)work_input[j].items();
-            d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n]);
+            // in = (gr_complex*)work_input[j].items();
+            d_fft.get_inbuf()[d_idxlut[j]] =
+                d_fir_filters[i].filter(&deinterleaved[j][n]);
             j++;
             i--;
         }
 
         i = d_nfilts - 1;
         while (i > last) {
-            in = (gr_complex*)work_input[j].items();
-            d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n - 1]);
+            // in = (gr_complex*)work_input[j].items();
+            d_fft.get_inbuf()[d_idxlut[j]] =
+                d_fir_filters[i].filter(&deinterleaved[j][n - 1]);
             j++;
             i--;
         }
@@ -159,7 +181,8 @@ work_return_code_t pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& w
     }
 
     this->consume_each(toconsume, work_input);
-    this->produce_each(noutput_items- (d_history - 1), work_output);
+    // this->produce_each(noutput_items - (d_history / d_nchans - 1), work_output);
+    this->produce_each(noutput_items, work_output);
     return work_return_code_t::WORK_OK;
 }
 

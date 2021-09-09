@@ -31,6 +31,8 @@ private:
     std::mutex d_mutex; // mutex to protect set/work access
 
     size_t d_history = 1;
+
+    size_t d_nchans;
 };
 
 

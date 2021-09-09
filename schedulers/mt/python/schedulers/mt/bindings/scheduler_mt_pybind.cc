@@ -43,6 +43,7 @@ PYBIND11_MODULE(scheduler_mt_python, m)
         .def(py::init(&gr::schedulers::scheduler_mt::make),
             py::arg("name") = "multi_threaded",
             py::arg("fixed_buf_size") = 32768)
+        .def("add_block_group", &gr::schedulers::scheduler_mt::add_block_group)
         ;
 
 
