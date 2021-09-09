@@ -28,7 +28,7 @@ pfb_channelizer_cuda<T>::pfb_channelizer_cuda(
     : pfb_channelizer<T>(args),
     d_nchans(args.numchans)
 {
-    d_in_items.resize(d_nchans);
+    d_in_items.resize(1);
     d_out_items.resize(d_nchans);
 
     auto new_taps = std::vector<gr_complex>(args.taps.size());
@@ -64,9 +64,15 @@ pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
 {
     // std::scoped_lock guard(d_mutex);
 
-    const T* in = (const T*)work_input[0].items();
-    T* out = (T*)work_output[0].items();
+    auto in = static_cast<const T*>(work_input[0].items());
+    auto out = static_cast<T*>(work_output[0].items());
     auto noutput_items = work_output[0].n_items;
+    auto ninput_items = work_input[0].n_items;
+
+    if (ninput_items < noutput_items * d_nchans + d_overlap)
+    {
+        return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
+    }
 
     size_t idx = 0;
     for (auto& wi : work_input) {
@@ -79,7 +85,7 @@ pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
     }
 
     checkCudaErrors(p_channelizer->launch_default_occupancy(
-        d_in_items, { d_dev_buf }, (noutput_items + d_overlap / d_nchans)));
+        d_in_items , { d_dev_buf }, (noutput_items + d_overlap / d_nchans)));
 
     checkCudaErrors(p_deinterleaver->launch_default_occupancy(
         { (gr_complex*)d_dev_buf + d_overlap }, d_out_items, noutput_items * d_nchans));

@@ -4,7 +4,7 @@ label: Multiply Constant
 
 properties:
 -   id: blocktype
-    value: sync
+    value: general
 -   id: templates
     keys:
     - id: T
@@ -35,7 +35,6 @@ ports:
     direction: input
     type: T
     dims: '{1}'
-    multiplicity: numchans
 
 -   domain: stream
     id: out

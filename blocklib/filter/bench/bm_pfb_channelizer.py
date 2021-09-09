@@ -10,6 +10,7 @@
 
 from newsched import gr, blocks, streamops, fft
 from newsched.filter import firdes
+from newsched.schedulers import mt
 import sys
 import signal
 from argparse import ArgumentParser
@@ -36,6 +37,7 @@ class benchmark_pfb_channelizer(gr.flowgraph):
         # Blocks
         ##################################################
         self.nsrc = blocks.null_source(gr.sizeof_gr_complex*1)
+        self.nsnk = blocks.null_sink(gr.sizeof_gr_complex*1, nports=nchans)
         self.hd = blocks.head(gr.sizeof_gr_complex*1, int(nsamples))
 
         if not args.cuda:
@@ -43,18 +45,19 @@ class benchmark_pfb_channelizer(gr.flowgraph):
                 nchans,
                 taps,
                 1.0)
-            self.s2ss = streamops.stream_to_streams(gr.sizeof_gr_complex, nchans)
+            # self.s2ss = streamops.stream_to_streams(gr.sizeof_gr_complex, nchans)
 
             ##################################################
             # Connections
             ##################################################
-            nsnks = []
+            # nsnks = []
             for ii in range(nchans):
-                nsnks.append(blocks.null_sink(gr.sizeof_gr_complex*1))
-                self.connect(self.channelizer, ii, nsnks[ii], 0)
-                self.connect(self.s2ss, ii, self.channelizer, ii)
+                # nsnks.append(blocks.null_sink(gr.sizeof_gr_complex*1))
+                self.connect(self.channelizer, ii, self.nsnk, ii)
+                # self.connect(self.s2ss, ii, self.channelizer, ii)
             # self.connect(self.channelizer, self.nsnk)
-            self.connect(self.hd, 0, self.s2ss, 0)      
+            # self.connect(self.hd, 0, self.s2ss, 0)      
+            self.connect(self.hd, 0, self.channelizer, 0)  
             self.connect(self.nsrc, 0, self.hd, 0)
         else:
             self.channelizer = filter.pfb_channelizer_cc(
@@ -62,25 +65,31 @@ class benchmark_pfb_channelizer(gr.flowgraph):
                 taps,
                 1.0,
                 impl=filter.pfb_channelizer_cc.cuda)
-            self.s2ss = streamops.stream_to_streams(gr.sizeof_gr_complex, nchans, impl=streamops.stream_to_streams.cuda)
+            # self.s2ss = streamops.stream_to_streams(gr.sizeof_gr_complex, nchans, impl=streamops.stream_to_streams.cuda)
 
             ##################################################
             # Connections
             ##################################################
-            nsnks = []
+            # nsnks = []
             for ii in range(nchans):
-                blk = blocks.null_sink(gr.sizeof_gr_complex*1)
-                nsnks.append(blk)
-                # self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H).set_buffer_size(bufsize))
+                # blk = blocks.null_sink(gr.sizeof_gr_complex*1)
+                # nsnks.append(blk)
+                self.connect(self.channelizer, ii, self.nsnk, ii).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H).set_buffer_size(bufsize))
                 # self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2D).set_buffer_size(bufsize))
-                self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
-                self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
+                # self.connect(self.channelizer, ii, nsnks[ii], 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
+                # self.connect(self.s2ss, ii, self.channelizer, ii).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))
 
             # self.connect(self.channelizer, self.nsnk)
             # self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D).set_buffer_size(bufsize))   
-            self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))               
+            self.connect(self.hd, 0, self.channelizer, 0).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D).set_buffer_size(bufsize))   
+            # self.connect(self.hd, 0, self.s2ss, 0).set_custom_buffer(gr.buffer_cuda_pinned_properties.make().set_buffer_size(bufsize))               
             self.connect(self.nsrc, 0, self.hd, 0).set_custom_buffer(gr.buffer_cpu_vmcirc_properties.make(gr.buffer_cpu_vmcirc_type.AUTO).set_buffer_size(bufsize))
 
+        # sched = mt.scheduler_mt("mtsched")
+        # self.add_scheduler(sched)
+        # sched.add_block_group([x.base() for x in nsnks])
+
+        # self.validate()
 
 
 def main(top_block_cls=benchmark_pfb_channelizer, options=None):
