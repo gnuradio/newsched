@@ -24,7 +24,7 @@ private:
     bool _validated = false; // TODO - update when connections are added or things are changed
 
     // Dynamically Loaded Default Scheduler
-    const std::string s_default_scheduler_name = "mt";
+    const std::string s_default_scheduler_name = "nbt";
     scheduler_sptr d_default_scheduler = nullptr;
     bool d_default_scheduler_inuse = true;
 
