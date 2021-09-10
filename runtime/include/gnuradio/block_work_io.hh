@@ -15,14 +15,15 @@ namespace gr {
 struct block_work_input {
     int n_items;
     buffer_reader_sptr buffer;
-    int n_consumed = -1; // output the number of items that were consumed on the work() call
+    int n_consumed =
+        -1; // output the number of items that were consumed on the work() call
 
     block_work_input(int n_items_, buffer_reader_sptr p_buf_)
         : n_items(n_items_), buffer(p_buf_)
     {
     }
 
-    void* items() { return buffer->read_ptr(); }
+    void* items() const { return buffer->read_ptr(); }
     uint64_t nitems_read() { return buffer->total_read(); }
 
     void consume(int num) { n_consumed = num; }
@@ -30,6 +31,17 @@ struct block_work_input {
     std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
     {
         return buffer->tags_in_window(item_start, item_end);
+    }
+
+    static std::vector<const void*>
+    all_items(const std::vector<block_work_input>& work_inputs)
+    {
+        std::vector<const void*> ret(work_inputs.size());
+        for (size_t idx = 0; idx < work_inputs.size(); idx++) {
+            ret[idx] = work_inputs[idx].items();
+        }
+
+        return ret;
     }
 };
 
@@ -40,24 +52,34 @@ struct block_work_input {
 struct block_work_output {
     int n_items;
     buffer_sptr buffer;
-    int n_produced = -1; // output the number of items that were produced on the work() call
+    int n_produced =
+        -1; // output the number of items that were produced on the work() call
 
     block_work_output(int _n_items, buffer_sptr p_buf_)
         : n_items(_n_items), buffer(p_buf_)
     {
     }
 
-    void* items() { return buffer->write_ptr(); }
+    void* items() const { return buffer->write_ptr(); }
     uint64_t nitems_written() { return buffer->total_written(); }
     void produce(int num) { n_produced = num; }
 
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
-    void add_tag(uint64_t offset,
-                 pmt::pmt_t key,
-                 pmt::pmt_t value,
-                 pmt::pmt_t srcid = nullptr)
+    void
+    add_tag(uint64_t offset, pmt::pmt_t key, pmt::pmt_t value, pmt::pmt_t srcid = nullptr)
     {
         buffer->add_tag(offset, key, value, srcid);
+    }
+
+    static std::vector<void*>
+    all_items(const std::vector<block_work_output>& work_outputs)
+    {
+        std::vector<void*> ret(work_outputs.size());
+        for (size_t idx = 0; idx < work_outputs.size(); idx++) {
+            ret[idx] = work_outputs[idx].items();
+        }
+
+        return ret;
     }
 };
 
