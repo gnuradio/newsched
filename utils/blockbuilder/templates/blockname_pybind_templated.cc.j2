@@ -35,7 +35,11 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
         {% endfor -%} {% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
+        {% if 'binding' in cb %}
+        .def("{{cb['id']}}", {{cb['binding']}})
+        {% else %}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}<{{typestr}}>::{{cb['id']}})
+        {% endif %}
         {% endfor %} 
         ;
 }
