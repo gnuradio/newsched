@@ -9,6 +9,10 @@
 {% endif -%}
 #include <gnuradio/types.hh>
 
+{% for inc in includes -%}
+#include <{{ inc['value']}}>
+{% endfor %}
+
 namespace gr {
 namespace {{module}} {
 
