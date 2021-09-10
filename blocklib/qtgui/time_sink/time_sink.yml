@@ -11,12 +11,16 @@ properties:
       type: class
       options: 
         - value: float
-          suffix: ff   
+          suffix: f 
 
 parameters:
 -   id: size
     label: Size
     dtype: size_t
+    settable: false
+-   id: samp_rate
+    label: Sampling Rate
+    dtype: double
     settable: false
 -   id: name
     label: Name
@@ -27,11 +31,11 @@ parameters:
     dtype: size_t
     settable: false
     default: 1
--   id: parent
-    label: Parent
-    dtype: QWidget*
-    settable: false 
-    default: nullptr
+# -   id: parent
+#     label: Parent
+#     dtype: QWidget*
+#     settable: false 
+#     default: nullptr
 
 # Includes go in the blockname.hh
 includes: 
@@ -74,13 +78,60 @@ implementations:
     # virtual void set_nsamps(const int newsize) = 0;
     # virtual void set_samp_rate(const double samp_rate) = 0;
     # virtual void set_line_alpha(unsigned int which, double alpha) = 0;
+    # virtual void set_trigger_mode(trigger_mode mode,
+    #                               trigger_slope slope,
+    #                               float level,
+    #                               float delay,
+    #                               int channel,
+    #                               const std::string& tag_key = "") = 0;
+
+    # virtual std::string title() = 0;
+    # virtual std::string line_label(unsigned int which) = 0;
+    # virtual std::string line_color(unsigned int which) = 0;
+    # virtual int line_width(unsigned int which) = 0;
+    # virtual int line_style(unsigned int which) = 0;
+    # virtual int line_marker(unsigned int which) = 0;
+    # virtual double line_alpha(unsigned int which) = 0;
+
+    # virtual void set_size(int width, int height) = 0;
+
+    # virtual void enable_menu(bool en = true) = 0;
+    # virtual void enable_grid(bool en = true) = 0;
+    # virtual void enable_autoscale(bool en = true) = 0;
+    # virtual void enable_stem_plot(bool en = true) = 0;
+    # virtual void enable_semilogx(bool en = true) = 0;
+    # virtual void enable_semilogy(bool en = true) = 0;
+    # virtual void enable_control_panel(bool en = true) = 0;
+    # virtual void enable_tags(unsigned int which, bool en) = 0;
+    # virtual void enable_tags(bool en) = 0;
+    # virtual void enable_axis_labels(bool en = true) = 0;
+    # virtual void disable_legend() = 0;
+
+    # virtual int nsamps() const = 0;
+    # virtual void reset() = 0;
 
 callbacks:
 -   id: exec_
     return: void
 -   id: qwidget
     return: QWidget*
-
+    binding: |- 
+        [](gr::qtgui::time_sink<T>& self) { return reinterpret_cast<uintptr_t>(self.qwidget()); }
+-   id: set_title
+    return: void
+    args:
+    - id: title
+      dtype: const std::string&
+-   id: set_update_time
+    return: void
+    args:
+    - id: time
+      dtype: double
+-   id: set_nsamps
+    return: void
+    args:
+    - id: newsize
+      dtype: const int
 # -   id: set_y_axis
 #     return: void
 #     args:
