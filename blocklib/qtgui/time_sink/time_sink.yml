@@ -66,18 +66,104 @@ implementations:
     # virtual void exec_() = 0;
     # virtual QWidget* qwidget() = 0;
 
+
+
+callbacks:
+-   id: exec_
+    return: void
+-   id: qwidget
+    return: QWidget*
+    binding: |- 
+        [](gr::qtgui::time_sink<T>& self) { return reinterpret_cast<uintptr_t>(self.qwidget()); }
     # virtual void set_y_axis(double min, double max) = 0;
+-   id: set_y_axis
+    return: void
+    args:
+    - id: min
+      dtype: double
+    - id: max
+      dtype: double
     # virtual void set_y_label(const std::string& label, const std::string& unit = "") = 0;
+-   id: set_y_label
+    return: void
+    args:
+    - id: label
+      dtype: const std::string& label
+    - id: unit
+      dtype: const std::string&
+      default: ""
     # virtual void set_update_time(double t) = 0;
+-   id: set_update_time
+    return: void
+    args:
+    - id: time
+      dtype: double
     # virtual void set_title(const std::string& title) = 0;
+-   id: set_title
+    return: void
+    args:
+    - id: title
+      dtype: const std::string&
     # virtual void set_line_label(unsigned int which, const std::string& label) = 0;
+-   id: set_line_label
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: label
+      dtype: const std::string&
     # virtual void set_line_color(unsigned int which, const std::string& color) = 0;
+-   id: set_line_color
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: color
+      dtype: const std::string&
     # virtual void set_line_width(unsigned int which, int width) = 0;
+-   id: set_line_width
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: width
+      dtype: int
     # virtual void set_line_style(unsigned int which, int style) = 0;
+-   id: set_line_style
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: style
+      dtype: int
     # virtual void set_line_marker(unsigned int which, int marker) = 0;
+-   id: set_line_marker
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: marker
+      dtype: int
     # virtual void set_nsamps(const int newsize) = 0;
+-   id: set_nsamps
+    return: void
+    args:
+    - id: newsize
+      dtype: const int
     # virtual void set_samp_rate(const double samp_rate) = 0;
+-   id: set_samp_rate
+    return: void
+    args:
+    - id: samp_rate
+      dtype: const double
     # virtual void set_line_alpha(unsigned int which, double alpha) = 0;
+-   id: set_line_alpha
+    return: void
+    args:
+    - id: which
+      dtype: unsigned int
+    - id: alpha
+      dtype: double
     # virtual void set_trigger_mode(trigger_mode mode,
     #                               trigger_slope slope,
     #                               float level,
@@ -94,7 +180,13 @@ implementations:
     # virtual double line_alpha(unsigned int which) = 0;
 
     # virtual void set_size(int width, int height) = 0;
-
+-   id: set_size
+    return: void
+    args:
+    - id: width
+      dtype: int
+    - id: height
+      dtype: int
     # virtual void enable_menu(bool en = true) = 0;
     # virtual void enable_grid(bool en = true) = 0;
     # virtual void enable_autoscale(bool en = true) = 0;
@@ -110,35 +202,6 @@ implementations:
     # virtual int nsamps() const = 0;
     # virtual void reset() = 0;
 
-callbacks:
--   id: exec_
-    return: void
--   id: qwidget
-    return: QWidget*
-    binding: |- 
-        [](gr::qtgui::time_sink<T>& self) { return reinterpret_cast<uintptr_t>(self.qwidget()); }
--   id: set_title
-    return: void
-    args:
-    - id: title
-      dtype: const std::string&
--   id: set_update_time
-    return: void
-    args:
-    - id: time
-      dtype: double
--   id: set_nsamps
-    return: void
-    args:
-    - id: newsize
-      dtype: const int
-# -   id: set_y_axis
-#     return: void
-#     args:
-#     - id: min
-#       dtype: double
-#     - id: max
-#       dtype: double
 
 
 file_format: 1

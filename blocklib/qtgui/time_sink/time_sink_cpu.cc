@@ -319,6 +319,17 @@ time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
+template <class T>
+void time_sink_cpu<T>::set_y_axis(double min, double max)
+{
+    d_main_gui->setYaxis(min, max);
+}
+
+template <class T>
+void time_sink_cpu<T>::set_y_label(const std::string& label, const std::string& unit)
+{
+    d_main_gui->setYLabel(label, unit);
+}
 
 template <class T>
 void time_sink_cpu<T>::set_update_time(double t)
@@ -334,6 +345,85 @@ template <class T>
 void time_sink_cpu<T>::set_title(const std::string& title)
 {
     d_main_gui->setTitle(title.c_str());
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_label(unsigned int which, const std::string& label)
+{
+    d_main_gui->setLineLabel(which, label.c_str());
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_color(unsigned int which, const std::string& color)
+{
+    d_main_gui->setLineColor(which, color.c_str());
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_width(unsigned int which, int width)
+{
+    d_main_gui->setLineWidth(which, width);
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_style(unsigned int which, int style)
+{
+    d_main_gui->setLineStyle(which, (Qt::PenStyle)style);
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_marker(unsigned int which, int marker)
+{
+    d_main_gui->setLineMarker(which, (QwtSymbol::Style)marker);
+}
+
+template <class T>
+void time_sink_cpu<T>::set_line_alpha(unsigned int which, double alpha)
+{
+    d_main_gui->setMarkerAlpha(which, (int)(255.0 * alpha));
+}
+
+// void time_sink_cpu<T>::set_trigger_mode(trigger_mode mode,
+//                                         trigger_slope slope,
+//                                         float level,
+//                                         float delay,
+//                                         int channel,
+//                                         const std::string& tag_key)
+// {
+//     gr::thread::scoped_lock lock(d_setlock);
+
+//     d_trigger_mode = mode;
+//     d_trigger_slope = slope;
+//     d_trigger_level = level;
+//     d_trigger_delay = static_cast<int>(delay * d_samp_rate);
+//     d_trigger_channel = channel;
+//     d_trigger_tag_key = pmt::intern(tag_key);
+//     d_triggered = false;
+//     d_trigger_count = 0;
+
+//     if ((d_trigger_delay < 0) || (d_trigger_delay >= d_size)) {
+//         GR_LOG_WARN(
+//             d_logger,
+//             boost::format("Trigger delay (%1%) outside of display range (0:%2%).") %
+//                 (d_trigger_delay / d_samp_rate) % ((d_size - 1) / d_samp_rate));
+//         d_trigger_delay = std::max(0, std::min(d_size - 1, d_trigger_delay));
+//         delay = d_trigger_delay / d_samp_rate;
+//     }
+
+//     d_main_gui->setTriggerMode(d_trigger_mode);
+//     d_main_gui->setTriggerSlope(d_trigger_slope);
+//     d_main_gui->setTriggerLevel(d_trigger_level);
+//     d_main_gui->setTriggerDelay(delay);
+//     d_main_gui->setTriggerChannel(d_trigger_channel);
+//     d_main_gui->setTriggerTagKey(tag_key);
+
+//     _reset();
+// }
+
+template <class T>
+void time_sink_cpu<T>::set_size(int width, int height)
+{
+    d_main_gui->resize(QSize(width, height));
 }
 
 template <class T>
@@ -369,6 +459,14 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
         d_main_gui->setNPoints(d_size);
         _reset();
     }
+}
+
+template <class T>
+void time_sink_cpu<T>::set_samp_rate(const double samp_rate)
+{
+    std::scoped_lock lock(d_setlock);
+    d_samp_rate = samp_rate;
+    d_main_gui->setSampleRate(d_samp_rate);
 }
 
 
