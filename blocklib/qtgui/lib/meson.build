@@ -1,9 +1,5 @@
 qtgui_inc_dir = join_paths('..','include','gnuradio','qtgui')
 
-qt5_mod = import('qt5')
-qt5widgets_dep = dependency('qt5', modules : 'Widgets')
-
-qwt_dep = dependency('Qwt', method: 'cmake', cmake_module_path: join_paths(meson.source_root(), 'cmake','Modules') )
 
 qtgui_sources += [
     'qtgui_util.cc',
@@ -27,7 +23,7 @@ qtgui_moc_sources = qt5_mod.compile_moc(headers: moc_srcs)
 qtgui_sources += qtgui_moc_sources
 
 
-qtgui_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, qt5widgets_dep, qwt_dep]
+qtgui_deps += [newsched_runtime_dep, newsched_blocklib_filter_dep, volk_dep, fmt_dep, pmt_dep, qt5widgets_dep, qwt_dep]
 
 block_cpp_args = ['-DHAVE_CPU','-DQWT_DLL']
 
