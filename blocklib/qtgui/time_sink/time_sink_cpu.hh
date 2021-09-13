@@ -21,18 +21,18 @@ public:
 
     virtual void exec_() { d_qApplication->exec(); };
     virtual QWidget* qwidget() { return d_main_gui; };
-    // void set_y_axis(double min, double max) override;
-    // void set_y_label(const std::string& label, const std::string& unit = "") override;
+    void set_y_axis(double min, double max) override;
+    void set_y_label(const std::string& label, const std::string& unit = "") override;
     void set_update_time(double t) override;
     void set_title(const std::string& title) override;
-    // void set_line_label(unsigned int which, const std::string& label) override;
-    // void set_line_color(unsigned int which, const std::string& color) override;
-    // void set_line_width(unsigned int which, int width) override;
-    // void set_line_style(unsigned int which, int style) override;
-    // void set_line_marker(unsigned int which, int marker) override;
+    void set_line_label(unsigned int which, const std::string& label) override;
+    void set_line_color(unsigned int which, const std::string& color) override;
+    void set_line_width(unsigned int which, int width) override;
+    void set_line_style(unsigned int which, int style) override;
+    void set_line_marker(unsigned int which, int marker) override;
     void set_nsamps(const int size) override;
-    // void set_samp_rate(const double samp_rate) override;
-    // void set_line_alpha(unsigned int which, double alpha) override;
+    void set_samp_rate(const double samp_rate) override;
+    void set_line_alpha(unsigned int which, double alpha) override;
     // void set_trigger_mode(trigger_mode mode,
     //                       trigger_slope slope,
     //                       float level,
@@ -48,7 +48,7 @@ public:
     // int line_marker(unsigned int which) override;
     // double line_alpha(unsigned int which) override;
 
-    // void set_size(int width, int height) override;
+    void set_size(int width, int height) override;
 
     // int nsamps() const override;
 
