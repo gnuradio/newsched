@@ -29,6 +29,10 @@ threads_dep = dependency('threads')
 gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
 cuda_dep = dependency('cuda', version : '>=10.1', required : USE_CUDA, modules : ['cufft'])
 
+qt5_mod = import('qt5', required: false)
+qt5widgets_dep = dependency('qt5', modules : 'Widgets', required: false)
+qwt_dep = dependency('Qwt', method: 'cmake', cmake_module_path: join_paths(meson.source_root(), 'cmake','Modules'), required: false )
+
 if USE_CUDA
 cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
 endif
