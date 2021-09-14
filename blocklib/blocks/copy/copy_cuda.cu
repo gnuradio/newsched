@@ -6,20 +6,18 @@
 // function
 namespace gr {
 namespace blocks {
-__global__ void apply_copy_kernel(const uint8_t* in, uint8_t* out, int batch_size)
+__global__ void apply_copy_kernel(const uint8_t* in, uint8_t* out, int n)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int n = batch_size;
     if (i < n) {
         out[i] = in[i];
     }
 }
 
 void apply_copy(
-    const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream)
+    const uint8_t* in, uint8_t* out, int n, int grid_size, int block_size, cudaStream_t stream)
 {
-    int batch_size = block_size * grid_size;
-    apply_copy_kernel<<<grid_size, block_size, 0, stream>>>(in, out, batch_size);
+    apply_copy_kernel<<<grid_size, block_size, 0, stream>>>(in, out, n);
 }
 
 void get_block_and_grid(int* minGrid, int* minBlock)

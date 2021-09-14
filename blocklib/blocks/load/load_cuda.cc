@@ -28,10 +28,10 @@ work_return_code_t load_cuda::work(std::vector<block_work_input>& work_input,
     auto out = static_cast<uint8_t*>(work_output[0].items());
 
     auto noutput_items = work_output[0].n_items;
-
+    int gridSize = (noutput_items * d_itemsize + d_block_size - 1) / d_block_size;
     for (int i = 0; i < noutput_items; i++) {
         load_cu::exec_kernel(
-            in + i*d_itemsize, out + i*d_itemsize, d_itemsize / d_block_size, d_block_size, d_load, d_stream);
+            in + i*d_itemsize, out + i*d_itemsize, gridSize, d_block_size, d_load, d_stream);
         checkCudaErrors(cudaPeekAtLastError());
     }
 
@@ -39,8 +39,7 @@ work_return_code_t load_cuda::work(std::vector<block_work_input>& work_input,
 
 
     // Tell runtime system how many output items we produced.
-    work_output[0].n_produced = // noutput_items;
-        (((noutput_items * d_itemsize) / d_block_size) * d_block_size) / d_itemsize;
+    work_output[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 } // namespace blocks
