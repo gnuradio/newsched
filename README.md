@@ -28,6 +28,37 @@ cd build
 ninja install
 ```
 
+### Ubuntu 20.04 Example ###
+
+The following assumes use of a prefix `/opt/newsched` (change if needed to desired prefix location):
+
+1. Install dependencies
+```bash
+sudo apt install cmake g++ ninja-build libzmq3-dev libboost-program-options-dev doxygen libyaml-cpp-dev libfmt-dev libspdlog-dev libgtest-dev libqwt-qt5-dev 
+sudo -H pip3 install meson
+```
+2. Install volk to prefix:
+```bash
+cd
+git clone --recursive https://github.com/gnuradio/volk.git
+cd volk
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/opt/newsched ../
+make -j8
+sudo make install
+```
+3. Build and install newsched
+```bash
+cd
+git clone https://github.com/gnuradio/newsched.git
+cd newsched
+meson setup build --buildtype=debugoptimized --prefix=/opt/newsched --pkg-config-path=/opt/newsched/lib/pkgconfig/
+cd build
+ninja -j8
+sudo ninja install
+```
+
 ## Dependencies ##
 
 newsched uses C++17, and has the following dependencies
@@ -40,3 +71,4 @@ newsched uses C++17, and has the following dependencies
 - spdlog
 - yaml-cpp
 - gtest
+- volk
