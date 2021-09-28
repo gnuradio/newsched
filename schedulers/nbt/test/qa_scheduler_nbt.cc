@@ -22,8 +22,8 @@ TEST(SchedulerMTTest, TwoSinks)
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make_cpu({input_data, false});
-    auto snk1 = blocks::vector_sink_f::make_cpu();
-    auto snk2 = blocks::vector_sink_f::make_cpu();
+    auto snk1 = blocks::vector_sink_f::make({});
+    auto snk2 = blocks::vector_sink_f::make({});
 
 
     auto fg = flowgraph::make();
@@ -51,7 +51,7 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     auto src = blocks::vector_source_f::make_cpu({input_data, false});
     auto mult1 = math::multiply_const_ff::make_cpu({100.0});
     auto mult2 = math::multiply_const_ff::make_cpu({200.0});
-    auto snk = blocks::vector_sink_f::make_cpu();
+    auto snk = blocks::vector_sink_f::make({});
 
     flowgraph_sptr fg(new flowgraph());
     fg->connect(src, mult1);
@@ -96,7 +96,7 @@ TEST(SchedulerMTTest, BlockFanout)
 
         for (int i = 0; i < nblocks; i++) {
             mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
-            sink_blks[i] = blocks::vector_sink_c::make_cpu();
+            sink_blks[i] = blocks::vector_sink_c::make({});
         }
         flowgraph_sptr fg(new flowgraph());
 
@@ -141,8 +141,8 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
     auto copy1 = blocks::copy::make({sizeof(float)});
     auto copy2 = blocks::copy::make({sizeof(float)});
     auto copy3 = blocks::copy::make({sizeof(float)});
-    auto snk1 = blocks::vector_sink_f::make();
-    auto snk2 = blocks::vector_sink_f::make();
+    auto snk1 = blocks::vector_sink_f::make({});
+    auto snk2 = blocks::vector_sink_f::make({});
 
 
     flowgraph_sptr fg(new flowgraph());
