@@ -14,7 +14,7 @@
 
 {% macro includes(includes) -%}
 {% for incl in includes %}
-#include <{{incl['include']}}>
+#include <{{incl['value']}}>
 {% endfor %}
 {% endmacro %}
 
@@ -92,7 +92,7 @@ class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 
 {% macro implementations(implementations) -%}
     enum class available_impl { {% for impl in implementations %}{{ impl['id'] | upper }}{{ ", " if not loop.last }}{% endfor %} };
-    static sptr make(const block_args& args, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
+    static sptr make(const block_args& args = {}, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
 
     {% for impl in implementations %}
     /**
@@ -100,7 +100,7 @@ class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
      * 
      * @return std::shared_ptr<{{ block }}> 
      */
-    static sptr make_{{impl['id']}}(const block_args& args);
+    static sptr make_{{impl['id']}}(const block_args& args = {});
     {% endfor %}
 {% endmacro %}
 
