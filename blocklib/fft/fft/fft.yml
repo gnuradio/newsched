@@ -34,7 +34,7 @@ parameters:
 -   id: shift
     label: Shift
     dtype: bool
-    default: false
+    default: 'false'
     settable: false
 
 ports:

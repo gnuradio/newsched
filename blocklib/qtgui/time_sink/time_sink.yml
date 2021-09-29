@@ -88,7 +88,7 @@ callbacks:
     return: void
     args:
     - id: label
-      dtype: const std::string& label
+      dtype: const std::string&
     - id: unit
       dtype: const std::string&
       default: ""
