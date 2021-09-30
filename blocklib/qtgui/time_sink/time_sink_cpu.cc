@@ -24,7 +24,7 @@ template <class T>
 time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
      : sync_block("time_sink"),
       time_sink<T>(args),
-    d_size(args.size),
+      d_size(args.size),
       d_buffer_size(2 * args.size),
       d_samp_rate(args.samp_rate),
       d_name(args.name),
@@ -202,6 +202,67 @@ void time_sink_cpu<T>::_test_trigger_tags(int nitems)
 }
 
 
+template <>
+bool time_sink_cpu<gr_complex>::_test_trigger_slope(const gr_complex* in) const
+{
+    float x0, x1;
+    if (d_trigger_channel % 2 == 0) {
+        x0 = in[0].real();
+        x1 = in[1].real();
+    } else {
+        x0 = in[0].imag();
+        x1 = in[1].imag();
+    }
+
+
+    if (d_trigger_slope == TRIG_SLOPE_POS)
+        return ((x0 <= d_trigger_level) && (x1 > d_trigger_level));
+    else
+        return ((x0 >= d_trigger_level) && (x1 < d_trigger_level));
+}
+
+template <class T>
+bool time_sink_cpu<T>::_test_trigger_slope(const T* in) const
+{
+    float x0, x1;
+    x0 = in[0];
+    x1 = in[1];
+
+    if (d_trigger_slope == TRIG_SLOPE_POS)
+        return ((x0 <= d_trigger_level) && (x1 > d_trigger_level));
+    else
+        return ((x0 >= d_trigger_level) && (x1 < d_trigger_level));
+}
+
+template <>
+void time_sink_cpu<gr_complex>::_test_trigger_norm(int nitems, gr_vector_const_void_star inputs)
+{
+    int trigger_index;
+    const gr_complex* in = (const gr_complex*)inputs[d_trigger_channel / 2];
+    for (trigger_index = 0; trigger_index < nitems - 1; trigger_index++) {
+        d_trigger_count++;
+
+        // Test if trigger has occurred based on the input stream,
+        // channel number, and slope direction
+        if (_test_trigger_slope(&in[trigger_index])) {
+            d_triggered = true;
+            d_start = d_index + trigger_index - d_trigger_delay;
+            d_end = d_start + d_size;
+            d_trigger_count = 0;
+            _adjust_tags(-d_start);
+            break;
+        }
+    }
+
+    // If using auto trigger mode, trigger periodically even
+    // without a trigger event.
+    if ((d_trigger_mode == TRIG_MODE_AUTO) && (d_trigger_count > d_size)) {
+        d_triggered = true;
+        d_trigger_count = 0;
+    }
+}
+
+
 template <class T>
 void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star inputs)
 {
@@ -230,18 +291,8 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
     }
 }
 
-template <class T>
-bool time_sink_cpu<T>::_test_trigger_slope(const T* in) const
-{
-    float x0, x1;
-    x0 = in[0];
-    x1 = in[1];
 
-    if (d_trigger_slope == TRIG_SLOPE_POS)
-        return ((x0 <= d_trigger_level) && (x1 > d_trigger_level));
-    else
-        return ((x0 >= d_trigger_level) && (x1 < d_trigger_level));
-}
+
 
 template <class T>
 work_return_code_t
@@ -472,7 +523,7 @@ void time_sink_cpu<T>::set_samp_rate(const double samp_rate)
 
 
 template class time_sink<float>;
-// template class time_sink<gr_complex>;
+template class time_sink<gr_complex>;
 
 } /* namespace qtgui */
 } /* namespace gr */

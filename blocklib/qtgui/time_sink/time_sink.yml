@@ -12,7 +12,8 @@ properties:
       options: 
         - value: float
           suffix: f 
-
+        - value: gr_complex
+          suffix: c
 parameters:
 -   id: size
     label: Size

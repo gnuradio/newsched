@@ -101,8 +101,8 @@ private:
     trigger_mode d_trigger_mode;
     trigger_slope d_trigger_slope;
     float d_trigger_level;
-    int d_trigger_channel;
-    int d_trigger_delay;
+    int d_trigger_channel = 0;
+    int d_trigger_delay = 0;
     pmt::pmt_t d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
