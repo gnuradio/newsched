@@ -22,7 +22,7 @@ typename multiply_const<T>::sptr multiply_const<T>::make_cpu(const block_args& a
 
 template <class T>
 multiply_const_cpu<T>::multiply_const_cpu(const typename multiply_const<T>::block_args& args)
-    : multiply_const<T>(args), d_k(args.k), d_vlen(args.vlen)
+    : sync_block("multiply_const"), multiply_const<T>(args), d_k(args.k), d_vlen(args.vlen)
 {
 }
 

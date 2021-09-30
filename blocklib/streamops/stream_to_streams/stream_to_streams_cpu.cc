@@ -22,7 +22,7 @@ stream_to_streams::make_cpu(const block_args& args)
 }
 
 stream_to_streams_cpu::stream_to_streams_cpu(const block_args& args)
-    : stream_to_streams(args), d_itemsize(args.itemsize)
+    : block("stream_to_streams"), stream_to_streams(args), d_itemsize(args.itemsize)
 {
 }
 

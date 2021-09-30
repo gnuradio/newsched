@@ -9,7 +9,7 @@ file_sink::sptr file_sink::make_cpu(const block_args& args)
 }
 
 file_sink_cpu::file_sink_cpu(const block_args& args)
-    : 
+    : sync_block("file_sink"),
       file_sink_base(args.filename, true, args.append),
       file_sink(args),
       d_itemsize(args.itemsize)

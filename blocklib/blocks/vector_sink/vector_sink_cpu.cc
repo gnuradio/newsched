@@ -22,7 +22,7 @@ typename vector_sink<T>::sptr vector_sink<T>::make_cpu(const block_args& args)
 
 template <class T>
 vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& args)
-    : vector_sink<T>(args), d_vlen(args.vlen)
+    : sync_block("vector_sink"), vector_sink<T>(args), d_vlen(args.vlen)
 {
     d_data.reserve(d_vlen * args.reserve_items);
 }

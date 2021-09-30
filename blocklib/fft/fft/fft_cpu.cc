@@ -11,7 +11,8 @@ typename fft<T, forward>::sptr fft<T, forward>::make_cpu(const block_args& args)
 
 template <class T, bool forward>
 fft_cpu<T, forward>::fft_cpu(const typename fft<T, forward>::block_args& args) 
-    : fft<T, forward>(args),
+    : sync_block("fft"),
+      fft<T, forward>(args),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
       d_fft(args.fft_size)

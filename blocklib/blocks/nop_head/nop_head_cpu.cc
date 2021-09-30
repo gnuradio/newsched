@@ -19,7 +19,7 @@ nop_head::sptr nop_head::make_cpu(const block_args& args)
 }
 
 nop_head_cpu::nop_head_cpu(const block_args& args)
-    : nop_head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
+    : sync_block("nop_head"), nop_head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
 {
 }
 
