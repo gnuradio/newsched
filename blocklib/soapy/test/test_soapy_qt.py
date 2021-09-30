@@ -22,7 +22,7 @@ if __name__ == '__main__':
             print("Warning: failed to XInitThreads()")
 
 from PyQt5 import Qt
-from newsched import qtgui, soapy
+from newsched import qtgui, soapy, fft
 import sip
 from newsched import blocks
 from newsched import gr
@@ -80,7 +80,7 @@ class test_qt(Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
+        self.tsnk = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
             "", #name
@@ -88,18 +88,18 @@ class test_qt(Qt.QWidget):
         )
 
         '''
-        self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
+        self.tsnk.set_update_time(0.10)
+        self.tsnk.set_y_axis(-1, 1)
 
-        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
+        self.tsnk.set_y_label('Amplitude', "")
 
-        self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_0.enable_grid(False)
-        self.qtgui_time_sink_x_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0.enable_control_panel(False)
-        self.qtgui_time_sink_x_0.enable_stem_plot(False)
+        self.tsnk.enable_tags(True)
+        self.tsnk.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
+        self.tsnk.enable_autoscale(False)
+        self.tsnk.enable_grid(False)
+        self.tsnk.enable_axis_labels(True)
+        self.tsnk.enable_control_panel(False)
+        self.tsnk.enable_stem_plot(False)
 
 
         labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
@@ -118,19 +118,42 @@ class test_qt(Qt.QWidget):
 
         for i in range(1):
             if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
+                self.tsnk.set_line_label(i, "Data {0}".format(i))
             else:
-                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
+                self.tsnk.set_line_label(i, labels[i])
+            self.tsnk.set_line_width(i, widths[i])
+            self.tsnk.set_line_color(i, colors[i])
+            self.tsnk.set_line_style(i, styles[i])
+            self.tsnk.set_line_marker(i, markers[i])
+            self.tsnk.set_line_alpha(i, alphas[i])
         '''
-        print(self.qtgui_time_sink_x_0.qwidget())
+        print(self.tsnk.qwidget())
 
-        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self._tsnk_win = sip.wrapinstance(self.tsnk.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._tsnk_win)
+
+
+        self.fsnk = qtgui.freq_sink_c(
+            1024, #size
+            fft.window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            samp_rate, #bw
+            "", #name
+            1,
+        )
+        self.fsnk.set_update_time(0.10)
+        self.fsnk.set_y_axis(-140, 10)
+        self.fsnk.set_y_label('Relative Gain', 'dB')
+        # self.fsnk.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
+        self.fsnk.enable_autoscale(False)
+        self.fsnk.enable_grid(False)
+        self.fsnk.set_fft_average(1.0)
+        self.fsnk.enable_axis_labels(True)
+        self.fsnk.enable_control_panel(False)
+        self.fsnk.set_fft_window_normalized(False)
+
+        self._fsnk_win = sip.wrapinstance(self.fsnk.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._fsnk_win)
 
         # src = blocks.vector_source_f([x / 100 for x in range(0,100) ], True, 1, [])
         src = soapy.source_cc('driver=rtlsdr',1)
@@ -144,7 +167,8 @@ class test_qt(Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.fg.connect(src, 0, self.qtgui_time_sink_x_0, 0)
+        self.fg.connect(src, 0, self.tsnk, 0)
+        self.fg.connect(src, 0, self.fsnk, 0)
 
 
     def closeEvent(self, event):
@@ -160,7 +184,7 @@ class test_qt(Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
+        self.tsnk.set_samp_rate(self.samp_rate)
 
 
 

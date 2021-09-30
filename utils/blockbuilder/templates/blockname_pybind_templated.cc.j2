@@ -1,4 +1,5 @@
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
+{% set inherits = properties|selectattr("id", "equalto", "blocktype")|map(attribute='inherits')|first -%}
 {% set typekeys = properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first %}
 {% set typestr = typekeys|map(attribute="id")|join(",")%}
 
@@ -16,9 +17,9 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
     // using block_class = gr::{{ module }}::{{ block }}<{{typestr}}>;
 
     {% if blocktype == 'sync' -%}
-    py::class_<gr::{{ module }}::{{ block }}<{{typestr}}>, gr::sync_block, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typestr}}>>> {{block}}_class(m, classname);
+    py::class_<gr::{{ module }}::{{ block }}<{{typestr}}>, {{ inherits }}{{',' if inherits}} gr::sync_block, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typestr}}>>> {{block}}_class(m, classname);
     {% else -%}
-    py::class_<gr::{{ module }}::{{ block }}<{{typestr}}>, gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typestr}}>>> {{block}}_class(m, classname);
+    py::class_<gr::{{ module }}::{{ block }}<{{typestr}}>, {{ inherits }}{{',' if inherits}} gr::block, gr::node, std::shared_ptr<gr::{{ module }}::{{ block }}<{{typestr}}>>> {{block}}_class(m, classname);
     {% endif -%}
 
     py::enum_<typename ::gr::{{ module }}::{{ block }}<{{typestr}}>::available_impl>({{block}}_class, "available_impl")
