@@ -84,8 +84,12 @@ public:
         return result;
     }
 
-    std::string& name() { return d_name; };
-    std::string& alias() { return d_alias; }
+    std::string name() const { return d_name; };
+    std::string alias() const { return d_alias; }
+
+    logger_sptr logger() const { return _logger; }
+    logger_sptr debug_logger() const { return _debug_logger; }
+
     uint32_t id() { return d_id; }
     void set_alias(std::string alias)
     {
