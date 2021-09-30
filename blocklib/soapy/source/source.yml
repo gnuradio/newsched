@@ -1,0 +1,80 @@
+module: soapy
+block: source
+label: source
+
+properties:
+-   id: blocktype
+    value: general
+    inherits: gr::soapy::block
+-   id: templates
+    keys:
+    - id: T
+      type: class
+      options: 
+        # - value: int16_t
+        #   suffix: ss   
+        # - value: int32_t 
+        #   suffix: ii 
+        # - value: float
+        #   suffix: ff   
+        - value: gr_complex 
+          suffix: cc 
+
+includes:
+  - value: gnuradio/soapy/block.hh
+
+    # static sptr make(const std::string& device,
+    #                  const std::string& type,
+    #                  size_t nchan,
+    #                  const std::string& dev_args = "",
+    #                  const std::string& stream_args = "",
+    #                  const std::vector<std::string>& tune_args = { "" },
+    #                  const std::vector<std::string>& other_settings = { "" });
+parameters:
+-   id: device
+    label: Device
+    dtype: const std::string&
+    settable: false
+-   id: nchan
+    label: Number of Channels
+    dtype: size_t
+    settable: false
+-   id: dev_args
+    label: Device Args
+    dtype: const std::string&
+    settable: false
+    default: '""'
+-   id: stream_args
+    label: Stream Args
+    dtype: const std::string&
+    settable: false
+    default: '""'
+-   id: tune_args
+    label: Tune Args
+    dtype: const std::vector<std::string>&
+    settable: false
+    default: std::vector<std::string>{""}
+-   id: other_settings
+    label: Other Settings
+    dtype: const std::vector<std::string>&
+    settable: false
+    default: std::vector<std::string>{""}
+
+ports:
+# -   domain: stream
+#     id: in
+#     direction: input
+#     type: T
+
+-   domain: stream
+    id: out
+    direction: output
+    type: T
+    dims: '{1}'
+    multiplicity: nchan
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
