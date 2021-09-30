@@ -24,7 +24,8 @@ annotator::make_cpu(const block_args& args)
 }
 
 annotator_cpu::annotator_cpu(const block_args& args)
-    : annotator(args),
+    : sync_block("annotator"),
+      annotator(args),
       d_when(args.when),
       d_num_inputs(args.num_inputs),
       d_num_outputs(args.num_outputs),

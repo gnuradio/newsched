@@ -19,7 +19,7 @@ head::sptr head::make_cpu(const block_args& args)
 }
 
 head_cpu::head_cpu(const block_args& args)
-    : head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
+    : sync_block("head"), head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
 {
 }
 

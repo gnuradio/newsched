@@ -22,13 +22,13 @@ typename multiply<T>::sptr multiply<T>::make_cpu(const block_args& args)
 
 template <class T>
 multiply_cpu<T>::multiply_cpu(const typename multiply<T>::block_args& args)
-    : multiply<T>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : sync_block("multiply"), multiply<T>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
 }
 
 template <>
 multiply_cpu<float>::multiply_cpu(const typename multiply<float>::block_args& args)
-    : multiply<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : sync_block("multiply_ff"), multiply<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
     // const int alignment_multiple = volk_get_alignment() / sizeof(float);
     // set_output_multiple(std::max(1, alignment_multiple));
@@ -36,7 +36,7 @@ multiply_cpu<float>::multiply_cpu(const typename multiply<float>::block_args& ar
 
 template <>
 multiply_cpu<gr_complex>::multiply_cpu(const typename multiply<gr_complex>::block_args& args)
-    : multiply<gr_complex>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : sync_block("multiply_cc"), multiply<gr_complex>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
     // const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     // set_output_multiple(std::max(1, alignment_multiple));

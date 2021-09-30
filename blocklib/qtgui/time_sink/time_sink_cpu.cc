@@ -22,7 +22,8 @@ typename time_sink<T>::sptr time_sink<T>::make_cpu(const block_args& args)
 
 template <class T>
 time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
-     : time_sink<T>(args),
+     : sync_block("time_sink"),
+      time_sink<T>(args),
     d_size(args.size),
       d_buffer_size(2 * args.size),
       d_samp_rate(args.samp_rate),
@@ -182,7 +183,7 @@ void time_sink_cpu<T>::_gui_update_trigger()
 template <class T>
 void time_sink_cpu<T>::_test_trigger_tags(int nitems)
 {
-    int trigger_index;
+    // int trigger_index;
 
     // uint64_t nr = nitems_read(d_trigger_channel);
     // std::vector<gr::tag_t> tags;

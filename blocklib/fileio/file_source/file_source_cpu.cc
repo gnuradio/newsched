@@ -28,7 +28,7 @@ namespace fileio {
 
 file_source::sptr file_source::make_cpu(const block_args& args) { return std::make_shared<file_source_cpu>(args); }
 
-file_source_cpu::file_source_cpu(const file_source::block_args& args) : file_source(args),       
+file_source_cpu::file_source_cpu(const file_source::block_args& args) : sync_block("file_source"), file_source(args), 
       d_itemsize(args.itemsize),
       d_start_offset_items(args.offset),
       d_length_items(args.len),

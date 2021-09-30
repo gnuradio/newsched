@@ -29,7 +29,7 @@
 
 {% macro class_statement(properties, block) -%}
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-class {{ block }} : public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
+class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
 {% endmacro %}
 
 {% macro block_args(parameters) -%}
