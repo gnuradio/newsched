@@ -89,11 +89,12 @@ QwtPickerMachine* QwtDblClickPlotPicker::stateMachine(int n) const
     return new QwtPickerDblClickPointMachine;
 }
 
-// void check_set_qss(QApplication* app)
-// {
-//     std::string qssfile = gr::prefs::singleton()->get_string("qtgui", "qss", "");
-//     if (!qssfile.empty()) {
-//         QString sstext = get_qt_style_sheet(QString(qssfile.c_str()));
-//         app->setStyleSheet(sstext);
-//     }
-// }
+void check_set_qss(QApplication* app)
+{
+    // FIXME - tie qss into the prefs
+    // std::string qssfile = gr::prefs::singleton()->get_string("qtgui", "qss", "");
+    // if (!qssfile.empty()) {
+    //     QString sstext = get_qt_style_sheet(QString(qssfile.c_str()));
+    //     app->setStyleSheet(sstext);
+    // }
+}

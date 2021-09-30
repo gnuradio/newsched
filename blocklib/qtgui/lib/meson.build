@@ -6,8 +6,11 @@ qtgui_sources += [
     'displayform.cc',
     'spectrumUpdateEvents.cc',
     'timedisplayform.cc',
+    'freqdisplayform.cc',
+    'freqcontrolpanel.cc',
     'DisplayPlot.cc',
     'TimeDomainDisplayPlot.cc',
+    'FrequencyDisplayPlot.cc',
     'timecontrolpanel.cc'
     ]
 
@@ -16,8 +19,11 @@ moc_srcs = [
     join_paths(qtgui_inc_dir, 'DisplayPlot.h'),
     join_paths(qtgui_inc_dir, 'form_menus.h'),
     join_paths(qtgui_inc_dir, 'timecontrolpanel.h'),
+    join_paths(qtgui_inc_dir, 'freqcontrolpanel.h'),
     join_paths(qtgui_inc_dir, 'timedisplayform.h'),
-    join_paths(qtgui_inc_dir, 'TimeDomainDisplayPlot.h')
+    join_paths(qtgui_inc_dir, 'freqdisplayform.h'),
+    join_paths(qtgui_inc_dir, 'TimeDomainDisplayPlot.h'),
+    join_paths(qtgui_inc_dir, 'FrequencyDisplayPlot.h')
 ]
 qtgui_moc_sources = qt5_mod.compile_moc(headers: moc_srcs)
 qtgui_sources += qtgui_moc_sources

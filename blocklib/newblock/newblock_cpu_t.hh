@@ -5,9 +5,6 @@
 namespace gr {
 namespace newmod {
 
-#define PARAM_LIST T k, size_t vlen
-#define PARAM_VALS k, vlen
-
 template <class T>
 class newblock_cpu : public newblock<T>
 {
@@ -17,9 +14,8 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
 
-protected:
-    T d_k;
-    size_t d_vlen;
+private:
+    // Declare private variables here
 };
 
 
