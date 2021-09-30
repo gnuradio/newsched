@@ -8,4 +8,6 @@ subdir('streamops')
 subdir('digital')
 subdir('fileio')
 subdir('qtgui')
-subdir('soapy')
+if (ENABLE_GR_SOAPY)
+  subdir('soapy')
+endif
