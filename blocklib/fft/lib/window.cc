@@ -12,7 +12,7 @@
 #include <config.h>
 #endif
 
-#include <gnuradio/fft/window.h>
+#include <gnuradio/fft/window.hh>
 #include <gnuradio/math.hh>
 #include <algorithm>
 #include <numeric>

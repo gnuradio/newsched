@@ -13,7 +13,7 @@
 /* If manual edits are made, the following tags should be modified accordingly.    */
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
-/* BINDTOOL_HEADER_FILE(window.h)                                                  */
+/* BINDTOOL_HEADER_FILE(window.hh)                                                  */
 /* BINDTOOL_HEADER_FILE_HASH(872e1911444c9a5982f4d00af81a2def)                     */
 /***********************************************************************************/
 
@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/fft/window.h>
+#include <gnuradio/fft/window.hh>
 
 void bind_window(py::module& m)
 {

@@ -22,27 +22,8 @@ typename newblock<T>::sptr newblock<T>::make_cpu(const block_args& args)
 
 template <class T>
 newblock_cpu<T>::newblock_cpu(const typename newblock<T>::block_args& args)
-    : newblock<T>(args), d_k(args.k), d_vlen(args.vlen)
+    : sync_block("newblock"), newblock<T>(args)
 {
-}
-
-template <>
-work_return_code_t
-newblock_cpu<float>::work(std::vector<block_work_input>& work_input,
-                                std::vector<block_work_output>& work_output)
-{
-
-    // Do block specific code here
-    return work_return_code_t::WORK_OK;
-}
-
-template <>
-work_return_code_t
-newblock_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
-                                     std::vector<block_work_output>& work_output)
-{
-    // Do block specific code here
-    return work_return_code_t::WORK_OK;
 }
 
 template <class T>

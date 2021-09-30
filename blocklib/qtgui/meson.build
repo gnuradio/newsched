@@ -13,6 +13,7 @@ if (get_option('enable_gr_qtgui'))
 
     # Individual block subdirectories
     subdir('time_sink')
+    subdir('freq_sink')
 
 
     subdir('lib')
