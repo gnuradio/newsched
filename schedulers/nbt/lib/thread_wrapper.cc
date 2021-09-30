@@ -67,11 +67,27 @@ bool thread_wrapper::handle_work_notification()
     }
 
     bool notify_self_ = false;
+    bool kick = false;
     for (auto elem : s) {
         if (elem.second == executor_iteration_status::READY ||
             elem.second == executor_iteration_status::BLKD_OUT) {
             notify_self_ = true;
         }
+        else if (elem.second == executor_iteration_status::BLKD_IN)
+        {
+            kick = true;
+        }
+    }
+
+    if (kick)
+    {
+        // after some period of time, drop a message in the queue to try again on this thread
+        std::thread th( [this] { 
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // make configurable
+            this->push_message(std::make_shared<scheduler_action>(
+                                scheduler_action_t::NOTIFY_INPUT, 0)); } );
+
+        th.detach();
     }
 
     return notify_self_;
@@ -123,7 +139,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
             blocking_queue = false;
 
-            if (valid) // this blocks
+            if (valid) 
             {
                 switch (msg->type()) {
                 case scheduler_message_t::SCHEDULER_ACTION: {

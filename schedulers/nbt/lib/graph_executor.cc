@@ -144,6 +144,20 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 } else if (ret == work_return_code_t::WORK_OK) {
                     per_block_status[b->id()] = executor_iteration_status::READY;
+
+                    // If a source block, and no outputs were produced, mark as BLKD_IN
+                    if (!work_input.size() && work_output.size()) {
+                        auto max_output = 0;
+                        for (auto& w : work_output) {
+                            max_output = std::max(w.n_produced, max_output);
+                        }
+                        if (max_output <= 0) {
+                            per_block_status[b->id()] =
+                                executor_iteration_status::BLKD_IN;
+                        }
+                    }
+
+
                     break;
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
                     if (b->output_multiple_set()) {
