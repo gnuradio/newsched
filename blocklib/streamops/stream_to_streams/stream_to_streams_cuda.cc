@@ -22,7 +22,7 @@ typename stream_to_streams::sptr stream_to_streams::make_cuda(const block_args& 
 }
 
 stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
-    : stream_to_streams(args), d_itemsize(args.itemsize)
+    : block("stream_to_streams_cuda"), stream_to_streams(args), d_itemsize(args.itemsize)
 {
     d_out_items.resize(args.nstreams);
     p_kernel =

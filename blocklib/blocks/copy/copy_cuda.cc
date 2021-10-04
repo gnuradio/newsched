@@ -17,7 +17,7 @@ extern void get_block_and_grid(int* minGrid, int* minBlock);
 
 copy::sptr copy::make_cuda(const block_args& args) { return std::make_shared<copy_cuda>(args); }
 
-copy_cuda::copy_cuda(block_args args) : copy(args), d_itemsize(args.itemsize)
+copy_cuda::copy_cuda(block_args args) : sync_block("copy_cuda"), copy(args), d_itemsize(args.itemsize)
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);

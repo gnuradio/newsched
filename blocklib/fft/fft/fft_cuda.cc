@@ -19,7 +19,7 @@ typename fft<T, forward>::sptr fft<T, forward>::make_cuda(const block_args& args
 
 template <class T, bool forward>
 fft_cuda<T, forward>::fft_cuda(const typename fft<T, forward>::block_args& args) 
-    : fft<T, forward>(args),
+    : sync_block("fft_cuda"), fft<T, forward>(args),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
       d_fft(args.fft_size, 64)
