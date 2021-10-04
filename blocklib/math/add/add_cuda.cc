@@ -23,7 +23,7 @@ typename add<T>::sptr add<T>::make_cuda(const block_args& args)
 
 template <class T>
 add_cuda<T>::add_cuda(const typename add<T>::block_args& args)
-    : add<T>(args), d_vlen(args.vlen), d_nports(args.nports)
+    : sync_block("add_cuda"), add<T>(args), d_vlen(args.vlen), d_nports(args.nports)
 {
     d_in_items.resize(d_nports);
     p_add_kernel =

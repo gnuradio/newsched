@@ -3,10 +3,10 @@ yml_file = 'freq_sink.yml'
 qtgui_freq_sink_files = files(['freq_sink_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    qtgui_freq_sink_files += files('freq_sink_cuda.cc')
-    qtgui_cu_sources += files('freq_sink_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     qtgui_freq_sink_files += files('freq_sink_cuda.cc')
+#     qtgui_cu_sources += files('freq_sink_cuda.cu')
+# endif
 
 gen_freq_sink_h = custom_target('gen_freq_sink_cpu_h',
                         input : ['freq_sink.yml'],

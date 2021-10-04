@@ -23,7 +23,8 @@ moving_average<T>::make_cuda(const moving_average<T>::block_args& args)
 template <class T>
 moving_average_cuda<T>::moving_average_cuda(
     const typename moving_average<T>::block_args& args)
-    : moving_average<T>(args),
+    : block("moving_average_cuda"),
+      moving_average<T>(args),
       d_length(args.length),
       d_scale(args.scale),
       d_max_iter(args.max_iter),

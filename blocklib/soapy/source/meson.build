@@ -3,10 +3,10 @@ yml_file = 'source.yml'
 soapy_source_files = files(['source_cpu.cc'])
 
 
-if cuda_dep.found() and get_option('enable_cuda')
-    soapy_source_files += files('source_cuda.cc')
-    soapy_cu_sources += files('source_cuda.cu')
-endif
+# if cuda_dep.found() and get_option('enable_cuda')
+#     soapy_source_files += files('source_cuda.cc')
+#     soapy_cu_sources += files('source_cuda.cu')
+# endif
 
 gen_source_h = custom_target('gen_source_cpu_h',
                         input : ['source.yml'],
