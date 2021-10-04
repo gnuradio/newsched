@@ -80,7 +80,7 @@ class test_qt(Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
+        self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
             "", #name
@@ -131,7 +131,7 @@ class test_qt(Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.blocks_vector_source_x_0 = blocks.vector_source_f([x / 100 for x in range(0,100) ], True, 1, [])
+        self.blocks_vector_source_x_0 = blocks.vector_source_c([x / 100 for x in range(0,100) ], True, 1, [])
 
 
 

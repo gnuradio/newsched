@@ -22,7 +22,7 @@ typename time_sink<T>::sptr time_sink<T>::make_cpu(const block_args& args)
 
 template <class T>
 time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
-     : sync_block("time_sink"),
+    : sync_block("time_sink"),
       time_sink<T>(args),
       d_size(args.size),
       d_buffer_size(2 * args.size),
@@ -30,6 +30,9 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
       d_name(args.name),
       d_nconnections(args.nconnections)
 {
+    if (sizeof(T) == sizeof(gr_complex)) {
+        d_nconnections = 2 * args.nconnections;
+    }
     // // setup PDU handling input port
     // message_port_register_in(pmt::mp("in"));
     // set_msg_handler(pmt::mp("in"), [this](pmt::pmt_t msg) { this->handle_pdus(msg); });
@@ -37,7 +40,7 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
     // +1 for the PDU buffer
     for (unsigned int n = 0; n < d_nconnections + 1; n++) {
         d_buffers.emplace_back(d_buffer_size);
-        d_fbuffers.emplace_back(d_buffer_size);
+        d_Tbuffers.emplace_back(d_buffer_size);
     }
 
     // Set alignment properties for VOLK
@@ -55,6 +58,30 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
     // declare_sample_delay(1); // delay the tags for a history of 2
 
     _reset();
+}
+
+template <>
+void time_sink_cpu<float>::initialize()
+{
+    if (qApp != NULL) {
+        d_qApplication = qApp;
+    } else {
+        d_qApplication = new QApplication(d_argc, &d_argv);
+    }
+
+    // If a style sheet is set in the prefs file, enable it here.
+    // check_set_qss(d_qApplication);
+
+    unsigned int numplots = (d_nconnections > 0) ? d_nconnections : 1;
+    d_main_gui = new TimeDisplayForm(numplots, d_parent);
+    d_main_gui->setNPoints(d_size);
+    d_main_gui->setSampleRate(d_samp_rate);
+
+    if (!d_name.empty())
+        set_title(d_name);
+
+    // initialize update time to 10 times a second
+    set_update_time(0.1);
 }
 
 template <class T>
@@ -91,8 +118,8 @@ void time_sink_cpu<T>::_reset()
             // represents data that might have to be plotted again if a
             // trigger occurs and we have a trigger delay set.  The tail
             // section is between (d_end-d_trigger_delay) and d_end.
-            memmove(d_fbuffers[n].data(),
-                    &d_fbuffers[n][d_end - d_trigger_delay],
+            memmove(d_Tbuffers[n].data(),
+                    &d_Tbuffers[n][d_end - d_trigger_delay],
                     d_trigger_delay * sizeof(float));
 
             // // Also move the offsets of any tags that occur in the tail
@@ -165,7 +192,8 @@ void time_sink_cpu<T>::_gui_update_trigger()
         if ((delay < 0) || (delay >= d_size)) {
             // GR_LOG_WARN(
             //     d_logger,
-            //     boost::format("Trigger delay (%1%) outside of display range (0:%2%).") %
+            //     boost::format("Trigger delay (%1%) outside of display range (0:%2%).")
+            //     %
             //         (delay / d_samp_rate) % ((d_size - 1) / d_samp_rate));
             delay = std::max(0, std::min(d_size - 1, delay));
             delayf = delay / d_samp_rate;
@@ -235,7 +263,8 @@ bool time_sink_cpu<T>::_test_trigger_slope(const T* in) const
 }
 
 template <>
-void time_sink_cpu<gr_complex>::_test_trigger_norm(int nitems, gr_vector_const_void_star inputs)
+void time_sink_cpu<gr_complex>::_test_trigger_norm(int nitems,
+                                                   gr_vector_const_void_star inputs)
 {
     int trigger_index;
     const gr_complex* in = (const gr_complex*)inputs[d_trigger_channel / 2];
@@ -292,14 +321,11 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
 }
 
 
-
-
-template <class T>
-work_return_code_t
-time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+template <>
+work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input>& work_input,
+                                              std::vector<block_work_output>& work_output)
 {
-    auto noutput_items = work_input[0].n_items;  // need to check across all inputs
+    auto noutput_items = work_input[0].n_items; // need to check across all inputs
 
     unsigned int n = 0, idx = 0;
     const float* in;
@@ -327,8 +353,8 @@ time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections; n++) {
         in = static_cast<const float*>(work_input[idx].items());
-        // memcpy(&d_fbuffers[n][d_index], &in[1], nitems * sizeof(float));
-        memcpy(&d_fbuffers[n][d_index], &in[0], nitems * sizeof(float));
+        // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
+        memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(float));
         // volk_32f_convert_64f(&d_buffers[n][d_index],
         //                     &in[1], nitems);
 
@@ -348,7 +374,85 @@ time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
         // Copy data to be plotted to start of buffers.
         for (n = 0; n < d_nconnections; n++) {
             // memmove(d_buffers[n], &d_buffers[n][d_start], d_size*sizeof(double));
-            volk_32f_convert_64f(d_buffers[n].data(), &d_fbuffers[n][d_start], d_size);
+            volk_32f_convert_64f(d_buffers[n].data(), &d_Tbuffers[n][d_start], d_size);
+        }
+
+        // Plot if we are able to update
+        if (gr::high_res_timer_now() - d_last_time > d_update_time) {
+            d_last_time = gr::high_res_timer_now();
+            d_qApplication->postEvent(d_main_gui,
+                                      new TimeUpdateEvent(d_buffers, d_size, d_tags));
+        }
+
+        // We've plotting, so reset the state
+        _reset();
+    }
+    // If we've filled up the buffers but haven't triggered, reset.
+    if (d_index == d_end) {
+        _reset();
+    }
+
+    this->consume_each(nitems, work_input);
+    return work_return_code_t::WORK_OK;
+}
+
+
+template <class T>
+work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
+                                          std::vector<block_work_output>& work_output)
+{
+    auto noutput_items = work_input[0].n_items; // need to check across all inputs
+
+    unsigned int n = 0, idx = 0;
+    const T* in;
+
+    _npoints_resize();
+    _gui_update_trigger();
+
+    std::scoped_lock lock(d_setlock);
+
+    int nfill = d_end - d_index;                 // how much room left in buffers
+    int nitems = std::min(noutput_items, nfill); // num items we can put in buffers
+
+    // If auto, normal, or tag trigger, look for the trigger
+    if ((d_trigger_mode != TRIG_MODE_FREE) && !d_triggered) {
+        // trigger off a tag key (first one found)
+        if (d_trigger_mode == TRIG_MODE_TAG) {
+            _test_trigger_tags(nitems);
+        }
+        // Normal or Auto trigger
+        else {
+            _test_trigger_norm(nitems, block_work_input::all_items(work_input));
+        }
+    }
+
+    // Copy data into the buffers.
+    for (n = 0; n < d_nconnections / 2; n++) {
+        in = static_cast<const T*>(work_input[idx].items());
+        // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
+        memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(T));
+        // volk_32f_convert_64f(&d_buffers[n][d_index],
+        //                     &in[1], nitems);
+
+        // uint64_t nr = nitems_read(idx);
+        // std::vector<gr::tag_t> tags;
+        // get_tags_in_range(tags, idx, nr, nr + nitems + 1);
+        // for (size_t t = 0; t < tags.size(); t++) {
+        //     tags[t].offset = tags[t].offset - nr + (d_index - d_start - 1);
+        // }
+        // d_tags[idx].insert(d_tags[idx].end(), tags.begin(), tags.end());
+        idx++;
+    }
+    d_index += nitems;
+
+    // If we've have a trigger and a full d_size of items in the buffers, plot.
+    if ((d_triggered) && (d_index == d_end)) {
+        // Copy data to be plotted to start of buffers.
+        for (n = 0; n < d_nconnections / 2; n++) {
+            volk_32fc_deinterleave_64f_x2(d_buffers[2 * n + 0].data(),
+                                          d_buffers[2 * n + 1].data(),
+                                          &d_Tbuffers[n][d_start],
+                                          d_size);
         }
 
         // Plot if we are able to update
@@ -493,8 +597,8 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
         for (unsigned int n = 0; n < d_nconnections + 1; n++) {
             d_buffers[n].clear();
             d_buffers[n].resize(d_buffer_size);
-            d_fbuffers[n].clear();
-            d_fbuffers[n].resize(d_buffer_size);
+            d_Tbuffers[n].clear();
+            d_Tbuffers[n].resize(d_buffer_size);
         }
 
         // If delay was set beyond the new boundary, pull it back.

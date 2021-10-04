@@ -80,7 +80,7 @@ private:
     const pmt::pmt_t d_tag_key;
 
     int d_index, d_start, d_end;
-    std::vector<volk::vector<float>> d_fbuffers;
+    std::vector<volk::vector<T>> d_Tbuffers;
     std::vector<volk::vector<double>> d_buffers;
     std::vector<std::vector<gr::tag_t>> d_tags;
 
