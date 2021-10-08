@@ -4,7 +4,6 @@ fft_sources += ['fftw_fft.cc','window.cc']
 link_args = []
 
 if USE_CUDA
-    # fft_sources += 'cufft.cc'
     fft_deps += cuda_dep
     fft_deps += cusp_dep
     link_args += '-lcusp'
