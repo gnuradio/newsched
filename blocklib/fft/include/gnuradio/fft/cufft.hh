@@ -15,9 +15,10 @@
  */
 
 #include <gnuradio/fft/api.h>
-#include <gnuradio/types.hh>
 #include <gnuradio/logging.hh>
+#include <gnuradio/types.hh>
 
+#include <map>
 #include <mutex>
 
 #include <cuda.h>
@@ -52,9 +53,6 @@ template <class T, bool forward>
 class FFT_API cufft
 {
 private:
-
-    cufftHandle plan;
-
     gr::logger_sptr d_logger;
     gr::logger_sptr d_debug_logger;
 
@@ -63,17 +61,21 @@ private:
     size_t d_batch_size;
     cudaStream_t d_stream;
 
+    cufftHandle d_plan;  // if batch size is specified
+    std::map<size_t, cufftHandle> d_plan_cache;
+
 public:
-    cufft(size_t fft_size, size_t batch_size, cudaStream_t stream = nullptr);
-    
+    cufft(size_t fft_size, size_t batch_size = 0, cudaStream_t stream = nullptr);
+
     cufft(const cufft&) = delete;
     cufft& operator=(const cufft&) = delete;
     // virtual ~cufft();
 
     /*!
-     * compute FFT. 
+     * compute FFT.
      */
-    void execute(const typename cufft_inbuf<T, forward>::type* in, typename cufft_outbuf<T, forward>::type* out);
+    void execute(const typename cufft_inbuf<T, forward>::type* in,
+                 typename cufft_outbuf<T, forward>::type* out);
 };
 
 using cufft_complex_fwd = cufft<gr_complex, true>;

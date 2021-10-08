@@ -1,14 +1,17 @@
 fft_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, fftw_dep]
 
 fft_sources += ['fftw_fft.cc','window.cc']
+link_args = []
 
-if cuda_dep.found() and get_option('enable_cuda')
-    fft_sources += 'cufft.cc'
+if USE_CUDA
+    # fft_sources += 'cufft.cc'
     fft_deps += cuda_dep
+    fft_deps += cusp_dep
+    link_args += '-lcusp'
 endif
 
 block_cpp_args = ['-DHAVE_CPU']
-if cuda_dep.found() and get_option('enable_cuda')
+if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 
     newsched_blocklib_fft_cu = library('newsched-blocklib-fft-cu', 
@@ -32,6 +35,7 @@ newsched_blocklib_fft_lib = library('newsched-blocklib-fft',
     include_directories : incdir, 
     install : true,
     link_language: 'cpp',
+    link_args : link_args,
     dependencies : fft_deps,
     cpp_args : block_cpp_args)
 
