@@ -2,6 +2,7 @@
 
 #include <gnuradio/fft/fft.hh>
 #include <gnuradio/fft/cufft.hh>
+#include <cusp/fft.cuh>
 
 namespace gr {
 namespace fft {
@@ -20,7 +21,8 @@ protected:
     bool d_shift;
     cudaStream_t d_stream;
 
-    cufft<gr_complex, forward> d_fft;
+    // std::shared_ptr<cusp::fft<T,forward>> d_fft;
+    cusp::fft<T,forward> d_fft;
 
     void fft_and_shift(const T* in, gr_complex* out, int batch);
 };

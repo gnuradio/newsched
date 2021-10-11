@@ -1,6 +1,5 @@
 headers = [
     'api.h',
-    'cufft.hh',
     'fftw_fft.hh',
     'window.hh'
 ]

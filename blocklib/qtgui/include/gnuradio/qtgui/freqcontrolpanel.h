@@ -11,7 +11,7 @@
 #ifndef FREQ_CONTROL_PANEL_H
 #define FREQ_CONTROL_PANEL_H
 
-#include <gnuradio/fft/window.h>
+#include <gnuradio/fft/window.hh>
 #include <gnuradio/qtgui/displayform.h>
 #include <gnuradio/qtgui/freqdisplayform.h>
 #include <QtGui/QtGui>
