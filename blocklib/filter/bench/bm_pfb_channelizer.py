@@ -57,8 +57,8 @@ class benchmark_pfb_channelizer(gr.flowgraph):
                 # self.connect(self.s2ss, ii, self.channelizer, ii)
             # self.connect(self.channelizer, self.nsnk)
             # self.connect(self.hd, 0, self.s2ss, 0)      
-            self.connect(self.hd, 0, self.channelizer, 0)  
-            self.connect(self.nsrc, 0, self.hd, 0)
+            self.connect([self.nsrc, self.hd, self.channelizer])  
+            # self.connect(self.nsrc, 0, self.hd, 0)
         else:
             self.channelizer = filter.pfb_channelizer_cc(
                 nchans,
