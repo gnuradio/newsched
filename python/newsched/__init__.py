@@ -35,13 +35,14 @@ if path.endswith(path_ending):
 
 
     ###BLOCKLIB###
-    __path__.append(os.path.join(build_path, 'blocklib', 'blocks', 'python'))
-    __path__.append(os.path.join(build_path, 'blocklib', 'math', 'python'))
-    __path__.append(os.path.join(build_path, 'blocklib', 'fileio', 'python'))
-    __path__.append(os.path.join(build_path, 'blocklib', 'streamops', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'analog', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'blocks', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'digital', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'fec', 'python'))    
     __path__.append(os.path.join(build_path, 'blocklib', 'fft', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'fileio', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'filter', 'python'))
-    __path__.append(os.path.join(build_path, 'blocklib', 'dtv', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'math', 'python'))   
     __path__.append(os.path.join(build_path, 'blocklib', 'qtgui', 'python'))
     __path__.append(os.path.join(build_path, 'blocklib', 'soapy', 'python'))
+    __path__.append(os.path.join(build_path, 'blocklib', 'streamops', 'python'))
