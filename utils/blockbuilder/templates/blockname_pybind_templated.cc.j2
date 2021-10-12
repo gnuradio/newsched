@@ -42,6 +42,12 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}<{{typestr}}>::{{cb['id']}})
         {% endif %}
         {% endfor %} 
+        {% for p in parameters -%}
+        {% if p['settable'] %}
+        .def("set_{{p['id']}}", &gr::{{module}}::{{block}}<{{typestr}}>::set_{{p['id']}})
+        .def("{{p['id']}}", &gr::{{module}}::{{block}}<{{typestr}}>::{{p['id']}})
+        {% endif %}
+        {% endfor %} 
         ;
 }
 
