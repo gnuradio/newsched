@@ -5,9 +5,6 @@
 namespace gr {
 namespace math {
 
-#define PARAM_LIST T k, size_t vlen
-#define PARAM_VALS k, vlen
-
 template <class T>
 class multiply_const_cpu : public multiply_const<T>
 {

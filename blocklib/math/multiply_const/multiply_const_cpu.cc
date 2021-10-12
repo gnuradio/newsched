@@ -31,12 +31,13 @@ work_return_code_t
 multiply_const_cpu<float>::work(std::vector<block_work_input>& work_input,
                                 std::vector<block_work_output>& work_output)
 {
+    auto k = multiply_const<float>::param_k->value();
 
     const float* in = (const float*)work_input[0].items();
     float* out = (float*)work_output[0].items();
     int noi = work_output[0].n_items * d_vlen;
 
-    volk_32f_s32f_multiply_32f(out, in, d_k, noi);
+    volk_32f_s32f_multiply_32f(out, in, k, noi);
 
     work_output[0].n_produced = work_output[0].n_items;
     return work_return_code_t::WORK_OK;
@@ -47,11 +48,13 @@ work_return_code_t
 multiply_const_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
                                      std::vector<block_work_output>& work_output)
 {
+    auto k = multiply_const<gr_complex>::param_k->value();
+
     const gr_complex* in = (const gr_complex*)work_input[0].items();
     gr_complex* out = (gr_complex*)work_output[0].items();
     int noi = work_output[0].n_items * d_vlen;
 
-    volk_32fc_s32fc_multiply_32fc(out, in, d_k, noi);
+    volk_32fc_s32fc_multiply_32fc(out, in, k, noi);
 
     work_output[0].n_produced = work_output[0].n_items;
     return work_return_code_t::WORK_OK;
@@ -62,6 +65,8 @@ work_return_code_t
 multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
+    auto k = multiply_const<T>::param_k->value();
+
     // Pre-generate these from modtool, for example
     T* iptr = (T*)work_input[0].items();
     T* optr = (T*)work_output[0].items();
@@ -69,19 +74,19 @@ multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
     int size = work_output[0].n_items * d_vlen;
 
     while (size >= 8) {
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
-        *optr++ = *iptr++ * d_k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
+        *optr++ = *iptr++ * k;
         size -= 8;
     }
 
     while (size-- > 0)
-        *optr++ = *iptr++ * d_k;
+        *optr++ = *iptr++ * k;
 
     work_output[0].n_produced = work_output[0].n_items;
     work_input[0].n_consumed = work_input[0].n_items;

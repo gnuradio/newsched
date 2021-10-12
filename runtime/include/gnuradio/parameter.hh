@@ -71,30 +71,12 @@ public:
     }
     T value()
     {
-        return std::static_pointer_cast<pmtf::pmt_scalar<T>>(pmt_value())->value();
+        return pmtf::get_pmt_scalar<T>(pmt_value()).value();
     }
 
 protected:
     T _value;
 };
-
-#define DECLARE_SCALAR_PARAM(type, name)                                     \
-public:                                                                      \
-    void set_##name(type name)                                               \
-    {                                                                        \
-        return request_parameter_change(params::id_##name,                   \
-                                        pmtf::pmt_scalar<type>::make(name)); \
-    }                                                                        \
-    type name()                                                              \
-    {                                                                        \
-        return std::static_pointer_cast<pmtf::pmt_scalar<type>>(             \
-                   request_parameter_query(params::id_##name))               \
-            ->value();                                                       \
-    }                                                                        \
-                                                                             \
-private:                                                                     \
-    typename scalar_param<type>::sptr d_##name;
-    // typename scalar_param<type> d_##name;
 
 class param_action
 {
