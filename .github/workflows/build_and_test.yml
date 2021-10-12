@@ -40,6 +40,8 @@ jobs:
         - build_data:/build
       options: --cpus 2
     steps:
+    - name: build_pmt
+      run: git clone https://github.com/gnuradio/pmt && cd pmt && meson setup build && cd build && ninja install
     - uses: actions/checkout@v2
       name: Checkout Project
     - name: Meson Setup
