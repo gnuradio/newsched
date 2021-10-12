@@ -1,4 +1,4 @@
-fft_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, fftw_dep]
+fft_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, pmtf_dep, fftw_dep]
 
 fft_sources += ['fftw_fft.cc','window.cc']
 link_args = []

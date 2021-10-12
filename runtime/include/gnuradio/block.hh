@@ -9,6 +9,10 @@
 #include <gnuradio/node.hh>
 #include <gnuradio/gpdict.hh>
 
+#include <gnuradio/parameter.hh>
+
+#include <pmtf/pmtf_wrap.hpp>
+
 namespace gr {
 
 class scheduler; // Forward declaration to scheduler class
@@ -102,6 +106,23 @@ public:
     };
 
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+    parameter_config d_parameters;
+    void add_param(param_sptr p) { d_parameters.add(p); }
+    pmtf::pmt_wrap request_parameter_query(int param_id);
+    void request_parameter_change(int param_id, pmtf::pmt_wrap new_value);
+    virtual void on_parameter_change(param_action_sptr action)
+    {
+        gr_log_debug(_debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
+        auto param = d_parameters.get(action->id());
+        param->set_pmt_value(action->pmt_value());
+    }
+
+    virtual void on_parameter_query(param_action_sptr action)
+    {
+        gr_log_debug(_debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
+        auto param = d_parameters.get(action->id());
+        action->set_pmt_value(param->pmt_value());
+    }
 
     void consume_each(int num, std::vector<block_work_input>& work_input)
     {

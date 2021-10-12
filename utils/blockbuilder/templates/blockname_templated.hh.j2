@@ -27,12 +27,30 @@ public:
     {{ macros.implementations(implementations) }}
 
     {{ macros.callbacks(callbacks) }}    
+
+    {% for p in parameters -%}
+    {% if p['settable']%}
+    void set_{{p['id']}}({{p['dtype']}} {{p['id']}});                                             
+    {{p['dtype']}} {{p['id']}}();
+    {% endif %}
+    {% endfor -%}
+protected: 
+
+enum params : uint32_t { {% for p in parameters -%}{% if p['settable']%}id_{{p['id']}},{% endif %}{% endfor %} num_params };
+
+{% for p in parameters -%}
+{% if p['settable']%}
+    typename scalar_param<{{p['dtype']}}>::sptr param_{{p['id']}};
+    {% endif %}
+    {% endfor -%}
+
 };
 
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
 typedef {{block}}<{{ opt['value']}}> {{block}}_{{ opt['suffix'] }};
 {% endfor -%}
+
 
 
 } // namespace {{ module }}

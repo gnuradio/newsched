@@ -1,5 +1,5 @@
 soapy_sources += ['block_impl.cc']
-soapy_deps += [newsched_runtime_dep, soapysdr_dep, volk_dep, fmt_dep, pmt_dep]
+soapy_deps += [newsched_runtime_dep, soapysdr_dep, volk_dep, fmt_dep, pmt_dep, pmtf_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 
