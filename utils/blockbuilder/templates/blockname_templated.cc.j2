@@ -27,13 +27,7 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}") {
  {{ macros.ports(ports, parameters) }}
-
-{% for p in parameters -%}
-{% if p['settable']%}
-    param_{{p['id']}} = scalar_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, "{{p['id']}}", args.{{p['id']}});
-    add_param(param_{{p['id']}});
-{% endif %}
-{% endfor -%}
+ {{ macros.parameter_instantiations(parameters) }}
 
 }
 

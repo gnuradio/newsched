@@ -13,7 +13,7 @@ namespace blocks {
 
 load::sptr load::make_cuda(const block_args& args) { return std::make_shared<load_cuda>(args); }
 
-load_cuda::load_cuda(block_args args) : sync_block("load_cuda"), load(args), d_itemsize(args.itemsize), d_load(args.load)
+load_cuda::load_cuda(block_args args) : sync_block("load_cuda"), load(args), d_itemsize(args.itemsize), d_load(args.iterations)
 
 {
     load_cu::get_block_and_grid(&d_min_grid_size, &d_block_size);

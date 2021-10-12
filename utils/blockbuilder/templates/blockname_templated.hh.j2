@@ -28,21 +28,7 @@ public:
 
     {{ macros.callbacks(callbacks) }}    
 
-    {% for p in parameters -%}
-    {% if p['settable']%}
-    void set_{{p['id']}}({{p['dtype']}} {{p['id']}});                                             
-    {{p['dtype']}} {{p['id']}}();
-    {% endif %}
-    {% endfor -%}
-protected: 
-
-enum params : uint32_t { {% for p in parameters -%}{% if p['settable']%}id_{{p['id']}},{% endif %}{% endfor %} num_params };
-
-{% for p in parameters -%}
-{% if p['settable']%}
-    typename scalar_param<{{p['dtype']}}>::sptr param_{{p['id']}};
-    {% endif %}
-    {% endfor -%}
+{{ macros.parameter_declarations(parameters)}} 
 
 };
 

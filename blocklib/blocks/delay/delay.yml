@@ -11,7 +11,7 @@ parameters:
     label: Item Size
     dtype: size_t
     settable: false
--   id: delay
+-   id: dly
     label: Delay
     dtype: size_t
     settable: true
