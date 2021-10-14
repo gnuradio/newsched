@@ -38,13 +38,13 @@ void bind_{{block}}(py::module& m)
         {% for cb in callbacks -%}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
         {% endfor %}
-        {% for p in parameters -%}
+        {% if parameters %}{% for p in parameters -%}
         {% if p['settable'] %}
         .def("set_{{p['id']}}", &gr::{{module}}::{{block}}::set_{{p['id']}})
         {% endif -%}
         {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
         .def("{{p['id']}}", &gr::{{module}}::{{block}}::{{p['id']}})
         {% endif %}
-        {% endfor %}  
+        {% endfor %}{% endif %}  
                    ;
 }
