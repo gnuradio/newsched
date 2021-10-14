@@ -2,6 +2,7 @@
 
 #include <pmtf/pmtf_wrap.hpp>
 #include <pmtf/pmtf_scalar.hpp>
+#include <pmtf/pmtf_vector.hpp>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -60,7 +61,7 @@ public:
         return std::make_shared<scalar_param<T>>(id, name, value);
     }
     scalar_param<T>(const uint32_t id, const std::string name, T value)
-        : param(id, name, pmtf::pmt_scalar<T>(value)), _value(value)
+        : param(id, name, pmtf::pmt_scalar<T>(value))
     {
     }
     virtual ~scalar_param<T>() {}
@@ -72,6 +73,31 @@ public:
     T value()
     {
         return pmtf::get_pmt_scalar<T>(pmt_value()).value();
+    }
+};
+
+template <class T>
+class vector_param : public param
+{
+public:
+    typedef std::shared_ptr<vector_param> sptr;
+    static sptr make(const uint32_t id, const std::string name, const std::vector<T>& value)
+    {
+        return std::make_shared<vector_param<T>>(id, name, value);
+    }
+    vector_param<T>(const uint32_t id, const std::string name, const std::vector<T>& value)
+        : param(id, name, pmtf::pmt_vector<T>(value))
+    {
+    }
+    virtual ~vector_param<T>() {}
+
+    void set_value(T val)
+    {
+        std::static_pointer_cast<pmtf::pmt_vector<T>>(pmt_value())->set_pmt_value(val);
+    }
+    T value()
+    {
+        return pmtf::get_pmt_vector<T>(pmt_value()).value();
     }
 
 protected:

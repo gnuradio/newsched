@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/blocks/throttle.hh>
+#include <chrono>
 
 namespace gr {
 namespace blocks {

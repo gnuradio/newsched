@@ -1,5 +1,4 @@
 #include "throttle_cpu.hh"
-#include <chrono>
 
 namespace gr {
 namespace blocks {

@@ -130,14 +130,16 @@ class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else '
 public:
     {% for p in parameters -%}
     {% if p['settable']%}
-    virtual void set_{{p['id']}}({{p['dtype']}} {{p['id']}});                                             
+    virtual void set_{{p['id']}}({{p['dtype']}} {{p['id']}}); 
+    {% endif -%}
+    {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
     virtual {{p['dtype']}} {{p['id']}}();
-    {% endif %}
+    {% endif -%}
     {% endfor -%}
 protected:
-    enum params : uint32_t { {% for p in parameters -%}{% if p['settable']%}id_{{p['id']}},{% endif %}{% endfor %} num_params };
+    enum params : uint32_t { {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}id_{{p['id']}},{% endif %}{% endfor %} num_params };
 {% for p in parameters -%}
-{% if p['settable']%}
+{% if p['settable'] or p['gettable'] %}
     typename scalar_param<{{p['dtype']}}>::sptr param_{{p['id']}};
 {% endif %}
 {% endfor -%}
@@ -147,7 +149,7 @@ protected:
 {% macro parameter_instantiations(parameters) -%}
 {% if parameters -%}
 {% for p in parameters -%}
-{% if p['settable']%}
+{% if p['settable'] or p['gettable']%}
     param_{{p['id']}} = scalar_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, "{{p['id']}}", args.{{p['id']}});
     add_param(param_{{p['id']}});
 {% endif %}

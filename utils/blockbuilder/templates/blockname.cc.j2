@@ -37,6 +37,8 @@ void {{block}}::set_{{p['id']}}({{p['dtype']}} {{p['id']}})
     return request_parameter_change(params::id_{{p['id']}},
                                     pmtf::pmt_scalar<{{p['dtype']}}>({{p['id']}}));
 }
+{% endif -%}
+{% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 {{p['dtype']}} {{block}}::{{p['id']}}()
 {
     return pmtf::get_pmt_scalar<{{p['dtype']}}>(

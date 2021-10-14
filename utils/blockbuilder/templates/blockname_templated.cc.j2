@@ -40,6 +40,8 @@ void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }
     return request_parameter_change(params::id_{{p['id']}},
                                     pmtf::pmt_scalar<{{p['dtype']}}>({{p['id']}}));
 }
+{% endif -%}
+{% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
 {
