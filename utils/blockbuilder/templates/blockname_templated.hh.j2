@@ -27,12 +27,16 @@ public:
     {{ macros.implementations(implementations) }}
 
     {{ macros.callbacks(callbacks) }}    
+
+{{ macros.parameter_declarations(parameters)}} 
+
 };
 
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
 typedef {{block}}<{{ opt['value']}}> {{block}}_{{ opt['suffix'] }};
 {% endfor -%}
+
 
 
 } // namespace {{ module }}

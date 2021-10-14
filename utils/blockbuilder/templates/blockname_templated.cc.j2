@@ -27,7 +27,30 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}") {
  {{ macros.ports(ports, parameters) }}
+ {{ macros.parameter_instantiations(parameters) }}
+
 }
+
+// Settable Parameters
+{% for p in parameters -%}
+{% if p['settable']%}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::set_{{p['id']}}({{p['dtype']}} {{p['id']}})
+{
+    return request_parameter_change(params::id_{{p['id']}},
+                                    pmtf::pmt_scalar<{{p['dtype']}}>({{p['id']}}));
+}
+{% endif -%}
+{% if p['settable'] and not 'gettable' in p or p['gettable'] %}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+{{p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
+{
+    return pmtf::get_pmt_scalar<{{p['dtype']}}>(
+                request_parameter_query(params::id_{{p['id']}}))
+        .value(); 
+}
+{% endif %}
+{% endfor -%}
 
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}

@@ -11,8 +11,8 @@ parameters:
     label: Item Size
     dtype: size_t
     settable: false
--   id: load
-    label: Load
+-   id: iterations
+    label: Iterations (Load)
     dtype: size_t
     settable: true
 

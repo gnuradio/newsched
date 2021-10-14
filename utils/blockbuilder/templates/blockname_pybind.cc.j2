@@ -37,6 +37,14 @@ void bind_{{block}}(py::module& m)
                    py::arg("impl") = gr::{{module}}::{{block}}::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
-        {% endfor %} 
+        {% endfor %}
+        {% if parameters %}{% for p in parameters -%}
+        {% if p['settable'] %}
+        .def("set_{{p['id']}}", &gr::{{module}}::{{block}}::set_{{p['id']}})
+        {% endif -%}
+        {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
+        .def("{{p['id']}}", &gr::{{module}}::{{block}}::{{p['id']}})
+        {% endif %}
+        {% endfor %}{% endif %}  
                    ;
 }

@@ -21,7 +21,9 @@ public:
     {{ macros.callbacks(callbacks) }}    
 
 protected:
-    {{ macros.message_ports(ports) }}    
+    {{ macros.message_ports(ports) }} 
+
+{{ macros.parameter_declarations(parameters) }}
 };
 
 } // namespace {{ module }}

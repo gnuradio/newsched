@@ -15,6 +15,10 @@ thread_wrapper::thread_wrapper(int id,
     _logger = logging::get_logger(bgp.name(), "default");
     _debug_logger = logging::get_logger(bgp.name() + "_dbg", "debug");
 
+    for (auto b : d_blocks) {
+        d_block_id_to_block_map[b->id()] = b;
+    }
+
     d_fgmon = fgmon;
     _exec = std::make_unique<graph_executor>(bgp.name());
     _exec->initialize(bufman, d_blocks);
@@ -91,6 +95,32 @@ bool thread_wrapper::handle_work_notification()
     }
 
     return notify_self_;
+}
+
+void thread_wrapper::handle_parameter_query(std::shared_ptr<param_query_action> item)
+{
+    auto b = d_block_id_to_block_map[item->blkid()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter query {} - {}", item->blkid(), b->alias());
+
+    b->on_parameter_query(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
+}
+
+void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action> item)
+{
+    auto b = d_block_id_to_block_map[item->blkid()];
+
+    gr_log_debug(
+        _debug_logger, "handle parameter change {} - {}", item->blkid(), b->alias());
+
+    b->on_parameter_change(item->param_action());
+
+    if (item->cb_fcn() != nullptr)
+        item->cb_fcn()(item->param_action());
 }
 
 
@@ -193,6 +223,16 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
                     break;
                 }
+                case scheduler_message_t::PARAMETER_QUERY: {
+                    // Query the state of a parameter on a block
+                    top->handle_parameter_query(
+                        std::static_pointer_cast<param_query_action>(msg));
+                } break;
+                case scheduler_message_t::PARAMETER_CHANGE: {
+                    // Query the state of a parameter on a block
+                    top->handle_parameter_change(
+                        std::static_pointer_cast<param_change_action>(msg));
+                } break;
                 default:
                     break;
                 }

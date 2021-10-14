@@ -26,6 +26,7 @@ parameters:
     label: Vec. Length
     dtype: size_t
     settable: false
+    gettable: true
     default: 1
 -   id: reserve_items
     label: Reserve Items

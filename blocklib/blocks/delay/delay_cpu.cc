@@ -10,7 +10,7 @@ delay::sptr delay::make_cpu(const block_args& args)
 
 delay_cpu::delay_cpu(const block_args& args) : block("delay"), delay(args), d_itemsize(args.itemsize)
 {
-    set_dly(args.delay);
+    set_dly(args.dly);
 }
 
 void delay_cpu::set_dly(size_t d)

@@ -1,20 +1,25 @@
 module: blocks
-block: delay
-label: Delay
+block: throttle
+label: throttle
 
 properties:
 -   id: blocktype
-    value: general
+    value: sync
 
 parameters:
 -   id: itemsize
     label: Item Size
     dtype: size_t
     settable: false
--   id: dly
-    label: Delay
-    dtype: size_t
-    settable: true
+-   id: samples_per_sec
+    label: Samples Per Second
+    dtype: double
+    settable: false
+-   id: ignore_tags
+    label: Ignore Tags
+    dtype: bool
+    settable: false
+    default: 'true'
 
 ports:
 -   domain: stream
@@ -31,6 +36,5 @@ ports:
 
 implementations:
 -   id: cpu
-# -   id: cuda
 
 file_format: 1

@@ -39,7 +39,7 @@ if USE_CUDA
 cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
 endif
 
-
+pmtf_dep = dependency('pmtf')
 
 cmake = import('cmake')
 

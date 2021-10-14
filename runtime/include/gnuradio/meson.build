@@ -25,6 +25,7 @@ runtime_headers = [
     'parameter_types.hh',
     'port.hh',
     'prefs.hh',
+    'parameter.hh',
     'scheduler.hh',
     'scheduler_message.hh',
     'buffer_cpu_simple.hh',

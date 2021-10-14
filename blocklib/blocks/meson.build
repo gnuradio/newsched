@@ -17,6 +17,7 @@ subdir('nop_head')
 subdir('nop_source')
 subdir('null_sink')
 subdir('null_source')
+subdir('throttle')
 subdir('vector_sink')
 subdir('vector_source')
 

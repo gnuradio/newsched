@@ -76,6 +76,7 @@ if get_option('enable_testing')
     test('NBT Tags Tests', e)
 
     test('Basic Python', find_program('qa_basic.py'), env: env)
+    test('Block Parameters', find_program('qa_parameters.py'), env: env)
 
 endif
 

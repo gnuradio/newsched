@@ -36,6 +36,7 @@ private:
     int _id;
     block_group_properties d_block_group;
     std::vector<block_sptr> d_blocks;
+    std::map<nodeid_t, block_sptr> d_block_id_to_block_map;
 
     logger_sptr _logger;
     logger_sptr _debug_logger;
@@ -73,6 +74,8 @@ public:
     void run();
 
     bool handle_work_notification();
+    void handle_parameter_query(std::shared_ptr<param_query_action> item);
+    void handle_parameter_change(std::shared_ptr<param_change_action> item);
     static void thread_body(thread_wrapper* top);
 };
 } // namespace schedulers

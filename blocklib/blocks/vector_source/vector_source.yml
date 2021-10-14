@@ -25,7 +25,7 @@ parameters:
 -   id: data
     label: Data
     dtype: std::vector<T>
-    settable: true
+    settable: false
 -   id: repeat
     label: Repeat
     dtype: bool
@@ -39,7 +39,7 @@ parameters:
 -   id: tags
     label: Tags
     dtype: std::vector<gr::tag_t>
-    settable: true
+    settable: false
     default: std::vector<gr::tag_t>()
 
 ports:
