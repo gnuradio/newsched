@@ -28,11 +28,11 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
     {% endfor -%}
         .export_values();
 
-    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }}, {%endfor%}{% endif %} typename gr::{{module}}::{{block}}<{{typestr}}>::available_impl impl) {
-                       return ::gr::{{ module }}::{{block}}<{{typestr}}>::make({ {% if parameters %}{% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}{% endif %} }, impl);
+    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}{{ param['dtype'] }} {{ param['id'] }},{%endif%} {%endfor%}{% endif %} typename gr::{{module}}::{{block}}<{{typestr}}>::available_impl impl) {
+                       return ::gr::{{ module }}::{{block}}<{{typestr}}>::make({ {% if parameters %}{% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}{{ param['id'] }}{{ ", " if not loop.last }}{% endif %}{%endfor%}{% endif %} }, impl);
                    }),
-        {% if parameters %} {% for param in parameters -%}
-        py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},
+        {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}
+        py::arg("{{ param['id'] }}"){% endif %}{% if 'default' in param %} = {{param['default']}},{% endif %}
         {% endfor -%} {% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
