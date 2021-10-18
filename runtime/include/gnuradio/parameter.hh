@@ -81,21 +81,21 @@ class vector_param : public param
 {
 public:
     typedef std::shared_ptr<vector_param> sptr;
-    static sptr make(const uint32_t id, const std::string name, const std::vector<T>& value)
+    static sptr make(const uint32_t id, const std::string name, const std::vector<T>& value = {})
     {
         return std::make_shared<vector_param<T>>(id, name, value);
     }
-    vector_param<T>(const uint32_t id, const std::string name, const std::vector<T>& value)
+    vector_param<T>(const uint32_t id, const std::string name, const std::vector<T>& value = {})
         : param(id, name, pmtf::pmt_vector<T>(value))
     {
     }
     virtual ~vector_param<T>() {}
 
-    void set_value(T val)
+    void set_value(std::vector<T> val)
     {
         std::static_pointer_cast<pmtf::pmt_vector<T>>(pmt_value())->set_pmt_value(val);
     }
-    T value()
+    std::vector<T> value()
     {
         return pmtf::get_pmt_vector<T>(pmt_value()).value();
     }

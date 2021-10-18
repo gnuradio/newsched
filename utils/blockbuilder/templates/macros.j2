@@ -34,9 +34,9 @@ class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else '
 
 {% macro block_args(parameters) -%}
     struct block_args {
-        {% if parameters %} {% for param in parameters -%}
+        {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr'] == true %}
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% endfor -%}{% endif %}};
+        {% endif %}{% endfor -%}{% endif %}};
 {% endmacro %}
 
 {% macro cotr_statement(block) -%}
@@ -129,18 +129,27 @@ class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else '
 {% if parameters -%}
 public:
     {% for p in parameters -%}
-    {% if p['settable']%}
+        {% if p['container'] == 'vector' -%}
+            {% if p['settable']%}
+    virtual void set_{{p['id']}}(std::vector<{{p['dtype']}}> {{p['id']}}); 
+            {% endif -%}
+            {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
+    virtual std::vector<{{p['dtype']}}> {{p['id']}}();
+            {% endif -%}
+        {% else -%}
+            {% if p['settable']%}
     virtual void set_{{p['id']}}({{p['dtype']}} {{p['id']}}); 
-    {% endif -%}
-    {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
+            {% endif -%}
+            {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
     virtual {{p['dtype']}} {{p['id']}}();
-    {% endif -%}
+            {% endif -%}
+        {% endif -%}
     {% endfor -%}
 protected:
     enum params : uint32_t { {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}id_{{p['id']}},{% endif %}{% endfor %} num_params };
 {% for p in parameters -%}
 {% if p['settable'] or p['gettable'] %}
-    typename scalar_param<{{p['dtype']}}>::sptr param_{{p['id']}};
+    typename {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::sptr param_{{p['id']}};
 {% endif %}
 {% endfor -%}
 {% endif -%}
@@ -150,7 +159,8 @@ protected:
 {% if parameters -%}
 {% for p in parameters -%}
 {% if p['settable'] or p['gettable']%}
-    param_{{p['id']}} = scalar_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, "{{p['id']}}", args.{{p['id']}});
+    param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
+        "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
     add_param(param_{{p['id']}});
 {% endif %}
 {% endfor -%}

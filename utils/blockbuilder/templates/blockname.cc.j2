@@ -35,13 +35,13 @@ namespace {{module}} {
 void {{block}}::set_{{p['id']}}({{p['dtype']}} {{p['id']}})
 {
     return request_parameter_change(params::id_{{p['id']}},
-                                    pmtf::pmt_scalar<{{p['dtype']}}>({{p['id']}}));
+                                    pmtf::pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{p['id']}}));
 }
 {% endif -%}
 {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 {{p['dtype']}} {{block}}::{{p['id']}}()
 {
-    return pmtf::get_pmt_scalar<{{p['dtype']}}>(
+    return pmtf::get_pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
                 request_parameter_query(params::id_{{p['id']}}))
         .value(); 
 }

@@ -33,10 +33,15 @@ parameters:
     dtype: size_t
     settable: false
     default: 1024
-
-callbacks:
 -   id: data
-    return: std::vector<T>
+    label: Data
+    dtype: T
+    container: vector
+    gettable: true
+    cotr: false
+# callbacks:
+# -   id: data
+#     return: std::vector<T>
 
 ports:
 -   domain: stream
