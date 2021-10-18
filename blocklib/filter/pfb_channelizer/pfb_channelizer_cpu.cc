@@ -101,8 +101,8 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
 {
     // std::scoped_lock guard(d_mutex);
 
-    const T* in = (const T*)work_input[0].items();
-    T* out = (T*)work_output[0].items();
+    auto in = work_input[0].items<T>();
+    auto out = work_output[0].items<T>();
     auto noutput_items = work_output[0].n_items;
     auto ninput_items = work_input[0].n_items;
 
@@ -175,7 +175,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
 
         // Send to output channels
         for (unsigned int nn = 0; nn < noutputs; nn++) {
-            out = (gr_complex*)work_output[nn].items();
+            out = work_output[nn].items<gr_complex>();
             out[oo] = d_fft.get_outbuf()[d_channel_map[nn]];
         }
         oo++;

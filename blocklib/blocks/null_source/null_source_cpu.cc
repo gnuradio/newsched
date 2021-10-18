@@ -14,7 +14,7 @@ work_return_code_t null_source_cpu::work(std::vector<block_work_input>& work_inp
     void* optr;
 
     for (size_t n = 0; n < work_output.size(); n++) {
-        optr = work_output[n].items();
+        optr = work_output[n].items<void>();
         auto noutput_items = work_output[n].n_items;
         memset(optr, 0, noutput_items * d_itemsize);
         work_output[n].n_produced = noutput_items;

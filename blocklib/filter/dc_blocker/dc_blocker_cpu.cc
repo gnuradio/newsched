@@ -51,8 +51,8 @@ work_return_code_t dc_blocker_cpu<T>::work(std::vector<block_work_input>& work_i
                                            std::vector<block_work_output>& work_output)
 {
 
-    const T* in = (const T*)work_input[0].items();
-    T* out = (T*)work_output[0].items();
+    auto in = work_input[0].items<T>();
+    auto out = work_output[0].items<T>();
     auto noutput_items = work_output[0].n_items;
 
     if (d_long_form) {

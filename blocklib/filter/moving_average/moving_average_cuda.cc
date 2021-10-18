@@ -54,8 +54,8 @@ moving_average_cuda<T>::work(std::vector<block_work_input>& work_input,
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
-    auto in = static_cast<const T*>(work_input[0].items());
-    auto out = static_cast<T*>(work_output[0].items());
+    auto in = work_input[0].items<T>());
+    auto out = work_output[0].items<T>());
 
     size_t noutput_items =
         std::min((int)(work_input[0].n_items), work_output[0].n_items);

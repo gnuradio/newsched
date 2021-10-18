@@ -22,7 +22,7 @@ file_sink_cpu::~file_sink_cpu() {}
 work_return_code_t file_sink_cpu::work(std::vector<block_work_input>& work_input,
                                        std::vector<block_work_output>& work_output)
 {
-    auto inbuf = static_cast<const char*>(work_input[0].items());
+    auto inbuf = work_input[0].items<uint8_t>();
     auto noutput_items = work_input[0].n_items;
 
     int nwritten = 0;

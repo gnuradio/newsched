@@ -11,8 +11,8 @@ work_return_code_t conjugate_cpu::work(std::vector<block_work_input>& work_input
 {
     auto noutput_items = work_output[0].n_items;
 
-    auto iptr = static_cast<const gr_complex*>(work_input[0].items());
-    auto optr = static_cast<gr_complex*>(work_output[0].items());
+    auto iptr = work_input[0].items<gr_complex>();
+    auto optr = work_output[0].items<gr_complex>();
 
     volk_32fc_conjugate_32fc(optr, iptr, noutput_items);
 

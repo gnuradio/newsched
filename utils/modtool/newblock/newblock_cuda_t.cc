@@ -55,9 +55,8 @@ work_return_code_t
 newblock_cuda<gr_complex>::work(std::vector<block_work_input>& work_input,
                              std::vector<block_work_output>& work_output)
 {
-    // Pre-generate these from modtool, for example
-    auto in = static_cast<cuFloatComplex*>(work_input[0].items());
-    auto out = static_cast<cuFloatComplex*>(work_output[0].items());
+    auto in = work_input[0].items<cuFloatComplex>());
+    auto out = work_output[0].items<cuFloatComplex>());
 
     auto noutput_items = work_output[0].n_items;
 

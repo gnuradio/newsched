@@ -41,9 +41,6 @@ annotator_cpu::annotator_cpu(const block_args& args)
 work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
-    // auto in = (const float*)work_input[0].items();
-    // auto out = (float*)work_output[0].items();
-
     auto noutput_items = work_output[0].n_items;
 
     uint64_t abs_N = 0;

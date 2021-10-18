@@ -23,7 +23,9 @@ struct block_work_input {
     {
     }
 
-    void* items() const { return buffer->read_ptr(); }
+    template <typename T>
+    const T* items() const { return static_cast<const T*>(buffer->read_ptr()); }
+
     uint64_t nitems_read() { return buffer->total_read(); }
 
     void consume(int num) { n_consumed = num; }
@@ -38,7 +40,7 @@ struct block_work_input {
     {
         std::vector<const void*> ret(work_inputs.size());
         for (size_t idx = 0; idx < work_inputs.size(); idx++) {
-            ret[idx] = work_inputs[idx].items();
+            ret[idx] = work_inputs[idx].buffer->read_ptr();
         }
 
         return ret;
@@ -60,7 +62,9 @@ struct block_work_output {
     {
     }
 
-    void* items() const { return buffer->write_ptr(); }
+    template <typename T>
+    T* items() const { return static_cast<T*>(buffer->write_ptr()); }
+
     uint64_t nitems_written() { return buffer->total_written(); }
     void produce(int num) { n_produced = num; }
 
@@ -76,7 +80,7 @@ struct block_work_output {
     {
         std::vector<void*> ret(work_outputs.size());
         for (size_t idx = 0; idx < work_outputs.size(); idx++) {
-            ret[idx] = work_outputs[idx].items();
+            ret[idx] = work_outputs[idx].buffer->write_ptr();
         }
 
         return ret;

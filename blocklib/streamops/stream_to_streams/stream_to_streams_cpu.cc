@@ -30,7 +30,7 @@ work_return_code_t
 stream_to_streams_cpu::work(std::vector<block_work_input>& work_input,
                                        std::vector<block_work_output>& work_output)
 {
-    auto in = static_cast<const uint8_t*>(work_input[0].items());
+    auto in = work_input[0].items<uint8_t>();
 
     uint8_t * in_ptr = const_cast<uint8_t*>(in);
     auto noutput_items = work_output[0].n_items;
@@ -41,7 +41,7 @@ stream_to_streams_cpu::work(std::vector<block_work_input>& work_input,
 
     for (size_t i = 0; i < total_items; i++) {
         for (size_t j = 0; j < nstreams; j++) {
-            memcpy(((uint8_t *)work_output[j].items())+i*d_itemsize, in_ptr, d_itemsize);
+            memcpy(work_output[j].items<uint8_t>()+i*d_itemsize, in_ptr, d_itemsize);
             in_ptr += d_itemsize;
         }
     }

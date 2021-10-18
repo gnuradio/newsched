@@ -65,7 +65,7 @@ template <class T>
 work_return_code_t freq_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
                                           std::vector<block_work_output>& work_output)
 {
-    auto in = (const T*)work_input[0].items();
+    auto in = work_input[0].items<T>();
     auto noutput_items = work_input[0].n_items;
 
     // Update the FFT size from the application
@@ -99,7 +99,7 @@ work_return_code_t freq_sink_cpu<T>::work(std::vector<block_work_input>& work_in
 
             // Perform FFT and shift operations into d_magbufs
             for (int n = 0; n < d_nconnections; n++) {
-                in = (const T*)work_input[n].items();
+                in = work_input[n].items<T>();
                 memcpy(
                     d_residbufs[n].data(), &in[d_index], sizeof(gr_complex) * d_fftsize);
 

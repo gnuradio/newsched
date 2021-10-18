@@ -35,6 +35,7 @@ work_return_code_t
 add_cuda<T>::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
+    auto out = work_output[0].items<T>());
     auto noutput_items = work_output[0].n_items;
     int noi = d_vlen * noutput_items;
 
@@ -44,7 +45,7 @@ add_cuda<T>::work(std::vector<block_work_input>& work_input,
         d_in_items[idx++] = wi.items();
     }
 
-    p_add_kernel->launch_default_occupancy(d_in_items, { work_output[0].items() }, noi);
+    p_add_kernel->launch_default_occupancy(d_in_items, { out }, noi);
 
     this->produce_each(noutput_items, work_output);
     this->consume_each(noutput_items, work_input);

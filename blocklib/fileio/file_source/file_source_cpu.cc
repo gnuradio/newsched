@@ -233,7 +233,7 @@ void file_source_cpu::set_begin_tag(pmt::pmt_t val) { d_add_begin_tag = val; }
 work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
 {
-    auto o = static_cast<uint8_t*>(work_output[0].items());
+    auto out = work_output[0].items<uint8_t>();
     auto noutput_items = work_output[0].n_items;
     uint64_t size = noutput_items;
 
@@ -264,7 +264,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
 
         uint64_t nitems_to_read = std::min(size, d_items_remaining);
 
-        size_t nitems_read = fread(o, d_itemsize, nitems_to_read, (FILE*)d_fp);
+        size_t nitems_read = fread(out, d_itemsize, nitems_to_read, (FILE*)d_fp);
         if (nitems_to_read != nitems_read) {
             // Size of non-seekable files is unknown. EOF is normal.
             if (!d_seekable && feof((FILE*)d_fp)) {
@@ -278,7 +278,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
 
         size -= nitems_read;
         d_items_remaining -= nitems_read;
-        o += nitems_read * d_itemsize;
+        out += nitems_read * d_itemsize;
 
         // Ran out of items ("EOF")
         if (d_items_remaining == 0) {

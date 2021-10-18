@@ -161,14 +161,8 @@ template <class T, bool forward>
 work_return_code_t fft_cpu<T, forward>::work(std::vector<block_work_input>& work_input,
                                              std::vector<block_work_output>& work_output)
 {
-    // auto* iptr = (uint8_t*)work_input[0].items();
-    // int size = work_output[0].n_items * d_itemsize;
-    // auto* optr = (uint8_t*)work_output[0].items();
-    // // std::fft(iptr, iptr + size, optr);
-    // memcpy(optr, iptr, size);
-
-    auto in = static_cast<const T*>(work_input[0].items());
-    auto out = static_cast<gr_complex*>(work_output[0].items());
+    auto in = work_input[0].items<T>();
+    auto out = work_output[0].items<gr_complex>();
     auto noutput_items = work_output[0].n_items;
 
     int count = 0;

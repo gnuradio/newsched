@@ -72,16 +72,9 @@ pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
-    size_t idx = 0;
-    for (auto& wi : work_input) {
-        d_in_items[idx++] = wi.items();
-    }
-
-    idx = 0;
-    for (auto& wo : work_output) {
-        d_out_items[idx++] = wo.items();
-    }
-
+    d_in_items = block_work_input::all_items(work_input);
+    d_out_items = block_work_outpu::all_items(work_output);
+    
     checkCudaErrors(p_channelizer->launch_default_occupancy(
         d_in_items , { d_dev_buf }, (noutput_items + d_overlap / d_nchans)));
 
