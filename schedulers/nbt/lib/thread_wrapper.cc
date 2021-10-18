@@ -72,24 +72,48 @@ bool thread_wrapper::handle_work_notification()
 
     bool notify_self_ = false;
     bool kick = false;
+    bool all_blkd = true;
     for (auto elem : s) {
         if (elem.second == executor_iteration_status::READY ||
             elem.second == executor_iteration_status::BLKD_OUT) {
             notify_self_ = true;
-        }
-        else if (elem.second == executor_iteration_status::BLKD_IN)
-        {
+        } else if (elem.second == executor_iteration_status::BLKD_IN) {
             kick = true;
+        }
+
+        if (elem.second != executor_iteration_status::BLKD_IN &&
+            elem.second != executor_iteration_status::BLKD_OUT) {
+            // Ignore source blocks
+            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size())
+            {
+                all_blkd = false;
+            }
         }
     }
 
-    if (kick)
-    {
-        // after some period of time, drop a message in the queue to try again on this thread
-        std::thread th( [this] { 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // make configurable
-            this->push_message(std::make_shared<scheduler_action>(
-                                scheduler_action_t::NOTIFY_INPUT, 0)); } );
+    if (d_flushing) { 
+        if (all_blkd) {
+        gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
+        d_fgmon->push_message(
+            fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
+        return false;
+        }
+        else
+        {
+            gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
+        }
+    }
+
+
+    if (kick) {
+        // after some period of time, drop a message in the queue to try again on this
+        // thread
+        std::thread th([this] {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(100)); // make configurable
+            this->push_message(
+                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, 0));
+        });
 
         th.detach();
     }
@@ -169,8 +193,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
             blocking_queue = false;
 
-            if (valid) 
-            {
+            if (valid) {
                 switch (msg->type()) {
                 case scheduler_message_t::SCHEDULER_ACTION: {
                     // Notification that work needs to be done
@@ -181,10 +204,16 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     case scheduler_action_t::DONE:
                         // fgmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
-                        gr_log_debug(top->_debug_logger,
-                                     "fgm signaled DONE, pushing flushed");
-                        top->d_fgmon->push_message(
-                            fg_monitor_message(fg_monitor_message_t::FLUSHED, top->id()));
+
+                        // if a block (e.g. head block) has told the fgmon that we are
+                        // done, need to push the rest of the samples through the pipeline
+                        // -- hang in this state until all the blocks in this thread
+                        // report
+                        //    either BLKD_IN or BLKD_OUT
+
+                        top->start_flushing();
+                        do_some_work = true;
+
                         break;
                     case scheduler_action_t::EXIT:
                         gr_log_debug(top->_debug_logger,
