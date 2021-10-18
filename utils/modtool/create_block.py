@@ -23,6 +23,7 @@ templated_arg = args.templated # boolean for templated
 
 # get current working directory
 path = os.getcwd()
+path_of_this_file = os.path.dirname(os.path.abspath(__file__))
 
 # check if module exists, if not return an error
 mod_path = os.path.join(path, mod_name)
@@ -31,7 +32,7 @@ if not mod_exists:
     sys.exit('Error: module ' + mod_name + ' does not exist')
 
 # copy newblock template
-src = os.path.join(path, 'newblock')
+src = os.path.join(path_of_this_file, 'newblock')
 dest = os.path.join(mod_path, block_name)
 new_block_dir = shutil.copytree(src,dest)
 
