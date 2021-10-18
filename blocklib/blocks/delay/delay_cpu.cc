@@ -41,8 +41,8 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
     // No change in delay; just memcpy ins to outs
     if (d_delta == 0) {
         for (size_t i = 0; i < work_input.size(); i++) {
-            iptr = static_cast<const uint8_t*>(work_input[i].items());
-            optr = static_cast<uint8_t*>(work_output[i].items());
+            iptr = work_input[i].items<uint8_t>();
+            optr = work_output[i].items<uint8_t>();
             std::memcpy(optr, iptr, noutput_items * d_itemsize);
         }
         cons = noutput_items;
@@ -56,8 +56,8 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
         n_to_copy = std::max(0, noutput_items - delta);
         n_adj = std::min(delta, noutput_items);
         for (size_t i = 0; i < work_input.size(); i++) {
-            iptr = static_cast<const uint8_t*>(work_input[i].items());
-            optr = static_cast<uint8_t*>(work_output[i].items());
+            iptr = work_input[i].items<uint8_t>();
+            optr = work_output[i].items<uint8_t>();
             std::memcpy(optr, iptr + delta * d_itemsize, n_to_copy * d_itemsize);
         }
         cons = noutput_items;
@@ -72,8 +72,8 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
         n_from_input = std::max(0, noutput_items - d_delta);
         n_padding = std::min(d_delta, noutput_items);
         for (size_t i = 0; i < work_input.size(); i++) {
-            iptr = static_cast<const uint8_t*>(work_input[i].items());
-            optr = static_cast<uint8_t*>(work_output[i].items());
+            iptr = work_input[i].items<uint8_t>();
+            optr = work_output[i].items<uint8_t>();
             std::memset(optr, 0, n_padding * d_itemsize);
             std::memcpy(optr + n_padding * d_itemsize, iptr, n_from_input * d_itemsize);
         }

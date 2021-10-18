@@ -352,7 +352,7 @@ work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input>& wor
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections; n++) {
-        in = static_cast<const float*>(work_input[idx].items());
+        in = work_input[idx].items<float>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(float));
         // volk_32f_convert_64f(&d_buffers[n][d_index],
@@ -428,7 +428,7 @@ work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input>& work_in
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections / 2; n++) {
-        in = static_cast<const T*>(work_input[idx].items());
+        in = work_input[idx].items<T>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(T));
         // volk_32f_convert_64f(&d_buffers[n][d_index],

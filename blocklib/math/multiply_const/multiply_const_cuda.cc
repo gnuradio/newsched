@@ -48,9 +48,10 @@ work_return_code_t
 multiply_const_cuda<T>::work(std::vector<block_work_input>& work_input,
                              std::vector<block_work_output>& work_output)
 {
+    auto out = work_output[0].items<T>());
     auto noutput_items = work_output[0].n_items;
 
-    p_kernel->launch_default_occupancy({work_input[0].items()}, { work_output[0].items() }, noutput_items);
+    p_kernel->launch_default_occupancy({work_input[0].items<T>()}, { out }, noutput_items);
     cudaStreamSynchronize(d_stream);
 
     work_output[0].n_produced = work_output[0].n_items;

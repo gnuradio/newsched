@@ -41,8 +41,9 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input>& work_input,
     // }
 
     // copy all samples output[i] <= input[i]
-    const char* in = (const char*)work_input[0].items();
-    char* out = (char*)work_output[0].items();
+    auto in = work_input[0].items<uint8_t>();
+    auto out = work_output[0].items<uint8_t>();
+
     auto noutput_items = work_output[0].n_items;
 
     d_total_samples += noutput_items;

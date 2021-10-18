@@ -42,13 +42,10 @@ stream_to_streams_cuda::work(std::vector<block_work_input>& work_input,
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
 
-    size_t idx = 0;
-    for (auto& wo : work_output) {
-        d_out_items[idx++] = wo.items();
-    }
+    d_out_items = block_work_output::all_items(work_output);
 
     p_kernel->launch_default_occupancy(
-        { work_input[0].items() }, d_out_items, d_itemsize * total_items * nstreams);
+        { work_input[0].items<uint8_t>() }, d_out_items, d_itemsize * total_items * nstreams);
     cudaStreamSynchronize(d_stream);
 
     produce_each(total_items, work_output);

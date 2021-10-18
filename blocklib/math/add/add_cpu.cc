@@ -58,13 +58,13 @@ work_return_code_t
 add_cpu<T>::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
-    T* out = (T*)work_output[0].items();
+    auto out = work_output[0].items<T>();
     auto noutput_items = work_output[0].n_items;
     int noi = d_vlen * noutput_items;
 
-    memcpy(out, work_input[0].items(), noi * sizeof(T));
+    memcpy(out, work_input[0].items<T>(), noi * sizeof(T));
     for (size_t i = 1; i < work_input.size(); i++) {
-        volk_add(out, (T*)work_input[i].items(), noi);
+        volk_add(out, work_input[i].items<T>(), noi);
     }
 
     this->produce_each(noutput_items, work_output);

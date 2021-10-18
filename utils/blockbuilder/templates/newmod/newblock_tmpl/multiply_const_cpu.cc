@@ -32,8 +32,8 @@ multiply_const_cpu<float>::work(std::vector<block_work_input>& work_input,
                                 std::vector<block_work_output>& work_output)
 {
 
-    const float* in = (const float*)work_input[0].items();
-    float* out = (float*)work_output[0].items();
+    auto in = work_input[0].items<float>());
+    auto out = work_output[0].items<float>());
     int noi = work_output[0].n_items * d_vlen;
 
     volk_32f_s32f_multiply_32f(out, in, d_k, noi);
@@ -47,8 +47,8 @@ work_return_code_t
 multiply_const_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
                                      std::vector<block_work_output>& work_output)
 {
-    const gr_complex* in = (const gr_complex*)work_input[0].items();
-    gr_complex* out = (gr_complex*)work_output[0].items();
+    auto in = work_input[0].items<gr_complex>());
+    auto out = work_output[0].items<gr_complex>());
     int noi = work_output[0].n_items * d_vlen;
 
     volk_32fc_s32fc_multiply_32fc(out, in, d_k, noi);
@@ -63,8 +63,8 @@ multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
     // Pre-generate these from modtool, for example
-    T* iptr = (T*)work_input[0].items();
-    T* optr = (T*)work_output[0].items();
+    auto iptr = work_input[0].items<T>());
+    auto optr = work_output[0].items<T>());
 
     int size = work_output[0].n_items * d_vlen;
 

@@ -8,9 +8,9 @@ copy::sptr copy::make_cpu(const block_args& args) { return std::make_shared<copy
 work_return_code_t copy_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
 {
-    auto* iptr = (uint8_t*)work_input[0].items();
+    auto iptr = work_input[0].items<uint8_t>();
     int size = work_output[0].n_items * d_itemsize;
-    auto* optr = (uint8_t*)work_output[0].items();
+    auto optr = work_output[0].items<uint8_t>();
     // std::copy(iptr, iptr + size, optr);
     memcpy(optr, iptr, size);
 

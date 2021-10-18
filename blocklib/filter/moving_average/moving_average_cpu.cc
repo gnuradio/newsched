@@ -58,8 +58,8 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
         return work_return_code_t::WORK_OK;
     }
 
-    auto in = static_cast<const T*>(work_input[0].items());
-    auto out = static_cast<T*>(work_output[0].items());
+    auto in = work_input[0].items<T>();
+    auto out = work_output[0].items<T>();
 
     size_t noutput_items = std::min( (int) ( work_input[0].n_items - d_length ), work_output[0].n_items);
 

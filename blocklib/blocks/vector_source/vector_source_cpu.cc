@@ -36,9 +36,7 @@ work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& wor
 
     // size_t noutput_ports = work_output.size(); // is 1 for this block
     int noutput_items = work_output[0].n_items;
-    void* output_items = work_output[0].items();
-
-    T* optr = (T*)output_items;
+    auto optr = work_output[0].items<T>();
 
     if (d_repeat) {
         unsigned int size = d_data.size();
