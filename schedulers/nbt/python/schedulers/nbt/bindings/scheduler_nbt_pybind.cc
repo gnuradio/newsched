@@ -8,7 +8,9 @@
  *
  */
 
+#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <gnuradio/types.hh>
@@ -43,7 +45,10 @@ PYBIND11_MODULE(scheduler_nbt_python, m)
         .def(py::init(&gr::schedulers::scheduler_nbt::make),
             py::arg("name") = "multi_threaded",
             py::arg("fixed_buf_size") = 32768)
-        .def("add_block_group", &gr::schedulers::scheduler_nbt::add_block_group)
+        .def("add_block_group", &gr::schedulers::scheduler_nbt::add_block_group,
+            py::arg("blocks"),
+            py::arg("name") = "",
+            py::arg("affinity_mask") = std::vector<unsigned int>{})
         ;
 
 
