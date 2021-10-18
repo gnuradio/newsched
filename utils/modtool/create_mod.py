@@ -14,8 +14,10 @@ mod_name = args.create_mod # name of new module to be created
 # get current working directory
 path = os.getcwd()
 
+path_of_this_file = os.path.dirname(os.path.abspath(__file__))
+
 # copy newmod template
-src = os.path.join(path, 'newmod')
+src = os.path.join(path_of_this_file, 'newmod')
 dest = os.path.join(path, mod_name)
 
 new_mod_dir = shutil.copytree(src, dest)
