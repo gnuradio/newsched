@@ -32,7 +32,7 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
                        return ::gr::{{ module }}::{{block}}<{{typestr}}>::make({ {% if parameters %}{% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}{{ param['id'] }}{{ ", " if not loop.last }}{% endif %}{%endfor%}{% endif %} }, impl);
                    }),
         {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}
-        py::arg("{{ param['id'] }}"){% endif %}{% if 'default' in param %} = {{param['default']}},{% endif %}
+        py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},{% endif %}
         {% endfor -%} {% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
