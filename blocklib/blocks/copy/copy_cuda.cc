@@ -29,8 +29,8 @@ copy_cuda::copy_cuda(block_args args) : sync_block("copy_cuda"), copy(args), d_i
 work_return_code_t copy_cuda::work(std::vector<block_work_input>& work_input,
                                    std::vector<block_work_output>& work_output)
 {
-    auto in = work_input[0].items<uint8_t>());
-    auto out = work_output[0].items<uint8_t>());
+    auto in = work_input[0].items<uint8_t>();
+    auto out = work_output[0].items<uint8_t>();
 
     auto noutput_items = work_output[0].n_items;
     int gridSize = (noutput_items * d_itemsize + d_block_size - 1) / d_block_size;
