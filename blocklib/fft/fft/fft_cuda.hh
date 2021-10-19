@@ -1,7 +1,6 @@
 #pragma once
 
 #include <gnuradio/fft/fft.hh>
-#include <gnuradio/fft/cufft.hh>
 #include <cusp/fft.cuh>
 
 namespace gr {

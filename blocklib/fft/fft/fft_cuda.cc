@@ -85,8 +85,8 @@ work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input>& wor
                                               std::vector<block_work_output>& work_output)
 {
 
-    auto in = work_input[0].items<T>());
-    auto out = work_output[0].items<gr_complex>());
+    auto in = work_input[0].items<T>();
+    auto out = work_output[0].items<gr_complex>();
     auto noutput_items = work_output[0].n_items;
 
     // int count = 0;

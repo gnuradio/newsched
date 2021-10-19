@@ -73,7 +73,7 @@ pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
     }
 
     d_in_items = block_work_input::all_items(work_input);
-    d_out_items = block_work_outpu::all_items(work_output);
+    d_out_items = block_work_output::all_items(work_output);
     
     checkCudaErrors(p_channelizer->launch_default_occupancy(
         d_in_items , { d_dev_buf }, (noutput_items + d_overlap / d_nchans)));
