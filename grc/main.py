@@ -30,9 +30,10 @@ LOG_LEVELS = {
 
 
 def main():
-    from gnuradio import gr
+    # FIXME: need gr.version
+    from newsched import gr
     parser = argparse.ArgumentParser(
-        description=VERSION_AND_DISCLAIMER_TEMPLATE % gr.version())
+        description=VERSION_AND_DISCLAIMER_TEMPLATE % "newsched")
     parser.add_argument('flow_graphs', nargs='*')
     parser.add_argument('--log', choices=['debug', 'info', 'warning', 'error', 'critical'], default='warning')
     args = parser.parse_args()
@@ -74,10 +75,13 @@ def main():
     platform = Platform(
         version=gr.version(),
         version_parts=(gr.major_version(), gr.api_version(), gr.minor_version()),
-        prefs=gr.prefs(),
+        prefs=None, #FIXME #gr.prefs(),
         install_prefix=gr.prefix()
     )
-    platform.build_library()
+
+    hack_blocks_path = ['/share/gnuradio/gr40/src/newsched/build/grc/blocks',
+        '/share/gnuradio/gr40/src/newsched/grc/blocks']
+    platform.build_library(path=hack_blocks_path)
 
     log.debug("Loading application")
     app = Application(args.flow_graphs, platform)

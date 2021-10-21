@@ -133,7 +133,7 @@ asserts:
 
 templates:
     imports: |-
-        from gnuradio import gr
+        from newsched import gr
         from gnuradio.filter import firdes
         from gnuradio.fft import window
         import sys

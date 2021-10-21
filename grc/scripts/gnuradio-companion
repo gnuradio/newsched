@@ -60,7 +60,7 @@ def check_gtk():
 
 def check_gnuradio_import():
     try:
-        from gnuradio import gr
+        from newsched import gr
     except ImportError as err:
         die(err, GR_IMPORT_ERROR_MESSAGE)
 

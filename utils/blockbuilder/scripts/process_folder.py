@@ -76,8 +76,12 @@ def main():
                 print("generating " + blockname_cc)
                 file.write(rendered)
 
-
-        # shutil.copyfile(blockname_h, full_outputfile)
+        # copy the yaml file to the build dir
+        yaml_path = os.path.join(args.build_dir,'grc','blocks')
+        if not os.path.exists(yaml_path):
+            os.makedirs(yaml_path)
+        gr_blocks_path = os.path.join(yaml_path, os.path.basename(args.yaml_file))
+        shutil.copyfile(args.yaml_file, gr_blocks_path)
 
         # for impl in d['implementations']:
         #     if templated:
