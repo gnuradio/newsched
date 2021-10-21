@@ -118,6 +118,24 @@ public:
         }
     }
 
+    port_sptr input_port(size_t index)
+    {
+        auto ports = input_stream_ports();
+        if (ports.size() > index)
+            return ports[index];
+        else
+            return nullptr;
+    }
+
+    port_sptr output_port(size_t index)
+    {
+        auto ports = output_stream_ports();
+        if (ports.size() > index)
+            return ports[index];
+        else
+            return nullptr;
+    }
+
     message_port_sptr get_message_port(const std::string& name)
     {
         auto p = get_port(name);

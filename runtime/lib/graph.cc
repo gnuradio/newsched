@@ -2,7 +2,7 @@
 
 namespace gr {
 
-edge_sptr graph::connect(const node_endpoint& src,
+port_sptr graph::connect(const node_endpoint& src,
                     const node_endpoint& dst)
 {
     
@@ -49,10 +49,10 @@ edge_sptr graph::connect(const node_endpoint& src,
     src.port()->connect(dst.port());
     dst.port()->connect(src.port());
 
-    return newedge;
+    return src.port();
 }
 
-edge_sptr graph::connect(node_sptr src_node,
+port_sptr graph::connect(node_sptr src_node,
                     unsigned int src_port_index,
                     node_sptr dst_node,
                     unsigned int dst_port_index)
@@ -71,20 +71,20 @@ edge_sptr graph::connect(node_sptr src_node,
             node_endpoint(dst_node, dst_port));
 }
 
-edge_sptr graph::connect(node_sptr src_node,
+port_sptr graph::connect(node_sptr src_node,
                     node_sptr dst_node)
 {
     return connect(src_node, 0, dst_node, 0);
 }
 
-edge_vector_t graph::connect(const std::vector<std::pair<node_sptr, unsigned int>>& pairs)
+port_vector_t graph::connect(const std::vector<std::pair<node_sptr, unsigned int>>& pairs)
 {
     if (pairs.size() < 2)
     {
         throw std::runtime_error("connect: must call with 2 or more node/index pairs");
     }
 
-    edge_vector_t ret;
+    port_vector_t ret;
     auto last_node = pairs[0].first;
     auto last_index = pairs[0].second;
     for (size_t i = 1; i < pairs.size(); i++)
@@ -97,14 +97,14 @@ edge_vector_t graph::connect(const std::vector<std::pair<node_sptr, unsigned int
     return ret;
 }
 
-edge_vector_t graph::connect(const std::vector<node_sptr>& nodes)
+port_vector_t graph::connect(const std::vector<node_sptr>& nodes)
 {
     if (nodes.size() < 2)
     {
         throw std::runtime_error("connect: must call with 2 or more nodes");
     }
 
-    edge_vector_t ret;
+    port_vector_t ret;
     auto last_node = nodes[0];
     for (size_t i = 1; i < nodes.size(); i++)
     {
@@ -115,7 +115,7 @@ edge_vector_t graph::connect(const std::vector<node_sptr>& nodes)
     return ret;
 }
 
-edge_sptr graph::connect(node_sptr src_node,
+port_sptr graph::connect(node_sptr src_node,
                     const std::string& src_port_name,
                     node_sptr dst_node,
                     const std::string& dst_port_name)

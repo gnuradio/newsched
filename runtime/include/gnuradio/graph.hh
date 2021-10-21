@@ -38,17 +38,17 @@ public:
     edge_vector_t& stream_edges() { return _stream_edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
     node_vector_t& nodes() { return _nodes; }
-    edge_sptr connect(const node_endpoint& src,
+    port_sptr connect(const node_endpoint& src,
                  const node_endpoint& dst);
-    edge_sptr connect(node_sptr src_node,
+    port_sptr connect(node_sptr src_node,
                  unsigned int src_port_index,
                  node_sptr dst_node,
                  unsigned int dst_port_index);
-    edge_sptr connect(node_sptr src_node,
+    port_sptr connect(node_sptr src_node,
                  node_sptr dst_node);
-    edge_vector_t connect(const std::vector<std::pair<node_sptr, unsigned int>>&);
-    edge_vector_t connect(const std::vector<node_sptr>&);
-    edge_sptr connect(node_sptr src_node,
+    port_vector_t connect(const std::vector<std::pair<node_sptr, unsigned int>>&);
+    port_vector_t connect(const std::vector<node_sptr>&);
+    port_sptr connect(node_sptr src_node,
                  const std::string& src_port_name,
                  node_sptr dst_node,
                  const std::string& dst_port_name);
