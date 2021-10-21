@@ -18,5 +18,7 @@ void bind_node(py::module& m)
 
         .def("name", &node::name)
         .def("alias", &node::alias)
+        .def("input_port", &node::input_port)
+        .def("output_port", &node::output_port)
         ;
 }

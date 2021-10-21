@@ -18,9 +18,9 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 fg->nodes().end()) {
 
                 buffer_sptr buf;
-                if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(
-                        num_items, e->itemsize(), e->buf_properties());
+                if (e->src().port()->has_custom_buffer()) {
+                    buf = e->src().port()->buffer_factory()(
+                        num_items, e->itemsize(), e->src().port()->buf_properties());
                 } else {
                     buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
                 }
@@ -67,7 +67,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                             ed[0]->identifier(),
                             ed[0]->src().node()->alias());
                 p->set_buffer_reader(
-                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
+                    ed[0]->src().port()->buffer()->add_reader(ed[0]->src().port()->buf_properties(), ed[0]->dst().port()->itemsize()));
             }
         }
     }
@@ -82,15 +82,15 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
     // (We're double buffering, where we used to single buffer)
 
     size_t buf_size = s_fixed_buf_size;
-    if (e->has_custom_buffer()) {
+    if (e->src().port()->has_custom_buffer()) {
 
-        auto req_buf_size = e->buf_properties()->buffer_size();
+        auto req_buf_size = e->src().port()->buf_properties()->buffer_size();
 
         if (req_buf_size > 0) {
             buf_size = req_buf_size;
         } else {
-            auto max_buf_size = e->buf_properties()->max_buffer_size();
-            auto min_buf_size = e->buf_properties()->min_buffer_size();
+            auto max_buf_size = e->src().port()->buf_properties()->max_buffer_size();
+            auto min_buf_size = e->src().port()->buf_properties()->min_buffer_size();
             if (max_buf_size > 0) {
                 buf_size = std::min(buf_size, max_buf_size);
             }

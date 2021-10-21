@@ -44,7 +44,7 @@ graph_utils::partition(graph_sptr input_graph,
                 // Is the other block in our current partition
                 if (std::find(blocks.begin(), blocks.end(), other_block) !=
                     blocks.end()) {
-                    g->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
+                    g->connect(e->src(), e->dst())->set_custom_buffer(e->src().port()->buf_properties());
                 } else {
                     // add this edge to the list of domain crossings
                     // domain_crossings.push_back(std::make_tuple(g,e));

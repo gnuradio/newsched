@@ -9,6 +9,8 @@
 #include <typeinfo>
 #include <utility>
 
+#include <gnuradio/buffer.hh>
+
 
 namespace gr {
 
@@ -26,7 +28,7 @@ enum class port_direction_t {
  * Holds the necessary information to describe the port to the runtime
  *
  */
-class port_base : std::enable_shared_from_this<port_base>
+class port_base
 {
 
 public:
@@ -99,7 +101,6 @@ public:
     size_t data_size() { return _datasize; }
     size_t itemsize() { return _itemsize; }
     std::vector<size_t> dims() { return _dims; }
-    sptr base() { return shared_from_this(); }
     bool optional() { return _optional; }
     auto& connected_ports() { return _connected_ports; }
 
@@ -145,6 +146,25 @@ public:
         }
     }
 
+    // We can associate a custom buffer setting with a port
+    void set_custom_buffer(std::shared_ptr<buffer_properties> buffer_properties)
+    {
+        _buffer_properties = buffer_properties;
+    }
+
+    bool has_custom_buffer()
+    {
+        if (_buffer_properties) {
+            return _buffer_properties->factory() != nullptr;
+        } else {
+            return false;
+        }
+    }
+
+    buffer_factory_function buffer_factory() { return _buffer_properties->factory(); }
+    std::shared_ptr<buffer_properties> buf_properties() { return _buffer_properties; }
+
+
 protected:
     std::string _name;
     std::string _alias;
@@ -163,6 +183,7 @@ protected:
     neighbor_interface_sptr _parent_intf = nullptr;
     buffer_sptr _buffer = nullptr;
     buffer_reader_sptr _buffer_reader = nullptr;
+    std::shared_ptr<buffer_properties> _buffer_properties = nullptr;
 };
 
 typedef port_base::sptr port_sptr;

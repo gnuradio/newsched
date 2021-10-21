@@ -71,7 +71,6 @@ class edge
 {
 protected:
     node_endpoint _src, _dst;
-    std::shared_ptr<buffer_properties> _buffer_properties = nullptr;
 
 public:
     typedef std::shared_ptr<edge> sptr;
@@ -93,14 +92,6 @@ public:
     std::string identifier() const;
     size_t itemsize() const;
 
-    void set_custom_buffer(std::shared_ptr<buffer_properties> buffer_properties)
-    {
-        _buffer_properties = buffer_properties;
-    }
-
-    bool has_custom_buffer();
-    buffer_factory_function buffer_factory();
-    std::shared_ptr<buffer_properties> buf_properties();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const edge edge)

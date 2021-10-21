@@ -13,15 +13,16 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/edge.hh>
+#include <gnuradio/port.hh>
 // pydoc.h is automatically generated in the build directory
-// #include <edge_pydoc.h>
+// #include <port_pydoc.h>
 
-void bind_edge(py::module& m)
+void bind_port(py::module& m)
 {
-    using edge = ::gr::edge;
+    using port = ::gr::port_base;
 
-    py::class_<edge, std::shared_ptr<edge>>(m, "edge")
+    py::class_<port, std::shared_ptr<::gr::port_base>>(m, "port")
+    .def("set_custom_buffer", &port::set_custom_buffer)
         ;
 
 }
