@@ -8,6 +8,9 @@
 #include <gnuradio/neighbor_interface_info.hh>
 #include <gnuradio/scheduler_message.hh>
 #include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #include "graph_executor.hh"
 
@@ -44,6 +47,11 @@ private:
     flowgraph_monitor_sptr d_fgmon;
 
     bool d_flushing = false;
+    std::atomic_flag d_kick_flag{};
+    std::mutex d_kick_mutex;
+    std::condition_variable d_kick_cv;
+    bool d_kick = false;
+    std::atomic<bool> d_kick_pending = false;
 
 public:
     typedef std::shared_ptr<thread_wrapper> sptr;

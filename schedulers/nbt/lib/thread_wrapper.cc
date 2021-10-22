@@ -23,6 +23,26 @@ thread_wrapper::thread_wrapper(int id,
     _exec = std::make_unique<graph_executor>(bgp.name());
     _exec->initialize(bufman, d_blocks);
     d_thread = std::thread(thread_body, this);
+
+    // after some period of time, drop a message in the queue to try again on this
+    // thread
+    std::thread watchdog_thread([this] {
+        while (!d_thread_stopped) {
+            // d_kick_flag.wait(false);
+            std::unique_lock<std::mutex> lck(d_kick_mutex);
+            d_kick_cv.wait(lck, [this] { return d_kick; });
+            d_kick_pending = true;
+            GR_LOG_DEBUG(
+                _debug_logger, "Waiting for 100ms");
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(100)); // make configurable
+            d_kick = false;
+            this->push_message(
+                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, 0));
+        }
+    });
+
+    watchdog_thread.detach();
 }
 
 void thread_wrapper::start()
@@ -84,38 +104,37 @@ bool thread_wrapper::handle_work_notification()
         if (elem.second != executor_iteration_status::BLKD_IN &&
             elem.second != executor_iteration_status::BLKD_OUT) {
             // Ignore source blocks
-            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size())
-            {
+            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size()) {
                 all_blkd = false;
             }
         }
     }
 
-    if (d_flushing) { 
+    if (d_flushing) {
         if (all_blkd) {
-        gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
-        d_fgmon->push_message(
-            fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
-        return false;
-        }
-        else
-        {
+            gr_log_debug(
+                _debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
+            d_fgmon->push_message(
+                fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
+            return false;
+        } else {
             gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
         }
     }
 
 
     if (kick) {
-        // after some period of time, drop a message in the queue to try again on this
-        // thread
-        std::thread th([this] {
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(100)); // make configurable
-            this->push_message(
-                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, 0));
-        });
-
-        th.detach();
+        // // after some period of time, drop a message in the queue to try again on this
+        // // thread
+        {
+            std::lock_guard<std::mutex> lck(d_kick_mutex);
+            if (!d_kick_pending) {
+                d_kick = true;
+            }
+        }
+        // The actual kicking is disabled for now
+        // FIXME: figure out why this make some tests fail
+        // d_kick_cv.notify_all();
     }
 
     return notify_self_;
