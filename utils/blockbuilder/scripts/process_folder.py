@@ -90,6 +90,13 @@ def main():
                 print("generating " + filename)
                 file.write(rendered)
 
+        if args.output_grc:
+            filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc))
+            template = env.get_template('blockname.grc.j2')
+            rendered = template.render(d)
+            with open(filename, 'w') as file:
+                print("generating " + filename)
+                file.write(rendered)
 
         # copy the yaml file to the build dir
         yaml_path = os.path.join(args.build_dir,'grc','blocks')

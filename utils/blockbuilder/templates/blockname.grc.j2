@@ -1,0 +1,62 @@
+{%- macro type_lookup(type) -%}
+{%- if type in ['int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int
+{%- elif type in ['short', 'unsigned short', 'uint16_t', 'int16_t'] -%}short
+{%- elif type in ['uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}byte
+{%- elif type in ['std::complex<float>', 'gr_complex'] -%}complex
+{%- elif type in ['float'] -%}float
+{%- else -%}raw{%-endif-%}
+{%- endmacro -%}
+{% macro get_linked_value(value, ports, parameters, typekeys) -%}
+    {% set newvalue = value -%}
+    {% if '/' in value -%}
+        {% set list1 = value.split('/') -%}
+        {% set newvalue = '${' + list1[1] + '}' -%}
+    {% endif -%}
+{{newvalue}}{% endmacro -%}
+id: {{module}}_{{block}}
+label: {{label if label else block}}
+flags: {{grc['flags']}}
+
+parameters:
+{% if typekeys -%} {# We have a templated block, enable type parameter#}
+-   id: {{typekeys[0]['id']}}
+    label: IO Type
+    dtype: enum
+    options: [{% for opt in typekeys[0]['options'] %}{{type_lookup(opt['value'])}}{{"," if not loop.last}} {% endfor %}]
+    option_attributes:
+        fcn: [{% for opt in typekeys[0]['options'] %}{{opt['suffix']}}{{"," if not loop.last}} {% endfor %}]
+    hide: part
+{% endif -%}
+{% for param in parameters -%}
+-   id: {{param['id']}}
+    label: {{param['label']}}
+    dtype: {{type_lookup(param['dtype'])}}
+    {% if 'default' in param %}default: {{param['default']}}{%elif 'grc' in param and 'default' in param['grc']%}default: {{param['default']}}{%endif%}
+    {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
+{% endfor -%}
+
+inputs:
+{% for port in ports -%}
+{% if port['direction'] == 'input'-%}
+-   domain: {{port['domain']}}
+    dtype: {{get_linked_value(port['dtype'])}}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+{% endif -%}
+{% endfor -%}
+
+outputs:
+{% for port in ports -%}
+{% if port['direction'] == 'output'-%}
+-   domain: {{port['domain']}}
+    dtype: {{get_linked_value(port['dtype'])}}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+{% endif -%}
+{% endfor -%}
+
+templates:
+    imports: {{grc['templates']['imports']}}
+    make: {{grc['templates']['make']}}
+
+file_format: 1
