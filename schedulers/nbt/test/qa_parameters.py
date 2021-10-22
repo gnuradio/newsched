@@ -49,7 +49,7 @@ class test_basic(gr_unittest.TestCase):
             k_queried.append(query_k)
 
 
-        sleep(0.25)
+        sleep(0.05)
 
         self.tb.stop()
 
