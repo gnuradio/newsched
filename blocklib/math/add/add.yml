@@ -17,8 +17,6 @@ typekeys:
         suffix: cc 
 
 parameters:
--   id: type
-
 -   id: nports
     label: Num Ports
     dtype: size_t
