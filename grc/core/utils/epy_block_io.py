@@ -44,7 +44,7 @@ def _find_block_class(source_code, cls):
 
 def extract(cls):
     try:
-        from gnuradio import gr
+        from newsched import gr
         import pmt
     except ImportError:
         raise EnvironmentError("Can't import GNU Radio")
@@ -89,7 +89,7 @@ def extract(cls):
 if __name__ == '__main__':
     blk_code = """
 import numpy as np
-from gnuradio import gr
+from newsched import gr
 import pmt
 
 class blk(gr.sync_block):

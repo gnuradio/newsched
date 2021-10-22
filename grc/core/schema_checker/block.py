@@ -68,11 +68,19 @@ BLOCK_SCHEME = expand(
 
     block_wrapper_path=str,  # todo: rename/remove
 )
-NEWSCHED_PROPERTIES_SCHEME = expand(
+
+NEWSCHED_KEY_SCHEME = expand(
+    id=str,
+    type=str,
+    options=list,
+)
+
+NEWSCHED_PROPERTY_SCHEME = expand(
     id=str,
     label=str,
     category=str,
     value=str,
+    keys=Spec(types=list, required=False, item_scheme=NEWSCHED_KEY_SCHEME),
 )
 
 NEWSCHED_PARAM_SCHEME = expand(
@@ -96,7 +104,7 @@ NEWSCHED_PORT_SCHEME = expand(
     id=str,
     type=str,
     dims=str,
-
+    size=str,
 
     multiplicity=(int, str),
     optional=(bool, int, str),
@@ -114,7 +122,7 @@ NEWSCHED_BLOCK_SCHEME = expand(
     flags=(list, str),
 
     parameters=Spec(types=list, required=False, item_scheme=NEWSCHED_PARAM_SCHEME),
-    properties=Spec(types=list, required=False, item_scheme=NEWSCHED_PROPERTIES_SCHEME),
+    properties=Spec(types=list, required=False, item_scheme=NEWSCHED_PROPERTY_SCHEME),
     ports=Spec(types=list, required=False, item_scheme=NEWSCHED_PORT_SCHEME),
 
     asserts=(list, str),

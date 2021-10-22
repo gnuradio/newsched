@@ -54,6 +54,9 @@ class Evaluated(object):
         if isinstance(value, str) and value.startswith('${') and value.endswith('}'):
             attribs[self.name_raw] = value[2:-1].strip()
             attribs.pop(self.name, None)  # reset previous eval result
+        elif isinstance(value, str) and '/' in value:
+            attribs[self.name_raw] = value
+            attribs.pop(self.name, None)  # reset previous eval result
         else:
             attribs[self.name] = type(self.default)(value)
 

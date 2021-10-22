@@ -38,10 +38,8 @@ def main():
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
         templated = 0
-        template_prop = [x for x in d['properties'] if x['id'] == 'templates']
-        if (len(template_prop) > 0):
-            templated = len(template_prop[0]['keys'])
-
+        if ('typekeys' in d and len(d['typekeys']) > 0):
+            templated = len(d['typekeys'])
 
         filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_pybind.cc')
         # full_outputfile = os.path.join(args.build_dir, args.output_file)

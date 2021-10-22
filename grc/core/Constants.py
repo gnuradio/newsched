@@ -23,7 +23,7 @@ DEFAULT_HIER_BLOCK_LIB_DIR = os.path.expanduser('~/.grc_gnuradio')
 
 CACHE_FILE = os.path.expanduser('~/.cache/grc_gnuradio/cache_newsched.json')
 
-BLOCK_DESCRIPTION_FILE_FORMAT_VERSION = 1
+BLOCK_DESCRIPTION_FILE_FORMAT_VERSION = 2
 # File format versions:
 #  0: undefined / legacy
 #  1: non-numeric message port keys (label is used instead)

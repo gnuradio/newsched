@@ -15,7 +15,7 @@ from .. import Constants
 # Blacklist certain ids, its not complete, but should help
 ID_BLACKLIST = ['self', 'default'] + dir(builtins)
 try:
-    from gnuradio import gr
+    from newsched import gr
     ID_BLACKLIST.extend(attr for attr in dir(gr.top_block()) if not attr.startswith('_'))
 except (ImportError, AttributeError):
     pass

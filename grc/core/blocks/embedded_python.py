@@ -28,7 +28,7 @@ be the parameters. All of them are required to have default values!
 """
 
 import numpy as np
-from gnuradio import gr
+from newsched import gr
 
 
 class blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block
