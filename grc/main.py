@@ -79,7 +79,7 @@ def main():
         install_prefix=gr.prefix()
     )
 
-    hack_blocks_path = ['/share/gnuradio/gr40/src/newsched/build/grc/blocks',
+    hack_blocks_path = ['/share/gnuradio/gr40/share/gnuradio/grc/blocks',
         '/share/gnuradio/gr40/src/newsched/grc/blocks']
     platform.build_library(path=hack_blocks_path)
 

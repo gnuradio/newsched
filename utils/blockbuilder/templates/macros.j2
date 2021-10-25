@@ -70,7 +70,7 @@ class {{ block }} : virtual public {{blocktype}}
         {% else %}
         add_port(port<{{porttype}}>::make("{{ port['id'] }}", 
                             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>({{ get_linked_value(port['dims'])}}) {% endif %}));
+                            {% if 'dims' in port %}, std::vector<size_t>{ {{ get_linked_value(port['dims'])}} } {% endif %}));
         {% endif %}
         {% else %}
         {% if port['type'] == 'untyped'%}   
@@ -84,7 +84,7 @@ class {{ block }} : virtual public {{blocktype}}
         for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {
         add_port(port<{{porttype}}>::make("{{ port['id'] }}" + std::to_string(i), 
                             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>({{ get_linked_value(port['dims'])}}) {% endif %}));
+                            {% if 'dims' in port %}, std::vector<size_t>{ {{ get_linked_value(port['dims'])}} } {% endif %}));
         }
         {% endif %}
         {% endif -%}

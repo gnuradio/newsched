@@ -64,7 +64,7 @@ for section in snippet_sections:
 %for section in snippet_sections:
 %if snippets[section]:
 
-def snippets_${section}(tb):
+def snippets_${section}(fg):
     % for snip in snippets[section]:
     ${indent(snip['call'])}
     % endfor
@@ -84,10 +84,10 @@ def snippets_${section}(tb):
 % if generate_options == 'qt_gui':
 from gnuradio import qtgui
 
-class ${class_name}(gr.top_block, Qt.QWidget):
+class ${class_name}(gr.flowgraph, Qt.QWidget):
 
     def __init__(${param_str}):
-        gr.top_block.__init__(self, "${title}", catch_exceptions=${catch_exceptions})
+        gr.flowgraph.__init__(self, "${title}")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("${title}")
         qtgui.util.check_set_qss()
@@ -118,18 +118,18 @@ class ${class_name}(gr.top_block, Qt.QWidget):
             pass
 % elif generate_options == 'bokeh_gui':
 
-class ${class_name}(gr.top_block):
+class ${class_name}(gr.flowgraph):
     def __init__(self, doc):
-        gr.top_block.__init__(self, "${title}", catch_exceptions=${catch_exceptions})
+        gr.flowgraph.__init__(self, "${title}")
         self.doc = doc
         self.plot_lst = []
         self.widget_lst = []
 % elif generate_options == 'no_gui':
 
-class ${class_name}(gr.top_block):
+class ${class_name}(gr.flowgraph):
 
     def __init__(${param_str}):
-        gr.top_block.__init__(self, "${title}", catch_exceptions=${catch_exceptions})
+        gr.flowgraph.__init__(self, "${title}")
 % elif generate_options.startswith('hb'):
     <% in_sigs = flow_graph.get_hier_block_stream_io('in') %>
     <% out_sigs = flow_graph.get_hier_block_stream_io('out') %>
@@ -346,7 +346,7 @@ def argument_parser():
 % endif
 
 
-def main(top_block_cls=${class_name}, options=None):
+def main(flowgraph_cls=${class_name}, options=None):
     % if parameters:
     if options is None:
         options = argument_parser().parse_args()
@@ -362,21 +362,21 @@ def main(top_block_cls=${class_name}, options=None):
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
-    tb = top_block_cls(${ ', '.join(params_eq_list) })
-    ${'snippets_main_after_init(tb)' if snippets['main_after_init'] else ''}
+    fg = flowgraph_cls(${ ', '.join(params_eq_list) })
+    ${'snippets_main_after_init(fg)' if snippets['main_after_init'] else ''}
     % if flow_graph.get_option('run'):
-    tb.start(${flow_graph.get_option('max_nouts') or ''})
+    fg.start(${flow_graph.get_option('max_nouts') or ''})
     % endif
-    ${'snippets_main_after_start(tb)' if snippets['main_after_start'] else ''}
+    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
     % if flow_graph.get_option('qt_qss_theme'):
-    tb.setStyleSheetFromFile("${ flow_graph.get_option('qt_qss_theme') }")
+    fg.setStyleSheetFromFile("${ flow_graph.get_option('qt_qss_theme') }")
     % endif
-    tb.show()
+    fg.show()
 
     def sig_handler(sig=None, frame=None):
-        tb.stop()
-        tb.wait()
-        ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+        fg.stop()
+        fg.wait()
+        ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
         Qt.QApplication.quit()
 
     signal.signal(signal.SIGINT, sig_handler)
@@ -388,16 +388,16 @@ def main(top_block_cls=${class_name}, options=None):
 
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    tb.${m.name}.start()
+    fg.${m.name}.start()
     % endif
     % endfor
     qapp.exec_()
     % elif generate_options == 'bokeh_gui':
     serverProc, port = bokehgui.utils.create_server()
-    def killProc(signum, frame, tb):
-        tb.stop()
-        tb.wait()
-        ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+    def killProc(signum, frame, fg):
+        fg.stop()
+        fg.wait()
+        ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
         serverProc.terminate()
         serverProc.kill()
     time.sleep(1)
@@ -412,66 +412,66 @@ def main(top_block_cls=${class_name}, options=None):
         session = push_session(doc, session_id="${flow_graph.get_option('id')}",
                                url = "http://localhost:" + port + "/bokehgui")
         # Create Top Block instance
-        tb = top_block_cls(doc)
-        ${'snippets_main_after_init(tb)' if snippets['main_after_init'] else ''}
+        fg = flowgraph_cls(doc)
+        ${'snippets_main_after_init(fg)' if snippets['main_after_init'] else ''}
         try:
-            tb.start()
-            ${'snippets_main_after_start(tb)' if snippets['main_after_start'] else ''}
-            signal.signal(signal.SIGTERM, functools.partial(killProc, tb=tb))
+            fg.start()
+            ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
+            signal.signal(signal.SIGTERM, functools.partial(killProc, fg=fg))
             session.loop_until_closed()
         finally:
             print("Exiting the simulation. Stopping Bokeh Server")
-            tb.stop()
-            tb.wait()
-            ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+            fg.stop()
+            fg.wait()
+            ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
     finally:
         serverProc.terminate()
         serverProc.kill()
     % elif generate_options == 'no_gui':
-    tb = top_block_cls(${ ', '.join(params_eq_list) })
-    ${'snippets_main_after_init(tb)' if snippets['main_after_init'] else ''}
+    fg = flowgraph_cls(${ ', '.join(params_eq_list) })
+    ${'snippets_main_after_init(fg)' if snippets['main_after_init'] else ''}
     def sig_handler(sig=None, frame=None):
         % for m in monitors:
         % if m.params['en'].get_value() == 'True':
-        tb.${m.name}.stop()
+        fg.${m.name}.stop()
         % endif
         % endfor
-        tb.stop()
-        tb.wait()
-        ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+        fg.stop()
+        fg.wait()
+        ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
         sys.exit(0)
 
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
 
     % if flow_graph.get_option('run_options') == 'prompt':
-    tb.start(${ flow_graph.get_option('max_nouts') or '' })
-    ${'snippets_main_after_start(tb)' if snippets['main_after_start'] else ''}
+    fg.start(${ flow_graph.get_option('max_nouts') or '' })
+    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    tb.${m.name}.start()
+    fg.${m.name}.start()
     % endif
     % endfor
     try:
         input('Press Enter to quit: ')
     except EOFError:
         pass
-    tb.stop()
-    ## ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+    fg.stop()
+    ## ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
     % elif flow_graph.get_option('run_options') == 'run':
-    tb.start(${flow_graph.get_option('max_nouts') or ''})
-    ${'snippets_main_after_start(tb)' if snippets['main_after_start'] else ''}
+    fg.start(${flow_graph.get_option('max_nouts') or ''})
+    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    tb.${m.name}.start()
+    fg.${m.name}.start()
     % endif
     % endfor
     % endif
-    tb.wait()
-    ${'snippets_main_after_stop(tb)' if snippets['main_after_stop'] else ''}
+    fg.wait()
+    ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    tb.${m.name}.stop()
+    fg.${m.name}.stop()
     % endif
     % endfor
     % endif

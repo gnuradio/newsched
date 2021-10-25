@@ -33,29 +33,6 @@ void bind_flowgraph(py::module& m)
         .def("validate", &gr::flowgraph::validate)
         .def("start", &gr::flowgraph::start)
         .def("stop", &gr::flowgraph::stop)
-        .def("wait",
-             [](gr::flowgraph& self) {
-                 std::thread th([] {
-                     for (;;) {
-                         if (PyErr_CheckSignals() != 0)
-                             throw py::error_already_set();
-                         std::this_thread::sleep_for(
-                             std::chrono::milliseconds(100));
-                     }
-                 });
-                 th.detach();
-                 self.wait();
-             })
-        .def("run", [](gr::flowgraph& self) {
-            std::thread th([] {
-                for (;;) {
-                    if (PyErr_CheckSignals() != 0)
-                        throw py::error_already_set();
-                    std::this_thread::sleep_for(
-                        std::chrono::milliseconds(100));
-                }
-            });
-            th.detach();
-            self.run();
-        });
+        .def("wait", &gr::flowgraph::wait)
+        .def("run", &gr::flowgraph::run);
 }

@@ -8,6 +8,6 @@ subdir('blocks')
 # subdir('digital')
 # subdir('fileio')
 # subdir('qtgui')
-if (ENABLE_GR_SOAPY)
-  subdir('soapy')
-endif
+# if (ENABLE_GR_SOAPY)
+#   subdir('soapy')
+# endif

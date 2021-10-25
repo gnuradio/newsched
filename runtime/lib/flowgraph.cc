@@ -6,9 +6,9 @@
 namespace gr {
 
 
-flowgraph::flowgraph()
+flowgraph::flowgraph(const std::string& name)
 {
-    set_alias("flowgraph");
+    set_alias(name);
 
     // Dynamically load the module containing the default scheduler
     // Search path needs to be set correctly for qa in build dir

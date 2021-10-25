@@ -9,21 +9,21 @@ grc:
     - ${ num_inputs > 1 }
     - ${ vlen > 0 }
   templates:
-      imports: from newsched import blocks
-      make: math.add${T.suffix}(${vlen})
+      imports: from newsched import math
+      make: math.add_${T.fcn}(${nports},${vlen})
 
 typekeys:
   - id: T
     type: class
     options: 
-      - value: int16_t
-        suffix: ss
-      - value: int32_t 
-        suffix: ii
-      - value: float
-        suffix: ff   
       - value: gr_complex 
         suffix: cc 
+      - value: float
+        suffix: ff 
+      - value: int32_t 
+        suffix: ii
+      - value: int16_t
+        suffix: ss
 
 parameters:
 -   id: nports

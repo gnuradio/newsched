@@ -112,7 +112,7 @@ class FlowGraph(Element):
             d['priority'] = snip.params['priority'].value
             d['lines'] = snip.params['code'].value.splitlines()
             d['def'] = 'def snipfcn_{}(self):'.format(snip.name)
-            d['call'] = 'snipfcn_{}(tb)'.format(snip.name)
+            d['call'] = 'snipfcn_{}(fg)'.format(snip.name)
             if not section or sect == section:
                 output.append(d)
 

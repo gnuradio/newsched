@@ -1,25 +1,30 @@
 module: blocks
 block: vector_source
 label: Vector Source
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
+grc:
+  flags: [python]
+  asserts:
+    - ${ vlen > 0 }
+  templates:
+      imports: from newsched import blocks
+      make: blocks.vector_source_${T.fcn}(${data},${repeat},${vlen},${tags})
+
+typekeys:
     - id: T
       type: class
       options: 
-        - value: uint8_t
-          suffix: b   
-        - value: int16_t
-          suffix: s   
-        - value: int32_t 
-          suffix: i 
-        - value: float
-          suffix: f
         - value: gr_complex 
           suffix: c
+        - value: float
+          suffix: f
+        - value: int32_t 
+          suffix: i 
+        - value: int16_t
+          suffix: s  
+        - value: uint8_t
+          suffix: b   
 
 parameters:
 -   id: data
@@ -46,8 +51,8 @@ ports:
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{args.vlen}'
+    type: typekeys/T
+    dims: parameters/vlen
 
 implementations:
 -   id: cpu

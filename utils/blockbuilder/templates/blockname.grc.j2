@@ -11,11 +11,14 @@
     {% if '/' in value -%}
         {% set list1 = value.split('/') -%}
         {% set newvalue = '${' + list1[1] + '}' -%}
-    {% endif -%}
+        {# {% if list1[0] == 'typekeys' %}
+        # {% set newvalue = '${' + list1[1] + '}' %}{% endif -%} #}
+    {%- endif -%}
 {{newvalue}}{% endmacro -%}
 id: {{module}}_{{block}}
-label: {{label if label else block}}
+label: '[{{module}}] {{label if label else block}}'
 flags: {{grc['flags']}}
+category: 'newsched'
 
 parameters:
 {% if typekeys -%} {# We have a templated block, enable type parameter#}
@@ -39,7 +42,7 @@ inputs:
 {% for port in ports -%}
 {% if port['direction'] == 'input'-%}
 -   domain: {{port['domain']}}
-    dtype: {{get_linked_value(port['dtype'])}}
+    dtype: {{get_linked_value(port['type'])}}
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
 {% endif -%}
@@ -49,7 +52,7 @@ outputs:
 {% for port in ports -%}
 {% if port['direction'] == 'output'-%}
 -   domain: {{port['domain']}}
-    dtype: {{get_linked_value(port['dtype'])}}
+    dtype: {{get_linked_value(port['type'])}}
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
 {% endif -%}
