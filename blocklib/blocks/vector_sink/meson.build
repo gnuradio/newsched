@@ -1,6 +1,6 @@
 srcs = files(['vector_sink_cpu.cc'])
 
-# if cuda_dep.found() and get_option('enable_cuda')
+# if USE_CUDA
 #     srcs += files('vector_sink_cuda.cc')
 #     # blocks_cu_sources += files('vector_sink_cuda.cu')
 # endif
