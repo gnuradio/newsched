@@ -43,6 +43,28 @@ pmtf_dep = dependency('pmtf')
 
 cmake = import('cmake')
 
+if (get_option('enable_testing'))
+    TEST_ENV = environment()
+    TEST_ENV.prepend('LD_LIBRARY_PATH', 
+      join_paths( meson.build_root(),'schedulers','nbt','lib'),
+      join_paths( meson.build_root(),'runtime','lib'),
+      join_paths( meson.build_root(),'blocklib','analog','lib'),
+      join_paths( meson.build_root(),'blocklib','blocks','lib'),
+      join_paths( meson.build_root(),'blocklib','digital','lib'),
+      join_paths( meson.build_root(),'blocklib','fec','lib'),
+      join_paths( meson.build_root(),'blocklib','fft','lib'),
+      join_paths( meson.build_root(),'blocklib','fileio','lib'),
+      join_paths( meson.build_root(),'blocklib','filter','lib'),
+      join_paths( meson.build_root(),'blocklib','math','lib'),
+      join_paths( meson.build_root(),'blocklib','qtgui','lib'),
+      join_paths( meson.build_root(),'blocklib','soapy','lib'),
+      join_paths( meson.build_root(),'blocklib','streamops','lib')
+    )
+    TEST_ENV.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
+
+endif
+
+
 subdir('pmt')
 subdir('runtime')
 subdir('blocklib')
@@ -52,3 +74,4 @@ subdir('utils')
 if (get_option('enable_python'))
   subdir('python/newsched')
 endif
+

@@ -1,20 +1,16 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
 #pragma once
-{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-{% set typekey = properties|selectattr("id", "equalto", "type")|map(attribute="key")|first %}
-{% if blocktype == 'sync' -%}
-#include <gnuradio/sync_block.hh>
-{% elif blocktype == 'general' -%}
-#include <gnuradio/block.hh>
-{% endif -%}
+#include <gnuradio/{{blocktype}}.hh>
 #include <gnuradio/types.hh>
+
 {{ macros.includes(includes) }}
+
 namespace gr {
 namespace {{module}} {
 
-template <{% for key in properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
-{{ macros.class_statement(properties, block) }}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+{{ macros.class_statement(block, blocktype) }}
 {
 public:
 {{ macros.block_args(parameters) }}
@@ -24,10 +20,17 @@ public:
     {{ macros.implementations(implementations) }}
 
     {{ macros.callbacks(callbacks) }}    
+
+{{ macros.parameter_declarations(parameters)}} 
+
 };
 
-{% for opt in properties|selectattr("id", "equalto", "type")|map(attribute="options")|first -%}
-typedef {{block}}<{{ opt['dtype']}}> {{block}}_{{ opt['suffix'] }};
+{%set key1 = typekeys|first %}
+{%set key2 = typekeys|last %}
+{% for opt1 in key1['options'] -%}
+{% for opt2 in key2['options'] -%}
+typedef {{block}}<{{ opt1['value']+ ", " + opt2['value']}}> {{block}}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }};
+{% endfor -%}
 {% endfor -%}
 
 } // namespace {{ module }}

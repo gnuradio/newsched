@@ -1,6 +1,6 @@
 srcs = files(['add_cpu.cc'])
 
-if cuda_dep.found() and get_option('enable_cuda')
+if USE_CUDA
     srcs += files('add_cuda.cc')
     # math_cu_sources += files('add_cuda.cu')
 endif

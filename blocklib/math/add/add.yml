@@ -29,6 +29,7 @@ parameters:
 -   id: nports
     label: Num Ports
     dtype: size_t
+    default: 2
     grc:
       default: 2
       hide: part

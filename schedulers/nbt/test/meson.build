@@ -5,10 +5,6 @@ incdir = include_directories('../include')
 ###################################################
 
 if get_option('enable_testing')
-    env = environment()
-    env.prepend('LD_LIBRARY_PATH', join_paths( meson.build_root(),'schedulers','nbt','lib'))
-    env.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
-
     # srcs = ['qa_scheduler_nbt.cc']
     # e = executable('qa_scheduler_nbt', 
     #     srcs, 
@@ -20,7 +16,7 @@ if get_option('enable_testing')
     #                 newsched_scheduler_nbt_dep,
     #                 gtest_dep], 
     #     install : true)
-    # test('Multi Threaded Scheduler Tests', e, env: env)
+    # test('Multi Threaded Scheduler Tests', e, env: TEST_ENV)
 
     # srcs = ['qa_block_grouping.cc']
     # e = executable('qa_block_grouping', 
@@ -47,7 +43,7 @@ if get_option('enable_testing')
     #                 gtest_dep], 
     #     install : true)
 
-    # test('NBT Single Mapped Buffers', e, env: env)
+    # test('NBT Single Mapped Buffers', e, env: TEST_ENV)
 
     # srcs = ['qa_message_ports.cc']
     # e = executable('qa_message_ports', 
@@ -75,8 +71,8 @@ if get_option('enable_testing')
     #     install : true)
     # test('NBT Tags Tests', e)
 
-    test('Basic Python', find_program('qa_basic.py'), env: env)
-    test('Block Parameters', find_program('qa_parameters.py'), env: env)
+    test('Basic Python', find_program('qa_basic.py'), env: TEST_ENV)
+    test('Block Parameters', find_program('qa_parameters.py'), env: TEST_ENV)
 
 endif
 
