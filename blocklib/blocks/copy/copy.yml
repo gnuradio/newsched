@@ -1,33 +1,32 @@
 module: blocks
 block: copy
 label: Copy
-blocktype: sync
+blocktype: sync_block
 
 grc:
     flags: [ python ]
     templates:
         imports: from newsched import blocks
-        make: blocks.copy(${type.itemsize})
+        make: blocks.copy(${itemsize})
 
 parameters:
     - id: itemsize
       label: Item Size
       dtype: size_t
       settable: false
-      default: 0
 
 ports:
     - domain: stream
       id: in
       direction: input
       type: untyped
-      size: itemsize
+      size: parameters/itemsize
 
     - domain: stream
       id: out
       direction: output
       type: untyped
-      size: itemsize
+      size: parameters/itemsize
 
 implementations:
     - id: cpu

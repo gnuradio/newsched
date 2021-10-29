@@ -1,10 +1,7 @@
 module: blocks
 block: msg_forward
 label: Message Forward
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize

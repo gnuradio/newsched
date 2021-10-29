@@ -1,10 +1,7 @@
 module: blocks
 block: nop_source
 label: Nop Source
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize
@@ -22,8 +19,8 @@ ports:
     id: out
     direction: output
     type: untyped
-    size: itemsize
-    multiplicity: nports
+    size: parameters/itemsize
+    multiplicity: parameters/nports
 
 implementations:
 -   id: cpu

@@ -6,18 +6,18 @@ blocks_pybind_sources = []
 blocks_pybind_names = []
 blocks_deps = []
 # Individual block subdirectories
-# subdir('copy')
-# subdir('delay')
-# subdir('annotator')
-# subdir('head')
+subdir('annotator')
+subdir('copy')
+subdir('delay')
+subdir('head')
 # subdir('load')
-# subdir('msg_forward')
-# subdir('nop')
-# subdir('nop_head')
+subdir('msg_forward')
+subdir('nop')
+subdir('nop_head')
 # subdir('nop_source')
-# subdir('null_sink')
-# subdir('null_source')
-# subdir('throttle')
+subdir('null_sink')
+subdir('null_source')
+subdir('throttle')
 subdir('vector_sink')
 subdir('vector_source')
 

@@ -2,7 +2,7 @@ blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, pmtf_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 link_args = []
-if false and USE_CUDA
+if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 
     newsched_blocklib_blocks_cu = library('newsched-blocklib-blocks-cu', 
