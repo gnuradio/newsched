@@ -105,6 +105,7 @@ CORE_TYPES = (  # name, key, sizeof, color
     ('Async Message',    'message',  0, GRC_COLOR_GREY),
     ('Bus Connection',       'bus',  0, GRC_COLOR_WHITE),
     ('Wildcard',                '',  0, GRC_COLOR_WHITE),
+    ('Untyped',          'untyped',  0, GRC_COLOR_WHITE),
 )
 
 ALIAS_TYPES = {
