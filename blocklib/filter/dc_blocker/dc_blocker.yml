@@ -1,19 +1,22 @@
 module: filter
 block: dc_blocker
 label: Multiply Constant
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: float
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+grc:
+  flags: [python]
+  templates:
+      imports: from newsched import math
+      make: math.add_${T.fcn}(${D},${long_form})
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+      - value: float
+        suffix: ff 
 
 parameters:
 -   id: D
@@ -30,14 +33,12 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{1}'
+    type: typekeys/T
 
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{1}'
+    type: typekeys/T
 
 implementations:
 -   id: cpu

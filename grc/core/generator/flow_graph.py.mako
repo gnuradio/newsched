@@ -82,15 +82,26 @@ def snippets_${section}(fg):
     param_str = ', '.join(['self'] + ['%s=%s'%(param.name, param.templates.render('make')) for param in parameters])
 %>\
 % if generate_options == 'qt_gui':
-from gnuradio import qtgui
+from newsched import qtgui
 
-class ${class_name}(gr.flowgraph, Qt.QWidget):
+class ${class_name}(Qt.QWidget):
+    def start(self):
+        self.fg.start()
+
+    def stop(self):
+        self.fg.stop()
+        
+    def wait(self):
+        self.fg.wait()
+    
+    def connect(self,*args):
+        self.fg.connect(*args)
 
     def __init__(${param_str}):
-        gr.flowgraph.__init__(self, "${title}")
+        self.fg = gr.flowgraph("${title}")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("${title}")
-        qtgui.util.check_set_qss()
+        ## qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
         except:

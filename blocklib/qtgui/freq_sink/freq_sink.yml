@@ -1,19 +1,42 @@
 module: qtgui
 block: freq_sink
 label: freq_sink
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: float
-          suffix: f   
-        - value: gr_complex 
-          suffix: c 
+grc:
+  flags: [python]
+  templates:
+    imports: |-
+      from PyQt5 import Qt
+      from newsched import qtgui
+      from newsched.filter import firdes
+      import sip
+    make: |
+      <%
+          win = 'self._%s_win'%id
+      %>\
+      qtgui.freq_sink_${T.fcn}(${fftsize},${wintype},${fc},${bw},${name},${nconnections})
+      self.${id}.set_update_time(0.10)
+      self.${id}.set_y_axis(-140, 10)
+      self.${id}.set_y_label('Relative Gain', 'dB')
+      # self.${id}.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
+      self.${id}.enable_autoscale(False)
+      self.${id}.enable_grid(False)
+      self.${id}.set_fft_average(1.0)
+      self.${id}.enable_axis_labels(True)
+      self.${id}.enable_control_panel(False)
+      self.${id}.set_fft_window_normalized(False)
+      ${win} = sip.wrapinstance(self.${id}.qwidget(), Qt.QWidget)
+      ${gui_hint() % win}
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: float
+        suffix: f   
+      - value: gr_complex 
+        suffix: c 
 
 parameters:
 -   id: fftsize
@@ -41,12 +64,17 @@ parameters:
     dtype: size_t
     settable: false
     default: 1
+-   id: gui_hint
+    label: GUI Hint
+    dtype: gui_hint
+    cotr: false
+    hide: part
 
 ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
+    type: typekeys/T
 
 includes: 
   - value: gnuradio/fft/fftw_fft.hh
