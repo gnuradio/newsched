@@ -1,5 +1,4 @@
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-{% set inherits = properties|selectattr("id", "equalto", "blocktype")|map(attribute='inherits')|first -%}
 {% set typestr = typekeys|map(attribute="id")|join(",")%}
 
 #include <pybind11/complex.h>
