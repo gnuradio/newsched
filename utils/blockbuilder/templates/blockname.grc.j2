@@ -17,7 +17,7 @@
 {{newvalue}}{% endmacro -%}
 id: {{module}}_{{block}}
 label: '[{{module}}] {{label if label else block}}'
-flags: {{grc['flags']}}
+{% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
 category: 'newsched'
 
 parameters:
@@ -43,23 +43,34 @@ inputs:
 {% if port['direction'] == 'input'-%}
 -   domain: {{port['domain']}}
     dtype: {{get_linked_value(port['type'])}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
-    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif -%}
 {% endif -%}
-{% endfor -%}
+{% endfor %}
 
 outputs:
 {% for port in ports -%}
 {% if port['direction'] == 'output'-%}
 -   domain: {{port['domain']}}
     dtype: {{get_linked_value(port['type'])}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
 {% endif -%}
 {% endfor -%}
 
+{% if grc -%}
 templates:
     imports: {{grc['templates']['imports']}}
     make: {{grc['templates']['make']}}
+{% else -%}{# Do the default template #}
+templates:
+    imports: from newsched import {{module}}
+    make: {{module}}.{{block}}(
+        {%- for param in parameters -%}
+          {%- if 'cotr' not in p or p['cotr'] -%}
+            {{'${'}}{{param['id']}}{{"}"}}{{',' if not loop.last}}
+        {%- endif -%}
+        {%-endfor-%}})
+{% endif -%}
 
-file_format: 1
+file_format: 1 {# TODO - should this increment for GR 4.0 #}

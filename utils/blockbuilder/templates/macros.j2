@@ -50,7 +50,7 @@ class {{ block }} : virtual public {{blocktype}}
         {% if category == 'ports' -%}
             {% set newvalue = list1[1] -%}
         {% elif category == 'parameters' -%}
-            {% set newvalue = 'args.'+list1[1] -%}
+            {% set newvalue = 'args.' + list1[1] -%}
         {% elif category == 'typekeys' -%}
             {% set newvalue = list1[1] -%}
         {% endif -%}
@@ -66,7 +66,7 @@ class {{ block }} : virtual public {{blocktype}}
         add_port(untyped_port::make(
             "{{ port['id'] }}", 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{ get_linked_value(port['size'])}});
+            {{ get_linked_value(port['size'])}}));
         {% else %}
         add_port(port<{{porttype}}>::make("{{ port['id'] }}", 
                             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
@@ -78,7 +78,7 @@ class {{ block }} : virtual public {{blocktype}}
         add_port(untyped_port::make(
             "{{ port['id'] }}" + std::to_string(i), 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if get_linked_value(port['size'])}});
+            {{ get_linked_value(port['size'])}}));
         }
         {% else %}
         for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {

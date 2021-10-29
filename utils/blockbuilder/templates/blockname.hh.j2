@@ -1,14 +1,16 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
 #pragma once
-{{ macros.includes(includes) }}
 
-{{ macros.blocktype(properties) }}
+#include <gnuradio/{{blocktype}}.hh>
+#include <gnuradio/types.hh>
+
+{{ macros.includes(includes) }}
 
 namespace gr {
 namespace {{module}} {
 
-{{ macros.class_statement(properties, block) }}
+{{ macros.class_statement(block, blocktype) }}
 {
 public:
 {{ macros.block_args(parameters) }}
