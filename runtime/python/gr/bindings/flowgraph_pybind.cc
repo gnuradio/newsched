@@ -24,7 +24,7 @@ void bind_flowgraph(py::module& m)
     py::class_<gr::flowgraph, gr::graph, gr::node, std::shared_ptr<gr::flowgraph>>(
         m, "flowgraph")
 
-        .def(py::init(&gr::flowgraph::make))
+        .def(py::init(&gr::flowgraph::make), py::arg("name")="flowgraph")
         .def("set_scheduler", &gr::flowgraph::set_scheduler, py::arg("sched"))
         .def("set_schedulers", &gr::flowgraph::set_schedulers, py::arg("sched"))
         .def("add_scheduler", &gr::flowgraph::add_scheduler, py::arg("sched"))
