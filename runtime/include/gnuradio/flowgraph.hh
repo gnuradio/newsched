@@ -31,8 +31,8 @@ private:
 public:
     
     typedef std::shared_ptr<flowgraph> sptr;
-    static sptr make() { return std::make_shared<flowgraph>(); }
-    flowgraph();
+    static sptr make(const std::string& name = "flowgraph") { return std::make_shared<flowgraph>(name); }
+    flowgraph(const std::string& name = "flowgraph");
     virtual ~flowgraph() { _monitor_thread_stopped = true; };
     void set_scheduler(scheduler_sptr sched);
     void set_schedulers(std::vector<scheduler_sptr> sched);

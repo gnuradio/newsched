@@ -24,6 +24,7 @@ void bind_graph(py::module& m)
         .def("connect", py::overload_cast<std::shared_ptr<gr::node>, unsigned int, std::shared_ptr<gr::node>, unsigned int>(&gr::graph::connect))
         .def("connect", py::overload_cast<std::shared_ptr<gr::node>, std::shared_ptr<gr::node>>(&gr::graph::connect))
         .def("connect", py::overload_cast<std::shared_ptr<gr::node>, const std::string&, std::shared_ptr<gr::node>, const std::string&>(&gr::graph::connect))
+        .def("connect", py::overload_cast<std::pair<std::shared_ptr<gr::node>, unsigned int>, std::pair<std::shared_ptr<gr::node>, unsigned int>>(&gr::graph::connect))
         .def("connect", py::overload_cast<const std::vector<std::pair<std::shared_ptr<gr::node>, unsigned int>>&>(&gr::graph::connect))
         .def("connect", py::overload_cast<const std::vector<std::shared_ptr<gr::node>>&>(&gr::graph::connect))
         ;
