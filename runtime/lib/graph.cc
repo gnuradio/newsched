@@ -77,6 +77,11 @@ edge_sptr graph::connect(node_sptr src_node,
     return connect(src_node, 0, dst_node, 0);
 }
 
+edge_sptr graph::connect(std::pair<node_sptr, unsigned int> src, std::pair<node_sptr, unsigned int> dst)
+{
+    return connect(src.first, src.second, dst.first, dst.second);
+}
+
 edge_vector_t graph::connect(const std::vector<std::pair<node_sptr, unsigned int>>& pairs)
 {
     if (pairs.size() < 2)

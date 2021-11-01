@@ -24,7 +24,7 @@ void bind_flowgraph(py::module& m)
     py::class_<gr::flowgraph, gr::graph, gr::node, std::shared_ptr<gr::flowgraph>>(
         m, "flowgraph")
 
-        .def(py::init(&gr::flowgraph::make))
+        .def(py::init(&gr::flowgraph::make), py::arg("name")="flowgraph")
         .def("set_scheduler", &gr::flowgraph::set_scheduler, py::arg("sched"))
         .def("set_schedulers", &gr::flowgraph::set_schedulers, py::arg("sched"))
         .def("add_scheduler", &gr::flowgraph::add_scheduler, py::arg("sched"))
@@ -33,29 +33,6 @@ void bind_flowgraph(py::module& m)
         .def("validate", &gr::flowgraph::validate)
         .def("start", &gr::flowgraph::start)
         .def("stop", &gr::flowgraph::stop)
-        .def("wait",
-             [](gr::flowgraph& self) {
-                 std::thread th([] {
-                     for (;;) {
-                         if (PyErr_CheckSignals() != 0)
-                             throw py::error_already_set();
-                         std::this_thread::sleep_for(
-                             std::chrono::milliseconds(100));
-                     }
-                 });
-                 th.detach();
-                 self.wait();
-             })
-        .def("run", [](gr::flowgraph& self) {
-            std::thread th([] {
-                for (;;) {
-                    if (PyErr_CheckSignals() != 0)
-                        throw py::error_already_set();
-                    std::this_thread::sleep_for(
-                        std::chrono::milliseconds(100));
-                }
-            });
-            th.detach();
-            self.run();
-        });
+        .def("wait", &gr::flowgraph::wait)
+        .def("run", &gr::flowgraph::run);
 }

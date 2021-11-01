@@ -46,6 +46,7 @@ public:
                  unsigned int dst_port_index);
     edge_sptr connect(node_sptr src_node,
                  node_sptr dst_node);
+    edge_sptr connect(std::pair<node_sptr, unsigned int>, std::pair<node_sptr, unsigned int>);
     edge_vector_t connect(const std::vector<std::pair<node_sptr, unsigned int>>&);
     edge_vector_t connect(const std::vector<node_sptr>&);
     edge_sptr connect(node_sptr src_node,
