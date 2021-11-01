@@ -138,4 +138,6 @@ callgrind.out.*
 perf.data
 trace.dat
 core
+!grc/core
 **/__pycache__/
+*.pyc
