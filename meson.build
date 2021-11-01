@@ -43,6 +43,12 @@ pmtf_dep = dependency('pmtf')
 
 cmake = import('cmake')
 
+prefix = get_option('prefix')
+# Escape spaces
+prefix_parts = prefix.split(' ')
+prefix = '\ '.join(prefix_parts)
+share_dir = join_paths(prefix,'share')
+
 subdir('pmt')
 subdir('runtime')
 subdir('blocklib')
@@ -51,4 +57,5 @@ subdir('docs')
 subdir('utils')
 if (get_option('enable_python'))
   subdir('python/newsched')
+  subdir('grc')
 endif
