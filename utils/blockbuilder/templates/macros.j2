@@ -27,9 +27,8 @@
 {% endif -%}
 {% endmacro %}
 
-{% macro class_statement(properties, block) -%}
-{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
-class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else 'block'}}
+{% macro class_statement(block, blocktype) -%}
+class {{ block }} : virtual public {{blocktype}}
 {% endmacro %}
 
 {% macro block_args(parameters) -%}
@@ -43,35 +42,49 @@ class {{ block }} : virtual public {{ 'sync_block' if blocktype == 'sync' else '
 {{ block }}(const block_args& args);
 {% endmacro %}
 
+{% macro get_linked_value(value, ports, parameters, typekeys) -%}
+    {% set newvalue = value -%}
+    {% if '/' in value -%}
+    {% set list1 = value.split('/') -%}
+    {% set category = list1[0] -%}
+        {% if category == 'ports' -%}
+            {% set newvalue = list1[1] -%}
+        {% elif category == 'parameters' -%}
+            {% set newvalue = 'args.' + list1[1] -%}
+        {% elif category == 'typekeys' -%}
+            {% set newvalue = list1[1] -%}
+        {% endif -%}
+    {% endif -%}
+{{newvalue}}{% endmacro -%}
 
-{% macro ports(ports, parameters) -%}
+{% macro ports(ports, parameters, typekeys) -%}
         {% for port in ports %}
+        {% set porttype = get_linked_value(port['type']) -%}
         {% if port['domain'] == 'stream' -%}
         {% if 'multiplicity' not in port%}     
         {% if port['type'] == 'untyped'%}                                  
         add_port(untyped_port::make(
             "{{ port['id'] }}", 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{ 'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
+            {{ get_linked_value(port['size'])}}));
         {% else %}
-        add_port(port<{{port['type']}}>::make("{{ port['id'] }}", 
+        add_port(port<{{porttype}}>::make("{{ port['id'] }}", 
                             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
+                            {% if 'dims' in port %}, std::vector<size_t>{ {{ get_linked_value(port['dims'])}} } {% endif %}));
         {% endif %}
         {% else %}
-        {% set m = 'args.' + port['multiplicity'] if parameters|selectattr("id", "equalto", port['multiplicity']) else port['multiplicity'] %}
         {% if port['type'] == 'untyped'%}   
-        for (size_t i = 0; i < {{m}}; i++) {
+        for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {
         add_port(untyped_port::make(
             "{{ port['id'] }}" + std::to_string(i), 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{'args.' if parameters|selectattr("id", "equalto", port['size'])|first }}{{ port['size'] }}));
+            {{ get_linked_value(port['size'])}}));
         }
         {% else %}
-        for (size_t i = 0; i < {{m}}; i++) {
-        add_port(port<{{port['type']}}>::make("{{ port['id'] }}" + std::to_string(i), 
+        for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {
+        add_port(port<{{porttype}}>::make("{{ port['id'] }}" + std::to_string(i), 
                             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'dims' in port %}, std::vector<size_t>{{ port['dims'] }} {% endif %}));
+                            {% if 'dims' in port %}, std::vector<size_t>{ {{ get_linked_value(port['dims'])}} } {% endif %}));
         }
         {% endif %}
         {% endif -%}

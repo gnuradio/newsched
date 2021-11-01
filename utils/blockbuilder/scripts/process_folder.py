@@ -10,7 +10,10 @@ def argParse():
     parser = argparse.ArgumentParser(description=desc)
     
     parser.add_argument("--yaml_file")
-    parser.add_argument("--output_file")
+    parser.add_argument("--output-cc")
+    parser.add_argument("--output-hh")
+    parser.add_argument("--output-pybind")
+    parser.add_argument("--output-grc")
     parser.add_argument("--build_dir")
 
     return parser.parse_args()
@@ -38,16 +41,12 @@ def main():
         d = yaml.load(file, Loader=yaml.FullLoader)
         # Does this block specify a templated version
         templated = 0
-        template_prop = [x for x in d['properties'] if x['id'] == 'templates']
-        if (len(template_prop) > 0):
-            templated = len(template_prop[0]['keys'])
+        if ('typekeys' in d and len(d['typekeys']) > 0):
+            templated = len(d['typekeys'])
 
-
-        blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.hh')
-        blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], blockname + '.hh')
-        # full_outputfile = os.path.join(args.build_dir, args.output_file)
-
-        if (args.output_file.endswith('.hh') ):
+        if (args.output_hh ):
+            blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_hh))
+            blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], os.path.basename(args.output_hh))
             if templated == 1:
                 template = env.get_template('blockname_templated.hh.j2')
             elif templated == 2:
@@ -57,14 +56,14 @@ def main():
 
             rendered = template.render(d)
             with open(blockname_h, 'w') as file:
-                print("generating " + blockname_h + " with " + str(templated))
+                print("generating " + blockname_h)
                 file.write(rendered)
 
             # Copy to the include dir
             shutil.copyfile(blockname_h, blockname_h_includedir)                
 
-        else:
-            blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '.cc')
+        if args.output_cc:
+            blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_cc))
             if templated == 1:
                 template = env.get_template('blockname_templated.cc.j2')
             elif templated == 2:
@@ -76,22 +75,36 @@ def main():
                 print("generating " + blockname_cc)
                 file.write(rendered)
 
+        if args.output_pybind:
+            filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_pybind))
 
-        # shutil.copyfile(blockname_h, full_outputfile)
+            if templated == 1:
+                template = env.get_template('blockname_pybind_templated.cc.j2')
+            elif templated == 2:
+                template = env.get_template('blockname_pybind_templated2.cc.j2')
+            else:
+                template = env.get_template('blockname_pybind.cc.j2')
 
-        # for impl in d['implementations']:
-        #     if templated:
-        #         template = env.get_template('blockname_templated_domain.hh.j2')
-        #     else:
-        #         template = env.get_template('blockname_domain.hh.j2')
+            rendered = template.render(d)
+            with open(filename, 'w') as file:
+                print("generating " + filename)
+                file.write(rendered)
 
-        #     domain = impl['id']
-        #     rendered = template.render(d, domain=domain)
+        if args.output_grc:
+            filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc))
+            template = env.get_template('blockname.grc.j2')
+            rendered = template.render(d)
+            with open(filename, 'w') as file:
+                print("generating " + filename)
+                file.write(rendered)
 
-        #     blockname_domain_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + '_' + domain + '.hh')
-        #     with open(blockname_domain_h, 'w') as file:
-        #         print("generating " + blockname_domain_h)
-        #         file.write(rendered)
+        # copy the yaml file to the build dir
+        yaml_path = os.path.join(args.build_dir,'grc','blocks')
+        if not os.path.exists(yaml_path):
+            os.makedirs(yaml_path)
+        gr_blocks_path = os.path.join(yaml_path, os.path.basename(args.yaml_file))
+        shutil.copyfile(args.yaml_file, gr_blocks_path)
+
 
 if __name__ == "__main__":
     main()

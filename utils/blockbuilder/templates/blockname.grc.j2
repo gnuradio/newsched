@@ -1,0 +1,83 @@
+{%- macro type_lookup(type, default) -%}
+{%- if type in ['int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int
+{%- elif type in ['short', 'unsigned short', 'uint16_t', 'int16_t'] -%}short
+{%- elif type in ['uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}byte
+{%- elif type in ['std::complex<float>', 'gr_complex'] -%}complex
+{%- elif type in ['float'] -%}float
+{%- elif type in ['const char *', 'const std::string&'] -%}string
+{%- elif type in ['bool'] -%}bool
+{%- elif type in ['gui_hint'] -%}gui_hint
+{%- else -%}{{default}}{%-endif-%}
+{%- endmacro -%}
+{% macro get_linked_value(value, ports, parameters, typekeys) -%}
+    {% set newvalue = value -%}
+    {% if '/' in value -%}
+        {% set list1 = value.split('/') -%}
+        {% set newvalue = '${' + list1[1] + '}' -%}
+        {# {% if list1[0] == 'typekeys' %}
+        # {% set newvalue = '${' + list1[1] + '}' %}{% endif -%} #}
+    {%- endif -%}
+{{newvalue}}{% endmacro -%}
+id: {{module}}_{{block}}
+label: '[{{module}}] {{label if label else block}}'
+{% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
+category: '[newsched]/{{module}}'
+
+parameters:
+{% if typekeys -%} {# We have a templated block, enable type parameter#}
+{% for key in typekeys -%}
+-   id: {{key['id']}}
+    label: {% if 'label' in key %}{{key['label']}}{% else %}IO Type{% endif %}
+    dtype: enum
+    options: [{% for opt in key['options'] %}{{type_lookup(opt['value'],opt['value'])}}{{"," if not loop.last}} {% endfor %}]
+    option_attributes:
+        fcn: [{% for opt in key['options'] %}{{opt['suffix']}}{{"," if not loop.last}} {% endfor %}]
+    hide: part
+{% endfor %}
+{% endif -%}
+{% for param in parameters -%}
+-   id: {{param['id']}}
+    label: {{param['label']}}
+    dtype: {{type_lookup(param['dtype'],'raw')}}
+    {% if 'default' in param %}default: {{param['default']}}{%elif 'grc' in param and 'default' in param['grc']%}default: {{param['default']}}{%endif%}
+    {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
+{% endfor -%}
+
+inputs:
+{% for port in ports -%}
+{% if port['direction'] == 'input'-%}
+-   domain: {{port['domain']}}
+    dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif -%}
+{% endif -%}
+{% endfor %}
+
+outputs:
+{% for port in ports -%}
+{% if port['direction'] == 'output'-%}
+-   domain: {{port['domain']}}
+    dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+{% endif -%}
+{% endfor -%}
+
+{% if grc -%}
+templates:
+    imports: |-
+{{grc['templates']['imports'] | indent(width=8,first=True)}}
+    make: |- 
+{{grc['templates']['make'] | indent(width=8,first=True)}}
+{% else -%}{# Do the default template #}
+templates:
+    imports: from newsched import {{module}}
+    make: {{module}}.{{block}}(
+        {%- for param in parameters -%}
+          {%- if 'cotr' not in p or p['cotr'] -%}
+            {{'${'}}{{param['id']}}{{"}"}}{{',' if not loop.last}}
+        {%- endif -%}
+        {%-endfor-%}})
+{% endif -%}
+
+file_format: 1 {# TODO - should this increment for GR 4.0 #}

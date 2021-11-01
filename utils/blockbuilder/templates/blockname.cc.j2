@@ -1,5 +1,4 @@
 {% import 'macros.j2' as macros -%}
-{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 {{ macros.header() }}
 
 #include <gnuradio/{{module}}/{{block}}.hh>
@@ -23,7 +22,7 @@ namespace {{module}} {
     }
 }
 
-{{block}}::{{block}}(const block_args& args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}") {
+{{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}") {
  {{ macros.ports(ports, parameters) }}
  {{ macros.parameter_instantiations(parameters) }}
 }
