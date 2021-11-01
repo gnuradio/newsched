@@ -26,7 +26,16 @@ if cuda_dep.found() and get_option('enable_cuda')
   runtime_deps += [newsched_runtime_cu_dep]
 endif
 
+cdata = configuration_data()
+cdata.set('VERSION', meson.project_version())
+constants_file = configure_file(input: 'constants.cc.in',
+                          output: 'constants.cc',
+                          configuration: cdata,
+                          install: false)
+
+
 runtime_sources = [
+  constants_file,
   'block.cc',
   'buffer.cc',
   'buffer_sm.cc',

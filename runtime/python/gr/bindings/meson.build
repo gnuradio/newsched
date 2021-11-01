@@ -11,7 +11,8 @@ runtime_pybind_sources = files([
     'scheduler_pybind.cc',
     'buffer_pybind.cc',
     'domain_pybind.cc',
-    'buffer_cpu_vmcirc_pybind.cc'
+    'buffer_cpu_vmcirc_pybind.cc',
+    'constants_pybind.cc'
  ] )
 
 cpp_args = []
