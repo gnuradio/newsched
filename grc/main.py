@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 
-import argparse, logging, sys
+import argparse, logging, sys, os
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -79,8 +79,7 @@ def main():
         install_prefix=gr.prefix()
     )
 
-    hack_blocks_path = ['/share/gnuradio/gr40/share/gnuradio/grc/blocks',
-        '/share/gnuradio/gr40/src/newsched/grc/blocks']
+    hack_blocks_path = [os.path.join(gr.prefix(),'share','gnuradio','grc','blocks')]
     platform.build_library(path=hack_blocks_path)
 
     log.debug("Loading application")
