@@ -1,7 +1,5 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
-{% set typekeys = properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first %}
-{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 #include <gnuradio/{{module}}/{{block}}.hh>
 
 namespace gr {
@@ -25,8 +23,8 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 }
 
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
-{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}") {
- {{ macros.ports(ports, parameters) }}
+{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{blocktype}}("") {
+ {{ macros.ports(ports, parameters, typekeys) }}
  {{ macros.parameter_instantiations(parameters) }}
 
 }

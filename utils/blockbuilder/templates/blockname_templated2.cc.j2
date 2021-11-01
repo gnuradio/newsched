@@ -1,7 +1,5 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
-{% set typekeys = properties|selectattr("id", "equalto", "templates")|map(attribute="keys")|first %}
-{% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 #include <gnuradio/{{module}}/{{block}}.hh>
 
 namespace gr {
@@ -25,9 +23,32 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 }
 
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
-{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{"sync_block" if blocktype == 'sync' else "block"}}("{{ block }}") {
- {{ macros.ports(ports, parameters) }}
+{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{blocktype}}("") {
+ {{ macros.ports(ports, parameters, typekeys) }}
+ {{ macros.parameter_instantiations(parameters) }}
+
 }
+
+// Settable Parameters
+{% for p in parameters -%}
+{% if p['settable']%}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::set_{{p['id']}}({{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{p['id']}})
+{
+    return request_parameter_change(params::id_{{p['id']}},
+                                    pmtf::pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{p['id']}}));
+}
+{% endif -%}
+{% if p['settable'] and not 'gettable' in p or p['gettable'] %}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
+{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
+{
+    return pmtf::get_pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
+                request_parameter_query(params::id_{{p['id']}}))
+        .value(); 
+}
+{% endif %}
+{% endfor -%}
 
 {%set key1 = typekeys|first %}
 {%set key2 = typekeys|last %}
