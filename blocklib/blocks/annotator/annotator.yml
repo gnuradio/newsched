@@ -5,10 +5,7 @@
 module: blocks
 block: annotator
 label: Annotator
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: when
@@ -37,15 +34,15 @@ ports:
     id: in
     direction: input
     type: untyped
-    size: itemsize
-    multiplicity: num_inputs
+    size: parameters/itemsize
+    multiplicity: parameters/num_inputs
 
 -   domain: stream
     id: out
     direction: output
     type: untyped
-    size: itemsize
-    multiplicity: num_outputs
+    size: parameters/itemsize
+    multiplicity: parameters/num_outputs
 
 callbacks:
 -   id: data

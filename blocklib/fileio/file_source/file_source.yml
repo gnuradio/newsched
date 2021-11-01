@@ -1,10 +1,7 @@
 module: fileio
 block: file_source
 label: File Source
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize
@@ -36,7 +33,7 @@ ports:
     id: out
     direction: output
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 callbacks:
 -   id: seek

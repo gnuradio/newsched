@@ -1,51 +1,59 @@
 module: math
 block: add
 label: Add
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: int16_t
-          suffix: ss   
-        - value: int32_t 
-          suffix: ii 
-        - value: float
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+grc:
+  flags: [python]
+  asserts:
+    - ${ num_inputs > 1 }
+    - ${ vlen > 0 }
+  templates:
+      imports: from newsched import math
+      make: math.add_${T.fcn}(${nports},${vlen})
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+      - value: float
+        suffix: ff 
+      - value: int32_t 
+        suffix: ii
+      - value: int16_t
+        suffix: ss
 
 parameters:
 -   id: nports
     label: Num Ports
     dtype: size_t
-    settable: false
+    default: 2
+    grc:
+      default: 2
+      hide: part
 -   id: vlen
     label: Vec. Length
     dtype: size_t
-    settable: false
     default: 1
 
 ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{args.vlen}'
-    multiplicity: nports
+    type: typekeys/T
+    dims: parameters/vlen
+    multiplicity: parameters/nports
 
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{args.vlen}'
+    type: typekeys/T
+    dims: parameters/vlen
 
 implementations:
 -   id: cpu
 -   id: cuda
 
-file_format: 1
+file_format: 2

@@ -1,35 +1,38 @@
 module: soapy
 block: source
 label: source
+blocktype: block
+inherits: gr::soapy::block
 
-properties:
--   id: blocktype
-    value: general
-    inherits: gr::soapy::block
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        # - value: int16_t
-        #   suffix: ss   
-        # - value: int32_t 
-        #   suffix: ii 
-        # - value: float
-        #   suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+# This needs a lot of work - for soapy there is an N:1 relationship 
+#  between the grc files and block
+#  Do we 
+#   1) have all that info here and generate multiple files
+#   2) have multiple grc files in tree and don't generate
+grc:
+  flags: [python]
+  templates:
+      imports: |- 
+        from newsched import soapy
+      make: |-
+        self.${id} = soapy.source_${T.fcn}(${device},${nchan})
+        self.${id}.set_sample_rate(0, samp_rate)
+        self.${id}.set_gain_mode(0, False)
+        self.${id}.set_frequency(0, ${frequency})
+        self.${id}.set_frequency_correction(0, 0)
+        self.${id}.set_gain(0, 'TUNER', ${gain})
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+    #   - value: float
+    #     suffix: ff 
 
 includes:
   - value: gnuradio/soapy/block.hh
 
-    # static sptr make(const std::string& device,
-    #                  const std::string& type,
-    #                  size_t nchan,
-    #                  const std::string& dev_args = "",
-    #                  const std::string& stream_args = "",
-    #                  const std::vector<std::string>& tune_args = { "" },
-    #                  const std::vector<std::string>& other_settings = { "" });
 parameters:
 -   id: device
     label: Device
@@ -59,6 +62,21 @@ parameters:
     dtype: const std::vector<std::string>&
     settable: false
     default: std::vector<std::string>{""}
+    grc:
+        default: '[]'
+# Gain here is a hack to get rtl-sdr to work
+-   id: gain
+    label: Gain
+    dtype: float
+    settable: false
+    cotr: false
+    default: 42
+-   id: frequency
+    label: Frequency
+    dtype: float
+    settable: false
+    cotr: false
+    default: 2400000000
 
 ports:
 # -   domain: stream
@@ -69,9 +87,8 @@ ports:
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{1}'
-    multiplicity: nchan
+    type: typekeys/T
+    multiplicity: parameters/nchan
 
 implementations:
 -   id: cpu

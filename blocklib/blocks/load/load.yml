@@ -1,10 +1,7 @@
 module: blocks
 block: load
 label: Load
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize
@@ -21,13 +18,13 @@ ports:
     id: in
     direction: input
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 -   domain: stream
     id: out
     direction: output
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 implementations:
 -   id: cpu

@@ -1,44 +1,27 @@
-yml_file = 'conjugate.yml'
+srcs = files(['conjugate_cpu.cc'])
 
-math_conjugate_files = files(['conjugate_cpu.cc'])
-
-
-# if cuda_dep.found() and get_option('enable_cuda')
-#     math_conjugate_files += files('conjugate_cuda.cc')
-#     math_cu_sources += files('conjugate_cuda.cu')
+# if USE_CUDA
+#     srcs += files('conjugate_cuda.cc')
+#     # math_cu_sources += files('conjugate_cuda.cu')
 # endif
 
-gen_conjugate_h = custom_target('gen_conjugate_cpu_h',
+gen_srcs = custom_target('gen_conjugate_h',
                         input : ['conjugate.yml'],
-                        output : ['conjugate.hh'],
+                        output : ['conjugate.cc', 'conjugate.hh', 'conjugate_pybind.cc', 'math_conjugate.block.yml'],
                         command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
                             '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
+                            '--output-cc', '@OUTPUT0@', 
+                            '--output-hh', '@OUTPUT1@', 
+                            '--output-pybind', '@OUTPUT2@', 
+                            '--output-grc', '@OUTPUT3@', 
                             '--build_dir', join_paths(meson.build_root())],
                         install : true,
-                        install_dir : 'include/gnuradio/math')
+                        install_dir : [false, 'include/gnuradio/math',false,'share/gnuradio/grc/blocks'])
 
-gen_conjugate_cc = custom_target('gen_conjugate_cpu_cc',
-                        input : ['conjugate.yml'],
-                        output : ['conjugate.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)        
+math_deps += declare_dependency(sources : [gen_srcs[1]] ) 
+math_sources += [srcs, gen_srcs[0]]
 
-math_deps += declare_dependency(sources : [gen_conjugate_h])
-math_sources += [math_conjugate_files, gen_conjugate_cc]
-
-if get_option('enable_python')
-    gen_conjugate_pybind = custom_target('gen_conjugate_cpu_pybind',
-                            input : ['conjugate.yml'],
-                            output : ['conjugate_pybind.cc'],
-                            command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
-                                '--yaml_file', '@INPUT@', 
-                                '--output_file', '@OUTPUT@', 
-                                '--build_dir', join_paths(meson.build_root())],
-                            install : false)                   
-    math_pybind_sources += gen_conjugate_pybind
+if get_option('enable_python')                           
+    math_pybind_sources += gen_srcs[2]
     math_pybind_names += 'conjugate'
 endif

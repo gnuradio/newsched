@@ -1,19 +1,22 @@
 module: filter
 block: pfb_channelizer
 label: Multiply Constant
+blocktype: block
 
-properties:
--   id: blocktype
-    value: general
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        # - value: float
-        #   suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+grc:
+  flags: [python]
+  templates:
+      imports: from newsched import filter
+      make: filter.pfb_channelizer_${T.fcn}(${numchans},${taps},${oversample_rate})
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+    #   - value: float
+    #     suffix: ff 
 
 parameters:
 -   id: numchans
@@ -33,15 +36,13 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{1}'
+    type: typekeys/T
 
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{1}'
-    multiplicity: numchans
+    type: typekeys/T
+    multiplicity: parameters/numchans
 
 implementations:
 -   id: cpu

@@ -1,10 +1,7 @@
 module: streamops
 block: stream_to_streams
 label: Stream To Streams
-
-properties:
--   id: blocktype
-    value: general # todo: decimator
+blocktype: block
 
 parameters:
 -   id: itemsize
@@ -21,14 +18,14 @@ ports:
     id: in
     direction: input
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 -   domain: stream
     id: out
     direction: output
     type: untyped
-    size: itemsize
-    multiplicity: nstreams
+    size: parameters/itemsize
+    multiplicity: parameters/nstreams
 
 implementations:
 -   id: cpu

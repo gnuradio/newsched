@@ -1,23 +1,22 @@
 module: filter
 block: moving_average
 label: Moving Average
+blocktype: block
 
-properties:
--   id: blocktype
-    value: general
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        # - value: int32_t
-        #   suffix: ii
-        # - value: int16_t
-        #   suffix: ss 
-        - value: float 
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+grc:
+  flags: [python]
+  templates:
+      imports: from newsched import filter
+      make: filter.moving_average_${T.fcn}(${length},${scale},${max_iter},${vlen})
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+      - value: float
+        suffix: ff 
 
 parameters:
 -   id: length
@@ -44,12 +43,12 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
+    type: typekeys/T
 
 -   domain: stream
     id: out
     direction: output
-    type: T
+    type: typekeys/T
 
 implementations:
 -   id: cpu

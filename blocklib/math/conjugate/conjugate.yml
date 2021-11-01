@@ -1,12 +1,7 @@
 module: math
 block: conjugate
 label: Complex Conjugate
-
-properties:
--   id: blocktype
-    value: sync
-
-parameters:
+blocktype: sync_block
 
 ports:
 -   domain: stream

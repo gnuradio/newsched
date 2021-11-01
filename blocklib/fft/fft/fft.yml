@@ -1,26 +1,30 @@
 module: fft
 block: fft
 label: FFT
+blocktype: sync_block
+grc:
+  flags: [python]
+  templates:
+      imports: from newsched import fft
+      make: fft.fft_${T.fcn}_${direction.fcn}(${fft_size},${window},${shift})
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: float
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
-    - id: forward
-      type: bool 
-      options: 
-        - value: true
-          suffix: fwd
-        - value: false
-          suffix: rev
+typekeys:
+  - id: T
+    type: class
+    options:
+      - value: gr_complex
+        suffix: cc 
+      - value: float
+        suffix: ff
+  - id: direction
+    type: bool
+    label: Direction
+    options:
+      - value: 'true' 
+        suffix: fwd
+      - value: 'false'
+        suffix: rev
+
 
 parameters:
 -   id: fft_size
@@ -41,14 +45,14 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{args.fft_size}'
+    type: typekeys/T
+    dims: parameters/fft_size
 
 -   domain: stream
     id: out
     direction: output
-    type: T 
-    dims: '{args.fft_size}'
+    type: typekeys/T
+    dims: parameters/fft_size
 
 implementations:
 -   id: cpu
