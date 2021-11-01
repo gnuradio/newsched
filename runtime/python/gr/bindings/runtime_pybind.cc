@@ -28,6 +28,7 @@ void bind_scheduler(py::module&);
 void bind_buffer(py::module&);
 void bind_vmcircbuf(py::module&);
 void bind_domain(py::module&);
+void bind_constants(py::module&);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
 void bind_buffer_cuda_pinned(py::module&);
@@ -65,6 +66,7 @@ PYBIND11_MODULE(runtime_python, m)
     bind_scheduler(m);
     bind_buffer(m);
     bind_vmcircbuf(m);
+    bind_constants(m);
     
     #ifdef HAVE_CUDA
     bind_buffer_cuda(m);
