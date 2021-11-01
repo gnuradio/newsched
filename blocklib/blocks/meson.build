@@ -6,9 +6,9 @@ blocks_pybind_sources = []
 blocks_pybind_names = []
 blocks_deps = []
 # Individual block subdirectories
+subdir('annotator')
 subdir('copy')
 subdir('delay')
-subdir('annotator')
 subdir('head')
 subdir('load')
 subdir('msg_forward')

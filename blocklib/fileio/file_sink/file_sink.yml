@@ -1,12 +1,8 @@
 module: fileio
 block: file_sink
 label: File Sink
-
-properties:
--   id: blocktype
-    value: sync
--   id: base_class
-    value: gr::fileio::file_sink_base
+blocktype: sync_block
+base_class: gr::fileio::file_sink_base
 
 parameters:
 -   id: itemsize
@@ -28,7 +24,7 @@ ports:
     id: in
     direction: input
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 callbacks:
 -   id: set_unbuffered

@@ -1,19 +1,33 @@
 module: qtgui
 block: time_sink
-label: time_sink
+label: QT GUI Time Sink
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: float
-          suffix: f 
-        - value: gr_complex
-          suffix: c
+grc:
+  flags: [python]
+  templates:
+      imports: |-
+        from PyQt5 import Qt
+        from newsched import qtgui
+        from newsched.filter import firdes
+        import sip
+      make: |
+        <%
+            win = 'self._%s_win'%id
+        %>\
+        qtgui.time_sink_${T.fcn}(${size},${samp_rate},${name},${nconnections})
+        ${win} = sip.wrapinstance(self.${id}.qwidget(), Qt.QWidget)
+        ${gui_hint() % win}
+
+typekeys:
+- id: T
+  type: class
+  options: 
+    - value: gr_complex
+      suffix: c
+    - value: float
+      suffix: f 
+
 parameters:
 -   id: size
     label: Size
@@ -37,7 +51,11 @@ parameters:
 #     dtype: QWidget*
 #     settable: false 
 #     default: nullptr
-
+-   id: gui_hint
+    label: GUI Hint
+    dtype: gui_hint
+    hide: part
+    cotr: false
 # Includes go in the blockname.hh
 includes: 
   - value: qapplication.h
@@ -58,7 +76,7 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
+    type: typekeys/T
 
 implementations:
 -   id: cpu

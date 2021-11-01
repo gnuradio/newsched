@@ -1,30 +1,36 @@
 module: math
 block: divide
 label: Divide
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: int16_t
-          suffix: ss   
-        - value: int32_t
-          suffix: ii 
-        - value: float
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+grc:
+  flags: [python]
+  asserts:
+    - ${ num_inputs > 1 }
+    - ${ vlen > 0 }
+  templates:
+      imports: from newsched import math
+      make: math.divide_${T.fcn}(${num_inputs},${vlen})
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: gr_complex 
+        suffix: cc 
+      - value: float
+        suffix: ff 
+      - value: int32_t 
+        suffix: ii
+      - value: int16_t
+        suffix: ss
 
 parameters:
 -   id: num_inputs
     label: Number of Inputs
     dtype: size_t
     settable: false
-    default: 2
+    default: 2 
 -   id: vlen
     label: Vec. Length
     dtype: size_t
@@ -35,15 +41,15 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{args.vlen}'
-    multiplicity: num_inputs
+    type: typekeys/T
+    dims: parameters/vlen
+    multiplicity: parameters/num_inputs
 
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{args.vlen}'
+    type: typekeys/T
+    dims: parameters/vlen
 
 implementations:
 -   id: cpu

@@ -1,10 +1,7 @@
 module: streamops
 block: interleaved_short_to_complex
 label: Interleaved Short to Complex
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: swap
@@ -23,13 +20,12 @@ ports:
     id: in
     direction: input
     type: int16_t
-    dims: '{2}'
+    dims: '2'
 
 -   domain: stream
     id: out
     direction: output
     type: gr_complex
-    dims: '{1}'
 
 implementations:
 -   id: cpu

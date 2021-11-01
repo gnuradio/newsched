@@ -1,43 +1,27 @@
-streamops_stream_to_streams_files = files(['stream_to_streams_cpu.cc'])
+srcs = files(['stream_to_streams_cpu.cc'])
 
-if cuda_dep.found() and get_option('enable_cuda')
-    streamops_stream_to_streams_files += files('stream_to_streams_cuda.cc')
+if USE_CUDA
+    srcs += files('stream_to_streams_cuda.cc')
     # streamops_cu_sources += files('stream_to_streams_cuda.cu')
 endif
 
-gen_stream_to_streams_h = custom_target('gen_stream_to_streams_h',
+gen_srcs = custom_target('gen_stream_to_streams_h',
                         input : ['stream_to_streams.yml'],
-                        output : ['stream_to_streams.hh'],
+                        output : ['stream_to_streams.cc', 'stream_to_streams.hh', 'stream_to_streams_pybind.cc', 'streamops_stream_to_streams.block.yml'],
                         command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
                             '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
+                            '--output-cc', '@OUTPUT0@', 
+                            '--output-hh', '@OUTPUT1@', 
+                            '--output-pybind', '@OUTPUT2@', 
+                            '--output-grc', '@OUTPUT3@', 
                             '--build_dir', join_paths(meson.build_root())],
                         install : true,
-                        install_dir : 'include/gnuradio/streamops')
+                        install_dir : [false, 'include/gnuradio/streamops',false,'share/gnuradio/grc/blocks'])
 
-gen_stream_to_streams_cc = custom_target('gen_stream_to_streams_cc',
-                        input : ['stream_to_streams.yml'],
-                        output : ['stream_to_streams.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_folder.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : true,
-                        install_dir : 'include/gnuradio/streamops')
+streamops_deps += declare_dependency(sources : [gen_srcs[1]] ) 
+streamops_sources += [srcs, gen_srcs[0]]
 
-streamops_deps += declare_dependency(sources : [gen_stream_to_streams_h] ) 
-streamops_sources += [streamops_stream_to_streams_files, gen_stream_to_streams_cc]
-
-if get_option('enable_python')
-    gen_stream_to_streams_pybind = custom_target('gen_stream_to_streams_cpu_pybind',
-                            input : ['stream_to_streams.yml'],
-                            output : ['stream_to_streams_pybind.cc'],
-                            command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_pybind.py'),
-                                '--yaml_file', '@INPUT@', 
-                                '--output_file', '@OUTPUT@', 
-                                '--build_dir', join_paths(meson.build_root())],
-                            install : false)   
-                            
-    streamops_pybind_sources += gen_stream_to_streams_pybind
+if get_option('enable_python')                           
+    streamops_pybind_sources += gen_srcs[2]
     streamops_pybind_names += 'stream_to_streams'
 endif
