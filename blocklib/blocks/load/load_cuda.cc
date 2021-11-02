@@ -29,11 +29,10 @@ work_return_code_t load_cuda::work(std::vector<block_work_input>& work_input,
 
     auto noutput_items = work_output[0].n_items;
     int gridSize = (noutput_items * d_itemsize + d_block_size - 1) / d_block_size;
-    for (int i = 0; i < noutput_items; i++) {
-        load_cu::exec_kernel(
-            in + i*d_itemsize, out + i*d_itemsize, gridSize, d_block_size, d_load, d_stream);
-        checkCudaErrors(cudaPeekAtLastError());
-    }
+    load_cu::exec_kernel(
+        in, out, gridSize, d_block_size, d_load, d_stream);
+    checkCudaErrors(cudaPeekAtLastError());
+
 
     cudaStreamSynchronize(d_stream);
 
