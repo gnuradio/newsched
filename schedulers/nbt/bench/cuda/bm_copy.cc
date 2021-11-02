@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 {
     uint64_t samples;
     int mem_model;
-    size_t batch_size;
+    size_t buffer_size;
     int nblocks;
     size_t load;
     bool rt_prio = false;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
         "nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")(
         "load,l", po::value<size_t>(&load)->default_value(1), "Num FFT Blocks")(
         "memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")(
-        "veclen,s", po::value<size_t>(&batch_size)->default_value(1024), "Batch Size")(
+        "bufsize,s", po::value<size_t>(&buffer_size)->default_value(8192), "Buffer Size")(
         "rt_prio", "Enable Real-time priority")(
         "sm", "Enable Single Mapped CUDA buffers (for memmodel 0)");
     po::variables_map vm;
@@ -65,24 +65,24 @@ int main(int argc, char* argv[])
 
     std::vector<blocks::load::sptr> copy_blks(nblocks);
     for (int i = 0; i < nblocks; i++) {
-        copy_blks[i] = blocks::load::make_cuda({ sizeof(gr_complex) * batch_size, load });
+        copy_blks[i] = blocks::load::make_cuda({ sizeof(gr_complex), load });
     }
 
     // std::vector<gr_complex> input_data(samples);
     // for (unsigned i = 0; i < samples; i++)
     //     input_data[i] = gr_complex(i % 256, 256 - i % 256);
 
-    auto src = blocks::null_source::make({ sizeof(gr_complex) * batch_size });
-    auto snk = blocks::null_sink::make({ sizeof(gr_complex) * batch_size });
+    auto src = blocks::null_source::make({ sizeof(gr_complex) });
+    auto snk = blocks::null_sink::make({ sizeof(gr_complex) });
     auto head =
-        blocks::head::make_cpu({ sizeof(gr_complex) * batch_size, samples / batch_size });
+        blocks::head::make_cpu({ sizeof(gr_complex), samples });
 
     auto fg = flowgraph::make();
 
     fg->connect(src, 0, head, 0)->set_custom_buffer(BUFFER_CPU_VMCIRC_ARGS);
     auto sched = schedulers::scheduler_nbt::make(
         "sched",
-        sizeof(gr_complex) * batch_size *
+        sizeof(gr_complex) * buffer_size *
             2); // This sizing should be handled in buffer_managment but it is not yet
     sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
     fg->set_scheduler(sched);
