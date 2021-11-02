@@ -34,8 +34,8 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
         d_nconnections = 2 * args.nconnections;
     }
     // // setup PDU handling input port
-    // message_port_register_in(pmt::mp("in"));
-    // set_msg_handler(pmt::mp("in"), [this](pmt::pmt_t msg) { this->handle_pdus(msg); });
+    // message_port_register_in(pmtf::pmt_string("in"));
+    // set_msg_handler(pmtf::pmt_string("in"), [this](pmtf::pmt_wrap msg) { this->handle_pdus(msg); });
 
     // +1 for the PDU buffer
     for (unsigned int n = 0; n < d_nconnections + 1; n++) {
@@ -205,7 +205,7 @@ void time_sink_cpu<T>::_gui_update_trigger()
     }
 
     // std::string tagkey = d_main_gui->getTriggerTagKey();
-    // d_trigger_tag_key = pmt::intern(tagkey);
+    // d_trigger_tag_key = pmtf::pmt_string(tagkey);
 }
 
 template <class T>
@@ -553,7 +553,7 @@ void time_sink_cpu<T>::set_line_alpha(unsigned int which, double alpha)
 //     d_trigger_level = level;
 //     d_trigger_delay = static_cast<int>(delay * d_samp_rate);
 //     d_trigger_channel = channel;
-//     d_trigger_tag_key = pmt::intern(tag_key);
+//     d_trigger_tag_key = pmtf::pmt_string(tag_key);
 //     d_triggered = false;
 //     d_trigger_count = 0;
 

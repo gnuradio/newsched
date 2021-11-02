@@ -55,9 +55,9 @@ void buffer::add_tag(tag_t tag)
     _tags.push_back(tag);
 }
 void buffer::add_tag(uint64_t offset,
-                     pmt::pmt_t key,
-                     pmt::pmt_t value,
-                     pmt::pmt_t srcid)
+                     pmtf::pmt_wrap key,
+                     pmtf::pmt_wrap value,
+                     pmtf::pmt_wrap srcid)
 {
     std::scoped_lock guard(_buf_mutex);
     _tags.emplace_back(offset, key, value, srcid);

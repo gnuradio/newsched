@@ -3,7 +3,7 @@ scheduler_nbt_sources = [
     'thread_wrapper.cc',
     'scheduler_nbt.cc',
 ]
-scheduler_nbt_deps = [newsched_runtime_dep, threads_dep, fmt_dep, pmt_dep, pmtf_dep]
+scheduler_nbt_deps = [newsched_runtime_dep, threads_dep, fmt_dep, pmtf_dep]
 
 incdir = include_directories('../include', '../include/gnuradio/schedulers/nbt')
 newsched_scheduler_nbt_lib = library('newsched-scheduler-nbt', 

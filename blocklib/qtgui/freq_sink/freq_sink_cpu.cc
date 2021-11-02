@@ -10,6 +10,7 @@
 
 #include "freq_sink_cpu.hh"
 #include <volk/volk.h>
+#include <pmtf/pmtf_string.hpp>
 
 namespace gr {
 namespace qtgui {
@@ -33,8 +34,8 @@ freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
       d_bandwidth(args.bw),
       d_name(args.name),
       d_nconnections(args.nconnections),
-      d_port(pmt::mp("freq")),
-      d_port_bw(pmt::mp("bw"))
+      d_port(pmtf::pmt_string("freq")),
+      d_port_bw(pmtf::pmt_string("bw"))
 {
     d_fft = std::make_unique<fft::fft_complex_fwd>(d_fftsize);
     d_fbuf.resize(d_fftsize);
@@ -310,7 +311,7 @@ void freq_sink_cpu<T>::set_trigger_mode(trigger_mode mode,
     d_trigger_mode = mode;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmt::intern(tag_key);
+    d_trigger_tag_key = pmtf::pmt_string(tag_key);
     d_triggered = false;
     d_trigger_count = 0;
 
@@ -568,31 +569,31 @@ void freq_sink_cpu<T>::check_clicked()
     // }
 }
 
-template <class T>
-void freq_sink_cpu<T>::handle_set_freq(pmt::pmt_t msg)
-{
-    if (pmt::is_pair(msg)) {
-        pmt::pmt_t x = pmt::cdr(msg);
-        if (pmt::is_real(x)) {
-            d_center_freq = pmt::to_double(x);
-            d_qApplication->postEvent(d_main_gui,
-                                      new SetFreqEvent(d_center_freq, d_bandwidth));
-        }
-    }
-}
+// template <class T>
+// void freq_sink_cpu<T>::handle_set_freq(pmtf::pmt_wrap msg)
+// {
+//     if (pmt::is_pair(msg)) {
+//         pmtf::pmt_wrap x = pmt::cdr(msg);
+//         if (pmt::is_real(x)) {
+//             d_center_freq = pmt::to_double(x);
+//             d_qApplication->postEvent(d_main_gui,
+//                                       new SetFreqEvent(d_center_freq, d_bandwidth));
+//         }
+//     }
+// }
 
-template <class T>
-void freq_sink_cpu<T>::handle_set_bw(pmt::pmt_t msg)
-{
-    if (pmt::is_pair(msg)) {
-        pmt::pmt_t x = pmt::cdr(msg);
-        if (pmt::is_real(x)) {
-            d_bandwidth = pmt::to_double(x);
-            d_qApplication->postEvent(d_main_gui,
-                                      new SetFreqEvent(d_center_freq, d_bandwidth));
-        }
-    }
-}
+// template <class T>
+// void freq_sink_cpu<T>::handle_set_bw(pmtf::pmt_wrap msg)
+// {
+//     if (pmt::is_pair(msg)) {
+//         pmtf::pmt_wrap x = pmt::cdr(msg);
+//         if (pmt::is_real(x)) {
+//             d_bandwidth = pmt::to_double(x);
+//             d_qApplication->postEvent(d_main_gui,
+//                                       new SetFreqEvent(d_center_freq, d_bandwidth));
+//         }
+//     }
+// }
 
 template <class T>
 void freq_sink_cpu<T>::_gui_update_trigger()
@@ -602,7 +603,7 @@ void freq_sink_cpu<T>::_gui_update_trigger()
     d_trigger_channel = d_main_gui->getTriggerChannel();
 
     std::string tagkey = d_main_gui->getTriggerTagKey();
-    d_trigger_tag_key = pmt::intern(tagkey);
+    d_trigger_tag_key = pmtf::pmt_string(tagkey);
 
     if (new_trigger_mode != d_trigger_mode) {
         d_trigger_mode = new_trigger_mode;
@@ -649,87 +650,87 @@ void freq_sink_cpu<T>::_test_trigger_norm(int nitems,
     }
 }
 
-template <class T>
-void freq_sink_cpu<T>::handle_pdus(pmt::pmt_t msg)
-{
-    size_t len;
-    pmt::pmt_t dict, samples;
+// template <class T>
+// void freq_sink_cpu<T>::handle_pdus(pmtf::pmt_wrap msg)
+// {
+//     size_t len;
+//     pmtf::pmt_wrap dict, samples;
 
-    // Test to make sure this is either a PDU or a uniform vector of
-    // samples. Get the samples PMT and the dictionary if it's a PDU.
-    // If not, we throw an error and exit.
-    if (pmt::is_pair(msg)) {
-        dict = pmt::car(msg);
-        samples = pmt::cdr(msg);
-    } else if (pmt::is_uniform_vector(msg)) {
-        samples = msg;
-    } else {
-        throw std::runtime_error("time_sink_c: message must be either "
-                                 "a PDU or a uniform vector of samples.");
-    }
+//     // Test to make sure this is either a PDU or a uniform vector of
+//     // samples. Get the samples PMT and the dictionary if it's a PDU.
+//     // If not, we throw an error and exit.
+//     if (pmt::is_pair(msg)) {
+//         dict = pmt::car(msg);
+//         samples = pmt::cdr(msg);
+//     } else if (pmt::is_uniform_vector(msg)) {
+//         samples = msg;
+//     } else {
+//         throw std::runtime_error("time_sink_c: message must be either "
+//                                  "a PDU or a uniform vector of samples.");
+//     }
 
-    len = pmt::length(samples);
+//     len = pmt::length(samples);
 
-    const gr_complex* in;
-    if (pmt::is_c32vector(samples)) {
-        in = (const gr_complex*)pmt::c32vector_elements(samples, len);
-    } else {
-        throw std::runtime_error("freq_sink_c: unknown data type "
-                                 "of samples; must be complex.");
-    }
+//     const gr_complex* in;
+//     if (pmt::is_c32vector(samples)) {
+//         in = (const gr_complex*)pmt::c32vector_elements(samples, len);
+//     } else {
+//         throw std::runtime_error("freq_sink_c: unknown data type "
+//                                  "of samples; must be complex.");
+//     }
 
-    // Plot if we're past the last update time
-    if (gr::high_res_timer_now() - d_last_time > d_update_time) {
-        d_last_time = gr::high_res_timer_now();
+//     // Plot if we're past the last update time
+//     if (gr::high_res_timer_now() - d_last_time > d_update_time) {
+//         d_last_time = gr::high_res_timer_now();
 
-        // Update the FFT size from the application
-        fftresize();
-        windowreset();
-        check_clicked();
+//         // Update the FFT size from the application
+//         fftresize();
+//         windowreset();
+//         check_clicked();
 
-        int winoverlap = 4;
-        int fftoverlap = d_fftsize / winoverlap;
-        float num = static_cast<float>(winoverlap * len) / static_cast<float>(d_fftsize);
-        int nffts = static_cast<int>(ceilf(num));
+//         int winoverlap = 4;
+//         int fftoverlap = d_fftsize / winoverlap;
+//         float num = static_cast<float>(winoverlap * len) / static_cast<float>(d_fftsize);
+//         int nffts = static_cast<int>(ceilf(num));
 
-        // Clear this as we will be accumulating in the for loop over nffts
-        memset(d_pdu_magbuf, 0, sizeof(double) * d_fftsize);
+//         // Clear this as we will be accumulating in the for loop over nffts
+//         memset(d_pdu_magbuf, 0, sizeof(double) * d_fftsize);
 
-        size_t min = 0;
-        size_t max = std::min(d_fftsize, static_cast<int>(len));
-        for (int n = 0; n < nffts; n++) {
-            // Clear in case (max-min) < d_fftsize
-            std::fill(std::begin(d_residbufs[d_nconnections]),
-                      std::end(d_residbufs[d_nconnections]),
-                      0x00);
+//         size_t min = 0;
+//         size_t max = std::min(d_fftsize, static_cast<int>(len));
+//         for (int n = 0; n < nffts; n++) {
+//             // Clear in case (max-min) < d_fftsize
+//             std::fill(std::begin(d_residbufs[d_nconnections]),
+//                       std::end(d_residbufs[d_nconnections]),
+//                       0x00);
 
-            // Copy in as much of the input samples as we can
-            memcpy(d_residbufs[d_nconnections].data(),
-                   &in[min],
-                   sizeof(gr_complex) * (max - min));
+//             // Copy in as much of the input samples as we can
+//             memcpy(d_residbufs[d_nconnections].data(),
+//                    &in[min],
+//                    sizeof(gr_complex) * (max - min));
 
-            // Apply the window and FFT; copy data into the PDU
-            // magnitude buffer.
-            fft(d_fbuf.data(), d_residbufs[d_nconnections].data(), d_fftsize);
-            for (int x = 0; x < d_fftsize; x++) {
-                d_pdu_magbuf[x] += (double)d_fbuf[x];
-            }
+//             // Apply the window and FFT; copy data into the PDU
+//             // magnitude buffer.
+//             fft(d_fbuf.data(), d_residbufs[d_nconnections].data(), d_fftsize);
+//             for (int x = 0; x < d_fftsize; x++) {
+//                 d_pdu_magbuf[x] += (double)d_fbuf[x];
+//             }
 
-            // Increment our indices; set max up to the number of
-            // samples in the input PDU.
-            min += fftoverlap;
-            max = std::min(max + fftoverlap, len);
-        }
+//             // Increment our indices; set max up to the number of
+//             // samples in the input PDU.
+//             min += fftoverlap;
+//             max = std::min(max + fftoverlap, len);
+//         }
 
-        // Perform the averaging
-        for (int x = 0; x < d_fftsize; x++) {
-            d_pdu_magbuf[x] /= static_cast<double>(nffts);
-        }
+//         // Perform the averaging
+//         for (int x = 0; x < d_fftsize; x++) {
+//             d_pdu_magbuf[x] /= static_cast<double>(nffts);
+//         }
 
-        // update gui per-pdu
-        d_qApplication->postEvent(d_main_gui, new FreqUpdateEvent(d_magbufs, d_fftsize));
-    }
-}
+//         // update gui per-pdu
+//         d_qApplication->postEvent(d_main_gui, new FreqUpdateEvent(d_magbufs, d_fftsize));
+//     }
+// }
 
 template <class T>
 void freq_sink_cpu<T>::set_plot_pos_half(bool half)

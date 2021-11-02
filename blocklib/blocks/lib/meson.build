@@ -1,4 +1,4 @@
-blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmt_dep, pmtf_dep]
+blocks_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 link_args = []
