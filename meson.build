@@ -64,8 +64,6 @@ if (get_option('enable_testing'))
 
 endif
 
-
-subdir('pmt')
 subdir('runtime')
 subdir('blocklib')
 subdir('schedulers')
