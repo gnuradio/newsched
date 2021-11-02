@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmt_dep, pmtf_dep, libdl_dep, pmtf_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep]
 
 if cuda_dep.found() and get_option('enable_cuda')
   cu_sources = [
@@ -16,7 +16,7 @@ if cuda_dep.found() and get_option('enable_cuda')
       cu_sources, 
       cuda_args: ['-DTAG_IS_SHARED=1', '-DTAG_IS_BUILDING=1'],
       install : true, 
-      dependencies : [cuda_dep, pmt_dep, pmtf_dep],
+      dependencies : [cuda_dep, pmtf_dep],
       include_directories : incdir)
 
   newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,

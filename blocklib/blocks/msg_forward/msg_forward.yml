@@ -2,6 +2,8 @@ module: blocks
 block: msg_forward
 label: Message Forward
 blocktype: sync_block
+includes: 
+  - value: pmtf/pmtf_wrap.hpp
 
 parameters:
 -   id: itemsize

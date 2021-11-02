@@ -14,6 +14,8 @@
 #include <boost/format.hpp>
 #include <cmath>
 #include <numeric>
+#include <pmtf/pmtf_string.hpp>
+#include <pmtf/pmtf_scalar.hpp>
 
 namespace gr {
 namespace soapy {
@@ -103,43 +105,43 @@ static void check_abi(void)
     }
 }
 
-const pmt::pmt_t CMD_CHAN_KEY = pmt::mp("chan");
-const pmt::pmt_t CMD_FREQ_KEY = pmt::mp("freq");
-const pmt::pmt_t CMD_GAIN_KEY = pmt::mp("gain");
-const pmt::pmt_t CMD_ANTENNA_KEY = pmt::mp("antenna");
-const pmt::pmt_t CMD_RATE_KEY = pmt::mp("rate");
-const pmt::pmt_t CMD_BW_KEY = pmt::mp("bandwidth");
-const pmt::pmt_t CMD_GAINMODE_KEY = pmt::mp("gain_mode");
-const pmt::pmt_t CMD_FREQCORR_KEY = pmt::mp("freq_corr");
-const pmt::pmt_t CMD_DCOFFSETMODE_KEY = pmt::mp("dc_offset_mode");
-const pmt::pmt_t CMD_DCOFFSET_KEY = pmt::mp("dc_offset");
-const pmt::pmt_t CMD_IQBAL_KEY = pmt::mp("iq_bal");
-const pmt::pmt_t CMD_IQBALMODE_KEY = pmt::mp("iq_bal_mode");
-const pmt::pmt_t CMD_MCR_KEY = pmt::mp("master_clock_rate");
-const pmt::pmt_t CMD_REFCLOCKRATE_KEY = pmt::mp("ref_clock_rate");
-const pmt::pmt_t CMD_CLOCKSRC_KEY = pmt::mp("clock_src");
-const pmt::pmt_t CMD_TIMESRC_KEY = pmt::mp("time_src");
-const pmt::pmt_t CMD_HWTIME_KEY = pmt::mp("hw_time");
-const pmt::pmt_t CMD_REG_KEY = pmt::mp("reg");
-const pmt::pmt_t CMD_REGS_KEY = pmt::mp("regs");
-const pmt::pmt_t CMD_SETTING_KEY = pmt::mp("setting");
-const pmt::pmt_t CMD_GPIO_KEY = pmt::mp("gpio");
-const pmt::pmt_t CMD_GPIODIR_KEY = pmt::mp("gpio_dir");
-const pmt::pmt_t CMD_I2C_KEY = pmt::mp("i2c");
-const pmt::pmt_t CMD_UART_KEY = pmt::mp("uart");
+const std::string CMD_CHAN_KEY = "chan";
+const std::string CMD_FREQ_KEY = "freq";
+const std::string CMD_GAIN_KEY = "gain";
+const std::string CMD_ANTENNA_KEY = "antenna";
+const std::string CMD_RATE_KEY = "rate";
+const std::string CMD_BW_KEY = "bandwidth";
+const std::string CMD_GAINMODE_KEY = "gain_mode";
+const std::string CMD_FREQCORR_KEY = "freq_corr";
+const std::string CMD_DCOFFSETMODE_KEY = "dc_offset_mode";
+const std::string CMD_DCOFFSET_KEY = "dc_offset";
+const std::string CMD_IQBAL_KEY = "iq_bal";
+const std::string CMD_IQBALMODE_KEY = "iq_bal_mode";
+const std::string CMD_MCR_KEY = "master_clock_rate";
+const std::string CMD_REFCLOCKRATE_KEY = "ref_clock_rate";
+const std::string CMD_CLOCKSRC_KEY = "clock_src";
+const std::string CMD_TIMESRC_KEY = "time_src";
+const std::string CMD_HWTIME_KEY = "hw_time";
+const std::string CMD_REG_KEY = "reg";
+const std::string CMD_REGS_KEY = "regs";
+const std::string CMD_SETTING_KEY = "setting";
+const std::string CMD_GPIO_KEY = "gpio";
+const std::string CMD_GPIODIR_KEY = "gpio_dir";
+const std::string CMD_I2C_KEY = "i2c";
+const std::string CMD_UART_KEY = "uart";
 
-const pmt::pmt_t CMD_NAME_KEY = pmt::mp("name");
-const pmt::pmt_t CMD_KEY_KEY = pmt::mp("key");
-const pmt::pmt_t CMD_VALUE_KEY = pmt::mp("value");
-const pmt::pmt_t CMD_ADDR_KEY = pmt::mp("addr");
-const pmt::pmt_t CMD_MASK_KEY = pmt::mp("mask");
-const pmt::pmt_t CMD_TIME_KEY = pmt::mp("time");
-const pmt::pmt_t CMD_BANK_KEY = pmt::mp("bank");
-const pmt::pmt_t CMD_DATA_KEY = pmt::mp("data");
+const std::string CMD_NAME_KEY = "name";
+const std::string CMD_KEY_KEY = "key";
+const std::string CMD_VALUE_KEY = "value";
+const std::string CMD_ADDR_KEY = "addr";
+const std::string CMD_MASK_KEY = "mask";
+const std::string CMD_TIME_KEY = "time";
+const std::string CMD_BANK_KEY = "bank";
+const std::string CMD_DATA_KEY = "data";
 
 // Common default values for pmt::dict_ref
-const pmt::pmt_t PMT_EMPTYSTR = pmt::mp("");
-const pmt::pmt_t PMT_ZERO = pmt::mp(0);
+const pmtf::pmt_wrap PMT_EMPTYSTR = pmtf::pmt_string("");
+const pmtf::pmt_wrap PMT_ZERO = pmtf::pmt_scalar<int>(0);
 
 /*
  * The private constructor
@@ -277,83 +279,83 @@ block_impl::block_impl(int direction,
         }
     }
 
-    // message_port_register_in(pmt::mp("cmd"));
-    // set_msg_handler(pmt::mp("cmd"),
-    //                 [this](pmt::pmt_t pmt) { this->msg_handler_cmd(pmt); });
-    // register_msg_cmd_handler(CMD_FREQ_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // message_port_register_in(pmtf::pmt_string("cmd"));
+    // set_msg_handler(pmtf::pmt_string("cmd"),
+    //                 [this](pmtf::pmt_wrap pmt) { this->msg_handler_cmd(pmt); });
+    // register_msg_cmd_handler(CMD_FREQ_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_frequency(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GAIN_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GAIN_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_gain(val, channel);
     // });
 
-    // register_msg_cmd_handler(CMD_RATE_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_RATE_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_samp_rate(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_BW_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_BW_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_bw(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_ANTENNA_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_ANTENNA_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_antenna(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GAINMODE_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GAINMODE_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_gain_mode(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_frequency_correction(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_frequency_correction(val, channel);
     // });
     // register_msg_cmd_handler(CMD_DCOFFSETMODE_KEY,
-    //                          [this](pmt::pmt_t val, size_t channel) {
+    //                          [this](pmtf::pmt_wrap val, size_t channel) {
     //                              this->cmd_handler_dc_offset_mode(val, channel);
     //                          });
-    // register_msg_cmd_handler(CMD_DCOFFSET_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_DCOFFSET_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_dc_offset(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_IQBAL_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_IQBAL_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_iq_balance(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_IQBALMODE_KEY, [this](pmt::pmt_t val, size_t channel)
+    // register_msg_cmd_handler(CMD_IQBALMODE_KEY, [this](pmtf::pmt_wrap val, size_t channel)
     // {
     //     this->cmd_handler_iq_balance_mode(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_MCR_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_MCR_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_master_clock_rate(val, channel);
     // });
     // register_msg_cmd_handler(CMD_REFCLOCKRATE_KEY,
-    //                          [this](pmt::pmt_t val, size_t channel) {
+    //                          [this](pmtf::pmt_wrap val, size_t channel) {
     //                              this->cmd_handler_reference_clock_rate(val, channel);
     //                          });
-    // register_msg_cmd_handler(CMD_CLOCKSRC_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_CLOCKSRC_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_clock_source(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_TIMESRC_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_TIMESRC_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_time_source(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_HWTIME_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_HWTIME_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_hardware_time(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_REG_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_REG_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_register(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_REGS_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_REGS_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_registers(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_SETTING_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_SETTING_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_setting(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GPIO_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GPIO_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_gpio(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GPIODIR_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GPIODIR_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_gpio_dir(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_I2C_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_I2C_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_i2c(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_UART_KEY, [this](pmt::pmt_t val, size_t channel) {
+    // register_msg_cmd_handler(CMD_UART_KEY, [this](pmtf::pmt_wrap val, size_t channel) {
     //     this->cmd_handler_uart(val, channel);
     // });
 }
@@ -391,9 +393,9 @@ bool block_impl::stop()
 
 block_impl::~block_impl() {}
 
-void block_impl::register_msg_cmd_handler(const pmt::pmt_t& cmd, cmd_handler_t handler)
+void block_impl::register_msg_cmd_handler(const pmtf::pmt_wrap& cmd, cmd_handler_t handler)
 {
-    d_cmd_handlers[cmd] = handler;
+    // d_cmd_handlers[cmd] = handler;
 }
 
 void block_impl::validate_channel(size_t channel) const
@@ -1243,393 +1245,393 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 
 /* End public API implementation */
 
-void block_impl::cmd_handler_frequency(pmt::pmt_t val, size_t channel)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: freq must be float/int");
-        return;
-    }
-    set_frequency(channel, pmt::to_double(val));
-}
+// void block_impl::cmd_handler_frequency(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: freq must be float/int");
+//         return;
+//     }
+//     set_frequency(channel, pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_gain(pmt::pmt_t val, size_t channel)
-{
-    // For compatibility, accept either a numeric value for setting the
-    // overall gain or a dict with a gain element and element-specific
-    // value.
-    if (!(val->is_number() && !val->is_complex()) && !val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: gain must be float/int or a dict");
-        return;
-    }
+// void block_impl::cmd_handler_gain(pmtf::pmt_wrap val, size_t channel)
+// {
+//     // For compatibility, accept either a numeric value for setting the
+//     // overall gain or a dict with a gain element and element-specific
+//     // value.
+//     if (!(val->is_number() && !val->is_complex()) && !val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: gain must be float/int or a dict");
+//         return;
+//     }
 
-    if (val->is_dict()) {
-        if (!pmt::dict_has_key(val, CMD_GAIN_KEY)) {
-            GR_LOG_ERROR(_debug_logger, "soapy: gain dict must contain key \"gain\"");
-            return;
-        }
+//     if (val->is_dict()) {
+//         if (!pmt::dict_has_key(val, CMD_GAIN_KEY)) {
+//             GR_LOG_ERROR(_debug_logger, "soapy: gain dict must contain key \"gain\"");
+//             return;
+//         }
 
-        // Accept no name, falls back to default argument ""
-        const auto name =
-            pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-        const auto gain = pmt::to_double(pmt::dict_ref(val, CMD_GAIN_KEY, PMT_ZERO));
+//         // Accept no name, falls back to default argument ""
+//         const auto name =
+//             pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
+//         const auto gain = pmtf::pmt_scalar<double>(pmt::dict_ref(val, CMD_GAIN_KEY, PMT_ZERO));
 
-        set_gain(channel, name, gain);
-    } else {
-        set_gain(channel, pmt::to_double(val));
-    }
-}
+//         set_gain(channel, name, gain);
+//     } else {
+//         set_gain(channel, pmtf::pmt_scalar<double>(val));
+//     }
+// }
 
-void block_impl::cmd_handler_samp_rate(pmt::pmt_t val, size_t channel)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: rate must be float/int");
-        return;
-    }
-    set_sample_rate(channel, pmt::to_double(val));
-}
+// void block_impl::cmd_handler_samp_rate(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: rate must be float/int");
+//         return;
+//     }
+//     set_sample_rate(channel, pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_bw(pmt::pmt_t val, size_t channel)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: bw must be float/int");
-        return;
-    }
-    set_bandwidth(channel, pmt::to_double(val));
-}
+// void block_impl::cmd_handler_bw(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: bw must be float/int");
+//         return;
+//     }
+//     set_bandwidth(channel, pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_antenna(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_symbol()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: ant must be string");
-        return;
-    }
-    set_antenna(channel, pmt::symbol_to_string(val));
-}
+// void block_impl::cmd_handler_antenna(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_symbol()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: ant must be string");
+//         return;
+//     }
+//     set_antenna(channel, pmt::symbol_to_string(val));
+// }
 
-void block_impl::cmd_handler_gain_mode(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_bool()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: gain mode must be bool");
-        return;
-    }
-    set_gain_mode(channel, pmt::to_bool(val));
-}
+// void block_impl::cmd_handler_gain_mode(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_bool()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: gain mode must be bool");
+//         return;
+//     }
+//     set_gain_mode(channel, pmt::to_bool(val));
+// }
 
-void block_impl::cmd_handler_frequency_correction(pmt::pmt_t val, size_t channel)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: frequency correction must be float/int");
-        return;
-    }
-    set_frequency_correction(channel, pmt::to_double(val));
-}
+// void block_impl::cmd_handler_frequency_correction(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: frequency correction must be float/int");
+//         return;
+//     }
+//     set_frequency_correction(channel, pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_dc_offset_mode(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_bool()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: DC offset mode must be bool");
-        return;
-    }
-    set_dc_offset_mode(channel, pmt::to_bool(val));
-}
+// void block_impl::cmd_handler_dc_offset_mode(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_bool()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: DC offset mode must be bool");
+//         return;
+//     }
+//     set_dc_offset_mode(channel, pmt::to_bool(val));
+// }
 
-void block_impl::cmd_handler_dc_offset(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_number()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: DC offset must be numeric");
-        return;
-    }
-    set_dc_offset(channel, pmt::to_complex(val));
-}
+// void block_impl::cmd_handler_dc_offset(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_number()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: DC offset must be numeric");
+//         return;
+//     }
+//     set_dc_offset(channel, pmt::to_complex(val));
+// }
 
-void block_impl::cmd_handler_iq_balance(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_number()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: IQ balance must be numeric");
-        return;
-    }
-    set_iq_balance(channel, pmt::to_complex(val));
-}
+// void block_impl::cmd_handler_iq_balance(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_number()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance must be numeric");
+//         return;
+//     }
+//     set_iq_balance(channel, pmt::to_complex(val));
+// }
 
-void block_impl::cmd_handler_iq_balance_mode(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_bool()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: IQ balance mode must be bool");
-        return;
-    }
-    set_iq_balance_mode(channel, pmt::to_bool(val));
-}
+// void block_impl::cmd_handler_iq_balance_mode(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_bool()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance mode must be bool");
+//         return;
+//     }
+//     set_iq_balance_mode(channel, pmt::to_bool(val));
+// }
 
-void block_impl::cmd_handler_master_clock_rate(pmt::pmt_t val, size_t)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: master clock rate must be float/int");
-        return;
-    }
-    set_master_clock_rate(pmt::to_double(val));
-}
+// void block_impl::cmd_handler_master_clock_rate(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: master clock rate must be float/int");
+//         return;
+//     }
+//     set_master_clock_rate(pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_reference_clock_rate(pmt::pmt_t val, size_t)
-{
-    if (!(val->is_number() && !val->is_complex())) {
-        GR_LOG_ERROR(_debug_logger, "soapy: reference clock rate must be float/int");
-        return;
-    }
-    set_reference_clock_rate(pmt::to_double(val));
-}
+// void block_impl::cmd_handler_reference_clock_rate(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!(val->is_number() && !val->is_complex())) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: reference clock rate must be float/int");
+//         return;
+//     }
+//     set_reference_clock_rate(pmtf::pmt_scalar<double>(val));
+// }
 
-void block_impl::cmd_handler_clock_source(pmt::pmt_t val, size_t)
-{
-    if (!val->is_symbol()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: clock source must be string");
-        return;
-    }
-    set_clock_source(pmt::symbol_to_string(val));
-}
+// void block_impl::cmd_handler_clock_source(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_symbol()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: clock source must be string");
+//         return;
+//     }
+//     set_clock_source(pmt::symbol_to_string(val));
+// }
 
-void block_impl::cmd_handler_time_source(pmt::pmt_t val, size_t)
-{
-    if (!val->is_symbol()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: time source must be string");
-        return;
-    }
-    set_time_source(pmt::symbol_to_string(val));
-}
+// void block_impl::cmd_handler_time_source(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_symbol()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: time source must be string");
+//         return;
+//     }
+//     set_time_source(pmt::symbol_to_string(val));
+// }
 
-void block_impl::cmd_handler_hardware_time(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: hardware time must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_hardware_time(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: hardware time must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_TIME_KEY)) {
-        GR_LOG_ERROR(_debug_logger,
-                     "soapy: hardware time dict must contain key \"time\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_TIME_KEY)) {
+//         GR_LOG_ERROR(_debug_logger,
+//                      "soapy: hardware time dict must contain key \"time\"");
+//         return;
+//     }
 
-    // Accept no name, falls back to default argument ""
-    const auto name =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-    const auto time = pmt::to_long(pmt::dict_ref(val, CMD_TIME_KEY, PMT_ZERO));
+//     // Accept no name, falls back to default argument ""
+//     const auto name =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
+//     const auto time = pmt::to_long(pmt::dict_ref(val, CMD_TIME_KEY, PMT_ZERO));
 
-    set_hardware_time(static_cast<long long>(time), name);
-}
+//     set_hardware_time(static_cast<long long>(time), name);
+// }
 
-void block_impl::cmd_handler_register(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: register write param must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_register(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: register write param must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
-        !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-        GR_LOG_ERROR(
-            _debug_logger,
-            "soapy: register write dict must contain keys \"name\", \"addr\", \"value\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
+//         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
+//         GR_LOG_ERROR(
+//             _debug_logger,
+//             "soapy: register write dict must contain keys \"name\", \"addr\", \"value\"");
+//         return;
+//     }
 
-    const auto name =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-    const auto addr = pmt::to_uint64(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
-    const auto value = pmt::to_uint64(pmt::dict_ref(val, CMD_VALUE_KEY, PMT_ZERO));
+//     const auto name =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
+//     const auto addr = pmt::to_uint64(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
+//     const auto value = pmt::to_uint64(pmt::dict_ref(val, CMD_VALUE_KEY, PMT_ZERO));
 
-    write_register(name, static_cast<unsigned>(addr), static_cast<unsigned>(value));
-}
+//     write_register(name, static_cast<unsigned>(addr), static_cast<unsigned>(value));
+// }
 
-void block_impl::cmd_handler_registers(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_registers(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
-        !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-        GR_LOG_ERROR(_debug_logger,
-                     "soapy: multi-register write dict must contain keys \"name\", "
-                     "\"addr\", \"value\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
+//         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
+//         GR_LOG_ERROR(_debug_logger,
+//                      "soapy: multi-register write dict must contain keys \"name\", "
+//                      "\"addr\", \"value\"");
+//         return;
+//     }
 
-    const auto name =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-    const auto addr = pmt::to_uint64(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
-    const auto value = pmt::u32vector_elements(
-        pmt::dict_ref(val, CMD_VALUE_KEY, pmt::make_u32vector(0, 0)));
+//     const auto name =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
+//     const auto addr = pmt::to_uint64(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
+//     const auto value = pmt::u32vector_elements(
+//         pmt::dict_ref(val, CMD_VALUE_KEY, pmt::make_u32vector(0, 0)));
 
-    write_registers(name, static_cast<unsigned>(addr), value);
-}
+//     write_registers(name, static_cast<unsigned>(addr), value);
+// }
 
-// TODO: any way to call channel-less version?
-void block_impl::cmd_handler_setting(pmt::pmt_t val, size_t channel)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: GPIO must be a dict");
-        return;
-    }
+// // TODO: any way to call channel-less version?
+// void block_impl::cmd_handler_setting(pmtf::pmt_wrap val, size_t channel)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_KEY_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-        GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"key\", \"value\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_KEY_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"key\", \"value\"");
+//         return;
+//     }
 
-    const auto key = pmt::symbol_to_string(pmt::dict_ref(val, CMD_KEY_KEY, PMT_EMPTYSTR));
-    const auto value_pmt = pmt::dict_ref(val, CMD_VALUE_KEY, PMT_EMPTYSTR);
+//     const auto key = pmt::symbol_to_string(pmt::dict_ref(val, CMD_KEY_KEY, PMT_EMPTYSTR));
+//     const auto value_pmt = pmt::dict_ref(val, CMD_VALUE_KEY, PMT_EMPTYSTR);
 
-    std::string value;
-    if (pmt::is_bool(val)) {
-        write_setting(channel, key, setting_to_string(pmt::to_bool(value_pmt)));
-    } else if (pmt::is_number(val)) {
-        write_setting(channel, key, setting_to_string(pmt::to_double(value_pmt)));
-    } else {
-        write_setting(channel, key, pmt::symbol_to_string(value_pmt));
-    }
-}
+//     std::string value;
+//     if (pmt::is_bool(val)) {
+//         write_setting(channel, key, setting_to_string(pmt::to_bool(value_pmt)));
+//     } else if (pmt::is_number(val)) {
+//         write_setting(channel, key, setting_to_string(pmtf::pmt_scalar<double>(value_pmt)));
+//     } else {
+//         write_setting(channel, key, pmt::symbol_to_string(value_pmt));
+//     }
+// }
 
-void block_impl::cmd_handler_gpio(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: setting must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_gpio(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: setting must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-        GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"bank\", \"value\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"bank\", \"value\"");
+//         return;
+//     }
 
-    const auto bank =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_BANK_KEY, PMT_EMPTYSTR));
-    const auto value = pmt::to_uint64(pmt::dict_ref(val, CMD_VALUE_KEY, PMT_ZERO));
+//     const auto bank =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_BANK_KEY, PMT_EMPTYSTR));
+//     const auto value = pmt::to_uint64(pmt::dict_ref(val, CMD_VALUE_KEY, PMT_ZERO));
 
-    if (pmt::dict_has_key(val, CMD_MASK_KEY)) {
-        const auto mask = pmt::to_uint64(pmt::dict_ref(val, CMD_MASK_KEY, PMT_ZERO));
+//     if (pmt::dict_has_key(val, CMD_MASK_KEY)) {
+//         const auto mask = pmt::to_uint64(pmt::dict_ref(val, CMD_MASK_KEY, PMT_ZERO));
 
-        write_gpio(bank, static_cast<unsigned>(value), static_cast<unsigned>(mask));
-    } else {
-        write_gpio(bank, static_cast<unsigned>(value));
-    }
-}
+//         write_gpio(bank, static_cast<unsigned>(value), static_cast<unsigned>(mask));
+//     } else {
+//         write_gpio(bank, static_cast<unsigned>(value));
+//     }
+// }
 
-void block_impl::cmd_handler_gpio_dir(pmt::pmt_t val, size_t)
-{
-    static const pmt::pmt_t CMD_DIR_KEY = pmt::mp("dir");
+// void block_impl::cmd_handler_gpio_dir(pmtf::pmt_wrap val, size_t)
+// {
+//     static const pmtf::pmt_wrap CMD_DIR_KEY = pmtf::pmt_string("dir");
 
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: GPIO dir must be a dict");
-        return;
-    }
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO dir must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_DIR_KEY)) {
-        GR_LOG_ERROR(_debug_logger,
-                     "soapy: GPIO dir must contain keys \"bank\", \"dir\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_DIR_KEY)) {
+//         GR_LOG_ERROR(_debug_logger,
+//                      "soapy: GPIO dir must contain keys \"bank\", \"dir\"");
+//         return;
+//     }
 
-    const auto bank =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_BANK_KEY, PMT_EMPTYSTR));
-    const auto dir = pmt::to_uint64(pmt::dict_ref(val, CMD_DIR_KEY, PMT_ZERO));
+//     const auto bank =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_BANK_KEY, PMT_EMPTYSTR));
+//     const auto dir = pmt::to_uint64(pmt::dict_ref(val, CMD_DIR_KEY, PMT_ZERO));
 
-    if (pmt::dict_has_key(val, CMD_MASK_KEY)) {
-        const auto mask = pmt::to_uint64(pmt::dict_ref(val, CMD_MASK_KEY, PMT_ZERO));
+//     if (pmt::dict_has_key(val, CMD_MASK_KEY)) {
+//         const auto mask = pmt::to_uint64(pmt::dict_ref(val, CMD_MASK_KEY, PMT_ZERO));
 
-        write_gpio_dir(bank, static_cast<unsigned>(dir), static_cast<unsigned>(mask));
-    } else {
-        write_gpio_dir(bank, static_cast<unsigned>(dir));
-    }
-}
+//         write_gpio_dir(bank, static_cast<unsigned>(dir), static_cast<unsigned>(mask));
+//     } else {
+//         write_gpio_dir(bank, static_cast<unsigned>(dir));
+//     }
+// }
 
-void block_impl::cmd_handler_i2c(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: I2C must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_i2c(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: I2C must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
-        GR_LOG_ERROR(_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
+//         return;
+//     }
 
-    const auto addr = pmt::to_long(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
-    const auto data =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_DATA_KEY, PMT_EMPTYSTR));
+//     const auto addr = pmt::to_long(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));
+//     const auto data =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_DATA_KEY, PMT_EMPTYSTR));
 
-    write_i2c(static_cast<int>(addr), data);
-}
+//     write_i2c(static_cast<int>(addr), data);
+// }
 
-void block_impl::cmd_handler_uart(pmt::pmt_t val, size_t)
-{
-    if (!val->is_dict()) {
-        GR_LOG_ERROR(_debug_logger, "soapy: UART must be a dict");
-        return;
-    }
+// void block_impl::cmd_handler_uart(pmtf::pmt_wrap val, size_t)
+// {
+//     if (!val->is_dict()) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: UART must be a dict");
+//         return;
+//     }
 
-    if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
-        GR_LOG_ERROR(_debug_logger, "soapy: UART must contain keys \"name\", \"data\"");
-        return;
-    }
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: UART must contain keys \"name\", \"data\"");
+//         return;
+//     }
 
-    const auto name =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-    const auto data =
-        pmt::symbol_to_string(pmt::dict_ref(val, CMD_DATA_KEY, PMT_EMPTYSTR));
+//     const auto name =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
+//     const auto data =
+//         pmt::symbol_to_string(pmt::dict_ref(val, CMD_DATA_KEY, PMT_EMPTYSTR));
 
-    write_uart(name, data);
-}
+//     write_uart(name, data);
+// }
 
-void block_impl::msg_handler_cmd(pmt::pmt_t msg)
-{
-    const long CHANNEL_ALL = 0x12345678; // arbitrary
+// void block_impl::msg_handler_cmd(pmtf::pmt_wrap msg)
+// {
+//     const long CHANNEL_ALL = 0x12345678; // arbitrary
 
-    if (!pmt::is_dict(msg)) {
-        GR_LOG_ERROR(_debug_logger, "soapy: commands must be pmt::dict");
-        return;
-    }
+//     if (!pmt::is_dict(msg)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: commands must be pmt::dict");
+//         return;
+//     }
 
-    // Channel not specified means apply to all
-    const pmt::pmt_t channel_all_pmt = pmt::from_long(CHANNEL_ALL);
-    size_t channel = pmt::to_long(pmt::dict_ref(msg, CMD_CHAN_KEY, channel_all_pmt));
+//     // Channel not specified means apply to all
+//     const pmtf::pmt_wrap channel_all_pmt = pmt::from_long(CHANNEL_ALL);
+//     size_t channel = pmt::to_long(pmt::dict_ref(msg, CMD_CHAN_KEY, channel_all_pmt));
 
-    if (channel != CHANNEL_ALL && channel >= d_nchan) {
-        GR_LOG_ERROR(_debug_logger,
-                     "soapy: ignoring command for invalid channel {}",
-                         channel);
-        return;
-    }
+//     if (channel != CHANNEL_ALL && channel >= d_nchan) {
+//         GR_LOG_ERROR(_debug_logger,
+//                      "soapy: ignoring command for invalid channel {}",
+//                          channel);
+//         return;
+//     }
 
-    for (size_t i = 0; i < pmt::length(msg); i++) {
-        const pmt::pmt_t item = pmt::nth(i, msg);
-        const pmt::pmt_t key = pmt::car(item);
-        const pmt::pmt_t val = pmt::cdr(item);
-        if (key == CMD_CHAN_KEY) {
-            continue;
-        }
+//     for (size_t i = 0; i < pmt::length(msg); i++) {
+//         const pmtf::pmt_wrap item = pmt::nth(i, msg);
+//         const pmtf::pmt_wrap key = pmt::car(item);
+//         const pmtf::pmt_wrap val = pmt::cdr(item);
+//         if (key == CMD_CHAN_KEY) {
+//             continue;
+//         }
 
-        // Find command handler
-        auto it = d_cmd_handlers.find(key);
-        if (it == d_cmd_handlers.end()) {
-            GR_LOG_ERROR(_debug_logger,
-                         "soapy: ignoring unknown command key '{}'",
-                             pmt::symbol_to_string(key));
-            continue;
-        }
-        cmd_handler_t handler = it->second;
+//         // Find command handler
+//         auto it = d_cmd_handlers.find(key);
+//         if (it == d_cmd_handlers.end()) {
+//             GR_LOG_ERROR(_debug_logger,
+//                          "soapy: ignoring unknown command key '{}'",
+//                              pmt::symbol_to_string(key));
+//             continue;
+//         }
+//         cmd_handler_t handler = it->second;
 
-        if (channel != CHANNEL_ALL) {
-            std::lock_guard<std::mutex> l(d_device_mutex);
-            handler(val, channel);
-        } else {
-            for (size_t c = 0; c < d_nchan; c++) {
-                std::lock_guard<std::mutex> l(d_device_mutex);
-                handler(val, c);
-            }
-        }
-    }
-}
+//         if (channel != CHANNEL_ALL) {
+//             std::lock_guard<std::mutex> l(d_device_mutex);
+//             handler(val, channel);
+//         } else {
+//             for (size_t c = 0; c < d_nchan; c++) {
+//                 std::lock_guard<std::mutex> l(d_device_mutex);
+//                 handler(val, c);
+//             }
+//         }
+//     }
+// }
 } /* namespace soapy */
 } /* namespace gr */

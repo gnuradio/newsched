@@ -4,12 +4,10 @@
 #include <iostream>
 #include <thread>
 
+#include <pmtf/pmtf_string.hpp>
 #include <gnuradio/blocks/msg_forward.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-
-#include <thread>
-#include <chrono>
 
 using namespace gr;
 
@@ -33,7 +31,7 @@ TEST(SchedulerMTMessagePassing, Forward)
     auto src_port = blk1->get_message_port("out");
     for (int i=0; i<10; i++)
     {
-        src_port->post(pmt::intern("message"));
+        src_port->post(pmtf::pmt_string("message"));
     }
 
     fg->start();
