@@ -1,3 +1,0 @@
-if get_option('enable_testing')
-
-endif
