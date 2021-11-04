@@ -11,7 +11,7 @@
 
 #include <gnuradio/parameter.hh>
 
-#include <pmtf/pmtf_wrap.hpp>
+#include <pmtf/wrap.hpp>
 
 namespace gr {
 
@@ -108,8 +108,8 @@ public:
     void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
     parameter_config d_parameters;
     void add_param(param_sptr p) { d_parameters.add(p); }
-    pmtf::pmt_wrap request_parameter_query(int param_id);
-    void request_parameter_change(int param_id, pmtf::pmt_wrap new_value);
+    pmtf::wrap request_parameter_query(int param_id);
+    void request_parameter_change(int param_id, pmtf::wrap new_value);
     virtual void on_parameter_change(param_action_sptr action)
     {
         gr_log_debug(_debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());

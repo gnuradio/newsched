@@ -70,7 +70,7 @@ struct block_work_output {
 
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void
-    add_tag(uint64_t offset, pmtf::pmt_wrap key, pmtf::pmt_wrap value, pmtf::pmt_wrap srcid = nullptr)
+    add_tag(uint64_t offset, pmtf::wrap key, pmtf::wrap value, pmtf::wrap srcid = nullptr)
     {
         buffer->add_tag(offset, key, value, srcid);
     }

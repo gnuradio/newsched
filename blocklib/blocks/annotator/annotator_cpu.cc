@@ -9,8 +9,8 @@
  */
 
 #include "annotator_cpu.hh"
-#include <pmtf/pmtf_string.hpp>
-#include <pmtf/pmtf_scalar.hpp>
+#include <pmtf/string.hpp>
+#include <pmtf/scalar.hpp>
 #include <string.h>
 #include <iomanip>
 #include <iostream>
@@ -55,8 +55,8 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input
     }
 
     // Storing the current noutput_items as the value to the "noutput_items" key
-    auto srcid = pmtf::pmt_string(alias());
-    auto key = pmtf::pmt_string("seq");
+    auto srcid = pmtf::string(alias());
+    auto key = pmtf::string("seq");
 
     // Work does nothing to the data stream; just copy all inputs to outputs
     // Adds a new tag when the number of items read is a multiple of d_when
@@ -69,7 +69,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input
         //for (unsigned i = 0; i < std::min(d_num_outputs, d_num_inputs); i++) {
         for (unsigned i = 0; i < d_num_outputs; i++) {
             if (abs_N % d_when == 0) {
-                auto value = pmtf::pmt_scalar<uint64_t>(d_tag_counter++);
+                auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
                 work_output[i].buffer->add_tag(abs_N, key, value, srcid);
             }
 

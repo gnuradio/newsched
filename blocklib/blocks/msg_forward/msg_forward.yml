@@ -3,7 +3,7 @@ block: msg_forward
 label: Message Forward
 blocktype: sync_block
 includes: 
-  - value: pmtf/pmtf_wrap.hpp
+  - value: pmtf/wrap.hpp
 
 parameters:
 -   id: itemsize

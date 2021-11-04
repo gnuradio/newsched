@@ -1,10 +1,10 @@
 #include <gnuradio/block.hh>
 #include <gnuradio/scheduler.hh>
-#include <pmtf/pmtf_wrap.hpp>
+#include <pmtf/wrap.hpp>
 
 namespace gr {
 
-void block::request_parameter_change(int param_id, pmtf::pmt_wrap new_value)
+void block::request_parameter_change(int param_id, pmtf::wrap new_value)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler && d_running) {
@@ -28,13 +28,13 @@ void block::request_parameter_change(int param_id, pmtf::pmt_wrap new_value)
     }
 }
 
-pmtf::pmt_wrap block::request_parameter_query(int param_id)
+pmtf::wrap block::request_parameter_query(int param_id)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler && d_running) {
         std::condition_variable cv;
         std::mutex m;
-        pmtf::pmt_wrap newval;
+        pmtf::wrap newval;
         auto lam = [&](param_action_sptr a) {
             std::unique_lock<std::mutex> lk(m);
             newval = a->pmt_value();

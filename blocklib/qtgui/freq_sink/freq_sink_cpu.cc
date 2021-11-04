@@ -10,7 +10,7 @@
 
 #include "freq_sink_cpu.hh"
 #include <volk/volk.h>
-#include <pmtf/pmtf_string.hpp>
+#include <pmtf/string.hpp>
 
 namespace gr {
 namespace qtgui {
@@ -34,8 +34,8 @@ freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
       d_bandwidth(args.bw),
       d_name(args.name),
       d_nconnections(args.nconnections),
-      d_port(pmtf::pmt_string("freq")),
-      d_port_bw(pmtf::pmt_string("bw"))
+      d_port(pmtf::string("freq")),
+      d_port_bw(pmtf::string("bw"))
 {
     d_fft = std::make_unique<fft::fft_complex_fwd>(d_fftsize);
     d_fbuf.resize(d_fftsize);
@@ -311,7 +311,7 @@ void freq_sink_cpu<T>::set_trigger_mode(trigger_mode mode,
     d_trigger_mode = mode;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmtf::pmt_string(tag_key);
+    d_trigger_tag_key = pmtf::string(tag_key);
     d_triggered = false;
     d_trigger_count = 0;
 
@@ -570,10 +570,10 @@ void freq_sink_cpu<T>::check_clicked()
 }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_set_freq(pmtf::pmt_wrap msg)
+// void freq_sink_cpu<T>::handle_set_freq(pmtf::wrap msg)
 // {
 //     if (pmt::is_pair(msg)) {
-//         pmtf::pmt_wrap x = pmt::cdr(msg);
+//         pmtf::wrap x = pmt::cdr(msg);
 //         if (pmt::is_real(x)) {
 //             d_center_freq = pmt::to_double(x);
 //             d_qApplication->postEvent(d_main_gui,
@@ -583,10 +583,10 @@ void freq_sink_cpu<T>::check_clicked()
 // }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_set_bw(pmtf::pmt_wrap msg)
+// void freq_sink_cpu<T>::handle_set_bw(pmtf::wrap msg)
 // {
 //     if (pmt::is_pair(msg)) {
-//         pmtf::pmt_wrap x = pmt::cdr(msg);
+//         pmtf::wrap x = pmt::cdr(msg);
 //         if (pmt::is_real(x)) {
 //             d_bandwidth = pmt::to_double(x);
 //             d_qApplication->postEvent(d_main_gui,
@@ -603,7 +603,7 @@ void freq_sink_cpu<T>::_gui_update_trigger()
     d_trigger_channel = d_main_gui->getTriggerChannel();
 
     std::string tagkey = d_main_gui->getTriggerTagKey();
-    d_trigger_tag_key = pmtf::pmt_string(tagkey);
+    d_trigger_tag_key = pmtf::string(tagkey);
 
     if (new_trigger_mode != d_trigger_mode) {
         d_trigger_mode = new_trigger_mode;
@@ -651,10 +651,10 @@ void freq_sink_cpu<T>::_test_trigger_norm(int nitems,
 }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_pdus(pmtf::pmt_wrap msg)
+// void freq_sink_cpu<T>::handle_pdus(pmtf::wrap msg)
 // {
 //     size_t len;
-//     pmtf::pmt_wrap dict, samples;
+//     pmtf::wrap dict, samples;
 
 //     // Test to make sure this is either a PDU or a uniform vector of
 //     // samples. Get the samples PMT and the dictionary if it's a PDU.
