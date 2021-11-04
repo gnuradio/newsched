@@ -271,7 +271,7 @@ public:
 
     message_port_callback_fcn callback() { return _callback_fcn; }
     void register_callback(message_port_callback_fcn fcn) { _callback_fcn = fcn; }
-    void post(pmtf::pmt_wrap msg) // should be a pmt, just pass strings for now
+    void post(pmtf::wrap msg) // should be a pmt, just pass strings for now
     {
         notify_connected_ports(std::make_shared<msgport_message>(msg, _callback_fcn));
     }

@@ -87,8 +87,8 @@ private:
     const std::string d_name;
     int d_nconnections;
 
-    const pmtf::pmt_wrap d_port;
-    const pmtf::pmt_wrap d_port_bw;
+    const pmtf::wrap d_port;
+    const pmtf::wrap d_port_bw;
 
     // Perform fftshift operation;
     // this is usually desired when plotting
@@ -121,20 +121,20 @@ private:
 
     // Handles message input port for setting new bandwidth
     // The message is a PMT pair (intern('bw'), double(bw))
-    // void handle_set_bw(pmtf::pmt_wrap msg);
+    // void handle_set_bw(pmtf::wrap msg);
 
     // Handles message input port for setting new center frequency.
     // The message is a PMT pair (intern('freq'), double(frequency)).
-    // void handle_set_freq(pmtf::pmt_wrap msg);
+    // void handle_set_freq(pmtf::wrap msg);
 
     // // Handles message input port for displaying PDU samples.
-    // void handle_pdus(pmtf::pmt_wrap msg);
+    // void handle_pdus(pmtf::wrap msg);
 
     // Members used for triggering scope
     trigger_mode d_trigger_mode;
     float d_trigger_level;
     int d_trigger_channel;
-    pmtf::pmt_wrap d_trigger_tag_key;
+    pmtf::wrap d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pmtf/pmtf_wrap.hpp>
+#include <pmtf/wrap.hpp>
 #include <string>
 
 namespace gr {
@@ -20,15 +20,15 @@ class tag_t
 {
 public:
     uint64_t offset = 0;
-    pmtf::pmt_wrap key = nullptr;
-    pmtf::pmt_wrap value = nullptr;
-    pmtf::pmt_wrap srcid = nullptr;
+    pmtf::wrap key = nullptr;
+    pmtf::wrap value = nullptr;
+    pmtf::wrap srcid = nullptr;
     bool modified = false;
     tag_t() {}
     tag_t(uint64_t offset,
-          pmtf::pmt_wrap key,
-          pmtf::pmt_wrap value,
-          pmtf::pmt_wrap srcid = nullptr)
+          pmtf::wrap key,
+          pmtf::wrap value,
+          pmtf::wrap srcid = nullptr)
         : offset(offset), key(key), value(value), srcid(srcid)
     {
     }

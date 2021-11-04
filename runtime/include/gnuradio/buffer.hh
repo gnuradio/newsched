@@ -192,9 +192,9 @@ public:
 
     void add_tag(tag_t tag);
     void add_tag(uint64_t offset,
-                 pmtf::pmt_wrap key,
-                 pmtf::pmt_wrap value,
-                 pmtf::pmt_wrap srcid = nullptr);
+                 pmtf::wrap key,
+                 pmtf::wrap value,
+                 pmtf::wrap srcid = nullptr);
 
     void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 

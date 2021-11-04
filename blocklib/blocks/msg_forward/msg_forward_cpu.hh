@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pmtf/pmtf_string.hpp>
+#include <pmtf/string.hpp>
 #include <gnuradio/blocks/msg_forward.hh>
 
 namespace gr {
@@ -16,10 +16,10 @@ public:
 
 protected:
     size_t d_itemsize;
-    void handle_msg_in(pmtf::pmt_wrap msg)
+    void handle_msg_in(pmtf::wrap msg)
     {
         gr_log_info(
-            _logger, "{} got message: {}", this->alias(), pmtf::get_pmt_string(msg).value());
+            _logger, "{} got message: {}", this->alias(), pmtf::get_string(msg).value());
         d_msg_cnt++;
         get_message_port("out")->post(msg);
     }

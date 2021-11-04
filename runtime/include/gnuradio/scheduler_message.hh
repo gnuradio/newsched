@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gnuradio/port.hh>
-#include <pmtf/pmtf_wrap.hpp>
+#include <pmtf/wrap.hpp>
 
 namespace gr {
 
@@ -46,19 +46,19 @@ private:
 typedef std::shared_ptr<scheduler_action> scheduler_action_sptr;
 
 
-typedef std::function<void(pmtf::pmt_wrap)> message_port_callback_fcn;
+typedef std::function<void(pmtf::wrap)> message_port_callback_fcn;
 class msgport_message : public scheduler_message
 {
 public:
-    msgport_message(pmtf::pmt_wrap msg, message_port_callback_fcn cb)
+    msgport_message(pmtf::wrap msg, message_port_callback_fcn cb)
         : scheduler_message(scheduler_message_t::MSGPORT_MESSAGE), _msg(msg), _cb(cb)
     {
     }
     void set_callback(message_port_callback_fcn cb) { _cb = cb;}
     message_port_callback_fcn callback() { return _cb;}
-    pmtf::pmt_wrap message() { return _msg;}
+    pmtf::wrap message() { return _msg;}
 private:
-    pmtf::pmt_wrap _msg; 
+    pmtf::wrap _msg; 
     message_port_callback_fcn _cb;
 };
 typedef std::shared_ptr<msgport_message> msgport_message_sptr;

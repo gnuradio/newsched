@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include <fcntl.h>
 
-#include <pmtf/pmtf_scalar.hpp>
-#include <pmtf/pmtf_string.hpp>
+#include <pmtf/scalar.hpp>
+#include <pmtf/string.hpp>
 
 #ifdef _MSC_VER
 #define GR_FSEEK _fseeki64
@@ -47,7 +47,7 @@ file_source_cpu::file_source_cpu(const file_source::block_args& args) : sync_blo
 
     std::stringstream str;
     str << name() << id();
-    _id = pmtf::pmt_string(str.str());
+    _id = pmtf::string(str.str());
 }
 
 
@@ -229,7 +229,7 @@ void file_source_cpu::do_update()
     }
 }
 
-void file_source_cpu::set_begin_tag(pmtf::pmt_wrap val) { d_add_begin_tag = val; }
+void file_source_cpu::set_begin_tag(pmtf::wrap val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
@@ -257,7 +257,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
             work_output[0].buffer->add_tag(work_output[0].buffer->total_written() +
                                                noutput_items - size,
                                            d_add_begin_tag,
-                                           pmtf::pmt_scalar<int64_t>(d_repeat_cnt),
+                                           pmtf::scalar<int64_t>(d_repeat_cnt),
                                            _id);
 
             d_file_begin = false;

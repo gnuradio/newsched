@@ -36,14 +36,14 @@ template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not 
 void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::set_{{p['id']}}({{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{p['id']}})
 {
     return request_parameter_change(params::id_{{p['id']}},
-                                    pmtf::pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{p['id']}}));
+                                    pmtf::{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{p['id']}}));
 }
 {% endif -%}
 {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
 {
-    return pmtf::get_pmt_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
+    return pmtf::get_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
                 request_parameter_query(params::id_{{p['id']}}))
         .value(); 
 }

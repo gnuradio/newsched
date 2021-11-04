@@ -77,7 +77,7 @@ private:
     const std::string d_name;
     unsigned int d_nconnections;
 
-    const pmtf::pmt_wrap d_tag_key;
+    const pmtf::wrap d_tag_key;
 
     int d_index, d_start, d_end;
     std::vector<volk::vector<T>> d_Tbuffers;
@@ -103,7 +103,7 @@ private:
     float d_trigger_level;
     int d_trigger_channel = 0;
     int d_trigger_delay = 0;
-    pmtf::pmt_wrap d_trigger_tag_key;
+    pmtf::wrap d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
 
@@ -116,7 +116,7 @@ private:
     bool _test_trigger_slope(const T* in) const;
 
     // Handles message input port for displaying PDU samples.
-    void handle_pdus(pmtf::pmt_wrap msg);
+    void handle_pdus(pmtf::wrap msg);
 
     QApplication* d_qApplication;
 

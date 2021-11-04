@@ -1,8 +1,8 @@
 #pragma once
 
-#include <pmtf/pmtf_wrap.hpp>
-#include <pmtf/pmtf_scalar.hpp>
-#include <pmtf/pmtf_vector.hpp>
+#include <pmtf/wrap.hpp>
+#include <pmtf/scalar.hpp>
+#include <pmtf/vector.hpp>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -26,11 +26,11 @@ class param
 public:
     typedef std::shared_ptr<param> sptr;
     static sptr
-    make(const uint32_t id, const std::string name, pmtf::pmt_wrap pmt_value = nullptr)
+    make(const uint32_t id, const std::string name, pmtf::wrap pmt_value = nullptr)
     {
         return std::make_shared<param>(id, name, pmt_value);
     }
-    param(const uint32_t id, const std::string name, pmtf::pmt_wrap pmt_value)
+    param(const uint32_t id, const std::string name, pmtf::wrap pmt_value)
         : _id(id), _name(name), _pmt_value(pmt_value)
     {
     }
@@ -41,14 +41,14 @@ public:
     const auto name() { return _name; }
     const auto pmt_value() { return _pmt_value; }
 
-    void set_pmt_value(pmtf::pmt_wrap val) { _pmt_value = val; };
+    void set_pmt_value(pmtf::wrap val) { _pmt_value = val; };
 
 
 protected:
     const uint32_t _id;
     const std::string _name;
     param_type_t _type; // should be some sort of typeinfo, but worst case enum or string
-    pmtf::pmt_wrap _pmt_value;
+    pmtf::wrap _pmt_value;
 };
 
 template <class T>
@@ -61,18 +61,18 @@ public:
         return std::make_shared<scalar_param<T>>(id, name, value);
     }
     scalar_param<T>(const uint32_t id, const std::string name, T value)
-        : param(id, name, pmtf::pmt_scalar<T>(value))
+        : param(id, name, pmtf::scalar<T>(value))
     {
     }
     virtual ~scalar_param<T>() {}
 
     void set_value(T val)
     {
-        std::static_pointer_cast<pmtf::pmt_scalar<T>>(pmt_value())->set_pmt_value(val);
+        std::static_pointer_cast<pmtf::scalar<T>>(pmt_value())->set_pmt_value(val);
     }
     T value()
     {
-        return pmtf::get_pmt_scalar<T>(pmt_value()).value();
+        return pmtf::get_scalar<T>(pmt_value()).value();
     }
 };
 
@@ -86,18 +86,18 @@ public:
         return std::make_shared<vector_param<T>>(id, name, value);
     }
     vector_param<T>(const uint32_t id, const std::string name, const std::vector<T>& value = {})
-        : param(id, name, pmtf::pmt_vector<T>(value))
+        : param(id, name, pmtf::vector<T>(value))
     {
     }
     virtual ~vector_param<T>() {}
 
     void set_value(std::vector<T> val)
     {
-        std::static_pointer_cast<pmtf::pmt_vector<T>>(pmt_value())->set_pmt_value(val);
+        std::static_pointer_cast<pmtf::vector<T>>(pmt_value())->set_pmt_value(val);
     }
     std::vector<T> value()
     {
-        return pmtf::get_pmt_vector<T>(pmt_value()).value();
+        return pmtf::get_vector<T>(pmt_value()).value();
     }
 
 protected:
@@ -108,23 +108,23 @@ class param_action
 {
 protected:
     uint32_t _id;
-    pmtf::pmt_wrap _pmt_value;
+    pmtf::wrap _pmt_value;
     uint64_t _at_sample;
 
 public:
     typedef std::shared_ptr<param_action> sptr;
     static sptr
-    make(uint32_t id, pmtf::pmt_wrap pmt_value = nullptr, uint64_t at_sample = 0)
+    make(uint32_t id, pmtf::wrap pmt_value = nullptr, uint64_t at_sample = 0)
     {
         return std::make_shared<param_action>(id, pmt_value, at_sample);
     }
-    param_action(uint32_t id, pmtf::pmt_wrap pmt_value, uint64_t at_sample)
+    param_action(uint32_t id, pmtf::wrap pmt_value, uint64_t at_sample)
         : _id(id), _pmt_value(pmt_value), _at_sample(at_sample)
     {
     }
     uint32_t id() const { return _id; }
-    pmtf::pmt_wrap pmt_value() { return _pmt_value; }
-    void set_pmt_value(pmtf::pmt_wrap val) { _pmt_value = val; }
+    pmtf::wrap pmt_value() { return _pmt_value; }
+    void set_pmt_value(pmtf::wrap val) { _pmt_value = val; }
     uint64_t at_sample() { return _at_sample; }
     void set_at_sample(uint64_t val) { _at_sample = val; }
 };

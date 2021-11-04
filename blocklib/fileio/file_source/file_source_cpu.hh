@@ -39,7 +39,7 @@ public:
     /*!
      * \brief Add a stream tag to the first sample of the file if true
      */
-    void set_begin_tag(pmtf::pmt_wrap val);
+    void set_begin_tag(pmtf::wrap val);
 
 private:
     const size_t d_itemsize;
@@ -53,10 +53,10 @@ private:
     bool d_file_begin;
     bool d_seekable;
     long d_repeat_cnt;
-    pmtf::pmt_wrap d_add_begin_tag;
+    pmtf::wrap d_add_begin_tag;
 
     std::mutex fp_mutex;
-    pmtf::pmt_wrap _id;
+    pmtf::wrap _id;
 
     void do_update();
 
