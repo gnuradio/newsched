@@ -11,7 +11,7 @@
 {%- endmacro -%}
 {% macro get_linked_value(value, ports, parameters, typekeys) -%}
     {% set newvalue = value -%}
-    {% if '/' in value -%}
+    {% if '/' in value | string() -%}
         {% set list1 = value.split('/') -%}
         {% set newvalue = '${' + list1[1] + '}' -%}
         {# {% if list1[0] == 'typekeys' %}
