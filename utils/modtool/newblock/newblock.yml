@@ -1,32 +1,28 @@
 module: newmod
 block: newblock
 label: newblock
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize
     label: Item Size
     dtype: size_t
-    settable: false
 
 ports:
 -   domain: stream
     id: in
     direction: input
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 -   domain: stream
     id: out
     direction: output
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 implementations:
 -   id: cpu
--   id: cuda
+# -   id: cuda
 
 file_format: 1

@@ -1,44 +1,27 @@
-yml_file = 'newblock.yml'
+srcs = files(['newblock_cpu.cc'])
 
-newmod_newblock_files = files(['newblock_cpu.cc'])
+# if USE_CUDA
+#     srcs += files('newblock_cuda.cc')
+#     # newmod_cu_sources += files('newblock_cuda.cu')
+# endif
 
-
-if cuda_dep.found() and get_option('enable_cuda')
-    newmod_newblock_files += files('newblock_cuda.cc')
-    newmod_cu_sources += files('newblock_cuda.cu')
-endif
-
-gen_newblock_h = custom_target('gen_newblock_cpu_h',
+gen_srcs = custom_target('gen_newblock_h',
                         input : ['newblock.yml'],
-                        output : ['newblock.hh'],
+                        output : ['newblock.cc', 'newblock.hh', 'newblock_pybind.cc', 'newmod_newblock.block.yml'],
                         command : ['python3', join_paths(share_dir,'utils/blockbuilder/scripts/process_folder.py'),
                             '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
+                            '--output-cc', '@OUTPUT0@', 
+                            '--output-hh', '@OUTPUT1@', 
+                            '--output-pybind', '@OUTPUT2@', 
+                            '--output-grc', '@OUTPUT3@', 
+                            '--build_dir', join_paths(meson.project_build_root())],
                         install : true,
-                        install_dir : 'include/gnuradio/newmod')
+                        install_dir : [false, 'include/gnuradio/newmod',false,'share/gnuradio/grc/blocks'])
 
-gen_newblock_cc = custom_target('gen_newblock_cpu_cc',
-                        input : ['newblock.yml'],
-                        output : ['newblock.cc'],
-                        command : ['python3', join_paths(share_dir,'utils/blockbuilder/scripts/process_folder.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output_file', '@OUTPUT@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)        
+newmod_deps += declare_dependency(sources : [gen_srcs[1]] ) 
+newmod_sources += [srcs, gen_srcs[0]]
 
-newmod_deps += declare_dependency(sources : [gen_newblock_h])
-newmod_sources += [newmod_newblock_files, gen_newblock_cc]
-
-if get_option('enable_python')
-    gen_newblock_pybind = custom_target('gen_newblock_cpu_pybind',
-                            input : ['newblock.yml'],
-                            output : ['newblock_pybind.cc'],
-                            command : ['python3', join_paths(share_dir,'utils/blockbuilder/scripts/process_pybind.py'),
-                                '--yaml_file', '@INPUT@', 
-                                '--output_file', '@OUTPUT@', 
-                                '--build_dir', join_paths(meson.build_root())],
-                            install : false)                   
-    newmod_pybind_sources += gen_newblock_pybind
+if get_option('enable_python')                           
+    newmod_pybind_sources += gen_srcs[2]
     newmod_pybind_names += 'newblock'
 endif

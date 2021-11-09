@@ -9,31 +9,37 @@ import sys
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a new block within specified module using newblock template')
 parser.add_argument('create_block', metavar='block_name', type=str, help='name of new block')
-parser.add_argument('mod_name', metavar='mod_name', type=str, help='name of module block will be inserted in, module must already exist')
 parser.add_argument('--cpu', action='store_true', help='indicate whether cpu files will be generated')
 parser.add_argument('--cuda', action='store_true', help='indicate whether cuda files will be generated')
 parser.add_argument('--templated', action='store_true', help='indicate whether files will be templated')
 
 args = parser.parse_args()
 block_name = args.create_block # name of new block to be created
-mod_name = args.mod_name # name of module where new block will be created
+# mod_name = args.mod_name # name of module where new block will be created
+# Infer the mod name from the current directory
+
+
 cpu_arg = args.cpu # boolean for cpu files
 cuda_arg = args.cuda # boolean for cuda files
 templated_arg = args.templated # boolean for templated
 
 # get current working directory
-path = os.getcwd()
+current_dir_name = os.getcwd()
+mod_name = os.path.basename(current_dir_name)
+if mod_name.startswith('ns-'):
+    mod_name = current_dir_name.split('-')[1]
+
 path_of_this_file = os.path.dirname(os.path.abspath(__file__))
 
-# check if module exists, if not return an error
-mod_path = os.path.join(path, mod_name)
-mod_exists = os.path.isdir(mod_path)
-if not mod_exists:
-    sys.exit('Error: module ' + mod_name + ' does not exist')
+# # check if module exists, if not return an error
+# mod_path = os.path.join(path, mod_name)
+# mod_exists = os.path.isdir(mod_path)
+# if not mod_exists:
+#     sys.exit('Error: module ' + mod_name + ' does not exist')
 
 # copy newblock template
 src = os.path.join(path_of_this_file, 'newblock')
-dest = os.path.join(mod_path, block_name)
+dest = os.path.join('blocklib',mod_name, block_name)
 new_block_dir = shutil.copytree(src,dest)
 
 # if cpu is not specified, delete all cpu files

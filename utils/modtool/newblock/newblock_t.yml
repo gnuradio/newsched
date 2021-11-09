@@ -1,23 +1,20 @@
 module: newmod
 block: newblock
 label: newblock
+blocktype: sync_block
 
-properties:
--   id: blocktype
-    value: sync
--   id: templates
-    keys:
-    - id: T
-      type: class
-      options: 
-        - value: int16_t
-          suffix: ss   
-        - value: int32_t 
-          suffix: ii 
-        - value: float
-          suffix: ff   
-        - value: gr_complex 
-          suffix: cc 
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: int16_t
+        suffix: ss   
+      - value: int32_t 
+        suffix: ii 
+      - value: float
+        suffix: ff   
+      - value: gr_complex 
+        suffix: cc 
 
 parameters:
 -   id: k
@@ -34,17 +31,17 @@ ports:
 -   domain: stream
     id: in
     direction: input
-    type: T
-    dims: '{args.vlen}'
+    type: typekeys/T
+    dims: parameters/vlen
 
 -   domain: stream
     id: out
     direction: output
-    type: T
-    dims: '{args.vlen}'
+    type: typekeys/T
+    dims: parameters/vlen
 
 implementations:
 -   id: cpu
--   id: cuda
+# -   id: cuda
 
 file_format: 1

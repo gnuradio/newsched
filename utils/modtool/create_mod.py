@@ -18,23 +18,26 @@ path_of_this_file = os.path.dirname(os.path.abspath(__file__))
 
 # copy newmod template
 src = os.path.join(path_of_this_file, 'newmod')
-dest = os.path.join(path, mod_name)
+dest = os.path.join(path, 'ns-' + mod_name)
 
 new_mod_dir = shutil.copytree(src, dest)
 
 # change all occurances of newmod to mod_name in the new module directory
 
+# blocklib dir
+old_dir = os.path.join(new_mod_dir, 'blocklib', 'newmod')
+new_dir = os.path.join(new_mod_dir, 'blocklib', mod_name)
+os.rename(old_dir, new_dir)
+
 # include dir
-include_dir = os.path.join('include/gnuradio', mod_name)
-old_include = os.path.join(new_mod_dir, 'include/gnuradio/newmod')
-new_include = os.path.join(new_mod_dir, include_dir)
-os.rename(old_include, new_include)
+old_dir = os.path.join(new_mod_dir, 'blocklib', mod_name, 'include', 'gnuradio', 'newmod')
+new_dir = os.path.join(new_mod_dir, 'blocklib', mod_name, 'include', 'gnuradio', mod_name)
+os.rename(old_dir, new_dir)
 
 # python dir
-python_dir = os.path.join('python', mod_name)
-old_python_dir = os.path.join(new_mod_dir, 'python/newmod')
-new_python_dir = os.path.join(new_mod_dir, python_dir)
-os.rename(old_python_dir, new_python_dir)
+old_dir = os.path.join(new_mod_dir, 'blocklib', mod_name, 'python', 'newmod')
+new_dir = os.path.join(new_mod_dir, 'blocklib', mod_name, 'python', mod_name)
+os.rename(old_dir, new_dir)
 
 # change all occurances of newmod in files to mod_name
 
