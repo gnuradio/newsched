@@ -34,6 +34,9 @@ Reference [commit](https://github.com/gnuradio/newsched/commit/1f74c1c0b22e312a4
 
 Logging is pervasive throughout the various modules, so we go ahead and include the commit that provides the logging mechanisms.  This is very similar to GNU Radio logging, e.g. `GR_LOG_DEBUG()`, but based on [spdlog](https://github.com/gabime/spdlog), which is a well supported library for all sorts of logging
 
+The logging here was developed before the `spdlog` updates to GNU Radio were integrated so it can be expected
+that the version which is in GR 3.10 will eventually become the common logging standard
+
 ### Instantiating a Logger
 
 A logger is instantiated by trying to gain access by a string name, e.g. 
@@ -58,7 +61,7 @@ inline void gr_log_debug(logger_sptr logger, const Args &... args)
 }
 ```
 
-SPDlog has a convenient arguments list interface to its logging objects which are wrapped into these global functions to be more compatible with legacy GNU Radio.  `TODO: make the upper case macros wrap these functions so they can be conditionally compiled`
+SPDlog has a convenient arguments list interface to its logging objects which are wrapped into these global functions to be more compatible with legacy GNU Radio.  
 
 ## Preferences
 
@@ -98,3 +101,5 @@ In this case the default logger, which would be obtained by `logging::get_logger
 The debug logger, which would be obtained with argument `"debug"` would append to the file specified in `/tmp/gr_debug_log.txt`
 
 The trace level logger is turned off in this example
+
+[--> Next: Ports](03_Ports)

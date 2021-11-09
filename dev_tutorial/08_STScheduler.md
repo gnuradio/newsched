@@ -1,5 +1,7 @@
 # The Single Threaded Scheduler
 
+__Note__: The ST Scheduler is no long in tree, but this is just an example of the Scheduler Interfaces
+
 Reference [commit](https://github.com/gnuradio/newsched/commit/106f7074b36c3dc36d7f9f70afc61eca5a27cc00)
 
 Now that we have seen how the scheduler interfaces to other things, let's implement a simple scheduler

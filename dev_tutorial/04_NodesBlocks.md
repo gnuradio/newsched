@@ -44,21 +44,24 @@ Rather than have a large and restrictive function signature for the `work()` fun
 ```cpp
 struct block_work_input {
     int n_items;
-    uint64_t n_items_read = 0; // Name TBD. Replacement for _read and _written because I/O
-    void* items;           // cannot be const for output items
-    std::vector<tag_t> tags;
-    int n_consumed; // output the number of items that were consumed on the work
+    buffer_reader_sptr buffer;
+    int n_consumed =
+        -1; // output the number of items that were consumed on the work() call
 ...
 struct block_work_output {
     int n_items;
-    uint64_t n_items_written = 0; // Name TBD. Replacement for _read and _written because I/O
-    void* items;              // cannot be const for output items
-    std::vector<tag_t> tags;
-    int n_produced; // output the number of items that were consumed on the work() call
+    buffer_sptr buffer;
+    int n_produced =
+        -1; // output the number of items that were produced on the work() call
 ...
 ```
 
 `block_work_input` and `block_work_output` are separated in the class definitions just because of convenient field naming (e.g. consumed vs produced).  These structs may change over time to handle things such as blocking I/O.
+
+Rather than passing in a raw pointer to the samples in the buffer object, a pointer to the actual buffer object
+is passed in.  This allows more complex operations to be done some particular buffer type since some buffers
+(e.g. OpenCL) don't have unrestricted raw memory access.  The buffer also holds the tags, so these can be 
+accessed via convenience methods within `block_work_input` and `block_work_output`
 
 ### Work function
 
@@ -72,12 +75,13 @@ Some notable changes on the work function from GR
 * Returns an enum indicating what happened instead of `noutput_items`
 * Work replaces forecast
     - an enum value of `INSUFFICIENT_INPUT/OUTPUT` is used from the work function to handle forecasting
+    - Additionally a pseudo forecasting could be added as another `block_work_io` struct member to return
+      the required number of inputs or outputs 
 * Removes the restriction that all output ports must produce the same number of samples, though this could be a challenging scheduler bookkeeping problem
 * No history.  
     - Blocks will be responsible for saving samples for their own history
 
-
 ### Tags
-`runtime/include/gnuradio/tag.hpp` creates a tag class that looks very similar to GR, and it is intended that tags are used to attach metadata.
+`runtime/include/gnuradio/tag.hh` creates a tag class that looks very similar to GR, and it is intended that tags are used to attach metadata.
 
-The only real difference here is that the tags do not include PMTs as we would like to replace those and have not included them yet in this implementation sequence.
+The tags are associated with the buffer class, not the work I/O function

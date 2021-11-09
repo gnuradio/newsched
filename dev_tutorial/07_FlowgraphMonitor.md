@@ -10,7 +10,7 @@ It communicates to the schedulers via the `push_message` method, and schedulers 
 
 ## Concurrent Queue
 
-`runtime/include/gnuradio/concurrent_queue.hpp`
+`runtime/include/gnuradio/concurrent_queue.hh`
 
 The concurrent queue class is a `std::deque` synchronized iwth condition variable to allow multiple producers and consumers, though only a single consumer is used in the current application.  This is a very simple implementation, and for usage elsewhere I'm sure gains could be found by using a different implementation.
 
@@ -49,7 +49,7 @@ Sequence for normal termination of a flowgraph
 
 1. One of the blocks inside the flowgraph returns `DONE` to its executor
 2. FGM instructs _all_ the schedulers to be done by pushing a `DONE` message onto their queues
-3. FGM waits for _all_ schedulers to signal they they are `FLUSHED` in that they have processed what is remaining in the buffers
+3. FGM waits for _all_ schedulers to signal they they are `FLUSHED` in that they have processed what is remaining in the buffers - the `FLUSHED` condition can be implemented differently per scheduler
 4. All the schedulers are told to `EXIT` their threads
 
 Sequence for canceled execution of a flowgraph (e.g. stop() is called)
