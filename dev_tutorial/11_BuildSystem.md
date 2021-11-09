@@ -30,7 +30,7 @@ For example, to disable testing, add `-Denable_testing=false` to the `meson setu
 To build:
 ```bash
 cd newsched
-meson setup build --buildtype=debugoptimized --prefix=[INSTALL_PREFIX] --libdir=lib -D[option={true/false}]
+meson setup build --buildtype=debugoptimized --prefix=[INSTALL_PREFIX] --libdir=lib -D[option={true,false}]
 cd build
 ninja
 ```

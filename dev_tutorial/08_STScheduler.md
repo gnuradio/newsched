@@ -1,6 +1,6 @@
 # The Single Threaded Scheduler
 
-__Note__: The ST Scheduler is no long in tree, but this is just an example of the Scheduler Interfaces
+__Note__: The ST Scheduler is no longer in tree, but this is just an example of the Scheduler Interfaces
 
 Reference [commit](https://github.com/gnuradio/newsched/commit/106f7074b36c3dc36d7f9f70afc61eca5a27cc00)
 

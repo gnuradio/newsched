@@ -11,6 +11,7 @@ In order to get more developers involved in the newsched project, which is aimed
 - [Schedulers](06_Schedulers)
 - [Flowgraph Monitor](07_FlowgraphMonitor)
 - [Single Threaded Scheduler](08_STScheduler)
+- [NBT Scheduler](08b_NBTScheduler)
 - [The Flowgraph](09_Flowgraph)
 - [Base Blocks](10_BaseBlocks)
 - [Block Development Methodology](10b_BlockDev)

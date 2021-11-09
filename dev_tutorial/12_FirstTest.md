@@ -42,7 +42,8 @@ Create the flowgraph object and connect our blocks
     fg->connect(op, 0, snk2, 0);
 ```
 
-Create the scheduler, assign it to the flowgraph, and validate (finalize).
+Create the scheduler, assign it to the flowgraph, and validate (finalize).  The scheduler can also be left out to use the default scheduler.
+
 ```cpp
     auto sched = schedulers::scheduler_st::make();
     fg->set_scheduler(sched);
