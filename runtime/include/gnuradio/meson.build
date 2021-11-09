@@ -19,7 +19,6 @@ runtime_headers = [
     'graph_utils.hh',
     'logging.hh',
     'neighbor_interface.hh',
-    'neighbor_interface_info.hh',
     'node.hh',
     'nodeid_generator.hh',
     'parameter_types.hh',

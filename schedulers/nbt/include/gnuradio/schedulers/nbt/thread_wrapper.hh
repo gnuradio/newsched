@@ -5,7 +5,6 @@
 #include <gnuradio/concurrent_queue.hh>
 #include <gnuradio/flowgraph_monitor.hh>
 #include <gnuradio/neighbor_interface.hh>
-#include <gnuradio/neighbor_interface_info.hh>
 #include <gnuradio/scheduler_message.hh>
 #include <thread>
 

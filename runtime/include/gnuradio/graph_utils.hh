@@ -2,7 +2,6 @@
 
 #include <gnuradio/domain.hh>
 #include <gnuradio/graph.hh>
-#include <gnuradio/neighbor_interface_info.hh>
 #include <gnuradio/scheduler.hh>
 
 namespace gr {
@@ -13,7 +12,6 @@ namespace gr {
  *
  * scheduler - the sptr to the scheduler for this partition
  * subgraph - the portion of the flowgraph controlled by this scheduler
- * neighbor map - a per block map of neighbor_interface_info
  */
 struct graph_partition_info {
     scheduler_sptr scheduler;

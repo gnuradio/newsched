@@ -10,7 +10,6 @@
 #include <gnuradio/flowgraph_monitor.hh>
 #include <gnuradio/logging.hh>
 #include <gnuradio/scheduler_message.hh>
-#include <gnuradio/neighbor_interface_info.hh>
 namespace gr {
 
 /**
