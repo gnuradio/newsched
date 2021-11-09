@@ -25,10 +25,20 @@ public:
 
 };
 
+{%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
 typedef {{block}}<{{ opt['value']}}> {{block}}_{{ opt['suffix'] }};
 {% endfor -%}
+{% else -%}
+{%set key1 = typekeys|first %}
+{%set key2 = typekeys|last %}
+{% for opt1 in key1['options'] -%}
+{% for opt2 in key2['options'] -%}
+typedef {{block}}<{{ opt1['value']+ ", " + opt2['value']}}> {{block}}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }};
+{% endfor -%}
+{% endfor -%}
+{% endif -%}
 
 } // namespace {{ module }}
 } // namespace gr

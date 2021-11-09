@@ -47,10 +47,8 @@ def main():
         if (args.output_hh ):
             blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_hh))
             blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], os.path.basename(args.output_hh))
-            if templated == 1:
+            if templated >= 1:
                 template = env.get_template('blockname_templated.hh.j2')
-            elif templated == 2:
-                template = env.get_template('blockname_templated2.hh.j2')
             else:
                 template = env.get_template('blockname.hh.j2')
 
@@ -64,10 +62,8 @@ def main():
 
         if args.output_cc:
             blockname_cc = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_cc))
-            if templated == 1:
+            if templated >= 1:
                 template = env.get_template('blockname_templated.cc.j2')
-            elif templated == 2:
-                template = env.get_template('blockname_templated2.cc.j2')
             else:
                 template = env.get_template('blockname.cc.j2')
             rendered = template.render(d)
@@ -78,10 +74,8 @@ def main():
         if args.output_pybind:
             filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_pybind))
 
-            if templated == 1:
+            if templated >= 1:
                 template = env.get_template('blockname_pybind_templated.cc.j2')
-            elif templated == 2:
-                template = env.get_template('blockname_pybind_templated2.cc.j2')
             else:
                 template = env.get_template('blockname_pybind.cc.j2')
 

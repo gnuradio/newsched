@@ -49,8 +49,18 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
 
 void bind_{{ block }}(py::module& m)
 {
-    {%set key1 = typekeys|first %}
-    {% for opt in key1['options'] -%}
+{%if typekeys | length == 1 -%}
+{%set key1 = typekeys|first %}
+{% for opt in key1['options'] -%}
     bind_{{ block }}_template<{{ opt['value'] }}>(m, "{{ block }}_{{ opt['suffix'] }}");
-    {% endfor %}
+{% endfor %}
+{% else -%}
+{%set key1 = typekeys|first %}
+{%set key2 = typekeys|last %}
+{% for opt1 in key1['options'] -%}
+{% for opt2 in key2['options'] -%}
+    bind_{{ block }}_template<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>(m, "{{ block }}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }}");
+{% endfor %}
+{% endfor %}
+{% endif %}
 }
