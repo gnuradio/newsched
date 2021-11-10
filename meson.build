@@ -13,6 +13,10 @@ libdl_dep = cc.find_library('dl')
 c_available = add_languages('c', required : true)
 cuda_available = add_languages('cuda', required : false)
 USE_CUDA = cuda_available and get_option('enable_cuda')
+IMPLEMENT_CUDA = USE_CUDA
+IMPLEMENT_CPU = true
+
+SCRIPTS_DIR=join_paths(meson.project_source_root(),'utils','blockbuilder','scripts')
 
 boost_dep = dependency('boost', modules : ['system','program_options','thread'], version : '>=1.65')
 volk_dep = dependency('volk', version : '>=2.2')

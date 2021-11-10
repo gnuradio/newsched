@@ -21,7 +21,7 @@ d = {
 
 gen_newmod_pybind = custom_target('gen_newmod_pybind',
                         output : ['newmod_pybind.cc'],
-                        command : ['python3', join_paths(meson.source_root(),'utils/blockbuilder/scripts/process_module_pybind.py'),
+                        command : ['python3', join_paths(SCRIPTS_DIR,'process_module_pybind.py'),
                             '--blocks', d['blocks'],
                             '--imports', ' '.join(d['imports']),
                             '--module', d['module'],

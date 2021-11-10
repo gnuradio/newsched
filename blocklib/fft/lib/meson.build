@@ -1,3 +1,5 @@
+fftw_dep = dependency('fftw3f')
+
 fft_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep, fftw_dep]
 
 fft_sources += ['fftw_fft.cc','window.cc']
