@@ -9,17 +9,12 @@
  */
 
 #include "multiply_const_cuda.hh"
+#include "multiply_const_cuda_gen.hh"
 #include <volk/volk.h>
 #include <thrust/complex.h>
 
 namespace gr {
 namespace math {
-
-template <class T>
-typename multiply_const<T>::sptr multiply_const<T>::make_cuda(const block_args& args)
-{
-    return std::make_shared<multiply_const_cuda<T>>(args);
-}
 
 template <class T>
 multiply_const_cuda<T>::multiply_const_cuda(
@@ -58,11 +53,6 @@ multiply_const_cuda<T>::work(std::vector<block_work_input>& work_input,
     work_input[0].n_consumed = work_input[0].n_items;
     return work_return_code_t::WORK_OK;
 }
-
-template class multiply_const<std::int16_t>;
-template class multiply_const<std::int32_t>;
-template class multiply_const<float>;
-template class multiply_const<gr_complex>;
 
 } /* namespace math */
 } /* namespace gr */

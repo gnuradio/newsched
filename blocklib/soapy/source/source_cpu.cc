@@ -9,18 +9,13 @@
  */
 
 #include "source_cpu.hh"
+#include "source_cpu_gen.hh"
 #include <SoapySDR/Formats.h>
 #include <SoapySDR/Errors.hpp>
 #include <volk/volk.h>
 
 namespace gr {
 namespace soapy {
-
-template <class T>
-typename source<T>::sptr source<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<source_cpu<T>>(args);
-}
 
 template <>
 source_cpu<gr_complex>::source_cpu(const typename source<gr_complex>::block_args& args)
@@ -100,11 +95,6 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input>& work_input
     return work_return_code_t::WORK_OK;
 }
 
-
-// template class source<std::int16_t>;
-// template class source<std::int32_t>;
-// template class source<float>;
-template class source<gr_complex>;
 
 } /* namespace soapy */
 } /* namespace gr */

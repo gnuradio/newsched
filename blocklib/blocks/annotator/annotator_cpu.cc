@@ -9,6 +9,7 @@
  */
 
 #include "annotator_cpu.hh"
+#include "annotator_cpu_gen.hh"
 #include <pmtf/string.hpp>
 #include <pmtf/scalar.hpp>
 #include <string.h>
@@ -17,12 +18,6 @@
 
 namespace gr {
 namespace blocks {
-
-annotator::sptr
-annotator::make_cpu(const block_args& args)
-{
-    return std::make_shared<annotator_cpu>(args);
-}
 
 annotator_cpu::annotator_cpu(const block_args& args)
     : sync_block("annotator"),

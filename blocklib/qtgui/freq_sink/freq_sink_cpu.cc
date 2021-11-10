@@ -9,17 +9,12 @@
  */
 
 #include "freq_sink_cpu.hh"
+#include "freq_sink_cpu_gen.hh"
 #include <volk/volk.h>
 #include <pmtf/string.hpp>
 
 namespace gr {
 namespace qtgui {
-
-template <class T>
-typename freq_sink<T>::sptr freq_sink<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<freq_sink_cpu<T>>(args);
-}
 
 template <class T>
 freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
@@ -737,10 +732,6 @@ void freq_sink_cpu<T>::set_plot_pos_half(bool half)
 {
     d_main_gui->setPlotPosHalf(half);
 }
-
-
-template class freq_sink<float>;
-template class freq_sink<gr_complex>;
 
 } /* namespace qtgui */
 } /* namespace gr */

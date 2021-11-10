@@ -1,12 +1,8 @@
 #include "file_sink_cpu.hh"
+#include "file_sink_cpu_gen.hh"
 
 namespace gr {
 namespace fileio {
-
-file_sink::sptr file_sink::make_cpu(const block_args& args)
-{
-    return std::make_shared<file_sink_cpu>(args);
-}
 
 file_sink_cpu::file_sink_cpu(const block_args& args)
     : sync_block("file_sink"),

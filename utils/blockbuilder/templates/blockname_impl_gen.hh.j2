@@ -4,11 +4,18 @@
 namespace gr {
 namespace {{module}} {
 
-template <class T>
+{%if typekeys | length > 0 -%}
+template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::sptr {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::make_{{impl}}(const block_args& args)
 {
     return std::make_shared<{{block}}_{{impl}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
 }
+{%else-%}
+{{block}}::sptr {{block}}::make_{{impl}}(const block_args& args)
+{
+    return std::make_shared<{{block}}_{{impl}}>(args);
+}
+{%endif-%}
 
 {%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}

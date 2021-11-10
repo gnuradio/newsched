@@ -9,17 +9,11 @@
  */
 
 #include "interleaved_short_to_complex_cpu.hh"
+#include "interleaved_short_to_complex_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace streamops {
-
-
-typename interleaved_short_to_complex::sptr
-interleaved_short_to_complex::make_cpu(const block_args& args)
-{
-    return std::make_shared<interleaved_short_to_complex_cpu>(args);
-}
 
 interleaved_short_to_complex_cpu::interleaved_short_to_complex_cpu(const block_args& args)
     : sync_block("interleaved_short_to_complex"), interleaved_short_to_complex(args), d_scalar(args.scale_factor), d_swap(args.swap)

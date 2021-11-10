@@ -9,6 +9,7 @@
  */
 
 #include "add_cpu.hh"
+#include "add_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
@@ -35,13 +36,6 @@ inline void volk_add<gr_complex>(gr_complex* out, const gr_complex* add, unsigne
     volk_32fc_x2_add_32fc(out, out, add, num);
 }
 } // namespace
-
-
-template <class T>
-typename add<T>::sptr add<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<add_cpu<T>>(args);
-}
 
 template <class T>
 add_cpu<T>::add_cpu(const typename add<T>::block_args& args)
@@ -72,11 +66,6 @@ add_cpu<T>::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 
 }
-
-template class add<std::int16_t>;
-template class add<std::int32_t>;
-template class add<float>;
-template class add<gr_complex>;
 
 } /* namespace math */
 } /* namespace gr */

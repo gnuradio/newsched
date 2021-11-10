@@ -9,14 +9,10 @@
  */
 
 #include "nop_head_cpu.hh"
+#include "nop_head_cpu_gen.hh"
 
 namespace gr {
 namespace blocks {
-
-nop_head::sptr nop_head::make_cpu(const block_args& args)
-{
-    return std::make_shared<nop_head_cpu>(args);
-}
 
 nop_head_cpu::nop_head_cpu(const block_args& args)
     : sync_block("nop_head"), nop_head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)

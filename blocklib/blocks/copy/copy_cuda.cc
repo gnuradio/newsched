@@ -1,4 +1,5 @@
 #include "copy_cuda.hh"
+#include "copy_cuda_gen.hh"
 
 #include <gnuradio/helper_cuda.h>
 
@@ -14,8 +15,6 @@ extern void apply_copy(
     const uint8_t* in, uint8_t* out, int n, int grid_size, int block_size, cudaStream_t stream);
 
 extern void get_block_and_grid(int* minGrid, int* minBlock);
-
-copy::sptr copy::make_cuda(const block_args& args) { return std::make_shared<copy_cuda>(args); }
 
 copy_cuda::copy_cuda(block_args args) : sync_block("copy_cuda"), copy(args), d_itemsize(args.itemsize)
 

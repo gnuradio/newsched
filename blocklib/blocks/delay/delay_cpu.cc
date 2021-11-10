@@ -1,12 +1,8 @@
 #include "delay_cpu.hh"
+#include "delay_cpu_gen.hh"
 
 namespace gr {
 namespace blocks {
-
-delay::sptr delay::make_cpu(const block_args& args)
-{
-    return std::make_shared<delay_cpu>(args);
-}
 
 delay_cpu::delay_cpu(const block_args& args) : block("delay"), delay(args), d_itemsize(args.itemsize)
 {

@@ -9,16 +9,11 @@
  */
 
 #include "vector_sink_cpu.hh"
+#include "vector_sink_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace blocks {
-
-template <class T>
-typename vector_sink<T>::sptr vector_sink<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<vector_sink_cpu<T>>(args);
-}
 
 template <class T>
 vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& args)
@@ -40,12 +35,6 @@ work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input>& work_
     work_input[0].n_consumed = noutput_items;
     return work_return_code_t::WORK_OK;
 }
-
-template class vector_sink<std::uint8_t>;
-template class vector_sink<std::int16_t>;
-template class vector_sink<std::int32_t>;
-template class vector_sink<float>;
-template class vector_sink<gr_complex>;
 
 } /* namespace blocks */
 } /* namespace gr */

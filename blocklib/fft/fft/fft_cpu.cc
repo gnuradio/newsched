@@ -1,13 +1,8 @@
 #include "fft_cpu.hh"
+#include "fft_cpu_gen.hh"
 
 namespace gr {
 namespace fft {
-
-template <class T, bool forward>
-typename fft<T, forward>::sptr fft<T, forward>::make_cpu(const block_args& args)
-{
-    return std::make_shared<fft_cpu<T, forward>>(args);
-}
 
 template <class T, bool forward>
 fft_cpu<T, forward>::fft_cpu(const typename fft<T, forward>::block_args& args) 
@@ -179,11 +174,6 @@ work_return_code_t fft_cpu<T, forward>::work(std::vector<block_work_input>& work
     work_output[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
-
-template class fft<gr_complex, true>;
-template class fft<gr_complex, false>;
-template class fft<float, true>;
-template class fft<float, false>;
 
 
 } // namespace fft
