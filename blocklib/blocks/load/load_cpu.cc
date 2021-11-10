@@ -1,9 +1,8 @@
 #include "load_cpu.hh"
+#include "load_cpu_gen.hh"
 
 namespace gr {
 namespace blocks {
-
-load::sptr load::make_cpu(const block_args& args) { return std::make_shared<load_cpu>(args); }
 
 work_return_code_t load_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)

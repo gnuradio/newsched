@@ -9,17 +9,11 @@
  */
 
 #include "moving_average_cpu.hh"
+#include "moving_average_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace filter {
-
-template <class T>
-typename moving_average<T>::sptr
-moving_average<T>::make_cpu(const moving_average<T>::block_args& args)
-{
-    return std::make_shared<moving_average_cpu<T>>(args);
-}
 
 template <class T>
 moving_average_cpu<T>::moving_average_cpu(
@@ -92,11 +86,6 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
     work_input[0].n_consumed = tr == 0 ? num_iter - (d_length - 1) : num_iter;
     return work_return_code_t::WORK_OK;
 } // namespace filter
-
-// template class moving_average<int16_t>;
-// template class moving_average<int32_t>;
-template class moving_average<float>;
-template class moving_average<gr_complex>;
 
 } // namespace filter
 } /* namespace gr */

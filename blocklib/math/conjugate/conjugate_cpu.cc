@@ -1,10 +1,9 @@
 #include "conjugate_cpu.hh"
+#include "conjugate_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace math {
-
-conjugate::sptr conjugate::make_cpu(const block_args& args) { return std::make_shared<conjugate_cpu>(args); }
 
 work_return_code_t conjugate_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)

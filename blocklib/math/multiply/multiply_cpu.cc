@@ -9,16 +9,11 @@
  */
 
 #include "multiply_cpu.hh"
+#include "multiply_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace math {
-
-template <class T>
-typename multiply<T>::sptr multiply<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<multiply_cpu<T>>(args);
-}
 
 template <class T>
 multiply_cpu<T>::multiply_cpu(const typename multiply<T>::block_args& args)
@@ -98,11 +93,6 @@ multiply_cpu<T>::work(std::vector<block_work_input>& work_input,
     work_input[0].n_consumed = work_input[0].n_items;
     return work_return_code_t::WORK_OK;
 }
-
-template class multiply<std::int16_t>;
-template class multiply<std::int32_t>;
-template class multiply<float>;
-template class multiply<gr_complex>;
 
 } /* namespace math */
 } /* namespace gr */

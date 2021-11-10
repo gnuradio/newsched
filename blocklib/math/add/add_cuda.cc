@@ -9,17 +9,11 @@
  */
 
 #include "add_cuda.hh"
+#include "add_cuda_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace math {
-
-
-template <class T>
-typename add<T>::sptr add<T>::make_cuda(const block_args& args)
-{
-    return std::make_shared<add_cuda<T>>(args);
-}
 
 template <class T>
 add_cuda<T>::add_cuda(const typename add<T>::block_args& args)
@@ -52,11 +46,6 @@ add_cuda<T>::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 
 }
-
-template class add<std::int16_t>;
-template class add<std::int32_t>;
-template class add<float>;
-template class add<gr_complex>;
 
 } /* namespace math */
 } /* namespace gr */

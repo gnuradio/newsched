@@ -1,10 +1,9 @@
 #include "complex_to_mag_squared_cpu.hh"
+#include "complex_to_mag_squared_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace math {
-
-complex_to_mag_squared::sptr complex_to_mag_squared::make_cpu(const block_args& args) { return std::make_shared<complex_to_mag_squared_cpu>(args); }
 
 work_return_code_t complex_to_mag_squared_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)

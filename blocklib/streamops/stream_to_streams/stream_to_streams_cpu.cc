@@ -9,17 +9,11 @@
  */
 
 #include "stream_to_streams_cpu.hh"
+#include "stream_to_streams_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace streamops {
-
-
-typename stream_to_streams::sptr
-stream_to_streams::make_cpu(const block_args& args)
-{
-    return std::make_shared<stream_to_streams_cpu>(args);
-}
 
 stream_to_streams_cpu::stream_to_streams_cpu(const block_args& args)
     : block("stream_to_streams"), stream_to_streams(args), d_itemsize(args.itemsize)

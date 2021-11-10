@@ -9,16 +9,11 @@
  */
 
 #include "divide_cpu.hh"
+#include "divide_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace math {
-
-template <class T>
-typename divide<T>::sptr divide<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<divide_cpu<T>>(args);
-}
 
 template <class T>
 divide_cpu<T>::divide_cpu(const typename divide<T>::block_args& args)
@@ -102,10 +97,6 @@ divide_cpu<T>::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
-template class divide<std::int16_t>;
-template class divide<std::int32_t>;
-template class divide<float>;
-template class divide<gr_complex>;
 
 } /* namespace math */
 } /* namespace gr */

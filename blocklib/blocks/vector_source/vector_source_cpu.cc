@@ -1,4 +1,5 @@
 #include "vector_source_cpu.hh"
+#include "vector_source_cpu_gen.hh"
 #include <algorithm>
 #include <cstring> // for memcpy
 #include <stdexcept>
@@ -7,12 +8,6 @@ using namespace std;
 
 namespace gr {
 namespace blocks {
-
-template <class T>
-typename vector_source<T>::sptr vector_source<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<vector_source_cpu<T>>(args);
-}
 
 template <class T>
 vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_args& args)
@@ -72,12 +67,6 @@ work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& wor
         return work_return_code_t::WORK_OK;
     }
 }
-
-template class vector_source<std::uint8_t>;
-template class vector_source<std::int16_t>;
-template class vector_source<std::int32_t>;
-template class vector_source<float>;
-template class vector_source<gr_complex>;
 
 } /* namespace blocks */
 } /* namespace gr */

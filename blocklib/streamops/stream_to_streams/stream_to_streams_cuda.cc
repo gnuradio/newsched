@@ -9,17 +9,12 @@
  */
 
 #include "stream_to_streams_cuda.hh"
+#include "stream_to_streams_cuda_gen.hh"
 #include <gnuradio/helper_cuda.h>
 #include <volk/volk.h>
 
 namespace gr {
 namespace streamops {
-
-
-typename stream_to_streams::sptr stream_to_streams::make_cuda(const block_args& args)
-{
-    return std::make_shared<stream_to_streams_cuda>(args);
-}
 
 stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
     : block("stream_to_streams_cuda"), stream_to_streams(args), d_itemsize(args.itemsize)

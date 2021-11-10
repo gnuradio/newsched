@@ -9,16 +9,10 @@
  */
 
 #include "moving_average_cuda.hh"
+#include "moving_average_cuda_gen.hh"
 
 namespace gr {
 namespace filter {
-
-template <class T>
-typename moving_average<T>::sptr
-moving_average<T>::make_cuda(const moving_average<T>::block_args& args)
-{
-    return std::make_shared<moving_average_cuda<T>>(args);
-}
 
 template <class T>
 moving_average_cuda<T>::moving_average_cuda(
@@ -76,11 +70,6 @@ moving_average_cuda<T>::work(std::vector<block_work_input>& work_input,
         tr == 0 ? num_iter - (d_length - 1) : num_iter - (d_length - 1);
     return work_return_code_t::WORK_OK;
 } // namespace filter
-
-// template class moving_average<int16_t>;
-// template class moving_average<int32_t>;
-template class moving_average<float>;
-template class moving_average<gr_complex>;
 
 } // namespace filter
 } /* namespace gr */

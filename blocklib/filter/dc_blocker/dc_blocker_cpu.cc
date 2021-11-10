@@ -9,17 +9,11 @@
  */
 
 #include "dc_blocker_cpu.hh"
+#include "dc_blocker_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace filter {
-
-template <class T>
-typename dc_blocker<T>::sptr
-dc_blocker<T>::make_cpu(const dc_blocker<T>::block_args& args)
-{
-    return std::make_shared<dc_blocker_cpu<T>>(args);
-}
 
 template <class T>
 dc_blocker_cpu<T>::dc_blocker_cpu(const typename dc_blocker<T>::block_args& args)
@@ -81,9 +75,6 @@ work_return_code_t dc_blocker_cpu<T>::work(std::vector<block_work_input>& work_i
     work_output[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
-
-template class dc_blocker<float>;
-template class dc_blocker<gr_complex>;
 
 } /* namespace filter */
 } /* namespace gr */

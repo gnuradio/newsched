@@ -9,17 +9,11 @@
  */
 
 #include "pfb_channelizer_cpu.hh"
+#include "pfb_channelizer_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace filter {
-
-template <class T>
-typename pfb_channelizer<T>::sptr
-pfb_channelizer<T>::make_cpu(const pfb_channelizer<T>::block_args& args)
-{
-    return std::make_shared<pfb_channelizer_cpu<T>>(args);
-}
 
 template <class T>
 pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
@@ -186,9 +180,6 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input>& work_input,
     this->produce_each(noutput_items, work_output);
     return work_return_code_t::WORK_OK;
 }
-
-// template class pfb_channelizer<float>;
-template class pfb_channelizer<gr_complex>;
 
 } /* namespace filter */
 } /* namespace gr */

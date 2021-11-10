@@ -9,16 +9,11 @@
  */
 
 #include "time_sink_cpu.hh"
+#include "time_sink_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace qtgui {
-
-template <class T>
-typename time_sink<T>::sptr time_sink<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<time_sink_cpu<T>>(args);
-}
 
 template <class T>
 time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
@@ -624,10 +619,6 @@ void time_sink_cpu<T>::set_samp_rate(const double samp_rate)
     d_samp_rate = samp_rate;
     d_main_gui->setSampleRate(d_samp_rate);
 }
-
-
-template class time_sink<float>;
-template class time_sink<gr_complex>;
 
 } /* namespace qtgui */
 } /* namespace gr */

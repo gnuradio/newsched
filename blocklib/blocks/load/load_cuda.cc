@@ -1,4 +1,5 @@
 #include "load_cuda.hh"
+#include "load_cuda_gen.hh"
 
 #include <gnuradio/helper_cuda.h>
 
@@ -10,8 +11,6 @@
 
 namespace gr {
 namespace blocks {
-
-load::sptr load::make_cuda(const block_args& args) { return std::make_shared<load_cuda>(args); }
 
 load_cuda::load_cuda(block_args args) : sync_block("load_cuda"), load(args), d_itemsize(args.itemsize), d_load(args.iterations)
 

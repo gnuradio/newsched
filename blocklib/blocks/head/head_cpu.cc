@@ -9,14 +9,10 @@
  */
 
 #include "head_cpu.hh"
+#include "head_cpu_gen.hh"
 
 namespace gr {
 namespace blocks {
-
-head::sptr head::make_cpu(const block_args& args)
-{
-    return std::make_shared<head_cpu>(args);
-}
 
 head_cpu::head_cpu(const block_args& args)
     : sync_block("head"), head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)

@@ -1,9 +1,7 @@
 #include "copy_cpu.hh"
-
+#include "copy_cpu_gen.hh"
 namespace gr {
 namespace blocks {
-
-copy::sptr copy::make_cpu(const block_args& args) { return std::make_shared<copy_cpu>(args); }
 
 work_return_code_t copy_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)
