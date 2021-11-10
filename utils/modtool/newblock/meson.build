@@ -8,7 +8,7 @@ srcs = files(['newblock_cpu.cc'])
 gen_srcs = custom_target('gen_newblock_h',
                         input : ['newblock.yml'],
                         output : ['newblock.cc', 'newblock.hh', 'newblock_pybind.cc', 'newmod_newblock.block.yml'],
-                        command : ['python3', join_paths(share_dir,'utils/blockbuilder/scripts/process_folder.py'),
+                        command : ['python3', join_paths(SCRIPTS_DIR,'process_folder.py'),
                             '--yaml_file', '@INPUT@', 
                             '--output-cc', '@OUTPUT0@', 
                             '--output-hh', '@OUTPUT1@', 

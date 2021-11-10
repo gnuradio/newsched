@@ -1,17 +1,12 @@
 #include "agc_cpu.hh"
+#include "agc_cpu_gen.hh"
 
 namespace gr {
 namespace analog {
 
 template <class T>
-typename agc<T>::sptr agc<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<agc_cpu<T>>(args);
-}
-
-template <class T>
 work_return_code_t agc_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                 std::vector<block_work_output>& work_output)
+                                    std::vector<block_work_output>& work_output)
 {
     auto in = work_input[0].items<T>();
     auto out = work_output[0].items<T>();
@@ -22,8 +17,6 @@ work_return_code_t agc_cpu<T>::work(std::vector<block_work_input>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
-template class agc<float>;
-template class agc<gr_complex>;
-
 } // namespace analog
 } // namespace gr
+
