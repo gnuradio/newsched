@@ -4,7 +4,10 @@ become the GNU Radio 4.0 Runtime
 It is a clean-slate approach to write a GNU Radio runtime that works for humans -
 by getting back to the basic principles
 
-## GR 4.0 Vision
+It is the attempt to create an SDR framework that is simple, yet flexible, and pleasant to develop applications with.  Much is leveraged / copied from GNU Radio, but we are not attempting to keep GNU Radio entirely intact either.
+
+
+## GR 4.0 Runtime Vision
 
 <!-- ![Vision](images/vision.png) -->
 <img src="./images/vision.png" alt="Vision" width="600"/>
