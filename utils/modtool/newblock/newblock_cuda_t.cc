@@ -9,16 +9,11 @@
  */
 #include "newblock_cuda.cuh"
 #include "newblock_cuda.hh"
+#include "newblock_cuda_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace newmod {
-
-template <class T>
-typename newblock<T>::sptr newblock<T>::make_cuda(const block_args& args)
-{
-    return std::make_shared<newblock_cuda<T>>(args);
-}
 
 template <class T>
 newblock_cuda<T>::newblock_cuda(

@@ -16,6 +16,7 @@ typekeys:
       - value: gr_complex 
         suffix: cc 
 
+# Example Parameters
 parameters:
 -   id: k
     label: Constant
@@ -27,6 +28,7 @@ parameters:
     settable: false
     default: 1
 
+# Example Ports
 ports:
 -   domain: stream
     id: in

@@ -3,11 +3,13 @@ block: newblock
 label: newblock
 blocktype: sync_block
 
+# Example Parameters
 parameters:
 -   id: itemsize
     label: Item Size
     dtype: size_t
 
+# Exampler Ports
 ports:
 -   domain: stream
     id: in

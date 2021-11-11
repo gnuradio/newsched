@@ -9,16 +9,11 @@
  */
 
 #include "newblock_cpu.hh"
+#include "newblock_cpu_gen.hh"
 #include <volk/volk.h>
 
 namespace gr {
 namespace newmod {
-
-template <class T>
-typename newblock<T>::sptr newblock<T>::make_cpu(const block_args& args)
-{
-    return std::make_shared<newblock_cpu<T>>(args);
-}
 
 template <class T>
 newblock_cpu<T>::newblock_cpu(const typename newblock<T>::block_args& args)
