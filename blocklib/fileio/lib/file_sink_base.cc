@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <cstdio>
 #include <stdexcept>
+#include <unistd.h>
 
 // win32 (mingw/msvc) specific
 #ifdef HAVE_IO_H
