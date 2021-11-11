@@ -24,7 +24,7 @@ jobs:
           - distro: 'Ubuntu 20.04'
             containerid: 'mormj/newsched-ci-docker'
             cxxflags: -Werror
-          - distro: 'Fedora 33'
+          - distro: 'Fedora 34'
             containerid: 'mormj/newsched-ci-docker:fedora-34'
             cxxflags: ''
           # - distro: 'CentOS 8.3'
