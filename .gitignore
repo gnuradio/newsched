@@ -141,3 +141,7 @@ core
 !grc/core
 **/__pycache__/
 *.pyc
+
+# Archives
+*.tar.gz
+*.zip
