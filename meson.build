@@ -29,6 +29,12 @@ ENABLE_GR_SOAPY = soapysdr_dep.found() and get_option('enable_gr_soapy')
 
 # Import python3 meson module which is used to find the Python dependencies.
 py3_inst = import('python').find_installation('python3')
+py3_mod = import('python3')
+py3 = py3_mod.find_python()
+py3_version = py3_mod.language_version()
+if py3_version.version_compare('< 3.6')
+  error('Invalid python version!?')
+endif
 
 pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
 threads_dep = dependency('threads')

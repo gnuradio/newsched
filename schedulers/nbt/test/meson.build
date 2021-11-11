@@ -71,8 +71,8 @@ if get_option('enable_testing')
         install : true)
     test('NBT Tags Tests', e)
 
-    test('Basic Python', find_program('qa_basic.py'), env: TEST_ENV)
-    test('Block Parameters', find_program('qa_parameters.py'), env: TEST_ENV)
+    test('Basic Python', py3, args : files('qa_basic.py'), env: TEST_ENV)
+    test('Block Parameters', py3, args : files('qa_parameters.py'), env: TEST_ENV)
 
 endif
 
