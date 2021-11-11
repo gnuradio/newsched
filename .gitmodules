@@ -1,0 +1,3 @@
+[submodule "subprojects/pmt"]
+	path = subprojects/pmt
+	url = https://github.com/gnuradio/pmt
