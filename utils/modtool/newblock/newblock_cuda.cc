@@ -1,4 +1,5 @@
 #include "newblock_cuda.hh"
+#include "newblock_cuda_gen.hh"
 
 #include <gnuradio/helper_cuda.h>
 
@@ -14,8 +15,6 @@ extern void apply_newblock(
     const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream);
 
 extern void get_block_and_grid(int* minGrid, int* minBlock);
-
-newblock::sptr newblock::make_cuda(const block_args& args) { return std::make_shared<newblock_cuda>(args); }
 
 newblock_cuda::newblock_cuda(block_args args) : newblock(args), d_itemsize(args.itemsize)
 
