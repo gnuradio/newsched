@@ -3,6 +3,17 @@ All notable changes to newsched will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.1] - [2021.11.11]
+
+Didn't take long to require a patch from the first release
+
+### runtime
+* Propagate dependencies through meson
+  * not having this was causing build issues on Fedora
+
+### blocklib
+* Adds some missing include files
+
 ## [0.1.0] - [2021.11.11]
 
 Here it is: the first release of newsched!  
