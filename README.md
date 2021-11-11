@@ -1,5 +1,9 @@
 # newsched – the final frontier #
 
+<table><tr>
+<th><b><a href="https://gnuradio.github.io/newsched/">Documentation</a></b></th>
+</tr></table>
+
 A messaging-based implementation of GNU Radio scheduling.
 
 This is a clean-slate approach to write a GNU Radio runtime that works for humans.
