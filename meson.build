@@ -49,7 +49,9 @@ if USE_CUDA
 cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
 endif
 
-pmtf_dep = dependency('pmtf', version : '>=0.0.2')
+# pmtf_dep = dependency('pmtf', version : '>=0.0.2')
+libpmtf = subproject('pmt')
+pmtf_dep = libpmtf.get_variable('pmtf_dep')
 
 cmake = import('cmake')
 
