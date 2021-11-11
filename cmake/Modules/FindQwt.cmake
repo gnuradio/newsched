@@ -10,8 +10,6 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 pkg_check_modules(PC_QWT "Qt5Qwt6")
 set(QWT_QT_VERSION qt5)
 
-message(STATUS "asdfalsdfaisdfjiaodfijfadojiafijds")
-
 find_path(QWT_INCLUDE_DIRS
   NAMES qwt_global.h
   HINTS
