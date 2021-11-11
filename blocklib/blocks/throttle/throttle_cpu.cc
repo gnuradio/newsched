@@ -1,4 +1,5 @@
 #include "throttle_cpu.hh"
+#include <thread>
 
 namespace gr {
 namespace blocks {
