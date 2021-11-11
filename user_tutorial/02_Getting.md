@@ -96,3 +96,5 @@ ninja install
 ## Installing from Packaging
 
 TODO: build and distribute conda and ppa packages
+
+[Next: Setting up a Flowgraph](03_Flowgraph)

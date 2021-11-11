@@ -115,3 +115,5 @@ implementations:
 -   id: cpu
 # -   id: cuda
 ```
+
+[Next: Implementing the Block](05_BlockImplementation)

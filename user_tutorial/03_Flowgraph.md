@@ -34,3 +34,5 @@ to prove out the long term vision for GNU Radio 4.x
 
 We will next dig into the more advanced features of newsched, starting with how you might want to 
 create your own module, blocks, and even custom scheduler
+
+[Next: Creating a block](04_BlockBuilder)
