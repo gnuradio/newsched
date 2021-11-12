@@ -4,14 +4,11 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-// #include <boost/thread/mutex.hh>
 #include <cuda.h>
 #include <cuda_runtime.h>
 
 #include <gnuradio/buffer_cuda.hh>
 
-
-// typedef boost::unique_lock<boost::mutex> scoped_lock;
 
 namespace gr {
 buffer_cuda::buffer_cuda(size_t num_items,
