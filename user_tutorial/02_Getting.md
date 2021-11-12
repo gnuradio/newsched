@@ -10,7 +10,10 @@ mkdir -p $PREFIX/src
 ```
 Put the following contents into a file called `setup_env.sh` (and adjust python paths as necessary) - (This is copied from PyBOMBS)
 ```bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Store a variable with the path to the directory in which this file resides
+DIR=/path/to/my/prefix #e.g. /opt/newsched_prefix/ or $HOME/newsched_prefix
+# If sh is bash we can obtain this automatically
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
 export PATH="$DIR/bin:$PATH"
 export PYTHONPATH="$DIR/lib/python3/site-packages:$DIR/lib/python3/dist-packages:$DIR/lib/python3.8/site-packages:$DIR/lib/python3.8/dist-packages:$DIR/lib64/python3/site-packages:$DIR/lib64/python3/dist-packages:$DIR/lib64/python3.8/site-packages:$DIR/lib64/python3.8/dist-packages:$PYTHONPATH"
 export LD_LIBRARY_PATH="$DIR/lib:$DIR/lib64/:$DIR/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
@@ -36,6 +39,7 @@ The following dependencies are necessary to build and run `newsched`
 - [Boost](https://www.boost.org/)
 - FFTW
 - C++17 capable compiler (g++9)
+- flatbuffers (>=2.0.0)
   
 Optionally
 - Python3
@@ -79,6 +83,13 @@ VOLK must be built from source
 cd $PREFIX/src
 git clone --recursive https://github.com/gnuradio/volk.git --branch v2.4.1
 cd volk && mkdir build && cd build &&cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/prefix && make install -j8
+```
+
+Flatc must be built from source (used for PMT subproject)
+```bash
+cd $PREFIX/src
+git clone https://github.com/google/flatbuffers.git /src/flatbuffers --branch v2.0.0
+cd flatbuffers && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j8 && make install 
 ```
 
 ## 3. Clone and build newsched
