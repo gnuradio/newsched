@@ -14,9 +14,7 @@ flat_graph::~flat_graph() {}
 
 void flat_graph::clear()
 {
-    // Boost shared pointers will deallocate as needed
     d_blocks.clear();
-
     graph::clear();
 }
 

@@ -9,9 +9,8 @@
  */
 
 #include <gnuradio/thread.hh>
-
-#include <boost/format.hpp>
-
+#include <unistd.h>
+#include <fmt/core.h>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
@@ -117,7 +116,7 @@ void set_thread_name(gr_thread_t thread, const std::string& name)
         return;
 
     if (name.empty())
-        name = boost::str(boost::format("thread %lu") % dwThreadId);
+        name = fmt::format("thread {}", dwThreadId);
 
     _set_thread_name(thread, name.c_str(), dwThreadId);
 }
@@ -299,7 +298,7 @@ void set_thread_name(gr_thread_t thread, const std::string& name)
 
     std::string thread_name = name;
     if (name.empty())
-        thread_name = boost::str(boost::format("thread %llu") % ((unsigned long long)thread));
+        thread_name = fmt::format("thread {}", ((unsigned long long)thread));
 
     const int max_len = 16; // Maximum accepted by PR_SET_NAME
 

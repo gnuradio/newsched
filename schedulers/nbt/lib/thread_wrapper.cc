@@ -1,6 +1,6 @@
 #include "thread_wrapper.hh"
 #include <gnuradio/thread.hh>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 #include <thread>
 
 namespace gr {
@@ -159,10 +159,10 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 #include <windows.h>
     thread::set_thread_name(
         GetCurrentThread(),
-        boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
+        fmt::format("{}{}", block->name(), block->unique_id()));
 #else
     thread::set_thread_name(pthread_self(),
-                            str(boost::format("%s%d") % top->d_block_group.name() %
+                            fmt::format("{}{}", top->d_block_group.name(),
                                 top->d_block_group.blocks()[0]->id()));
 #endif
 

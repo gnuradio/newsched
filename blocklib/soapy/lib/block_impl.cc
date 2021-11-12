@@ -11,7 +11,7 @@
 #include "setting_string_conversion.h"
 #include <SoapySDR/Formats.h>
 #include <SoapySDR/Version.hpp>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 #include <cmath>
 #include <numeric>
 #include <pmtf/string.hpp>
@@ -94,14 +94,12 @@ static void check_abi(void)
     const std::string runtime_abi = SoapySDR::getABIVersion();
 
     if (buildtime_abi != runtime_abi) {
-        throw std::runtime_error(str(
-            boost::format(
-                "\nGR-Soapy detected ABI compatibility mismatch with SoapySDR library.\n"
-                "GR-Soapy was built against ABI: %s,\n"
-                "but the SoapySDR library reports ABI: %s\n"
+        throw std::runtime_error(
+            fmt::format("\nGR-Soapy detected ABI compatibility mismatch with SoapySDR library.\n"
+                "GR-Soapy was built against ABI: {},\n"
+                "but the SoapySDR library reports ABI: {}\n"
                 "Suggestion: install an ABI compatible version of SoapySDR,\n"
-                "or rebuild GR-Soapy component against this ABI version.\n") %
-            buildtime_abi % runtime_abi));
+                "or rebuild GR-Soapy component against this ABI version.\n", buildtime_abi, runtime_abi));
     }
 }
 
