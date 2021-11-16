@@ -12,10 +12,6 @@ parameters:
     label: When
     dtype: uint64_t
     settable: false
--   id: itemsize
-    label: Item Size
-    dtype: size_t
-    settable: false
 -   id: num_inputs
     label: Num Inputs
     dtype: size_t
@@ -28,6 +24,13 @@ parameters:
     label: Tag Propagation Policy
     dtype: gr::tag_propagation_policy_t
     settable: false
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+    default: 0
+    grc:
+        hide: all
 
 ports:
 -   domain: stream

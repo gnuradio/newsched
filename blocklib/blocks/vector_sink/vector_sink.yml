@@ -45,6 +45,8 @@ parameters:
     container: vector
     gettable: true
     cotr: false
+    grc:
+      hide: all
 # callbacks:
 # -   id: data
 #     return: std::vector<T>

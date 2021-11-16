@@ -12,9 +12,8 @@ flowgraph::flowgraph(const std::string& name)
 
     // Dynamically load the module containing the default scheduler
     // Search path needs to be set correctly for qa in build dir
-    void* handle = dlopen(("libnewsched-scheduler-" +
-                              s_default_scheduler_name + ".so").c_str(),
-                          RTLD_LAZY);
+    void* handle = dlopen(
+        ("libnewsched-scheduler-" + s_default_scheduler_name + ".so").c_str(), RTLD_LAZY);
     if (!handle) {
         throw std::runtime_error("Unable to load default scheduler dynamically");
     }
@@ -71,13 +70,65 @@ void flowgraph::add_scheduler(scheduler_sptr sched)
 }
 void flowgraph::clear_schedulers() { d_schedulers.clear(); }
 
+size_t get_port_itemsize(port_sptr port)
+{
+#if 0
+    size_t size = 0;
+    while (size == 0) {
+        if (port->connected_ports().size() > 0) {
+            auto cp = port->connected_ports()[0];
+            // use data_size since this includes vector sizing
+            if (cp->data_size() > 0) {
+                return cp->data_size();
+            } else {
+                if (cp->direction() == port_direction_t::INPUT) {
+                    // Get the output port on the other side
+                    if (cp->parent_block()->output_stream_ports().size() > 0) {
+                        auto opposite_port = cp->parent_block()->output_stream_ports()[0];
+                        if (opposite_port->data_size() > 0) {
+                            return opposite_port->data_size();
+                        } else {
+                            size = get_port_itemsize(opposite_port);
+                        }
+                    } else {
+                        return 0; // we are at a dead end
+                    }
+                } else {
+                    // get the input port on the other side
+                    if (cp->parent_block()->input_stream_ports().size() > 0) {
+                        auto opposite_port = cp->parent_block()->input_stream_ports()[0];
+                        if (opposite_port->data_size() > 0) {
+                            return opposite_port->data_size();
+                        } else {
+                            size = get_port_itemsize(opposite_port);
+                        }
+                    } else {
+                        return 0; // we are at a dead end
+                    }
+                }
+            }
+        } else {
+            // this is a problem, shouldn't happen
+            return 0;
+        }
+    }
+#endif
+    size_t size = 0;
+    if (port->connected_ports().size() > 0) {
+        auto cp = port->connected_ports()[0];
+        // use data_size since this includes vector sizing
+        size = cp->data_size();
+    }
+    return size;
+}
+
 void flowgraph::check_connections(const graph_sptr& g)
 {
     // Are all non-optional ports connected to something
     for (auto& node : g->calc_used_nodes()) {
         for (auto& port : node->output_ports()) {
             if (!port->optional() && port->connected_ports().size() == 0) {
-                throw std::runtime_error("Nothing connected to " + port->alias());
+                throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
             }
         }
         for (auto& port : node->input_ports()) {
@@ -86,16 +137,55 @@ void flowgraph::check_connections(const graph_sptr& g)
                 if (port->type() == port_type_t::STREAM) {
 
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + port->alias());
+                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
                     } else if (port->connected_ports().size() > 1) {
                         throw std::runtime_error("More than 1 port connected to " +
                                                  port->alias());
                     }
                 } else if (port->type() == port_type_t::MESSAGE) {
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + port->alias());
+                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
                     }
                 }
+            }
+        }
+    }
+
+    // Iteratively check the flowgraph for 0 size ports and adjust
+    bool updated_sizes = true;
+    while (updated_sizes) {
+        updated_sizes = false;
+        for (auto& node : g->calc_used_nodes()) {
+            for (auto& port : node->output_ports()) {
+                if (port->itemsize() == 0) {
+                    // we need to propagate the itemsize from whatever it is connected to
+                    auto newsize = get_port_itemsize(port);
+                    port->set_itemsize(newsize);
+                    updated_sizes = newsize > 0;
+                }
+            }
+            for (auto& port : node->input_ports()) {
+                if (port->itemsize() == 0) {
+                    // we need to propagate the itemsize from whatever it is connected to
+                    auto newsize = get_port_itemsize(port);
+                    port->set_itemsize(newsize);
+                    updated_sizes = newsize > 0;
+                }
+            }
+        }
+    }
+
+    // Set any remaining 0 size ports to something
+    size_t newsize = sizeof(gr_complex); // why not, does it matter
+    for (auto& node : g->calc_used_nodes()) {
+        for (auto& port : node->output_ports()) {
+            if (port->itemsize() == 0) {
+                port->set_itemsize(newsize);
+            }
+        }
+        for (auto& port : node->input_ports()) {
+            if (port->itemsize() == 0) {
+                port->set_itemsize(newsize);
             }
         }
     }

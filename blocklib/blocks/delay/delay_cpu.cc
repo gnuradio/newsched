@@ -27,6 +27,7 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
 {
     std::scoped_lock l(d_mutex);
     assert(work_input.size() == work_output.size());
+    auto itemsize = work_output[0].buffer->item_size();
 
     const uint8_t* iptr;
     uint8_t* optr;
@@ -39,7 +40,7 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
         for (size_t i = 0; i < work_input.size(); i++) {
             iptr = work_input[i].items<uint8_t>();
             optr = work_output[i].items<uint8_t>();
-            std::memcpy(optr, iptr, noutput_items * d_itemsize);
+            std::memcpy(optr, iptr, noutput_items * itemsize);
         }
         cons = noutput_items;
         ret = noutput_items;
@@ -54,7 +55,7 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
         for (size_t i = 0; i < work_input.size(); i++) {
             iptr = work_input[i].items<uint8_t>();
             optr = work_output[i].items<uint8_t>();
-            std::memcpy(optr, iptr + delta * d_itemsize, n_to_copy * d_itemsize);
+            std::memcpy(optr, iptr + delta * itemsize, n_to_copy * itemsize);
         }
         cons = noutput_items;
         ret = n_to_copy;
@@ -70,8 +71,8 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input>& work_input,
         for (size_t i = 0; i < work_input.size(); i++) {
             iptr = work_input[i].items<uint8_t>();
             optr = work_output[i].items<uint8_t>();
-            std::memset(optr, 0, n_padding * d_itemsize);
-            std::memcpy(optr + n_padding * d_itemsize, iptr, n_from_input * d_itemsize);
+            std::memset(optr, 0, n_padding * itemsize);
+            std::memcpy(optr + n_padding * itemsize, iptr, n_from_input * itemsize);
         }
         cons = n_from_input;
         ret = noutput_items;

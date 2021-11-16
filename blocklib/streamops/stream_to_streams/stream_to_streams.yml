@@ -4,15 +4,18 @@ label: Stream To Streams
 blocktype: block
 
 parameters:
--   id: itemsize
-    label: Item Size
-    dtype: size_t
-    settable: false
 -   id: nstreams
     label: Number of Streams
     dtype: size_t
     settable: false
-
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+    default: 0
+    grc:
+        hide: all
+        
 ports:
 -   domain: stream
     id: in

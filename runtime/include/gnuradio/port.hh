@@ -20,6 +20,8 @@ enum class port_direction_t {
     BIDIRECTONAL //?? can it be done
 };
 
+class block;
+
 /**
  * @brief Base class for all ports
  *
@@ -98,6 +100,7 @@ public:
     port_direction_t direction() { return _direction; }
     size_t data_size() { return _datasize; }
     size_t itemsize() { return _itemsize; }
+    void set_itemsize(size_t itemsize) { _itemsize = itemsize; }
     std::vector<size_t> dims() { return _dims; }
     sptr base() { return shared_from_this(); }
     bool optional() { return _optional; }
@@ -163,6 +166,8 @@ protected:
     neighbor_interface_sptr _parent_intf = nullptr;
     buffer_sptr _buffer = nullptr;
     buffer_reader_sptr _buffer_reader = nullptr;
+
+    block *_parent_block = nullptr;
 };
 
 typedef port_base::sptr port_sptr;

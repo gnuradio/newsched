@@ -75,7 +75,7 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input>& work_input,
 
     // TODO: blocks like throttle shouldn't need to do a memcpy, but this would have to be
     // fixed in the buffering model and a special port type
-    std::memcpy(out, in, n * d_itemsize);
+    std::memcpy(out, in, n * work_output[0].buffer->item_size());
     work_output[0].n_produced = n;
     return work_return_code_t::WORK_OK;
 }

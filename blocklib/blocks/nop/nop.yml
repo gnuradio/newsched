@@ -8,6 +8,9 @@ parameters:
     label: Item Size
     dtype: size_t
     settable: false
+    default: 0
+    grc:
+        hide: all
 
 ports:
 -   domain: stream
