@@ -1,7 +1,7 @@
 module: soapy
 block: source
 label: source
-blocktype: block
+blocktype: gr::soapy::block
 inherits: gr::soapy::block
 
 # This needs a lot of work - for soapy there is an N:1 relationship 
@@ -9,18 +9,150 @@ inherits: gr::soapy::block
 #  Do we 
 #   1) have all that info here and generate multiple files
 #   2) have multiple grc files in tree and don't generate
-grc:
-  flags: [python]
-  templates:
-      imports: |- 
-        from newsched import soapy
-      make: |-
-        self.${id} = soapy.source_${T.fcn}(${device},${nchan})
-        self.${id}.set_sample_rate(0, samp_rate)
-        self.${id}.set_gain_mode(0, False)
-        self.${id}.set_frequency(0, ${frequency})
-        self.${id}.set_frequency_correction(0, 0)
-        self.${id}.set_gain(0, 'TUNER', ${gain})
+# grc:
+#   flags: [python]
+#   templates:
+#       imports: |- 
+#         from newsched import soapy
+#       make: |-
+#         self.${id} = soapy.source_${T.fcn}(${device},${nchan})
+#         self.${id}.set_sample_rate(0, samp_rate)
+#         self.${id}.set_gain_mode(0, False)
+#         self.${id}.set_frequency(0, ${frequency})
+#         self.${id}.set_frequency_correction(0, 0)
+#         self.${id}.set_gain(0, 'TUNER', ${gain})
+
+grc_multiple:
+    - id: rtlsdr_source
+      label: RTL SDR Source
+      flags: [python]
+      # GRC only parameters
+      parameters:
+      - id: samp_rate
+        label: Sample Rate
+        dtype: float
+        default: 'samp_rate'
+      - id: center_freq
+        label: 'Center Freq (Hz)'
+        category: RF Options
+        dtype: real
+        default: 'freq'
+      - id: freq_correction
+        label: 'Frequency Correction (PPM)'
+        category: RF Options
+        dtype: real
+        default: '0'
+        hide: 'part'
+      - id: agc
+        label: 'AGC'
+        category: RF Options
+        dtype: bool
+        default: 'False'
+        hide: 'part'
+      - id: gain
+        label: 'RF Gain'
+        category: RF Options
+        dtype: real
+        default: '20'
+        hide: ${'all' if agc else 'part'}
+      templates:
+        imports: |- 
+            from newsched import soapy
+        make: |
+            None
+            dev = 'driver=rtlsdr'
+            stream_args = ''
+            tune_args = ['']
+            settings = ['']
+
+            self.${id} = soapy.source_${T.fcn}(dev, 1, ${dev_args},
+                                        stream_args, tune_args, settings)
+            self.${id}.set_sample_rate(0, ${samp_rate})
+            self.${id}.set_gain_mode(0, ${agc})
+            self.${id}.set_frequency(0, ${center_freq})
+            self.${id}.set_frequency_correction(0, ${freq_correction})
+            self.${id}.set_gain(0, 'TUNER', ${gain})
+        callbacks:
+            - set_sample_rate(0, ${samp_rate})
+            - set_gain_mode(0, ${agc})
+            - set_frequency(0, ${center_freq})
+            - set_frequency_correction(0, ${freq_correction})
+            - set_gain(0, 'TUNER', ${gain})
+
+    - id: hackrf_source
+      label: HackRF Source
+      flags: [python]
+      # GRC only parameters
+      parameters:
+      - id: dev_args
+        label: Device arguments
+        dtype: string
+        hide: ${'part' if not dev_args else 'none'}
+
+      - id: samp_rate
+        label: Sample Rate
+        dtype: float
+        default: 'samp_rate'
+
+      - id: bandwidth
+        label: Bandwidth (0=auto)
+        category: RF Options
+        dtype: float
+        default: '0'
+        hide: part
+
+      - id: center_freq
+        label: 'Center Freq (Hz)'
+        category: RF Options
+        dtype: real
+        default: 'freq'
+
+      - id: amp
+        label: 'Amp On (+14 dB)'
+        category: RF Options
+        dtype: bool
+        default: 'False'
+        hide: part
+
+      - id: gain
+        label: 'IF Gain (0dB - 40dB)'
+        category: RF Options
+        dtype: real
+        default: '16'
+        hide: part
+
+      - id: vga
+        label: VGA Gain (0dB - 62dB)'
+        category: RF Options
+        dtype: real
+        default: '16'
+        hide: part
+
+      templates:
+        imports: from newsched import soapy
+        make: |
+            None
+            dev = 'driver=hackrf'
+            stream_args = ''
+            tune_args = ['']
+            settings = ['']
+
+            self.${id} = soapy.source_${T.fcn}(dev, 1, ${dev_args},
+                                      stream_args, tune_args, settings)
+            self.${id}.set_sample_rate(0, ${samp_rate})
+            self.${id}.set_bandwidth(0, ${bandwidth})
+            self.${id}.set_frequency(0, ${center_freq})
+            self.${id}.set_gain(0, 'AMP', ${amp})
+            self.${id}.set_gain(0, 'LNA', min(max(${gain}, 0.0), 40.0))
+            self.${id}.set_gain(0, 'VGA', min(max(${vga}, 0.0), 62.0))
+        callbacks:
+          - set_sample_rate(0, ${samp_rate})
+          - set_bandwidth(0, ${bandwidth})
+          - set_frequency(0, ${center_freq})
+          - set_gain(0, 'AMP', ${amp})
+          - set_gain(0, 'LNA', min(max(${gain}, 0.0), 40.0))
+          - set_gain(0, 'VGA', min(max(${vga}, 0.0), 62.0))
+
 typekeys:
   - id: T
     type: class
@@ -38,10 +170,14 @@ parameters:
     label: Device
     dtype: const std::string&
     settable: false
+    grc:
+      hid: 'all'
 -   id: nchan
     label: Number of Channels
     dtype: size_t
     settable: false
+    grc:
+        hide: 'all'
 -   id: dev_args
     label: Device Args
     dtype: const std::string&
@@ -52,11 +188,16 @@ parameters:
     dtype: const std::string&
     settable: false
     default: '""'
+    grc:
+        hide: 'all'
 -   id: tune_args
     label: Tune Args
     dtype: const std::vector<std::string>&
     settable: false
     default: std::vector<std::string>{""}
+    grc:
+        default: '[]'
+        hide: 'all'
 -   id: other_settings
     label: Other Settings
     dtype: const std::vector<std::string>&
@@ -64,19 +205,7 @@ parameters:
     default: std::vector<std::string>{""}
     grc:
         default: '[]'
-# Gain here is a hack to get rtl-sdr to work
--   id: gain
-    label: Gain
-    dtype: float
-    settable: false
-    cotr: false
-    default: 42
--   id: frequency
-    label: Frequency
-    dtype: float
-    settable: false
-    cotr: false
-    default: 2400000000
+        hide: 'all'
 
 ports:
 # -   domain: stream

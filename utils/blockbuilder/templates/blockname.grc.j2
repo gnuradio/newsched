@@ -18,8 +18,8 @@
         # {% set newvalue = '${' + list1[1] + '}' %}{% endif -%} #}
     {%- endif -%}
 {{newvalue}}{% endmacro -%}
-id: {{module}}_{{block}}
-label: '[{{module}}] {{label if label else block}}'
+id: {{module}}_{% if grc and 'id' in grc %}{{grc['id']}}{% else %}{{block}}{%endif%}
+label: '[{{module}}] {% if grc and 'label' in grc %}{{grc['label']}}{% else %}{{label if label else block}}{%endif%}'
 {% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
 category: '[newsched]/{{module}}'
 
@@ -36,12 +36,23 @@ parameters:
 {% endfor %}
 {% endif -%}
 {% for param in parameters -%}
+{% if 'grc' not in param or ('hide' in param['grc'] and param['grc']['hide'] != 'all') -%}
 -   id: {{param['id']}}
     label: {{param['label']}}
     dtype: {{type_lookup(param['dtype'],'raw')}}
-    {% if 'default' in param %}default: {{param['default']}}{%elif 'grc' in param and 'default' in param['grc']%}default: {{param['default']}}{%endif%}
+    default: {%if 'grc' in param and 'default' in param['grc']%}{{param['grc']['default']}}{%elif 'default' in param %}{{param['default']}}{%endif%}
     {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
+{%endif-%}
 {% endfor -%}
+{% if grc and 'parameters' in grc -%}
+{% for param in grc['parameters'] -%}
+-   id: {{param['id']}}
+    label: {{param['label']}}
+    dtype: {{param['dtype']}}
+    {% if 'default' in param %}default: {{param['default']}}{%endif%}
+    {% if 'hide' in param %}hide: {{param['hide']}}{%endif%}
+{% endfor -%}
+{% endif -%}
 
 inputs:
 {% for port in ports -%}
@@ -75,9 +86,9 @@ templates:
     make: {{module}}.{{block}}(
         {%- for param in parameters -%}
           {%- if 'cotr' not in p or p['cotr'] -%}
-            {{'${'}}{{param['id']}}{{"}"}}{{',' if not loop.last}}
+            {{'${'}}{{param['id']}}{{'}'}}{{',' if not loop.last}}
         {%- endif -%}
-        {%-endfor-%}})
+        {%-endfor-%})
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
