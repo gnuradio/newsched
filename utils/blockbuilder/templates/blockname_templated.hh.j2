@@ -1,7 +1,12 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
 #pragma once
-#include <gnuradio/{{blocktype}}.hh>
+{% set blocktype_include = blocktype %}
+{% if '::' in blocktype_include %}
+{% set list = blocktype_include.split('::') %}
+{% set blocktype_include = list[(list | length )-1] %}
+{% endif %}
+#include <gnuradio/{{blocktype_include}}.hh>
 #include <gnuradio/types.hh>
 
 {{ macros.includes(includes) }}

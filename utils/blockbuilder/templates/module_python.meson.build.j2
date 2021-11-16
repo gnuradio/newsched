@@ -4,7 +4,10 @@
 ######################
 
 # Generate _python.cc for each block
-
+fs = import('fs')
+if fs.exists('bindings/meson.build')
+subdir('bindings')
+endif
 srcs = ['__init__.py']
 
 foreach s: srcs
@@ -34,6 +37,7 @@ gen_{{module}}_pybind = custom_target('gen_{{module}}_pybind',
 
 newsched_blocklib_{{module}}_pybind = py3_inst.extension_module('{{module}}_python',
     {{module}}_pybind_sources, 
+    include_directories: ['../../lib'],
     dependencies : [newsched_blocklib_{{module}}_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
     install : true,
