@@ -36,13 +36,12 @@ parameters:
 {% endfor %}
 {% endif -%}
 {% for param in parameters -%}
-{% if 'grc' not in param or ('hide' in param['grc'] and param['grc']['hide'] != 'all') -%}
+{#{% if 'grc' not in param or ('hide' in param['grc'] and param['grc']['hide'] != 'all') -%}#}
 -   id: {{param['id']}}
     label: {{param['label']}}
     dtype: {{type_lookup(param['dtype'],'raw')}}
     default: {%if 'grc' in param and 'default' in param['grc']%}{{param['grc']['default']}}{%elif 'default' in param %}{{param['default']}}{%endif%}
     {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
-{%endif-%}
 {% endfor -%}
 {% if grc and 'parameters' in grc -%}
 {% for param in grc['parameters'] -%}

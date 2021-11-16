@@ -37,7 +37,7 @@ work_return_code_t head_cpu::work(std::vector<block_work_input>& work_input,
         return work_return_code_t::WORK_OK;
     }
 
-    memcpy(optr, iptr, n * d_itemsize);
+    memcpy(optr, iptr, n * work_input[0].buffer->item_size());
 
     d_ncopied_items += n;
     work_output[0].n_produced = n;

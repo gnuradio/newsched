@@ -8,6 +8,10 @@ parameters:
 -   id: itemsize
     label: Item Size
     dtype: size_t
+    settable: false
+    default: 0
+    grc:
+        hide: all
 
 # Exampler Ports
 ports:

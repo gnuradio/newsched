@@ -4,14 +4,17 @@ label: Delay
 blocktype: block
 
 parameters:
--   id: itemsize
-    label: Item Size
-    dtype: size_t
-    settable: false
 -   id: dly
     label: Delay
     dtype: size_t
     settable: true
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+    default: 0
+    grc:
+        hide: all
 
 ports:
 -   domain: stream

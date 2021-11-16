@@ -28,7 +28,7 @@ class test_delay(gr_unittest.TestCase):
         expected_result = list(delta_t * [0.0] + src_data)
 
         src = blocks.vector_source_f(src_data)
-        op = blocks.delay(gr.sizeof_float, delta_t)
+        op = blocks.delay(delta_t)
         dst = blocks.vector_sink_f()
 
         tb.connect(src, op)
@@ -44,7 +44,7 @@ class test_delay(gr_unittest.TestCase):
         expected_result = list(delta_t * [0.0] + src_data)
 
         src = blocks.vector_source_f(src_data)
-        op = blocks.delay(gr.sizeof_float, delta_t)
+        op = blocks.delay(delta_t)
         dst = blocks.vector_sink_f()
 
         tb.connect(src, op)

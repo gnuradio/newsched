@@ -6,7 +6,7 @@ edge_sptr graph::connect(const node_endpoint& src,
                     const node_endpoint& dst)
 {
     
-    if (src.port()->itemsize() != dst.port()->itemsize())
+    if (src.port()->itemsize() != dst.port()->itemsize() && src.port()->itemsize() > 0 && dst.port()->itemsize() > 0 )
     {
         std::stringstream msg;
         msg << "itemsize mismatch: " << src << " using " << src.port()->itemsize() << ", " << dst
