@@ -13,20 +13,25 @@ if IMPLEMENT_{{impl['id'] | upper}}
 {% endfor -%}
 {% endif -%}
 endif
-{% endfor %}
+{% endfor -%}
 
+{% set num_grc_outputs = 0 -%}
+{% set grc_idxs = ['0'] -%}
 gen_srcs = custom_target('gen_{{block}}_srcs',
                         input : ['{{block}}.yml'],
-                        output : ['{{block}}.cc', '{{block}}.hh', '{{block}}_pybind.cc', '{{module}}_{{block}}.block.yml'],
+                        output : ['{{block}}.cc', '{{block}}.hh', '{{block}}_pybind.cc', 
+                        '{{module}}_{{block}}.block.yml'
+                        ], 
                         command : ['python3', join_paths(SCRIPTS_DIR,'process_folder.py'),
                             '--yaml_file', '@INPUT@', 
                             '--output-cc', '@OUTPUT0@', 
                             '--output-hh', '@OUTPUT1@', 
                             '--output-pybind', '@OUTPUT2@', 
-                            '--output-grc', '@OUTPUT3@', 
+                            '--output-grc', [{%for ii in grc_idxs%}'@OUTPUT{{loop.index0+3}}@',{%endfor%}], 
+                            '--grc-index', [{%for ii in grc_idxs%}'{{ii}}',{%endfor%}],
                             '--build_dir', join_paths(meson.build_root())],
                         install : true,
-                        install_dir : [false, 'include/gnuradio/{{module}}',false,'share/gnuradio/grc/blocks'])
+                        install_dir : [false, 'include/gnuradio/{{module}}',false,{%for ii in grc_idxs%}'share/gnuradio/grc/blocks',{%endfor%}])
 
 gen_impls = custom_target('gen_{{block}}_impl',
                         input : ['{{block}}.yml'],

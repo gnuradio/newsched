@@ -84,5 +84,6 @@ subdir('utils')
 if (get_option('enable_python'))
   subdir('python/newsched')
   subdir('grc')
+  subdir('domains/grc')
 endif
 

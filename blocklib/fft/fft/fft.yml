@@ -2,11 +2,6 @@ module: fft
 block: fft
 label: FFT
 blocktype: sync_block
-grc:
-  flags: [python]
-  templates:
-      imports: from newsched import fft
-      make: fft.fft_${T.fcn}_${direction.fcn}(${fft_size},${window},${shift})
 
 typekeys:
   - id: T

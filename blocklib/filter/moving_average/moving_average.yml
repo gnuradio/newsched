@@ -3,12 +3,6 @@ block: moving_average
 label: Moving Average
 blocktype: block
 
-grc:
-  flags: [python]
-  templates:
-      imports: from newsched import filter
-      make: filter.moving_average_${T.fcn}(${length},${scale},${max_iter},${vlen})
-
 typekeys:
   - id: T
     type: class

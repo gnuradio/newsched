@@ -14,6 +14,7 @@ def argParse():
     parser.add_argument("--output-hh")
     parser.add_argument("--output-pybind")
     parser.add_argument("--output-grc", nargs='+')
+    parser.add_argument("--grc-index", nargs='+')
     parser.add_argument("--build_dir")
 
     return parser.parse_args()
@@ -88,6 +89,7 @@ def main():
             template = env.get_template('blockname.grc.j2')
             idx = 0
             if 'grc_multiple' in d:
+                # TODO - handle the grc-idx and impl
                 for grc_file in d['grc_multiple']:
                     filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc[idx]))
                     rendered = template.render(d, grc=grc_file)
@@ -96,11 +98,12 @@ def main():
                         file.write(rendered)
                     idx += 1
             else:
-                filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc[idx]))
-                rendered = template.render(d)
-                with open(filename, 'w') as file:
-                    print("generating " + filename)
-                    file.write(rendered)
+                for grcidx,fn in zip(args.grc_index,args.output_grc):
+                    filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(fn))
+                    rendered = template.render(d)
+                    with open(filename, 'w') as file:
+                        print("generating " + filename)
+                        file.write(rendered)
 
 
         # copy the yaml file to the build dir

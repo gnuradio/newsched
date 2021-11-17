@@ -19,7 +19,7 @@
     {%- endif -%}
 {{newvalue}}{% endmacro -%}
 id: {{module}}_{% if grc and 'id' in grc %}{{grc['id']}}{% else %}{{block}}{%endif%}
-label: '[{{module}}] {% if grc and 'label' in grc %}{{grc['label']}}{% else %}{{label if label else block}}{%endif%}'
+label: '{% if grc and 'label' in grc %}{{grc['label']}}{% else %}{{label if label else block}}{%endif%}'
 {% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
 category: '[newsched]/{{module}}'
 
@@ -52,11 +52,20 @@ parameters:
     {% if 'hide' in param %}hide: {{param['hide']}}{%endif%}
 {% endfor -%}
 {% endif -%}
+{# Add a parameter for the implementation -#}
+-   id: domain
+    label: Domain
+    dtype: enum
+    options: [{% for impl in implementations %}'{{impl['id']}}',{% endfor %}]
+    option_labels: [{% for impl in implementations %}'{{impl['id'] | upper()}}',{% endfor %}]
+    category: Advanced
+    default: '{{implementations[0]['id']}}'
+    hide: 'none'
 
 inputs:
 {% for port in ports -%}
 {% if port['direction'] == 'input'-%}
--   domain: {{port['domain']}}
+-   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif -%}
@@ -66,7 +75,7 @@ inputs:
 outputs:
 {% for port in ports -%}
 {% if port['direction'] == 'output'-%}
--   domain: {{port['domain']}}
+-   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
@@ -82,12 +91,12 @@ templates:
 {% else -%}{# Do the default template #}
 templates:
     imports: from newsched import {{module}}
-    make: {{module}}.{{block}}(
+    make: {{module}}.{{block}}{% if typekeys -%}{% for key in typekeys %}_{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
         {%- for param in parameters -%}
-          {%- if 'cotr' not in p or p['cotr'] -%}
-            {{'${'}}{{param['id']}}{{'}'}}{{',' if not loop.last}}
+          {%- if 'cotr' not in param or param['cotr'] -%}
+            {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
-        {%-endfor-%})
+        {%-endfor-%} impl={{module}}.{{block}}{% if typekeys -%}{% for key in typekeys %}_{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${domain})
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
