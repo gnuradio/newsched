@@ -3,12 +3,6 @@ block: copy
 label: Copy
 blocktype: sync_block
 
-grc:
-    flags: [ python ]
-    templates:
-        imports: from newsched import blocks
-        make: blocks.copy(${itemsize})
-
 parameters:
     - id: itemsize
       label: Item Size

@@ -3,12 +3,6 @@ block: dc_blocker
 label: Multiply Constant
 blocktype: sync_block
 
-grc:
-  flags: [python]
-  templates:
-      imports: from newsched import math
-      make: math.add_${T.fcn}(${D},${long_form})
-
 typekeys:
   - id: T
     type: class

@@ -3,14 +3,6 @@ block: vector_sink
 label: Vector Sink
 blocktype: sync_block
 
-grc:
-  flags: [python]
-  asserts:
-    - ${ vlen > 0 }
-  templates:
-      imports: from newsched import blocks
-      make: blocks.vector_sink_${T.fcn}(${vlen},${reserve_items})
-
 typekeys:
     - id: T
       type: class

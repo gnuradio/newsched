@@ -10,7 +10,7 @@ from . import _virtual_connections
 from .. import Constants
 from ..base import Element
 from ..utils.descriptors import (
-    EvaluatedFlag, EvaluatedEnum, EvaluatedPInt,
+    EvaluatedFlag, EvaluatedEnum, EvaluatedPInt, Evaluated,
     setup_names, lazy_property
 )
 
@@ -25,6 +25,7 @@ class Port(Element):
     multiplicity = EvaluatedPInt()
     hidden = EvaluatedFlag()
     optional = EvaluatedFlag()
+    domain = Evaluated(str, 'stream')
 
     def __init__(self, parent, direction, id, label='', domain=Constants.DEFAULT_DOMAIN, dtype='',
                  vlen='', multiplicity=1, optional=False, hide=False, bus_struct=None, **_):

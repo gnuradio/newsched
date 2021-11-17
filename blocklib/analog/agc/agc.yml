@@ -3,15 +3,6 @@ block: agc
 label: AGC
 blocktype: sync_block
 
-grc:
-  flags: [python]
-  asserts:
-    - ${ num_inputs > 1 }
-    - ${ vlen > 0 }
-  templates:
-      imports: from newsched import analog
-      make: analog.agc_${T.fcn}(${nports},${vlen})
-
 typekeys:
   - id: T
     type: class

@@ -6,18 +6,18 @@ blocktype: sync_block
 grc:
   flags: [python]
   templates:
-      imports: |-
-        from PyQt5 import Qt
-        from newsched import qtgui
-        from newsched.filter import firdes
-        import sip
-      make: |
-        <%
-            win = 'self._%s_win'%id
-        %>\
-        qtgui.time_sink_${T.fcn}(${size},${samp_rate},${name},${nconnections})
-        ${win} = sip.wrapinstance(self.${id}.qwidget(), Qt.QWidget)
-        ${gui_hint() % win}
+    imports: |-
+      from PyQt5 import Qt
+      from newsched import qtgui
+      from newsched.filter import firdes
+      import sip
+    make: |
+      <%
+          win = 'self._%s_win'%id
+      %>\
+      qtgui.time_sink_${T.fcn}(${size},${samp_rate},${name},${nconnections})
+      ${win} = sip.wrapinstance(self.${id}.qwidget(), Qt.QWidget)
+      ${gui_hint() % win}
 
 typekeys:
 - id: T

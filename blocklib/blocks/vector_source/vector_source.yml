@@ -3,14 +3,6 @@ block: vector_source
 label: Vector Source
 blocktype: sync_block
 
-grc:
-  flags: [python]
-  asserts:
-    - ${ vlen > 0 }
-  templates:
-      imports: from newsched import blocks
-      make: blocks.vector_source_${T.fcn}(${data},${repeat},${vlen},${tags})
-
 typekeys:
     - id: T
       type: class

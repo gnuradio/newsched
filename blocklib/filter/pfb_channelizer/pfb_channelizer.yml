@@ -3,12 +3,6 @@ block: pfb_channelizer
 label: Multiply Constant
 blocktype: block
 
-grc:
-  flags: [python]
-  templates:
-      imports: from newsched import filter
-      make: filter.pfb_channelizer_${T.fcn}(${numchans},${taps},${oversample_rate})
-
 typekeys:
   - id: T
     type: class
