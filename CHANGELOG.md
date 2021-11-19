@@ -3,6 +3,26 @@ All notable changes to newsched will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.2.0] - [UNRELEASED]
+### meson build
+- Add .gitignore explicitly where autogeneration is expected rather than a global filter
+
+### soapy
+- Restructure the code generation to allow multiple GRC files from a single block yaml
+
+### runtime
+- Allow for itemsize of 0 by default to be connected to anything
+  - This allows a, e.g., copy block to be connected with no templating or setting of the item size
+  - Blocks will take on the itemsize of the first connected block it finds
+
+### qtgui
+- Update fft and filter blocks to allow for function qtgui
+
+### grc
+- Update domain property of a port to be evaluated parameter
+- Selectable domains automatically generated from block yml
+  - Automatic in grc file generation to have enum of specified implementations as domains
+
 ## [0.1.1] - [2021.11.11]
 
 Didn't take long to require a patch from the first release
