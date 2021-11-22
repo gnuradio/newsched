@@ -1,6 +1,6 @@
 module: filter
 block: dc_blocker
-label: Multiply Constant
+label: DC Blocker
 blocktype: sync_block
 
 typekeys:
