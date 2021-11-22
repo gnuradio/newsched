@@ -66,8 +66,9 @@ inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
-    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif -%}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+    label: {{port['id']}}
 {% endif %}{% endfor %}
 
 outputs:
@@ -75,8 +76,9 @@ outputs:
 {% if port['direction'] == 'output'-%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif -%}
+    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
+    label: {{port['id']}}
 {% endif -%}
 {% endfor -%}
 
