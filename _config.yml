@@ -45,3 +45,8 @@ github_projects :
   - project :
     name : newsched
     url : https://github.com/gnuradio/newsched
+
+
+# The following is a list of files to exclude from inclusion in the
+# generated gh-pages website.
+exclude : [ README.md , version.txt , index.md ]
