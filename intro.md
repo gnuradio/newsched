@@ -4,12 +4,6 @@ title : Intro to newsched
 exclude : false  
 ---
 
-<table><tr>
-<th><b><a href="user_tutorial/01_Intro">User Tutorial</a></b></th>
-<th><b><a href="dev_tutorial/01_Intro">Developer Tutorial</a></b></th>
-</tr></table>
-
-
 Newsched is intended to be a proving ground for concepts that will eventually
 become the GNU Radio 4.0 Runtime
 
