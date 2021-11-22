@@ -60,7 +60,7 @@ class {{ block }} : virtual public {{blocktype}}
 {% macro ports(ports, parameters, typekeys) -%}
         {% for port in ports %}
         {% set porttype = get_linked_value(port['type']) -%}
-        {% if port['domain'] == 'stream' -%}
+        {% if port['domain'] != 'message' -%}
         {% if 'multiplicity' not in port%}     
         {% if port['type'] == 'untyped'%}                                  
         add_port(untyped_port::make(
