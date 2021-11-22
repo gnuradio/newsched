@@ -1,6 +1,8 @@
+---
 layout : page  
 title : Intro to newsched
 exclude : false  
+---
 
 <table><tr>
 <th><b><a href="user_tutorial/01_Intro">User Tutorial</a></b></th>
