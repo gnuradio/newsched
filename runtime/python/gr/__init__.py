@@ -13,3 +13,6 @@ try:
     buffer_cuda_properties.__init__ = buffer_cuda_properties.make
 except:
     pass
+
+# For newsched, connect and msg_connect are the same
+graph.msg_connect = graph.connect
