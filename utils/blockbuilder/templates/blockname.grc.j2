@@ -69,6 +69,7 @@ inputs:
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
+    optional: {{ port['optional'] if 'optional' in port else 'false' }}
 {% endif %}{% endfor %}
 
 outputs:
@@ -79,6 +80,7 @@ outputs:
     {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
+    optional: {{ port['optional'] if 'optional' in port else 'false' }}
 {% endif -%}
 {% endfor -%}
 
