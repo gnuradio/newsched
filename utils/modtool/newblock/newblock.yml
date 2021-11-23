@@ -11,7 +11,7 @@ parameters:
     settable: false
     default: 0
     grc:
-        hide: all
+        hide: part
 
 # Exampler Ports
 ports:

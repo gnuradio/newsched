@@ -61,6 +61,12 @@ parameters:
     category: Advanced
     default: '{{implementations[0]['id']}}'
     hide: 'none'
+-   id: showports
+    label: Show Msg Ports
+    category: Advanced
+    dtype: bool
+    default: False
+    hide: 'part'
 
 inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
@@ -71,6 +77,11 @@ inputs:
     label: {{port['id']}}
     optional: {{ port['optional'] if 'optional' in port else 'false' }}
 {% endif %}{% endfor %}
+-   domain: message
+    id: param_update
+    label: cmd
+    optional: true
+    hide: ${ not showports }
 
 outputs:
 {% for port in ports -%}
