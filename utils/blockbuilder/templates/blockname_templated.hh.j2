@@ -28,6 +28,9 @@ public:
 
 {{ macros.parameter_declarations(parameters)}} 
 
+protected:
+    {{ macros.message_ports(ports) }} 
+    
 };
 
 {%if typekeys | length == 1 -%}

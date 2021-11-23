@@ -4,7 +4,7 @@
 
 namespace gr {
 
-void block::request_parameter_change(int param_id, pmtf::wrap new_value)
+void block::request_parameter_change(int param_id, pmtf::wrap new_value, bool block)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler && d_running) {
@@ -18,9 +18,11 @@ void block::request_parameter_change(int param_id, pmtf::wrap new_value)
         p_scheduler->push_message(std::make_shared<param_change_action>(
             id(), param_action::make(param_id, new_value, 0), lam));
 
-        // block until confirmation that parameter has been set
-        std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk);
+        if (block) {
+            // block until confirmation that parameter has been set
+            std::unique_lock<std::mutex> lk(m);
+            cv.wait(lk);
+        }
     }
     // else go ahead and update parameter value
     else {

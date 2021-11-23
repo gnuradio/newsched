@@ -38,18 +38,20 @@ graph_utils::partition(graph_sptr input_graph,
                 auto edges = input_graph->find_edge(input_port);
                 // There should only be one edge connected to an input port
                 // Crossings associated with the downstream port
-                auto e = edges[0];
-                auto other_block = e->src().node();
+                if (edges.size()) {
+                    auto e = edges[0];
+                    auto other_block = e->src().node();
 
-                // Is the other block in our current partition
-                if (std::find(blocks.begin(), blocks.end(), other_block) !=
-                    blocks.end()) {
-                    g->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
-                } else {
-                    // add this edge to the list of domain crossings
-                    // domain_crossings.push_back(std::make_tuple(g,e));
-                    domain_crossings.push_back(e);
-                    crossing_confs.push_back(conf);
+                    // Is the other block in our current partition
+                    if (std::find(blocks.begin(), blocks.end(), other_block) !=
+                        blocks.end()) {
+                        g->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
+                    } else {
+                        // add this edge to the list of domain crossings
+                        // domain_crossings.push_back(std::make_tuple(g,e));
+                        domain_crossings.push_back(e);
+                        crossing_confs.push_back(conf);
+                    }
                 }
             }
         }

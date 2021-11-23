@@ -170,6 +170,7 @@ protected:
 
 {% macro parameter_instantiations(parameters) -%}
 {% if parameters -%}
+    d_param_str_map = {{"{"}} {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endif %} {% endfor -%}{{"}"}};
 {% for p in parameters -%}
 {% if p['settable'] or p['gettable']%}
     param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 

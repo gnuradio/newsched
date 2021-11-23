@@ -12,6 +12,8 @@
 #include <gnuradio/parameter.hh>
 
 #include <pmtf/wrap.hpp>
+#include <pmtf/string.hpp>
+#include <pmtf/map.hpp>
 
 namespace gr {
 
@@ -36,6 +38,8 @@ private:
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
+    std::map<std::string, int> d_param_str_map;
+    message_port_sptr _msg_param_update;
 
 public:
     /**
@@ -46,6 +50,11 @@ public:
     block(const std::string& name)
         : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
     {
+        // {# add message handler port for parameter updates#}
+        _msg_param_update = message_port::make(
+            "param_update", port_direction_t::INPUT);
+        _msg_param_update->register_callback([this](pmtf::wrap msg) { this->handle_msg_param_update(msg); });
+        add_port(_msg_param_update);
     }
     virtual ~block(){};
 
@@ -109,7 +118,7 @@ public:
     parameter_config d_parameters;
     void add_param(param_sptr p) { d_parameters.add(p); }
     pmtf::wrap request_parameter_query(int param_id);
-    void request_parameter_change(int param_id, pmtf::wrap new_value);
+    void request_parameter_change(int param_id, pmtf::wrap new_value, bool block=true);
     virtual void on_parameter_change(param_action_sptr action)
     {
         gr_log_debug(_debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
@@ -151,6 +160,25 @@ public:
 
     void set_relative_rate(double relative_rate) { d_relative_rate = relative_rate; }
     double relative_rate() const { return d_relative_rate; }
+
+    virtual int get_param_id(const std::string& id){ return d_param_str_map[id]; }
+
+    /** 
+     * Every Block should have a param update message handler
+     */
+    virtual void handle_msg_param_update(pmtf::wrap msg)
+    {
+        // Update messages are a pmtf::map with the name of 
+        // the param as the "id" field, and the pmt::wrap
+        // that holds the update as the "value" field
+
+        auto id = pmtf::get_string(pmtf::get_map<std::string>(msg)["id"]).value();
+        auto value = pmtf::get_map<std::string>(msg)["value"];
+
+        request_parameter_change(get_param_id(id),
+                                    value, false);
+        
+    }
 
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
