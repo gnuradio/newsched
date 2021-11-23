@@ -22,8 +22,8 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
         // expected_output[i] = gr_complex(k*2*i,k*2*i+1);
     }
 
-    for (auto ngroups : { 2, 4, 8 }) {
-        for (auto nblocks : { 2, 8, 16 }) {
+    for (auto ngroups : { 2, 4 }) {
+        for (auto nblocks : { 2, 4 }) {
             // for (auto nblocks : { 2, }) {
             size_t veclen = 1;
             auto src = blocks::vector_source_c::make_cpu( blocks::vector_source_c::block_args{ input_data,false});
