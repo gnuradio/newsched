@@ -18,14 +18,11 @@ flowgraph::flowgraph(const std::string& name)
         throw std::runtime_error("Unable to load default scheduler dynamically");
     }
 
-    // TODO: Make the factory method more universal for any scheduler
-    //  e.g. a json conf string or something generic interface
-    std::shared_ptr<scheduler> (*factory)(const std::string&, size_t) =
-        (std::shared_ptr<scheduler>(*)(const std::string&, size_t))dlsym(handle,
+    std::shared_ptr<scheduler> (*factory)(const std::string&) =
+        (std::shared_ptr<scheduler>(*)(const std::string&))dlsym(handle,
                                                                          "factory");
-
     // Instantiate the default scheduler
-    d_default_scheduler = factory(s_default_scheduler_name, 32768);
+    d_default_scheduler = factory("{name: nbt, buffer_size: 32768}");
     d_schedulers = { d_default_scheduler };
 }
 
