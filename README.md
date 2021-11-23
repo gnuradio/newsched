@@ -1,5 +1,9 @@
 # newsched – the final frontier #
 
+[![Make Test](https://github.com/gnuradio/gnuradio/actions/workflows/make-test.yml/badge.svg?branch=main)](https://github.com/gnuradio/newsched/actions/workflows/build_and_test.yml)
+![Version](https://img.shields.io/github/v/tag/gnuradio/newsched.svg)
+[![AUR](https://img.shields.io/github/license/gnuradio/newsched)](https://github.com/gnuradio/newsched/blob/main/COPYING)
+
 <table><tr>
 <th><b><a href="https://gnuradio.github.io/newsched/">Documentation</a></b></th>
 </tr></table>
