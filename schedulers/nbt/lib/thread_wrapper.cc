@@ -93,7 +93,7 @@ bool thread_wrapper::handle_work_notification()
 
     if (d_flushing) { 
         if (all_blkd) {
-            if (++d_flush_cnt >= 3) {
+            if (++d_flush_cnt >= 8) {
                 gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
                 d_fgmon->push_message(
                     fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
