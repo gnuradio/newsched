@@ -1,4 +1,5 @@
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <yaml-cpp/yaml.h>
 
 namespace gr {
 namespace schedulers {
@@ -116,8 +117,16 @@ void scheduler_nbt::run()
 // External plugin interface for instantiating out of tree schedulers
 // TODO: name, version, other info methods
 extern "C" {
-std::shared_ptr<gr::scheduler> factory(const std::string& name = "nbt", size_t buf_size = 32768)
+std::shared_ptr<gr::scheduler> factory(const std::string& options)
 {
+    // const std::string& name = "nbt";
+    // size_t buf_size = 32768;
+
+    auto opt_yaml = YAML::Load(options);
+
+    auto buf_size = opt_yaml["buffer_size"].as<size_t>(32768);
+    auto name = opt_yaml["name"].as<std::string>("nbt");
+
     return gr::schedulers::scheduler_nbt::make(name, buf_size);
 }
 }
