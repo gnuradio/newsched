@@ -1,6 +1,6 @@
 module: qtgui
 block: freq_sink
-label: freq_sink
+label: QT GUI Frequency Sink
 blocktype: sync_block
 
 grc:

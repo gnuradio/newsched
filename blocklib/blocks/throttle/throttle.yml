@@ -1,6 +1,6 @@
 module: blocks
 block: throttle
-label: throttle
+label: Throttle
 blocktype: sync_block
 
 parameters:
