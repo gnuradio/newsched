@@ -43,6 +43,7 @@ private:
     flowgraph_monitor_sptr d_fgmon;
 
     bool d_flushing = false;
+    int d_flush_cnt = 0;
 
 public:
     typedef std::shared_ptr<thread_wrapper> sptr;
@@ -79,7 +80,7 @@ public:
     void handle_parameter_change(std::shared_ptr<param_change_action> item);
     static void thread_body(thread_wrapper* top);
 
-    void start_flushing() { d_flushing = true; }
+    void start_flushing() { d_flushing = true; d_flush_cnt = 0;}
 };
 } // namespace schedulers
 } // namespace gr

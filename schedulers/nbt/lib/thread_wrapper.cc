@@ -93,13 +93,16 @@ bool thread_wrapper::handle_work_notification()
 
     if (d_flushing) { 
         if (all_blkd) {
-        gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
-        d_fgmon->push_message(
-            fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
-        return false;
+            if (++d_flush_cnt >= 3) {
+                gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
+                d_fgmon->push_message(
+                    fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
+                return false;
+            }
         }
         else
         {
+            d_flush_cnt = 0;
             gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
         }
     }
