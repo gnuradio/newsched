@@ -59,6 +59,9 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             fg->start();
             fg->wait();
 
+            std::cout << "ngroups: " << ngroups << ", nblocks: " << nblocks << std::endl;
+        
+            EXPECT_EQ(snk->data().size(), input_data.size());
             EXPECT_EQ(snk->data(), input_data);
         }
     }
