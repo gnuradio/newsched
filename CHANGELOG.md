@@ -9,12 +9,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### soapy
 - Restructure the code generation to allow multiple GRC files from a single block yaml
+- Generate a .grc block for RTL-SDR and HackRF
 
 ### runtime
 - Allow for itemsize of 0 by default to be connected to anything
   - This allows a, e.g., copy block to be connected with no templating or setting of the item size
   - Blocks will take on the itemsize of the first connected block it finds
-
+- More generic factory interface using yaml string for scheduler
+- Additional logic to flush the scheduler in the sequence of events when a block starts the `DONE` process
+- Blocks now have a default `param_update` message port that using a pmtf::map can change any parameter that is exposed
+  
 ### qtgui
 - Update fft and filter blocks to allow for function qtgui
 
@@ -22,6 +26,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Update domain property of a port to be evaluated parameter
 - Selectable domains automatically generated from block yml
   - Automatic in grc file generation to have enum of specified implementations as domains
+- Supports optional tags on ports
+- Port ID from the yml is rendered into the grc file
 
 ## [0.1.1] - [2021.11.11]
 
