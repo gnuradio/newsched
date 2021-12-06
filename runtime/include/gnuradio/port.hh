@@ -1,8 +1,8 @@
 #pragma once
 
+#include <gnuradio/buffer.hh>
 #include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/parameter_types.hh>
-#include <gnuradio/buffer.hh>
 #include <algorithm>
 #include <string>
 #include <typeindex>
@@ -107,8 +107,15 @@ public:
     auto& connected_ports() { return _connected_ports; }
 
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
-    std::string format_descriptor() { return  parameter_functions::get_format_descriptor(
-                        _data_type);}
+    std::string format_descriptor()
+    {
+        if (_format_descriptor != "") {
+            return _format_descriptor;
+        } else {
+            return parameter_functions::get_format_descriptor(_data_type);
+        }
+    }
+    void set_format_descriptor(const std::string& fd) { _format_descriptor = fd; }
     void set_buffer(buffer_sptr buffer) { _buffer = buffer; }
     buffer_sptr buffer() { return _buffer; }
     void set_buffer_reader(buffer_reader_sptr rdr) { _buffer_reader = rdr; }
@@ -120,7 +127,7 @@ public:
             p->push_message(msg);
         }
 
-        // FIXME: To achieve maximum performance, we need to stimulate our own 
+        // FIXME: To achieve maximum performance, we need to stimulate our own
         //  thread by pushing messages into the queue and causing the next
         //  call to work() to be immediately evaluated
         // Without this, performance is significantly worse than the GR TPB
@@ -146,7 +153,8 @@ public:
             std::find_if(std::begin(_connected_ports), std::end(_connected_ports), pred);
 
         if (it == std::end(_connected_ports)) {
-            _connected_ports.push_back(other_port); // only connect if it is not already in there
+            _connected_ports.push_back(
+                other_port); // only connect if it is not already in there
         }
     }
 
@@ -163,13 +171,14 @@ protected:
     int _multiplicity; // port can be replicated as in grc
     size_t _datasize;
     size_t _itemsize; // data size across all dims
+    std::string _format_descriptor = "";
 
     std::vector<sptr> _connected_ports;
     neighbor_interface_sptr _parent_intf = nullptr;
     buffer_sptr _buffer = nullptr;
     buffer_reader_sptr _buffer_reader = nullptr;
 
-    block *_parent_block = nullptr;
+    block* _parent_block = nullptr;
 };
 
 typedef port_base::sptr port_sptr;
@@ -188,18 +197,18 @@ template <class T>
 class port : public port_base
 {
 public:
-    static std::shared_ptr<port<T>>
-    make(const std::string& name,
-         const port_direction_t direction,
-         const std::vector<size_t>& dims = {1},
-         const bool optional = false,
-         const int multiplicity = 1)
+    static std::shared_ptr<port<T>> make(const std::string& name,
+                                         const port_direction_t direction,
+                                         const std::vector<size_t>& dims = { 1 },
+                                         const bool optional = false,
+                                         const int multiplicity = 1)
     {
-        return std::shared_ptr<port<T>>(new port<T>(name, direction, dims, optional, multiplicity));
+        return std::shared_ptr<port<T>>(
+            new port<T>(name, direction, dims, optional, multiplicity));
     }
     port(const std::string& name,
          const port_direction_t direction,
-         const std::vector<size_t>& dims = {1},
+         const std::vector<size_t>& dims = { 1 },
          const bool optional = false,
          const int multiplicity = 1)
         : port_base(name,
@@ -240,7 +249,8 @@ public:
                  const size_t itemsize,
                  const bool optional = false,
                  const int multiplicity = 1)
-        : port_base(name, direction, itemsize, port_type_t::STREAM, optional, multiplicity)
+        : port_base(
+              name, direction, itemsize, port_type_t::STREAM, optional, multiplicity)
     {
     }
 };

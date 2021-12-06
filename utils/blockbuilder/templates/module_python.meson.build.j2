@@ -8,14 +8,14 @@ fs = import('fs')
 if fs.exists('bindings/meson.build')
 subdir('bindings')
 endif
-srcs = ['__init__.py']
+srcs = files('__init__.py') + {{module}}_pure_python_sources
 
-foreach s: srcs
-configure_file(copy: true,
-    input: s,
-    output: s
-)
-endforeach
+# foreach s: srcs
+# configure_file(copy: true,
+#     input: s,
+#     output: s
+# )
+# endforeach
 
 d = {
   'blocks' : {{module}}_pybind_names,

@@ -24,7 +24,7 @@ from .runtime_python import python_block, python_sync_block
 
 def pointer_to_ndarray(addr, typestr, dims, nitems):
     shape = dims
-    if shape[-1] == 1:
+    if len(shape) > 0 and shape[-1] == 1:
         shape = shape[:-1]
     shape = (nitems,) + tuple(shape)
     class array_like(object):
@@ -86,7 +86,6 @@ class sync_block(python_sync_block):
             ctypes.py_object, ctypes.c_char_p]
 
         port = self.get_port(index, gr.STREAM, gr.INPUT)
-
         return pointer_to_ndarray(
                 ctypes.pythonapi.PyCapsule_GetPointer(work_input[index].raw_items(), None),
                 port.format_descriptor(),
