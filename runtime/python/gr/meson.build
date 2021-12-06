@@ -1,7 +1,10 @@
 
 subdir('bindings')
 
-srcs = ['__init__.py']
+srcs = [
+    '__init__.py',
+    'gateway.py'
+    ]
 foreach s: srcs
 configure_file(copy: true,
     input: s,
@@ -9,4 +12,4 @@ configure_file(copy: true,
 )
 endforeach
 
-py3_inst.install_sources(files('__init__.py'), subdir : join_paths('newsched','gr'))
+py3_inst.install_sources(files(srcs), subdir : join_paths('newsched','gr'))

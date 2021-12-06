@@ -21,6 +21,26 @@ std::map<param_type_t, std::type_index> parameter_functions::param_type_index_ma
     { param_type_t::VOID, typeid(void) }
 };
 
+std::map<param_type_t, std::string> parameter_functions::param_type_format_map = {
+    { param_type_t::FLOAT, "f" },
+    { param_type_t::DOUBLE, "d" },
+    { param_type_t::CFLOAT, "Zf" },
+    { param_type_t::CDOUBLE, "Zd" },
+    { param_type_t::INT8, "b" },
+    { param_type_t::INT16, "h" },
+    { param_type_t::INT32, "i" },
+    { param_type_t::INT64, "q" },
+    { param_type_t::UINT8, "B" },
+    { param_type_t::UINT16, "H" },
+    { param_type_t::UINT32, "I" },
+    { param_type_t::UINT64, "Q" },
+    { param_type_t::BOOL, "?" },
+    { param_type_t::ENUM, "Q" }, //??
+    { param_type_t::STRING, "s" },
+    { param_type_t::VOID, "p" }
+};
+
+
 std::map<std::type_index, param_type_t> parameter_functions::param_index_type_map = {
     { std::type_index(typeid(float)), param_type_t::FLOAT },
     { std::type_index(typeid(double)), param_type_t::DOUBLE },
@@ -63,9 +83,14 @@ size_t parameter_functions::param_size_info(param_type_t p)
 {
     return param_type_size_map[p];
 }
+
 param_type_t parameter_functions::get_param_type_from_typeinfo(std::type_index t)
 {
     return param_index_type_map[t];
 }
 
+std::string parameter_functions::get_format_descriptor(param_type_t p)
+{
+    return param_type_format_map[p];
+}
 } // namespace gr

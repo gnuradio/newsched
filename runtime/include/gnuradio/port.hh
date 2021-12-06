@@ -28,7 +28,7 @@ class block;
  * Holds the necessary information to describe the port to the runtime
  *
  */
-class port_base : std::enable_shared_from_this<port_base>
+class port_base : public std::enable_shared_from_this<port_base>
 {
 
 public:
@@ -107,6 +107,8 @@ public:
     auto& connected_ports() { return _connected_ports; }
 
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
+    std::string format_descriptor() { return  parameter_functions::get_format_descriptor(
+                        _data_type);}
     void set_buffer(buffer_sptr buffer) { _buffer = buffer; }
     buffer_sptr buffer() { return _buffer; }
     void set_buffer_reader(buffer_reader_sptr rdr) { _buffer_reader = rdr; }
@@ -189,7 +191,7 @@ public:
     static std::shared_ptr<port<T>>
     make(const std::string& name,
          const port_direction_t direction,
-         const std::vector<size_t>& dims = std::vector<size_t>(),
+         const std::vector<size_t>& dims = {1},
          const bool optional = false,
          const int multiplicity = 1)
     {
@@ -197,7 +199,7 @@ public:
     }
     port(const std::string& name,
          const port_direction_t direction,
-         const std::vector<size_t>& dims = std::vector<size_t>(),
+         const std::vector<size_t>& dims = {1},
          const bool optional = false,
          const int multiplicity = 1)
         : port_base(name,
