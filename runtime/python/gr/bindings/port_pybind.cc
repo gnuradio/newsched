@@ -54,6 +54,12 @@ void bind_port(py::module& m)
 
     py::class_<untyped_port, port_base, std::shared_ptr<untyped_port>>(
         m, "untyped_port")
+        .def(py::init(&untyped_port::make),
+             py::arg("name"), 
+             py::arg("direction"), 
+             py::arg("itemsize"),
+             py::arg("optional")=false, 
+             py::arg("multiplicity")=1)
         ;
         
 
