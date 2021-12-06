@@ -33,13 +33,13 @@ moving_average_cpu<T>::moving_average_cpu(
 
 template <class T>
 work_return_code_t
-moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                            std::vector<block_work_output_sptr>& work_output)
 {
-    if (work_input[0].n_items < (int) d_length)
+    if (work_input[0]->n_items < (int) d_length)
     {
-        work_output[0].n_produced = 0;
-        work_input[0].n_consumed = 0;
+        work_output[0]->n_produced = 0;
+        work_input[0]->n_consumed = 0;
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
@@ -47,18 +47,18 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
         d_length = d_new_length;
         d_scale = d_new_scale;
         d_updated = false;
-        work_output[0].n_produced = 0;
-        work_input[0].n_consumed = 0;
+        work_output[0]->n_produced = 0;
+        work_input[0]->n_consumed = 0;
         return work_return_code_t::WORK_OK;
     }
 
-    auto in = work_input[0].items<T>();
-    auto out = work_output[0].items<T>();
+    auto in = work_input[0]->items<T>();
+    auto out = work_output[0]->items<T>();
 
-    size_t noutput_items = std::min( (int) ( work_input[0].n_items - d_length ), work_output[0].n_items);
+    size_t noutput_items = std::min( (int) ( work_input[0]->n_items - d_length ), work_output[0]->n_items);
 
     auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
-    auto tr = work_input[0].buffer->total_read();
+    auto tr = work_input[0]->buffer->total_read();
 
     if (tr == 0) { // for the first no history case
         for (size_t i = 0; i < num_iter; i++) {
@@ -82,8 +82,8 @@ moving_average_cpu<T>::work(std::vector<block_work_input>& work_input,
     }
 
     // don't consume the last d_length-1 samples
-    work_output[0].n_produced = num_iter;
-    work_input[0].n_consumed = tr == 0 ? num_iter - (d_length - 1) : num_iter;
+    work_output[0]->n_produced = num_iter;
+    work_input[0]->n_consumed = tr == 0 ? num_iter - (d_length - 1) : num_iter;
     return work_return_code_t::WORK_OK;
 } // namespace filter
 

@@ -28,11 +28,11 @@ stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
 }
 
 work_return_code_t
-stream_to_streams_cuda::work(std::vector<block_work_input>& work_input,
-                             std::vector<block_work_output>& work_output)
+stream_to_streams_cuda::work(std::vector<block_work_input_sptr>& work_input,
+                             std::vector<block_work_output_sptr>& work_output)
 {
-    auto noutput_items = work_output[0].n_items;
-    auto ninput_items = work_input[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
+    auto ninput_items = work_input[0]->n_items;
     size_t nstreams = work_output.size();
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
@@ -40,7 +40,7 @@ stream_to_streams_cuda::work(std::vector<block_work_input>& work_input,
     d_out_items = block_work_output::all_items(work_output);
 
     p_kernel->launch_default_occupancy(
-        { work_input[0].items<uint8_t>() }, d_out_items, d_itemsize * total_items * nstreams);
+        { work_input[0]->items<uint8_t>() }, d_out_items, d_itemsize * total_items * nstreams);
     cudaStreamSynchronize(d_stream);
 
     produce_each(total_items, work_output);

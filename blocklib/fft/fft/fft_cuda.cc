@@ -76,13 +76,13 @@ void fft_cuda<float, false>::fft_and_shift(const float* in, gr_complex* out, int
 }
 
 template <class T, bool forward>
-work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input>& work_input,
-                                              std::vector<block_work_output>& work_output)
+work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
+                                              std::vector<block_work_output_sptr>& work_output)
 {
 
-    auto in = work_input[0].items<T>();
-    auto out = work_output[0].items<gr_complex>();
-    auto noutput_items = work_output[0].n_items;
+    auto in = work_input[0]->items<T>();
+    auto out = work_output[0]->items<gr_complex>();
+    auto noutput_items = work_output[0]->n_items;
 
     // int count = 0;
 
@@ -96,7 +96,7 @@ work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input>& wor
     // cudaMemcpy(host_out, out, d_fft_size*sizeof(T), cudaMemcpyDeviceToHost);
 
     cudaStreamSynchronize(d_stream);
-    work_output[0].n_produced = noutput_items;
+    work_output[0]->n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 

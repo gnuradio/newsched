@@ -23,50 +23,50 @@ multiply_const_cpu<T>::multiply_const_cpu(const typename multiply_const<T>::bloc
 
 template <>
 work_return_code_t
-multiply_const_cpu<float>::work(std::vector<block_work_input>& work_input,
-                                std::vector<block_work_output>& work_output)
+multiply_const_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
+                                std::vector<block_work_output_sptr>& work_output)
 {
     auto k = multiply_const<float>::param_k->value();
 
-    auto in = work_input[0].items<float>();
-    auto out = work_output[0].items<float>();
-    int noi = work_output[0].n_items * d_vlen;
+    auto in = work_input[0]->items<float>();
+    auto out = work_output[0]->items<float>();
+    int noi = work_output[0]->n_items * d_vlen;
 
     volk_32f_s32f_multiply_32f(out, in, k, noi);
 
-    work_output[0].n_produced = work_output[0].n_items;
+    work_output[0]->n_produced = work_output[0]->n_items;
     return work_return_code_t::WORK_OK;
 }
 
 template <>
 work_return_code_t
-multiply_const_cpu<gr_complex>::work(std::vector<block_work_input>& work_input,
-                                     std::vector<block_work_output>& work_output)
+multiply_const_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
+                                     std::vector<block_work_output_sptr>& work_output)
 {
     auto k = multiply_const<gr_complex>::param_k->value();
 
-    const auto in = work_input[0].items<gr_complex>();
-    auto out = work_output[0].items<gr_complex>();
-    int noi = work_output[0].n_items * d_vlen;
+    const auto in = work_input[0]->items<gr_complex>();
+    auto out = work_output[0]->items<gr_complex>();
+    int noi = work_output[0]->n_items * d_vlen;
 
     volk_32fc_s32fc_multiply_32fc(out, in, k, noi);
 
-    work_output[0].n_produced = work_output[0].n_items;
+    work_output[0]->n_produced = work_output[0]->n_items;
     return work_return_code_t::WORK_OK;
 }
 
 template <class T>
 work_return_code_t
-multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+multiply_const_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                            std::vector<block_work_output_sptr>& work_output)
 {
     auto k = multiply_const<T>::param_k->value();
 
     // Pre-generate these from modtool, for example
-    auto iptr = work_input[0].items<T>();
-    auto optr = work_output[0].items<T>();
+    auto iptr = work_input[0]->items<T>();
+    auto optr = work_output[0]->items<T>();
 
-    int size = work_output[0].n_items * d_vlen;
+    int size = work_output[0]->n_items * d_vlen;
 
     while (size >= 8) {
         *optr++ = *iptr++ * k;
@@ -83,8 +83,8 @@ multiply_const_cpu<T>::work(std::vector<block_work_input>& work_input,
     while (size-- > 0)
         *optr++ = *iptr++ * k;
 
-    work_output[0].n_produced = work_output[0].n_items;
-    work_input[0].n_consumed = work_input[0].n_items;
+    work_output[0]->n_produced = work_output[0]->n_items;
+    work_input[0]->n_consumed = work_input[0]->n_items;
     return work_return_code_t::WORK_OK;
 }
 

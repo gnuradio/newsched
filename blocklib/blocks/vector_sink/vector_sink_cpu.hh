@@ -11,8 +11,8 @@ class vector_sink_cpu : public vector_sink<T>
 public:
     vector_sink_cpu(const typename vector_sink<T>::block_args& args);
     
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) override;
+    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output) override;
 
     std::vector<T> data()
     {

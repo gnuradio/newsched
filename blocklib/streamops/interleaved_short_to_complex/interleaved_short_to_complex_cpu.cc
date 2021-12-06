@@ -27,13 +27,13 @@ void interleaved_short_to_complex_cpu::set_scale_factor(float new_value)
 }
 
 work_return_code_t
-interleaved_short_to_complex_cpu::work(std::vector<block_work_input>& work_input,
-                                       std::vector<block_work_output>& work_output)
+interleaved_short_to_complex_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                                       std::vector<block_work_output_sptr>& work_output)
 {
-    auto in = work_input[0].items<short>();
-    auto out = work_output[0].items<float>();
+    auto in = work_input[0]->items<short>();
+    auto out = work_output[0]->items<float>();
 
-    auto noutput_items = work_output[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
 
     // This calculates in[] * 1.0 / d_scalar
     volk_16i_s32f_convert_32f(out, in, d_scalar, 2 * noutput_items);
@@ -46,7 +46,7 @@ interleaved_short_to_complex_cpu::work(std::vector<block_work_input>& work_input
         }
     }
 
-    work_output[0].n_produced = noutput_items;
+    work_output[0]->n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 

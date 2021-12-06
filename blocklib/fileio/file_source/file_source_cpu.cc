@@ -230,11 +230,11 @@ void file_source_cpu::do_update()
 
 void file_source_cpu::set_begin_tag(pmtf::wrap val) { d_add_begin_tag = val; }
 
-work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_input,
-                                  std::vector<block_work_output>& work_output)
+work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                                  std::vector<block_work_output_sptr>& work_output)
 {
-    auto out = work_output[0].items<uint8_t>();
-    auto noutput_items = work_output[0].n_items;
+    auto out = work_output[0]->items<uint8_t>();
+    auto noutput_items = work_output[0]->n_items;
     uint64_t size = noutput_items;
 
     do_update(); // update d_fp is reqd
@@ -245,7 +245,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
 
     // No items remaining - all done
     if (d_items_remaining == 0) {
-        work_output[0].n_produced = 0;
+        work_output[0]->n_produced = 0;
         return work_return_code_t::WORK_DONE;
     }
 
@@ -253,7 +253,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
 
         // Add stream tag whenever the file starts again
         if (d_file_begin && d_add_begin_tag != nullptr) {
-            work_output[0].buffer->add_tag(work_output[0].buffer->total_written() +
+            work_output[0]->buffer->add_tag(work_output[0]->buffer->total_written() +
                                                noutput_items - size,
                                            d_add_begin_tag,
                                            pmtf::scalar<int64_t>(d_repeat_cnt),
@@ -302,7 +302,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input>& work_inp
         }
     }
 
-    work_output[0].n_produced = (noutput_items - size);
+    work_output[0]->n_produced = (noutput_items - size);
     return work_return_code_t::WORK_OK;
 }
 

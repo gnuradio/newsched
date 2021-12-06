@@ -53,13 +53,13 @@ pfb_channelizer_cuda<T>::pfb_channelizer_cuda(
 
 template <class T>
 work_return_code_t
-pfb_channelizer_cuda<T>::work(std::vector<block_work_input>& work_input,
-                              std::vector<block_work_output>& work_output)
+pfb_channelizer_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
+                              std::vector<block_work_output_sptr>& work_output)
 {
     // std::scoped_lock guard(d_mutex);
 
-    auto noutput_items = work_output[0].n_items;
-    auto ninput_items = work_input[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
+    auto ninput_items = work_input[0]->n_items;
 
     if ((size_t)ninput_items < noutput_items * d_nchans + d_overlap)
     {
