@@ -60,6 +60,13 @@ runtime_sources = [
   'buffer_cpu_vmcirc_mmap_shm_open.cc'
 ]
 
+if (pybind11_dep.found() and get_option('enable_python'))
+runtime_sources += [
+  'python_block.cc'
+]
+runtime_deps += [python3_dep, python3_embed_dep, pybind11_dep]
+endif
+
 cpp_args = []
 compiler = meson.get_compiler('cpp')
 if compiler.has_header('sys/time.h')

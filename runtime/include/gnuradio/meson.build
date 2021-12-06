@@ -34,7 +34,8 @@ runtime_headers = [
     'types.hh',
     'buffer_cpu_vmcirc.hh',
     'helper_cuda.h',
-    'helper_string.h'
+    'helper_string.h',
+    'python_block.hh'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')

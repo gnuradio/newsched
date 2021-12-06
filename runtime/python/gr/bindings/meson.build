@@ -1,5 +1,6 @@
 runtime_pybind_sources = files([
     'block_work_io_pybind.cc',
+    'port_pybind.cc',
     'tag_pybind.cc',
     'block_pybind.cc',
     'node_pybind.cc',
@@ -12,7 +13,8 @@ runtime_pybind_sources = files([
     'buffer_pybind.cc',
     'domain_pybind.cc',
     'buffer_cpu_vmcirc_pybind.cc',
-    'constants_pybind.cc'
+    'constants_pybind.cc',
+    'python_block_pybind.cc'
  ] )
 
 cpp_args = []

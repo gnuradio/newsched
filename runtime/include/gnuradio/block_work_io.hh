@@ -26,6 +26,7 @@ struct block_work_input {
 
     template <typename T>
     const T* items() const { return static_cast<const T*>(buffer->read_ptr()); }
+    const void * raw_items() const { return buffer->read_ptr(); }
 
     uint64_t nitems_read() { return buffer->total_read(); }
 
@@ -68,6 +69,7 @@ struct block_work_output {
 
     template <typename T>
     T* items() const { return static_cast<T*>(buffer->write_ptr()); }
+    void * raw_items() const { return buffer->write_ptr(); }
 
     uint64_t nitems_written() { return buffer->total_written(); }
     void produce(int num) { n_produced = num; }

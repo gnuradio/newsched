@@ -8,6 +8,8 @@ except ImportError:
     __path__.append(os.path.join(dirname, "bindings"))
     from .runtime_python import *
 
+from .gateway import block, sync_block #, decim_block, interp_block
+
 # CUDA specific python code will exception out as these objects aren't compiled in
 try:
     buffer_cuda_properties.__init__ = buffer_cuda_properties.make

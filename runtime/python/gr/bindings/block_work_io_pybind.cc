@@ -31,12 +31,18 @@ void bind_block_work_io(py::module& m)
         .def_readwrite("n_items", &gr::block_work_output::n_items)
         .def_readwrite("buffer", &gr::block_work_output::buffer)
         .def_readwrite("n_produced", &gr::block_work_output::n_produced)
+
+        .def("raw_items", &gr::block_work_output::raw_items)
+        .def("produce", &gr::block_work_output::produce)
     ;
 
     py::class_<gr::block_work_input, std::shared_ptr<gr::block_work_input>>(m, "block_work_input")
         .def_readwrite("n_items", &gr::block_work_input::n_items)
         .def_readwrite("buffer", &gr::block_work_input::buffer)
         .def_readwrite("n_consumed", &gr::block_work_input::n_consumed)
+
+        .def("raw_items", &gr::block_work_input::raw_items)
+        .def("consume", &gr::block_work_input::consume)
     ;
 
 }

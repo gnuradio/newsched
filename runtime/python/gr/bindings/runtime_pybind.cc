@@ -14,9 +14,13 @@
 #include <gnuradio/types.hh>
 #include <numpy/arrayobject.h>
 
+#include <gnuradio/block_work_io.hh>
+#include <vector>
+
 namespace py = pybind11;
 
 void bind_tag(py::module&);
+void bind_port(py::module&);
 void bind_block_work_io(py::module&);
 void bind_node(py::module&);
 void bind_block(py::module&);
@@ -29,6 +33,7 @@ void bind_buffer(py::module&);
 void bind_vmcircbuf(py::module&);
 void bind_domain(py::module&);
 void bind_constants(py::module&);
+void bind_python_block(py::module&);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
 void bind_buffer_cuda_pinned(py::module&);
@@ -56,6 +61,7 @@ PYBIND11_MODULE(runtime_python, m)
 
     bind_tag(m);
     bind_block_work_io(m);
+    bind_port(m);
     bind_node(m);
     bind_block(m);
     bind_sync_block(m);
@@ -67,6 +73,7 @@ PYBIND11_MODULE(runtime_python, m)
     bind_buffer(m);
     bind_vmcircbuf(m);
     bind_constants(m);
+    bind_python_block(m);
     
     #ifdef HAVE_CUDA
     bind_buffer_cuda(m);
