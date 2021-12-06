@@ -3,8 +3,13 @@ subdir('bindings')
 
 srcs = [
     '__init__.py',
-    'gateway.py'
+    'gateway_numpy.py'
     ]
+
+if USE_CUDA
+    srcs += 'gateway_cupy.py'
+endif
+
 foreach s: srcs
 configure_file(copy: true,
     input: s,

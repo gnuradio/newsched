@@ -23,7 +23,6 @@ class add_2_f32_1_f32(gr.sync_block):
         self.add_port(gr.port_f("out", gr.OUTPUT, dims))
 
     def work(self, inputs, outputs):
-        print('work')
         noutput_items = outputs[0].n_items
         
         outputs[0].produce(noutput_items)
@@ -32,8 +31,6 @@ class add_2_f32_1_f32(gr.sync_block):
         inbuf2 = self.get_input_array(inputs, 1)
         outbuf1 = self.get_output_array(outputs, 0)
 
-        print(inbuf1)
-        print(inbuf2)
         outbuf1[:] = inbuf1 + inbuf2
 
         return gr.work_return_t.WORK_OK
