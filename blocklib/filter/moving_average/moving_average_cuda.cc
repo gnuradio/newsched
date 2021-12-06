@@ -39,24 +39,24 @@ moving_average_cuda<T>::moving_average_cuda(
 
 template <class T>
 work_return_code_t
-moving_average_cuda<T>::work(std::vector<block_work_input>& work_input,
-                             std::vector<block_work_output>& work_output)
+moving_average_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
+                             std::vector<block_work_output_sptr>& work_output)
 {
-    if (work_input[0].n_items < (int)d_length) {
-        work_output[0].n_produced = 0;
-        work_input[0].n_consumed = 0;
+    if (work_input[0]->n_items < (int)d_length) {
+        work_output[0]->n_produced = 0;
+        work_input[0]->n_consumed = 0;
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
-    auto in = work_input[0].items<T>();
-    auto out = work_output[0].items<T>();
+    auto in = work_input[0]->items<T>();
+    auto out = work_output[0]->items<T>();
 
     size_t noutput_items =
-        std::min((int)(work_input[0].n_items), work_output[0].n_items);
+        std::min((int)(work_input[0]->n_items), work_output[0]->n_items);
 
     // auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
     auto num_iter = noutput_items;
-    auto tr = work_input[0].buffer->total_read();
+    auto tr = work_input[0]->buffer->total_read();
 
     if (tr == 0) {
         p_kernel_full->launch_default_occupancy({ in }, { out }, num_iter);
@@ -65,8 +65,8 @@ moving_average_cuda<T>::work(std::vector<block_work_input>& work_input,
     }
 
     // don't consume the last d_length-1 samples
-    work_output[0].n_produced = tr == 0 ? num_iter : num_iter - (d_length - 1);
-    work_input[0].n_consumed =
+    work_output[0]->n_produced = tr == 0 ? num_iter : num_iter - (d_length - 1);
+    work_input[0]->n_consumed =
         tr == 0 ? num_iter - (d_length - 1) : num_iter - (d_length - 1);
     return work_return_code_t::WORK_OK;
 } // namespace filter

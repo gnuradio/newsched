@@ -25,13 +25,13 @@ vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_a
 
 
 template <class T>
-work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                          std::vector<block_work_output>& work_output)
+work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                          std::vector<block_work_output_sptr>& work_output)
 {
 
     // size_t noutput_ports = work_output.size(); // is 1 for this block
-    int noutput_items = work_output[0].n_items;
-    auto optr = work_output[0].items<T>();
+    int noutput_items = work_output[0]->n_items;
+    auto optr = work_output[0]->items<T>();
 
     if (d_repeat) {
         unsigned int size = d_data.size();
@@ -48,12 +48,12 @@ work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& wor
 
         d_offset = offset;
 
-        work_output[0].n_produced = noutput_items;
+        work_output[0]->n_produced = noutput_items;
         return work_return_code_t::WORK_OK;
 
     } else {
         if (d_offset >= d_data.size()) {
-            work_output[0].n_produced = 0;
+            work_output[0]->n_produced = 0;
             return work_return_code_t::WORK_DONE; // Done!
         }
 
@@ -63,7 +63,7 @@ work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input>& wor
         }
         d_offset += n;
 
-        work_output[0].n_produced = n / d_vlen;
+        work_output[0]->n_produced = n / d_vlen;
         return work_return_code_t::WORK_OK;
     }
 }

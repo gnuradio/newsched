@@ -94,8 +94,8 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output)
+    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output)
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
@@ -108,8 +108,8 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t do_work(std::vector<block_work_input>& work_input,
-                                       std::vector<block_work_output>& work_output)
+    virtual work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
+                                       std::vector<block_work_output_sptr>& work_output)
     {
         return work(work_input, work_output);
     };
@@ -133,17 +133,17 @@ public:
         action->set_pmt_value(param->pmt_value());
     }
 
-    void consume_each(int num, std::vector<block_work_input>& work_input)
+    void consume_each(int num, std::vector<block_work_input_sptr>& work_input)
     {
         for (auto& input : work_input) {
-            input.consume(num);
+            input->consume(num);
         }
     }
 
-    void produce_each(int num, std::vector<block_work_output>& work_output)
+    void produce_each(int num, std::vector<block_work_output_sptr>& work_output)
     {
         for (auto& output : work_output) {
-            output.produce(num);
+            output->produce(num);
         }
     }
 

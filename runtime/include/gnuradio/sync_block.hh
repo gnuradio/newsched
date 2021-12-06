@@ -40,16 +40,16 @@ public:
      * @param work_output
      * @return work_return_code_t
      */
-    work_return_code_t do_work(std::vector<block_work_input>& work_input,
-                               std::vector<block_work_output>& work_output)
+    work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
+                               std::vector<block_work_output_sptr>& work_output)
     {
         // Check all inputs and outputs have the same number of items
         int min_num_items = std::numeric_limits<int>::max();
         for (auto& w : work_input) {
-            min_num_items = std::min(min_num_items, w.n_items);
+            min_num_items = std::min(min_num_items, w->n_items);
         }
         for (auto& w : work_output) {
-            min_num_items = std::min(min_num_items, w.n_items);
+            min_num_items = std::min(min_num_items, w->n_items);
         }
 
         if (output_multiple_set())
@@ -59,14 +59,14 @@ public:
 
         // all inputs and outputs need to be fixed to the absolute min
         for (auto& w : work_input) {
-            w.n_items = min_num_items;
+            w->n_items = min_num_items;
         }
         for (auto& w : work_output) {
-            w.n_items = min_num_items;
+            w->n_items = min_num_items;
         }
 
         for (auto& w : work_output) {
-            if (w.n_items < output_multiple())
+            if (w->n_items < output_multiple())
             {
                 return work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS;
             }
@@ -82,10 +82,10 @@ public:
         bool allsame = true;
         for (auto& w : work_output) {
             if (firsttime) {
-                n_produced = w.n_produced;
+                n_produced = w->n_produced;
                 firsttime = false;
             }
-            if (n_produced != w.n_produced) {
+            if (n_produced != w->n_produced) {
                 allsame = false;
                 break;
             }
@@ -98,7 +98,7 @@ public:
         // by definition of a sync block the n_consumed must be equal to n_produced
         // also, a sync block must consume all of its items
         for (auto& w : work_input) {
-            w.n_consumed = n_produced < 0 ? w.n_items : n_produced;
+            w->n_consumed = n_produced < 0 ? w->n_items : n_produced;
         }
 
         return ret;

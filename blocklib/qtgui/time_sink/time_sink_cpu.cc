@@ -317,10 +317,10 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
 
 
 template <>
-work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input>& work_input,
-                                              std::vector<block_work_output>& work_output)
+work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
+                                              std::vector<block_work_output_sptr>& work_output)
 {
-    auto noutput_items = work_input[0].n_items; // need to check across all inputs
+    auto noutput_items = work_input[0]->n_items; // need to check across all inputs
 
     unsigned int n = 0, idx = 0;
     const float* in;
@@ -347,7 +347,7 @@ work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input>& wor
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections; n++) {
-        in = work_input[idx].items<float>();
+        in = work_input[idx]->items<float>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(float));
         // volk_32f_convert_64f(&d_buffers[n][d_index],
@@ -393,10 +393,10 @@ work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input>& wor
 
 
 template <class T>
-work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                          std::vector<block_work_output>& work_output)
+work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                          std::vector<block_work_output_sptr>& work_output)
 {
-    auto noutput_items = work_input[0].n_items; // need to check across all inputs
+    auto noutput_items = work_input[0]->n_items; // need to check across all inputs
 
     unsigned int n = 0, idx = 0;
     const T* in;
@@ -423,7 +423,7 @@ work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input>& work_in
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections / 2; n++) {
-        in = work_input[idx].items<T>();
+        in = work_input[idx]->items<T>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(T));
         // volk_32f_convert_64f(&d_buffers[n][d_index],

@@ -23,16 +23,16 @@ vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& a
 }
 
 template <class T>
-work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                        std::vector<block_work_output>& work_output)
+work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                        std::vector<block_work_output_sptr>& work_output)
 {
-    auto iptr = work_input[0].items<T>();
-    int noutput_items = work_input[0].n_items;
+    auto iptr = work_input[0]->items<T>();
+    int noutput_items = work_input[0]->n_items;
 
     for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
         d_data.push_back(iptr[i]);
 
-    work_input[0].n_consumed = noutput_items;
+    work_input[0]->n_consumed = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 

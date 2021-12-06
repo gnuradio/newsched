@@ -25,12 +25,12 @@ bool throttle_cpu::start()
     return block::start();
 }
 
-work_return_code_t throttle_cpu::work(std::vector<block_work_input>& work_input,
-                                      std::vector<block_work_output>& work_output)
+work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                                      std::vector<block_work_output_sptr>& work_output)
 {
     // check for updated rx_rate tag
     // if (!d_ignore_tags) {
-    // uint64_t abs_N = work_input[0].n_items_read;
+    // uint64_t abs_N = work_input[0]->n_items_read;
     // std::vector<tag_t> all_tags;
     // get_tags_in_range(all_tags, 0, abs_N, abs_N + noutput_items);
     // for (const auto& tag : all_tags) {
@@ -42,10 +42,10 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input>& work_input,
     // }
 
     // copy all samples output[i] <= input[i]
-    auto in = work_input[0].items<uint8_t>();
-    auto out = work_output[0].items<uint8_t>();
+    auto in = work_input[0]->items<uint8_t>();
+    auto out = work_output[0]->items<uint8_t>();
 
-    auto noutput_items = work_output[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
 
     d_total_samples += noutput_items;
 
@@ -75,8 +75,8 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input>& work_input,
 
     // TODO: blocks like throttle shouldn't need to do a memcpy, but this would have to be
     // fixed in the buffering model and a special port type
-    std::memcpy(out, in, n * work_output[0].buffer->item_size());
-    work_output[0].n_produced = n;
+    std::memcpy(out, in, n * work_output[0]->buffer->item_size());
+    work_output[0]->n_produced = n;
     return work_return_code_t::WORK_OK;
 }
 

@@ -14,8 +14,8 @@ public:
         : sync_block("agc"), agc<T>(args), kernel::agc<T>(args.rate, args.reference, args.gain, 65536)
     {
     }
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) override;
+    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
 };

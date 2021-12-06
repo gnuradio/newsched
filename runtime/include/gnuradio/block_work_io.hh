@@ -13,6 +13,7 @@ namespace gr {
  *
  */
 struct block_work_input {
+    typedef std::shared_ptr<block_work_input> sptr;
     int n_items;
     buffer_reader_sptr buffer;
     int n_consumed =
@@ -36,22 +37,25 @@ struct block_work_input {
     }
 
     static std::vector<const void*>
-    all_items(const std::vector<block_work_input>& work_inputs)
+    all_items(const std::vector<sptr>& work_inputs)
     {
         std::vector<const void*> ret(work_inputs.size());
         for (size_t idx = 0; idx < work_inputs.size(); idx++) {
-            ret[idx] = work_inputs[idx].buffer->read_ptr();
+            ret[idx] = work_inputs[idx]->buffer->read_ptr();
         }
 
         return ret;
     }
 };
 
+typedef block_work_input::sptr block_work_input_sptr;
+
 /**
  * @brief Struct for passing all information needed for output data from block::work
  *
  */
 struct block_work_output {
+    typedef std::shared_ptr<block_work_output> sptr;
     int n_items;
     buffer_sptr buffer;
     int n_produced =
@@ -76,16 +80,17 @@ struct block_work_output {
     }
 
     static std::vector<void*>
-    all_items(const std::vector<block_work_output>& work_outputs)
+    all_items(const std::vector<sptr>& work_outputs)
     {
         std::vector<void*> ret(work_outputs.size());
         for (size_t idx = 0; idx < work_outputs.size(); idx++) {
-            ret[idx] = work_outputs[idx].buffer->write_ptr();
+            ret[idx] = work_outputs[idx]->buffer->write_ptr();
         }
 
         return ret;
     }
 };
+typedef block_work_output::sptr block_work_output_sptr;
 
 /**
  * @brief Enum for return codes from calls to block::work

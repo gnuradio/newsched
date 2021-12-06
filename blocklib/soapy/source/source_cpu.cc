@@ -33,10 +33,10 @@ source_cpu<gr_complex>::source_cpu(const typename source<gr_complex>::block_args
 }
 
 template <class T>
-work_return_code_t source_cpu<T>::work(std::vector<block_work_input>& work_input,
-                                       std::vector<block_work_output>& work_output)
+work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                       std::vector<block_work_output_sptr>& work_output)
 {
-    auto noutput_items = work_output[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
     /* This limits each work invocation to MTU transfers */
     if (d_mtu > 0) {
         noutput_items = std::min(noutput_items, (int)d_mtu);

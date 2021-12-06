@@ -34,17 +34,17 @@ annotator_cpu::annotator_cpu(const block_args& args)
     // set_relative_rate(1, 1);
 }
 
-work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input,
-                                   std::vector<block_work_output>& work_output)
+work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                                   std::vector<block_work_output_sptr>& work_output)
 {
-    auto noutput_items = work_output[0].n_items;
+    auto noutput_items = work_output[0]->n_items;
 
     uint64_t abs_N = 0;
 
     for (unsigned i = 0; i < d_num_inputs; i++) {
-        abs_N = work_input[i].nitems_read();
+        abs_N = work_input[i]->nitems_read();
 
-        auto tags = work_input[i].buffer->tags_in_window(0,noutput_items);
+        auto tags = work_input[i]->buffer->tags_in_window(0,noutput_items);
         d_stored_tags.insert(
             d_stored_tags.end(), tags.begin(), tags.end());
     }
@@ -55,7 +55,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input
 
     // Work does nothing to the data stream; just copy all inputs to outputs
     // Adds a new tag when the number of items read is a multiple of d_when
-    abs_N = work_output[0].buffer->total_written();
+    abs_N = work_output[0]->buffer->total_written();
 
     for (int j = 0; j < noutput_items; j++) {
         // the min() is a hack to make sure this doesn't segfault if
@@ -65,7 +65,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input
         for (unsigned i = 0; i < d_num_outputs; i++) {
             if (abs_N % d_when == 0) {
                 auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
-                work_output[i].buffer->add_tag(abs_N, key, value, srcid);
+                work_output[i]->buffer->add_tag(abs_N, key, value, srcid);
             }
 
             // We don't really care about the data here
@@ -77,7 +77,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input>& work_input
         abs_N++;
     }
     for (unsigned i = 0; i < d_num_outputs; i++) {
-        work_output[i].n_produced = noutput_items;
+        work_output[i]->n_produced = noutput_items;
     }
 
     return work_return_code_t::WORK_OK;
