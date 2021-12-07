@@ -6,7 +6,7 @@ blocktype: sync_block
 typekeys:
   - id: T
     type: class
-    options: 
+    options:
       - value: gr_complex 
         suffix: cc 
       - value: float
@@ -46,5 +46,7 @@ ports:
 implementations:
 -   id: cpu
 -   id: cuda
+-   id: numpy
+    lang: python
 
 file_format: 2

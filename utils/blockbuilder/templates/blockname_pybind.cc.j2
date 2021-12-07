@@ -26,6 +26,7 @@ void bind_{{block}}(py::module& m)
     {% for impl in implementations -%}
         .value("{{ impl['id'] | lower }}", ::gr::{{module}}::{{block}}::available_impl::{{ impl['id'] | upper }}) 
     {% endfor -%}
+        //.value("base", ::gr::{{module}}::{{block}}::available_impl::BASE ) 
         .export_values();
 
     {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }},{%endfor%}{%endif%} gr::{{module}}::{{block}}::available_impl impl) {

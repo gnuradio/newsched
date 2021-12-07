@@ -17,7 +17,7 @@ inline static unsigned int round_down(unsigned int n, unsigned int multiple)
  * @brief synchronous 1:1 input to output
  *
  */
-class sync_block : public block
+class GR_RUNTIME_API sync_block : public block
 {
 public:
     sync_block(const std::string& name) : block(name) {}

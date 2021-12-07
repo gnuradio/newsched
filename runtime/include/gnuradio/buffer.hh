@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include <gnuradio/tag.hh>
 #include <functional>
 #include <memory>
@@ -15,7 +16,7 @@ namespace gr {
  * there to write into, as well as the total items read/written
  *
  */
-struct buffer_info_t {
+struct GR_RUNTIME_API buffer_info_t {
     void* ptr;
     int n_items; // number of items available to be read or written
     size_t item_size;
@@ -37,7 +38,7 @@ typedef std::function<std::shared_ptr<buffer>(
  *
  * Buffer Properties will vary according to the particular buffer
  */
-class buffer_properties : public std::enable_shared_from_this<buffer_properties>
+class GR_RUNTIME_API buffer_properties : public std::enable_shared_from_this<buffer_properties>
 {
 public:
     buffer_properties() {}
@@ -104,7 +105,7 @@ protected:
  * @brief Abstract buffer class
  *
  */
-class buffer : public std::enable_shared_from_this<buffer>
+class GR_RUNTIME_API buffer : public std::enable_shared_from_this<buffer>
 {
 protected:
     std::string _name;
@@ -249,7 +250,7 @@ public:
 typedef std::shared_ptr<buffer> buffer_sptr;
 
 
-class buffer_reader
+class GR_RUNTIME_API buffer_reader
 {
 protected:
     buffer_sptr _buffer; // the buffer that owns this reader

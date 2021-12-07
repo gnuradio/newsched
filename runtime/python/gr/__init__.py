@@ -8,7 +8,8 @@ except ImportError:
     __path__.append(os.path.join(dirname, "bindings"))
     from .runtime_python import *
 
-from .gateway_numpy import block, sync_block #, decim_block, interp_block
+# from .gateway_numpy import block, sync_block #, decim_block, interp_block
+from .numpy_helpers import get_input_array, get_output_array
 
 # CUDA specific python code will exception out as these objects aren't compiled in
 try:

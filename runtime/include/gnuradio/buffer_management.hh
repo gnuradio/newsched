@@ -1,11 +1,12 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include <gnuradio/flat_graph.hh>
 #include <gnuradio/logging.hh>
 
 namespace gr {
 
-class buffer_manager
+class GR_RUNTIME_API buffer_manager
 {
 private:
     const int s_fixed_buf_size;

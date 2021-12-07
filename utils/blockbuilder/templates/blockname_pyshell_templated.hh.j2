@@ -1,0 +1,21 @@
+#pragma once
+
+#include <gnuradio/{{module}}/{{block}}.hh>
+
+namespace gr {
+namespace {{module}} {
+
+template <class T>
+class {{block}}_pyshell : public {{block}}<T>
+{
+public:
+    {{block}}_pyshell(const typename {{block}}<T>::block_args& args) : {{blocktype}}("{{block}}_pyshell"), {{block}}<T>(args)
+    {
+        
+    }
+
+};
+
+
+} // namespace {{module}}
+} // namespace gr
