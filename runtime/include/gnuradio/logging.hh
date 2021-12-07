@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -16,7 +17,7 @@ typedef std::shared_ptr<spdlog::logger> logger_sptr;
 
 typedef spdlog::level::level_enum logging_level_t;
 
-enum class logger_type_t { console, basic, rotating, daily, none };
+enum class GR_RUNTIME_API logger_type_t { console, basic, rotating, daily, none };
 static std::unordered_map<std::string, logger_type_t> const logger_type_t_table = {
     { "console", logger_type_t::console },
     { "basic", logger_type_t::basic },
@@ -38,7 +39,7 @@ static std::unordered_map<std::string, logger_console_type> const
                                   { "stderr", logger_console_type::stderr } };
 
 
-struct logger_config {
+struct GR_RUNTIME_API logger_config {
     YAML::Node _config;
 
     std::string id;
@@ -52,7 +53,7 @@ struct logger_config {
     static std::shared_ptr<logger_config> parse(YAML::Node config);
 };
 
-struct logger_console_config : logger_config {
+struct GR_RUNTIME_API logger_console_config : logger_config {
     logger_console_type console_type;
 
     logger_console_config(YAML::Node config);
@@ -61,7 +62,7 @@ struct logger_console_config : logger_config {
                             std::shared_ptr<logger_config> logger_config);
 };
 
-struct logger_basic_config : logger_config {
+struct GR_RUNTIME_API logger_basic_config : logger_config {
     std::string filename;
 
     logger_basic_config(YAML::Node config);
@@ -70,7 +71,7 @@ struct logger_basic_config : logger_config {
                             std::shared_ptr<logger_config> logger_config);
 };
 
-class logging_config
+class GR_RUNTIME_API logging_config
 // follows the structure of the yaml
 {
 public:
@@ -81,7 +82,7 @@ private:
     void parse_from_prefs();
 };
 
-class logging
+class GR_RUNTIME_API logging
 {
 public:
     static logger_sptr get_logger(const std::string& logger_name,
@@ -99,7 +100,7 @@ inline void set_level(logger_sptr logger, logging_level_t log_level)
 
 
 template <typename... Args>
-inline void gr_log_debug(logger_sptr logger, const Args&... args)
+inline void GR_RUNTIME_API  gr_log_debug(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->debug(args...);

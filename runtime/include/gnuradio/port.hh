@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include <gnuradio/buffer.hh>
 #include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/parameter_types.hh>
@@ -12,9 +13,9 @@
 
 namespace gr {
 
-enum class port_type_t { STREAM, MESSAGE };
+enum class GR_RUNTIME_API port_type_t { STREAM, MESSAGE };
 
-enum class port_direction_t {
+enum class GR_RUNTIME_API port_direction_t {
     INPUT,
     OUTPUT,
     BIDIRECTONAL //?? can it be done
@@ -28,7 +29,7 @@ class block;
  * Holds the necessary information to describe the port to the runtime
  *
  */
-class port_base : public std::enable_shared_from_this<port_base>
+class GR_RUNTIME_API port_base : public std::enable_shared_from_this<port_base>
 {
 
 public:
@@ -194,7 +195,7 @@ typedef std::vector<port_sptr> port_vector_t;
  * @tparam T datatype to instantiate the base port class
  */
 template <class T>
-class port : public port_base
+class GR_RUNTIME_API port : public port_base
 {
 public:
     static std::shared_ptr<port<T>> make(const std::string& name,
@@ -232,7 +233,7 @@ public:
  * e.g. head block where the underlying datatype is not used, just copied byte for byte
  *
  */
-class untyped_port : public port_base
+class GR_RUNTIME_API untyped_port : public port_base
 {
 public:
     static std::shared_ptr<untyped_port> make(const std::string& name,
@@ -263,7 +264,7 @@ public:
  * absent and the type is MESSAGE
  *
  */
-class message_port : public port_base
+class GR_RUNTIME_API message_port : public port_base
 {
 private: //
     message_port_callback_fcn _callback_fcn;

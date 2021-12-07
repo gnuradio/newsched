@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include <gnuradio/types.hh>
 #include <map>
 #include <string>
@@ -12,7 +13,7 @@ namespace gr {
  * @brief Definition of supported types used for port parameters and port data types
  *
  */
-enum class param_type_t {
+enum class GR_RUNTIME_API param_type_t {
     UNTYPED,
     FLOAT,
     DOUBLE,
@@ -36,7 +37,7 @@ enum class param_type_t {
  * @brief Utility Functions for converting param type enums to other datatypes
  *
  */
-class parameter_functions
+class GR_RUNTIME_API parameter_functions
 {
 private:
     static std::map<param_type_t, std::type_index> param_type_index_map;

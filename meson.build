@@ -4,7 +4,7 @@
 project('newsched', 'cpp', 
   version : '0.1.1',
   license : 'GPLv3',
-  default_options : ['cpp_std=c++17'])
+  default_options : ['cpp_std=c++17', '-fvisibility=hidden'])
 
 cc = meson.get_compiler('cpp')
 rt_dep = cc.find_library('rt', required : false)

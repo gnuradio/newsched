@@ -5,7 +5,7 @@ math_sources += [
 math_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
 
 link_args = []
-block_cpp_args = ['-DHAVE_CPU']
+block_cpp_args = ['-DHAVE_CPU', '-DHAVE_NUMPY']
 if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 

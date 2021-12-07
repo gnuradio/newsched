@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gnuradio/api.h>
 #include <gnuradio/buffer.hh>
 #include <gnuradio/node.hh>
 #include <iostream>
@@ -15,7 +16,7 @@ namespace gr {
  * @tparam B
  */
 template <class A, class B>
-class endpoint : public std::pair<A, B>
+class GR_RUNTIME_API endpoint : public std::pair<A, B>
 {
 private:
     A _a;
@@ -31,7 +32,7 @@ public:
  * @brief Endpoint between ports associated with nodes
  *
  */
-class node_endpoint : public endpoint<node_sptr, port_sptr>
+class GR_RUNTIME_API node_endpoint : public endpoint<node_sptr, port_sptr>
 {
 private:
     node_sptr d_node;
@@ -67,7 +68,7 @@ inline std::ostream& operator<<(std::ostream& os, const node_endpoint endp)
  * custom type not defined in-tree
  *
  */
-class edge
+class GR_RUNTIME_API edge
 {
 protected:
     node_endpoint _src, _dst;

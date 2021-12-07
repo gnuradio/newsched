@@ -5,6 +5,7 @@
 srcs = []
 
 {% for impl in implementations -%}
+{% if 'lang' not in impl or impl['lang'] == 'cpp'%}
 if IMPLEMENT_{{impl['id'] | upper}}
     srcs += files(['{{block}}_{{impl['id']}}.cc'])
 {% if impl['id'] | lower == 'cuda' -%}
@@ -13,6 +14,7 @@ if IMPLEMENT_{{impl['id'] | upper}}
 {% endfor -%}
 {% endif -%}
 endif
+{% endif %}
 {% endfor -%}
 
 {% set num_grc_outputs = 0 -%}

@@ -28,6 +28,8 @@ void bind_block(py::module& m)
              py::arg("work_output_items"))
         .def("base",
             &block::base)
+        .def("set_py_handle",
+            &block::set_py_handle)
         .def("produce_each",
             &block::produce_each)
         .def("consume_each",

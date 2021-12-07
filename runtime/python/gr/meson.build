@@ -3,7 +3,9 @@ subdir('bindings')
 
 srcs = [
     '__init__.py',
-    'gateway_numpy.py'
+    'gateway_numpy.py',
+    'gateway_cupy.py',
+    'numpy_helpers.py'
     ]
 
 if USE_CUDA

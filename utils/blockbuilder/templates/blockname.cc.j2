@@ -16,6 +16,11 @@ namespace {{module}} {
         break;
     #endif
     {% endfor %}
+
+    //case available_impl::BASE:
+    //    return std::make_shared<{{block}}>(args);
+    //    break;
+        
     default:
         throw std::invalid_argument(
             "invalid implementation specified");

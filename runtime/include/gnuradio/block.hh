@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <gnuradio/api.h>
 #include <gnuradio/block_work_io.hh>
 #include <gnuradio/node.hh>
 #include <gnuradio/gpdict.hh>
@@ -14,6 +15,13 @@
 #include <pmtf/wrap.hpp>
 #include <pmtf/string.hpp>
 #include <pmtf/map.hpp>
+
+// Condiditonal if python enabled
+// Move this to block.cc if possible
+#include <pybind11/pybind11.h> // must be first
+#include <pybind11/stl.h>
+#include <pybind11/embed.h>
+namespace py = pybind11;
 
 namespace gr {
 
@@ -27,7 +35,7 @@ class scheduler; // Forward declaration to scheduler class
  * class of blocks that implement actual signal processing functions.
  *
  */
-class block : public gr::node, public std::enable_shared_from_this<block>
+class GR_RUNTIME_API block : public gr::node, public std::enable_shared_from_this<block>
 {
 private:
     bool d_running = false;
@@ -35,6 +43,7 @@ private:
     int d_output_multiple = 1;
     bool d_output_multiple_set = false;
     double d_relative_rate = 1.0;
+    py::handle d_py_handle = nullptr;
 
 protected:
     std::shared_ptr<scheduler> p_scheduler = nullptr;
@@ -42,6 +51,7 @@ protected:
     message_port_sptr _msg_param_update;
 
 public:
+    
     /**
      * @brief Construct a new block object
      *
@@ -87,6 +97,8 @@ public:
         d_tag_propagation_policy = policy;
     };
 
+    void set_py_handle(py::handle handle) { d_py_handle = handle; }
+
     /**
      * @brief Abstract method to call signal processing work from a derived block
      *
@@ -97,6 +109,15 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
                                     std::vector<block_work_output_sptr>& work_output)
     {
+        // If we have a python handle, then there will be no work function defined
+        // rely on the python block to do the work
+        if (d_py_handle) {
+            py::gil_scoped_acquire acquire;
+            py::object ret = d_py_handle.attr("work")(
+                work_input, work_output);
+            return ret.cast<work_return_code_t>();
+        }
+    
         throw std::runtime_error("work function has been called but not implemented");
     }
 

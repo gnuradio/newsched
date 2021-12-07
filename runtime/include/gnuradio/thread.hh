@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <gnuradio/api.h>
 #include <memory>
 #include <vector>
 
@@ -42,7 +43,7 @@ typedef pthread_t gr_thread_t;
  * low-level thread settings. Can be called within a GNU Radio
  * block to get a reference to its current thread ID.
  */
-gr_thread_t get_current_thread_id();
+gr_thread_t GR_RUNTIME_API get_current_thread_id();
 
 /*! \brief Bind the current thread to a set of cores.
  *
@@ -56,7 +57,7 @@ gr_thread_t get_current_thread_id();
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_bind_to_processor(const std::vector<unsigned int>& mask);
+void GR_RUNTIME_API thread_bind_to_processor(const std::vector<unsigned int>& mask);
 
 /*! \brief Convenience function to bind the current thread to a single core.
  *
@@ -68,7 +69,7 @@ void thread_bind_to_processor(const std::vector<unsigned int>& mask);
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_bind_to_processor(unsigned int n);
+void GR_RUNTIME_API thread_bind_to_processor(unsigned int n);
 
 /*! \brief Bind a thread to a set of cores.
  *
@@ -82,7 +83,7 @@ void thread_bind_to_processor(unsigned int n);
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_bind_to_processor(gr_thread_t thread,
+void GR_RUNTIME_API thread_bind_to_processor(gr_thread_t thread,
                                              const std::vector<unsigned int>& mask);
 
 
@@ -96,7 +97,7 @@ void thread_bind_to_processor(gr_thread_t thread,
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_bind_to_processor(gr_thread_t thread, unsigned int n);
+void GR_RUNTIME_API thread_bind_to_processor(gr_thread_t thread, unsigned int n);
 
 /*! \brief Remove any thread-processor affinity for the current thread.
  *
@@ -105,7 +106,7 @@ void thread_bind_to_processor(gr_thread_t thread, unsigned int n);
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_unbind();
+void GR_RUNTIME_API thread_unbind();
 
 /*! \brief Remove any thread-processor affinity for a given thread ID.
  *
@@ -114,17 +115,17 @@ void thread_unbind();
  * do support in this way since 10.5 is not what we want or can
  * use in this fashion).
  */
-void thread_unbind(gr_thread_t thread);
+void GR_RUNTIME_API thread_unbind(gr_thread_t thread);
 
 /*! \brief get current thread priority for a given thread ID
  */
-int thread_priority(gr_thread_t thread);
+int GR_RUNTIME_API thread_priority(gr_thread_t thread);
 
 /*! \brief set current thread priority for a given thread ID
  */
-int set_thread_priority(gr_thread_t thread, int priority);
+int GR_RUNTIME_API set_thread_priority(gr_thread_t thread, int priority);
 
-void set_thread_name(gr_thread_t thread, const std::string& name);
+void GR_RUNTIME_API set_thread_name(gr_thread_t thread, const std::string& name);
 
 } /* namespace thread */
 } /* namespace gr */

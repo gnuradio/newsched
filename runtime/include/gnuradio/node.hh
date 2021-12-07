@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 
+#include <gnuradio/api.h>
 #include <gnuradio/logging.hh>
 #include <gnuradio/nodeid_generator.hh>
 #include <gnuradio/port.hh>
@@ -23,7 +24,7 @@ typedef uint32_t nodeid_t;
  * Ports are added after construction of the node to simplify the constructor
  *
  */
-class node
+class GR_RUNTIME_API node
 {
 protected:
     std::string d_name;
