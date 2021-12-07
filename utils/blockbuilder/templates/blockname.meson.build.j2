@@ -4,8 +4,10 @@
 # this file alone
 srcs = []
 
+{% set vars = {'pyshell': False, 'cpp': False} %}
 {% for impl in implementations -%}
 {% if 'lang' not in impl or impl['lang'] == 'cpp'%}
+{% if vars.update({'pyshell': vars.pyshell, 'cpp': True}) %} {% endif %}
 if IMPLEMENT_{{impl['id'] | upper}}
     srcs += files(['{{block}}_{{impl['id']}}.cc'])
 {% if impl['id'] | lower == 'cuda' -%}
@@ -14,6 +16,8 @@ if IMPLEMENT_{{impl['id'] | upper}}
 {% endfor -%}
 {% endif -%}
 endif
+{% elif 'lang' in impl and impl['lang'] == 'python' and not vars.pyshell -%}
+{% if vars.update({'pyshell': True, 'cpp': vars.cpp}) %} {% endif %}
 {% endif %}
 {% endfor -%}
 
@@ -43,6 +47,20 @@ gen_impls = custom_target('gen_{{block}}_impl',
                             '--output', '@OUTPUT@', 
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)
+
+{% if vars.pyshell -%}
+# If we have python implementations, generate the pyshell
+gen_pyshell = custom_target('gen_{{block}}_pyshell',
+                        input : ['{{block}}.yml'],
+                        output : ['{{block}}_pyshell.hh','{{block}}_pyshell.cc'],
+                        command : ['python3', join_paths(SCRIPTS_DIR,'gen_pyshell.py'),
+                            '--yaml_file', '@INPUT@', 
+                            '--output-hh', '@OUTPUT0@', 
+                            '--output-cc', '@OUTPUT1@', 
+                            '--build_dir', join_paths(meson.build_root())],
+                        install : false)
+{{module}}_sources += gen_pyshell[1]
+{% endif %}
 
 {{module}}_deps += declare_dependency(sources : [gen_srcs[1]] ) 
 {{module}}_sources += [srcs, gen_srcs[0], gen_impls]
