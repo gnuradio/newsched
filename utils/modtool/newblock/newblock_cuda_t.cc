@@ -38,8 +38,8 @@ newblock_cuda<gr_complex>::newblock_cuda(
 
 template <class T>
 work_return_code_t
-newblock_cuda<T>::work(std::vector<block_work_input>& work_input,
-                             std::vector<block_work_output>& work_output)
+newblock_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
+                             std::vector<block_work_output_sptr>& work_output)
 {
     // Do block specific code here
     return work_return_code_t::WORK_OK;
@@ -47,8 +47,8 @@ newblock_cuda<T>::work(std::vector<block_work_input>& work_input,
 
 template <>
 work_return_code_t
-newblock_cuda<gr_complex>::work(std::vector<block_work_input>& work_input,
-                             std::vector<block_work_output>& work_output)
+newblock_cuda<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
+                             std::vector<block_work_output_sptr>& work_output)
 {
     auto in = work_input[0].items<cuFloatComplex>());
     auto out = work_output[0].items<cuFloatComplex>());

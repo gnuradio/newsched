@@ -15,8 +15,8 @@ class newblock_cuda : public newblock<T>
 public:
     newblock_cuda(const typename newblock<T>::block_args& args);
     
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) override;
+    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
     T d_k;

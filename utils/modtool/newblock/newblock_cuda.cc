@@ -25,8 +25,8 @@ newblock_cuda::newblock_cuda(block_args args) : newblock(args), d_itemsize(args.
     cudaStreamCreate(&d_stream);
 }
 
-work_return_code_t newblock_cuda::work(std::vector<block_work_input>& work_input,
-                                   std::vector<block_work_output>& work_output)
+work_return_code_t newblock_cuda::work(std::vector<block_work_input_sptr>& work_input,
+                                   std::vector<block_work_output_sptr>& work_output)
 {
     // Do <+signal processing+>
     // Block specific code goes here
