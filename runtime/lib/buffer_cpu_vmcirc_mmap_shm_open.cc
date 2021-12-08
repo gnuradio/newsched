@@ -36,7 +36,7 @@ buffer_cpu_vmcirc_mmap_shm_open::buffer_cpu_vmcirc_mmap_shm_open(
     int pagesize = gr::pagesize();
 
     if (_buf_size <= 0 || (_buf_size % pagesize) != 0) {
-        // GR_LOG_ERROR(d_logger, boost::format("invalid _buf_size = %d") % _buf_size);
+        GR_LOG_ERROR(this->_logger, "invalid _buf_size = {}", _buf_size);
         throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm_open");
     }
 

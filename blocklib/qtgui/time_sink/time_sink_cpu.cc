@@ -185,11 +185,10 @@ void time_sink_cpu<T>::_gui_update_trigger()
         // We restrict the delay to be within the window of time being
         // plotted.
         if ((delay < 0) || (delay >= d_size)) {
-            // GR_LOG_WARN(
-            //     d_logger,
-            //     boost::format("Trigger delay (%1%) outside of display range (0:%2%).")
-            //     %
-            //         (delay / d_samp_rate) % ((d_size - 1) / d_samp_rate));
+            GR_LOG_WARN(
+                 this->_logger,
+                 "Trigger delay ({}) outside of display range (0:{}).", 
+                     (delay / d_samp_rate), ((d_size - 1) / d_samp_rate));
             delay = std::max(0, std::min(d_size - 1, delay));
             delayf = delay / d_samp_rate;
         }
@@ -555,7 +554,7 @@ void time_sink_cpu<T>::set_line_alpha(unsigned int which, double alpha)
 //     if ((d_trigger_delay < 0) || (d_trigger_delay >= d_size)) {
 //         GR_LOG_WARN(
 //             d_logger,
-//             boost::format("Trigger delay (%1%) outside of display range (0:%2%).") %
+//             "Trigger delay ({}) outside of display range (0:{}).",
 //                 (d_trigger_delay / d_samp_rate) % ((d_size - 1) / d_samp_rate));
 //         d_trigger_delay = std::max(0, std::min(d_size - 1, d_trigger_delay));
 //         delay = d_trigger_delay / d_samp_rate;
@@ -598,11 +597,11 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
 
         // If delay was set beyond the new boundary, pull it back.
         if (d_trigger_delay >= d_size) {
-            // GR_LOG_WARN(d_logger,
-            //             boost::format("Trigger delay (%1%) outside of display range "
-            //                           "(0:%2%). Moving to 50%% point.") %
-            //                 (d_trigger_delay / d_samp_rate) %
-            //                 ((d_size - 1) / d_samp_rate));
+            GR_LOG_WARN(this->_logger,
+                        "Trigger delay ({}) outside of display range "
+                                      "(0:{}). Moving to 50%% point.",
+                            (d_trigger_delay / d_samp_rate),
+                            ((d_size - 1) / d_samp_rate));
             d_trigger_delay = d_size - 1;
             d_main_gui->setTriggerDelay(d_trigger_delay / d_samp_rate);
         }

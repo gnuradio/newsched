@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+#include <gnuradio/logging.hh>
 namespace gr {
 
 /**
@@ -126,6 +127,9 @@ protected:
     std::vector<tag_t> _tags;
 
     std::vector<buffer_reader*> _readers;
+
+    logger_sptr _logger;
+    logger_sptr _debug_logger;
 
 public:
     buffer(size_t num_items,
