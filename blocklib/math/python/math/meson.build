@@ -8,14 +8,16 @@ fs = import('fs')
 if fs.exists('bindings/meson.build')
 subdir('bindings')
 endif
-srcs = files('__init__.py') + math_pure_python_sources
+#srcs = files('__init__.py') + math_pure_python_sources
+srcs = ['__init__.py']
 
-# foreach s: srcs
-# configure_file(copy: true,
-#     input: s,
-#     output: s
-# )
-# endforeach
+# This is for testing without installing
+foreach s: srcs
+configure_file(copy: true,
+    input: s,
+    output: s
+)
+endforeach
 
 d = {
   'blocks' : math_pybind_names,
@@ -52,4 +54,5 @@ newsched_blocklib_math_pybind_dep = declare_dependency(include_directories : inc
 # Target for pure python
 py3_inst.install_sources(srcs, subdir : join_paths('newsched','math'))
 
+subdir('numpy')
 py3_inst.install_sources(files('numpy/__init__.py'), subdir : join_paths('newsched','math','numpy'))
