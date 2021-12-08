@@ -43,9 +43,9 @@ private:
     int d_output_multiple = 1;
     bool d_output_multiple_set = false;
     double d_relative_rate = 1.0;
-    py::handle d_py_handle = nullptr;
 
 protected:
+    py::handle d_py_handle = nullptr;
     std::shared_ptr<scheduler> p_scheduler = nullptr;
     std::map<std::string, int> d_param_str_map;
     message_port_sptr _msg_param_update;
@@ -109,15 +109,6 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
                                     std::vector<block_work_output_sptr>& work_output)
     {
-        // If we have a python handle, then there will be no work function defined
-        // rely on the python block to do the work
-        if (d_py_handle) {
-            py::gil_scoped_acquire acquire;
-            py::object ret = d_py_handle.attr("work")(
-                work_input, work_output);
-            return ret.cast<work_return_code_t>();
-        }
-    
         throw std::runtime_error("work function has been called but not implemented");
     }
 
