@@ -48,24 +48,31 @@ gen_impls = custom_target('gen_{{block}}_impl',
                             '--build_dir', join_paths(meson.build_root())],
                         install : false)
 
-{% if vars.pyshell -%}
-# If we have python implementations, generate the pyshell
-gen_pyshell = custom_target('gen_{{block}}_pyshell',
-                        input : ['{{block}}.yml'],
-                        output : ['{{block}}_pyshell.hh','{{block}}_pyshell.cc'],
-                        command : ['python3', join_paths(SCRIPTS_DIR,'gen_pyshell.py'),
-                            '--yaml_file', '@INPUT@', 
-                            '--output-hh', '@OUTPUT0@', 
-                            '--output-cc', '@OUTPUT1@', 
-                            '--build_dir', join_paths(meson.build_root())],
-                        install : false)
-{{module}}_sources += gen_pyshell[1]
-{% endif %}
-
 {{module}}_deps += declare_dependency(sources : [gen_srcs[1]] ) 
 {{module}}_sources += [srcs, gen_srcs[0], gen_impls]
 
-if get_option('enable_python')                           
+if get_option('enable_python') 
+    {% if vars.pyshell -%}
+    # If we have python implementations, generate the pyshell
+    gen_pyshell = custom_target('gen_{{block}}_pyshell',
+                            input : ['{{block}}.yml'],
+                            output : ['{{block}}_pyshell.hh','{{block}}_pyshell.cc'],
+                            command : ['python3', join_paths(SCRIPTS_DIR,'gen_pyshell.py'),
+                                '--yaml_file', '@INPUT@', 
+                                '--output-hh', '@OUTPUT0@', 
+                                '--output-cc', '@OUTPUT1@', 
+                                '--build_dir', join_paths(meson.build_root())],
+                            install : false)
+    {{module}}_sources += gen_pyshell[1]
+    {% for impl in implementations -%}
+    {% if 'lang' in impl and impl['lang'] == 'python'%}
+    py3_inst.install_sources(files('{{impl['id']}}/{{block}}.py'), subdir : join_paths('newsched','{{module}}','{{impl['id']}}'))
+    {% endif %}
+    {% endfor -%}
+    
+
+    {% endif %}
+
     {{module}}_pybind_sources += gen_srcs[2]
     {{module}}_pybind_names += '{{block}}'
 endif
