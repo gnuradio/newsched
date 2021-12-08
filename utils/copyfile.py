@@ -10,7 +10,7 @@ def argParse():
 
     parser.add_argument("--input_file")
     parser.add_argument("--output_file")
-    parser.add_argument("--output_dir")
+    parser.add_argument("--output_dir", default='')
 
     return parser.parse_args()
 
@@ -24,9 +24,9 @@ def main():
     # Copy to the expected dir - needed so that ninja doesn't trigger constantly
     shutil.copyfile(args.input_file, args.output_file)
 
-    # Copy to the include dir
-    shutil.copyfile(args.input_file, os.path.join(
-        args.output_dir, os.path.basename(args.output_file)))
+    # # Copy to the include dir
+    # shutil.copyfile(args.input_file, os.path.join(
+    #     args.output_dir, os.path.basename(args.output_file)))
 
 if __name__ == "__main__":
     main()
