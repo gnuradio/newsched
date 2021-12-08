@@ -22,6 +22,9 @@ def main():
         f"copying {args.input_file} to {args.output_file} in dir {args.output_dir}")
 
     # Copy to the expected dir - needed so that ninja doesn't trigger constantly
+    outdir = os.path.dirname(args.output_file)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
     shutil.copyfile(args.input_file, args.output_file)
 
     # # Copy to the include dir
