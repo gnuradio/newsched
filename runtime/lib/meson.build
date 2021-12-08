@@ -26,8 +26,18 @@ if cuda_dep.found() and get_option('enable_cuda')
   runtime_deps += [newsched_runtime_cu_dep]
 endif
 
+libdir = get_option('libdir')
+prefix = get_option('prefix')
+# r = run_command('python3',['-c','"import os; print(os.path.relpath(\'@0@\',\'@1@\'))"'.format(prefix, join_paths(prefix,libdir))], check:true, capture:true)
+r = run_command('python3', join_paths(meson.project_source_root(),'utils','relative_path.py'), '--dir1', prefix, '--dir2', join_paths(prefix,libdir), check:true)
+prefix_relative_to_lib = r.stdout().strip()
+message('prefix_relative_to_lib')
+message(prefix_relative_to_lib)
+
+
 cdata = configuration_data()
 cdata.set('VERSION', meson.project_version())
+cdata.set('prefix_relative_to_lib', prefix_relative_to_lib)
 constants_file = configure_file(input: 'constants.cc.in',
                           output: 'constants.cc',
                           configuration: cdata,
