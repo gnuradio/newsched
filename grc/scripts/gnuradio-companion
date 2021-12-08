@@ -77,7 +77,7 @@ def run_main():
 
     if not script_path.endswith(source_tree_subpath):
         # run the installed version
-        from gnuradio.grc.main import main
+        from newsched.grc.main import main
     else:
         print("Running from source tree")
         sys.path.insert(1, script_path[:-len(source_tree_subpath)])
