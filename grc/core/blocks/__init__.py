@@ -5,9 +5,6 @@
 #
 
 
-from .dummy import DummyBlock
-from .virtual import VirtualSink, VirtualSource
-from .embedded_python import EPyBlock, EPyModule
 from ._flags import Flags
 from ._templates import MakoTemplates
 
@@ -23,3 +20,8 @@ def register_build_in(cls):
     cls.loaded_from = '(build-in)'
     build_ins[cls.key] = cls
     return cls
+
+
+from .dummy import DummyBlock
+from .embedded_python import EPyBlock, EPyModule
+from .virtual import VirtualSink, VirtualSource
