@@ -72,7 +72,7 @@ sudo ninja install
 newsched uses C++17, and has the following dependencies
 
 - meson
-- boost (program_options)
+- boost
 - zmq
 - doxygen
 - fmt

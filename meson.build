@@ -18,7 +18,8 @@ IMPLEMENT_CPU = true
 
 SCRIPTS_DIR=join_paths(meson.project_source_root(),'utils','blockbuilder','scripts')
 
-boost_dep = dependency('boost', modules : ['system','program_options','thread'], version : '>=1.65')
+boost_dep = dependency('boost', modules : ['system','thread'], version : '>=1.65')
+boost_po_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')
 volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
