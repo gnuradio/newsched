@@ -43,5 +43,7 @@ ports:
 implementations:
 -   id: cpu
 -   id: cuda
+-   id: numpy
+    lang: python
 
 file_format: 1
