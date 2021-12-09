@@ -51,7 +51,6 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
 
     auto now = std::chrono::steady_clock::now();
     auto expected_time = d_start + d_sample_period * d_total_samples;
-
     int n = noutput_items;
     if (expected_time > now) {
         auto limit_duration =
@@ -65,18 +64,21 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
         // We should no longer block inside of a work function since it may not have its
         // own thread
         // This should only be done in its own thread
+        GR_LOG_DEBUG(this->debug_logger(), "Throttle sleeping {}", std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now).count());
         std::this_thread::sleep_until(expected_time);
 
         // need a more intelligent solution to inform the scheduler
         // to return at a certain time
-        n = 0;
-        d_total_samples -= noutput_items;
+        // n = 0;
+        // d_total_samples -= noutput_items;
     }
 
     // TODO: blocks like throttle shouldn't need to do a memcpy, but this would have to be
     // fixed in the buffering model and a special port type
     std::memcpy(out, in, n * work_output[0]->buffer->item_size());
     work_output[0]->n_produced = n;
+
+    GR_LOG_DEBUG(this->debug_logger(), "Throttle produced {}", n);
     return work_return_code_t::WORK_OK;
 }
 
