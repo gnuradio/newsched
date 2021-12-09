@@ -108,7 +108,7 @@ bool thread_wrapper::handle_work_notification()
     }
 
 
-    if (kick && !kick_pending && !d_flushing) {
+    if (kick && !kick_pending) {
         // std::cout << "kicking from id "  << id() << std::endl;
         // after some period of time, drop a message in the queue to try again on this
         // thread
@@ -223,7 +223,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                         // -- hang in this state until all the blocks in this thread
                         // report
                         //    either BLKD_IN or BLKD_OUT
-
+                        gr_log_debug(top->_debug_logger,
+                                     "fgm signaled DONE, start flushing");
                         top->start_flushing();
                         do_some_work = true;
 
