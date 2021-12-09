@@ -141,9 +141,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 if (ret == work_return_code_t::WORK_DONE) {
                     per_block_status[b->id()] = executor_iteration_status::DONE;
+                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     break;
                 } else if (ret == work_return_code_t::WORK_OK) {
                     per_block_status[b->id()] = executor_iteration_status::READY;
+                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
                     if (!work_input.size() && work_output.size()) {
@@ -154,6 +156,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         if (max_output <= 0) {
                             per_block_status[b->id()] =
                                 executor_iteration_status::BLKD_IN;
+                                GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                         }
                     }
 
@@ -168,14 +171,18 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     if (work_output[0]->n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
+                        GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                         // call the input blocked callback
                         break;
                     }
                 } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
                     per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
+                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     // call the output blocked callback
                     break;
                 }
+
+                
             }
             // TODO - handle READY_NO_OUTPUT
 
@@ -246,6 +253,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         }
     }
 
+    
     return per_block_status;
 }
 
