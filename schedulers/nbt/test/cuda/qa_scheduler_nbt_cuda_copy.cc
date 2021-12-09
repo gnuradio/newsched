@@ -73,12 +73,12 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
 
     auto fg = flowgraph::make();
-    // fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
-    // fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
-    // fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
-    fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
-    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
-    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
+    fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
+    fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
+    fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
+    // fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
+    // fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
+    // fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
 
     auto sched = schedulers::scheduler_nbt::make("sched", 32768);
     fg->set_scheduler(sched);
