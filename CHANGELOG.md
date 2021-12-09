@@ -3,7 +3,7 @@ All notable changes to newsched will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [0.2.0] - [UNRELEASED]
+## [0.2.0] - [2021.12.09]
 ### meson build
 - Add .gitignore explicitly where autogeneration is expected rather than a global filter
 
