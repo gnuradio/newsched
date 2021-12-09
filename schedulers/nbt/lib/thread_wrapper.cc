@@ -108,11 +108,12 @@ bool thread_wrapper::handle_work_notification()
     }
 
 
-    if (kick && !kick_pending) {
+    if (kick && !kick_pending && !d_flushing) {
         // std::cout << "kicking from id "  << id() << std::endl;
         // after some period of time, drop a message in the queue to try again on this
         // thread
         this->kick_pending = true;
+        gr_log_debug(_debug_logger, "Kicking myself");
         std::thread th([this] {
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(100)); // make configurable
@@ -124,6 +125,7 @@ bool thread_wrapper::handle_work_notification()
         th.detach();
     }
 
+    gr_log_debug(_debug_logger, "notify_self = {}", notify_self_);
     return notify_self_;
 }
 
@@ -192,8 +194,13 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         bool do_some_work = false;
         while (valid) {
             if (blocking_queue) {
+                gr_log_debug(top->_debug_logger,
+                                     "Going into blocking queue");
                 valid = top->pop_message(msg);
             } else {
+                gr_log_debug(top->_debug_logger,
+                                     "Going into nonblocking queue");
+
                 valid = top->pop_message_nonblocking(msg);
             }
 
