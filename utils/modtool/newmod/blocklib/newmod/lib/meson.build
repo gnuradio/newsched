@@ -27,6 +27,7 @@ newsched_blocklib_newmod_lib = library('newsched-blocklib-newmod',
     install : true,
     link_language: 'cpp',
     dependencies : newmod_deps,
+    link_args : ['-lnewsched-runtime'],
     cpp_args : block_cpp_args)
 
 newsched_blocklib_newmod_dep = declare_dependency(include_directories : incdir,
