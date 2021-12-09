@@ -4,7 +4,7 @@ from newsched import gr
 class add_ff(math.add_ff):
     def __init__(self, *args, **kwargs):
         math.add_ff.__init__(self, *args, **kwargs, impl = math.add_ff.available_impl.pyshell)
-        self.set_py_handle(self)
+        self.set_pyblock_detail(gr.pyblock_detail(self))
     
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items

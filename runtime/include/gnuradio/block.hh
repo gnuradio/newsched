@@ -16,17 +16,10 @@
 #include <pmtf/string.hpp>
 #include <pmtf/wrap.hpp>
 
-// Condiditonal if python enabled
-// Move this to block.cc if possible
-#include <pybind11/embed.h>
-#include <pybind11/pybind11.h> // must be first
-#include <pybind11/stl.h>
-namespace py = pybind11;
-
 namespace gr {
 
 class scheduler; // Forward declaration to scheduler class
-
+class pyblock_detail;
 /**
  * @brief The abstract base class for all signal processing blocks in the GR
  * Block Library
@@ -47,10 +40,10 @@ private:
   double d_relative_rate = 1.0;
 
 protected:
-  py::handle d_py_handle = nullptr;
   std::shared_ptr<scheduler> p_scheduler = nullptr;
   std::map<std::string, int> d_param_str_map;
   message_port_sptr _msg_param_update;
+  std::shared_ptr<pyblock_detail> d_pyblock_detail;
 
 public:
   /**
@@ -69,8 +62,8 @@ public:
 
   tag_propagation_policy_t tag_propagation_policy();
   void set_tag_propagation_policy(tag_propagation_policy_t policy);
-  void set_py_handle(py::handle handle) { d_py_handle = handle; }
-
+  void set_pyblock_detail(std::shared_ptr<pyblock_detail> p);
+  std::shared_ptr<pyblock_detail> pb_detail();
   /**
    * @brief Abstract method to call signal processing work from a derived block
    *

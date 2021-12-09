@@ -11,7 +11,7 @@ if get_option('enable_testing')
         include_directories : incdir, 
         link_language : 'cpp',
         dependencies: [newsched_runtime_dep,
-                    newsched_runtime_cu_dep,
+                    cuda_dep,
                     newsched_blocklib_blocks_dep,
                     newsched_scheduler_nbt_dep,
                     gtest_dep], 

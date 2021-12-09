@@ -2,6 +2,7 @@
 #include <gnuradio/scheduler.hh>
 #include <pmtf/wrap.hpp>
 
+#include <gnuradio/pyblock_detail.hh>
 namespace gr {
 
 block::block(const std::string& name)
@@ -14,6 +15,11 @@ block::block(const std::string& name)
     add_port(_msg_param_update);
 }
 
+void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p) { d_pyblock_detail = p; }
+std::shared_ptr<pyblock_detail> block::pb_detail()
+{
+    return d_pyblock_detail;
+}
 bool block::start()
 {
     d_running = true;
