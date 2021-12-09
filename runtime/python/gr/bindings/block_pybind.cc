@@ -13,7 +13,9 @@
 
 namespace py = pybind11;
 
+#include <gnuradio/pyblock_detail.hh>
 #include <gnuradio/block.hh>
+
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 
@@ -28,8 +30,8 @@ void bind_block(py::module& m)
              py::arg("work_output_items"))
         .def("base",
             &block::base)
-        .def("set_py_handle",
-            &block::set_py_handle)
+        .def("set_pyblock_detail",
+            &block::set_pyblock_detail)
         .def("produce_each",
             &block::produce_each)
         .def("consume_each",

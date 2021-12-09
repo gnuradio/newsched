@@ -14,17 +14,18 @@ runtime_pybind_sources = files([
     'domain_pybind.cc',
     'buffer_cpu_vmcirc_pybind.cc',
     'constants_pybind.cc',
-    'python_block_pybind.cc'
+    'python_block_pybind.cc',
+    'pyblock_detail_pybind.cc'
  ] )
 
 cpp_args = []
 runtime_pybind_deps = [newsched_runtime_dep, python3_dep, pybind11_dep, pmtf_dep]
-if (cuda_available and get_option('enable_cuda'))
+if USE_CUDA
     runtime_pybind_sources += [
         'buffer_cuda_pybind.cc', 
         'buffer_cuda_pinned.cc',
         'buffer_cuda_sm_pybind.cc']
-    runtime_pybind_deps += newsched_runtime_cu_dep
+    runtime_pybind_deps += cuda_dep
     cpp_args = '-DHAVE_CUDA'
 endif
 newsched_runtime_pybind = py3_inst.extension_module('runtime_python',

@@ -5,7 +5,7 @@ class multiply_const_ff(math.multiply_const_ff):
     def __init__(self, *args, **kwargs):
         math.multiply_const_ff.__init__(self, *args, **kwargs, 
             impl = math.multiply_const_ff.available_impl.pyshell)
-        self.set_py_handle(self)
+        self.set_pyblock_detail(gr.pyblock_detail(self))
     
         # In the future we should be able to use the block parameters
         #  But the pmts are not properly pybinded yet

@@ -5,27 +5,6 @@ incdir = [
 
 runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep]
 
-if cuda_dep.found() and get_option('enable_cuda')
-  cu_sources = [
-    'buffer_cuda.cu',
-    'buffer_cuda_pinned.cu',
-    'buffer_cuda_sm.cu'
-  ]
-
-  newsched_runtime_cu_lib = library('newsched-runtime-cu',
-      cu_sources, 
-      cuda_args: ['-DTAG_IS_SHARED=1', '-DTAG_IS_BUILDING=1'],
-      install : true, 
-      dependencies : [cuda_dep, pmtf_dep],
-      include_directories : incdir)
-
-  newsched_runtime_cu_dep = declare_dependency(include_directories : incdir,
-              link_with : newsched_runtime_cu_lib,
-              dependencies : [cuda_dep])
-
-  runtime_deps += [newsched_runtime_cu_dep]
-endif
-
 libdir = get_option('libdir')
 prefix = get_option('prefix')
 # r = run_command('python3',['-c','"import os; print(os.path.relpath(\'@0@\',\'@1@\'))"'.format(prefix, join_paths(prefix,libdir))], check:true, capture:true)
@@ -70,9 +49,19 @@ runtime_sources = [
   'buffer_cpu_vmcirc_mmap_shm_open.cc'
 ]
 
-if (pybind11_dep.found() and get_option('enable_python'))
+if USE_CUDA
+  runtime_sources += [
+    'buffer_cuda.cc',
+    'buffer_cuda_pinned.cc',
+    'buffer_cuda_sm.cc'
+  ]
+  runtime_deps += cuda_dep
+endif
+
+if (pybind11_dep.found() and python3_dep.found() and python3_embed_dep.found() and get_option('enable_python'))
 runtime_sources += [
-  'python_block.cc'
+  'python_block.cc',
+  'pyblock_detail.cc'
 ]
 runtime_deps += [python3_dep, python3_embed_dep, pybind11_dep]
 endif
