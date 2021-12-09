@@ -4,6 +4,95 @@
 
 namespace gr {
 
+block::block(const std::string& name)
+    : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
+{
+    // {# add message handler port for parameter updates#}
+    _msg_param_update = message_port::make("param_update", port_direction_t::INPUT);
+    _msg_param_update->register_callback(
+        [this](pmtf::wrap msg) { this->handle_msg_param_update(msg); });
+    add_port(_msg_param_update);
+}
+
+bool block::start()
+{
+    d_running = true;
+    return true;
+}
+
+bool block::stop()
+{
+    d_running = false;
+    return true;
+}
+bool block::done()
+{
+    d_running = false;
+    return true;
+}
+
+tag_propagation_policy_t block::tag_propagation_policy()
+{
+    return d_tag_propagation_policy;
+};
+
+void block::set_tag_propagation_policy(tag_propagation_policy_t policy)
+{
+    d_tag_propagation_policy = policy;
+};
+
+
+void block::on_parameter_change(param_action_sptr action)
+{
+    gr_log_debug(
+        _debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
+    auto param = d_parameters.get(action->id());
+    param->set_pmt_value(action->pmt_value());
+}
+
+void block::on_parameter_query(param_action_sptr action)
+{
+    gr_log_debug(
+        _debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
+    auto param = d_parameters.get(action->id());
+    action->set_pmt_value(param->pmt_value());
+}
+
+void block::consume_each(int num, std::vector<block_work_input_sptr>& work_input)
+{
+    for (auto& input : work_input) {
+        input->consume(num);
+    }
+}
+
+void block::produce_each(int num, std::vector<block_work_output_sptr>& work_output)
+{
+    for (auto& output : work_output) {
+        output->produce(num);
+    }
+}
+
+void block::set_output_multiple(int multiple)
+{
+    if (multiple < 1)
+        throw std::invalid_argument("block::set_output_multiple");
+
+    d_output_multiple_set = true;
+    d_output_multiple = multiple;
+}
+
+void block::handle_msg_param_update(pmtf::wrap msg)
+{
+    // Update messages are a pmtf::map with the name of
+    // the param as the "id" field, and the pmt::wrap
+    // that holds the update as the "value" field
+
+    auto id = pmtf::get_string(pmtf::get_map<std::string>(msg)["id"]).value();
+    auto value = pmtf::get_map<std::string>(msg)["value"];
+
+    request_parameter_change(get_param_id(id), value, false);
+}
+
 void block::request_parameter_change(int param_id, pmtf::wrap new_value, bool block)
 {
     // call back to the scheduler if ptr is not null

@@ -7,20 +7,20 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/block_work_io.hh>
-#include <gnuradio/node.hh>
 #include <gnuradio/gpdict.hh>
+#include <gnuradio/node.hh>
 
 #include <gnuradio/parameter.hh>
 
-#include <pmtf/wrap.hpp>
-#include <pmtf/string.hpp>
 #include <pmtf/map.hpp>
+#include <pmtf/string.hpp>
+#include <pmtf/wrap.hpp>
 
 // Condiditonal if python enabled
 // Move this to block.cc if possible
+#include <pybind11/embed.h>
 #include <pybind11/pybind11.h> // must be first
 #include <pybind11/stl.h>
-#include <pybind11/embed.h>
 namespace py = pybind11;
 
 namespace gr {
@@ -28,171 +28,104 @@ namespace gr {
 class scheduler; // Forward declaration to scheduler class
 
 /**
- * @brief The abstract base class for all signal processing blocks in the GR Block Library
+ * @brief The abstract base class for all signal processing blocks in the GR
+ * Block Library
  *
- * Blocks are the bare abstraction of an entity that has a name and a set of inputs and
- * outputs  These are never instantiated directly; rather, this is the abstract parent
- * class of blocks that implement actual signal processing functions.
+ * Blocks are the bare abstraction of an entity that has a name and a set of
+ * inputs and outputs  These are never instantiated directly; rather, this is
+ * the abstract parent class of blocks that implement actual signal processing
+ * functions.
  *
  */
-class GR_RUNTIME_API block : public gr::node, public std::enable_shared_from_this<block>
-{
+class GR_RUNTIME_API block : public gr::node,
+                             public std::enable_shared_from_this<block> {
 private:
-    bool d_running = false;
-    tag_propagation_policy_t d_tag_propagation_policy;
-    int d_output_multiple = 1;
-    bool d_output_multiple_set = false;
-    double d_relative_rate = 1.0;
+  bool d_running = false;
+  tag_propagation_policy_t d_tag_propagation_policy;
+  int d_output_multiple = 1;
+  bool d_output_multiple_set = false;
+  double d_relative_rate = 1.0;
 
 protected:
-    py::handle d_py_handle = nullptr;
-    std::shared_ptr<scheduler> p_scheduler = nullptr;
-    std::map<std::string, int> d_param_str_map;
-    message_port_sptr _msg_param_update;
+  py::handle d_py_handle = nullptr;
+  std::shared_ptr<scheduler> p_scheduler = nullptr;
+  std::map<std::string, int> d_param_str_map;
+  message_port_sptr _msg_param_update;
 
 public:
-    
-    /**
-     * @brief Construct a new block object
-     *
-     * @param name The non-unique name of this block representing the block type
-     */
-    block(const std::string& name)
-        : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
-    {
-        // {# add message handler port for parameter updates#}
-        _msg_param_update = message_port::make(
-            "param_update", port_direction_t::INPUT);
-        _msg_param_update->register_callback([this](pmtf::wrap msg) { this->handle_msg_param_update(msg); });
-        add_port(_msg_param_update);
-    }
-    virtual ~block(){};
+  /**
+   * @brief Construct a new block object
+   *
+   * @param name The non-unique name of this block representing the block type
+   */
+  block(const std::string &name);
+  virtual ~block(){};
+  virtual bool start();
+  virtual bool stop();
+  virtual bool done();
 
-    virtual bool start()
-    {
-        d_running = true;
-        return true;
-    }
-    virtual bool stop()
-    {
-        d_running = false;
-        return true;
-    }
+  typedef std::shared_ptr<block> sptr;
+  sptr base() { return shared_from_this(); }
 
-    virtual bool done()
-    {
-        d_running = false;
-        return true;
-    }
+  tag_propagation_policy_t tag_propagation_policy();
+  void set_tag_propagation_policy(tag_propagation_policy_t policy);
+  void set_py_handle(py::handle handle) { d_py_handle = handle; }
 
-    typedef std::shared_ptr<block> sptr;
-    sptr base() { return shared_from_this(); }
+  /**
+   * @brief Abstract method to call signal processing work from a derived block
+   *
+   * @param work_input Vector of block_work_input structs
+   * @param work_output Vector of block_work_output structs
+   * @return work_return_code_t
+   */
+  virtual work_return_code_t
+  work(std::vector<block_work_input_sptr> &work_input,
+       std::vector<block_work_output_sptr> &work_output) {
+    throw std::runtime_error(
+        "work function has been called but not implemented");
+  }
 
-    tag_propagation_policy_t tag_propagation_policy()
-    {
-        return d_tag_propagation_policy;
-    };
-    void set_tag_propagation_policy(tag_propagation_policy_t policy)
-    {
-        d_tag_propagation_policy = policy;
-    };
+  /**
+   * @brief Wrapper for work to perform special checks and take care of special
+   * cases for certain types of blocks, e.g. sync_block, decim_block
+   *
+   * @param work_input Vector of block_work_input structs
+   * @param work_output Vector of block_work_output structs
+   * @return work_return_code_t
+   */
+  virtual work_return_code_t
+  do_work(std::vector<block_work_input_sptr> &work_input,
+          std::vector<block_work_output_sptr> &work_output) {
+    return work(work_input, work_output);
+  };
 
-    void set_py_handle(py::handle handle) { d_py_handle = handle; }
+  void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+  parameter_config d_parameters;
+  void add_param(param_sptr p) { d_parameters.add(p); }
+  pmtf::wrap request_parameter_query(int param_id);
+  void request_parameter_change(int param_id, pmtf::wrap new_value,
+                                bool block = true);
+  virtual void on_parameter_change(param_action_sptr action);
+  virtual void on_parameter_query(param_action_sptr action);
+  static void consume_each(int num, std::vector<block_work_input_sptr> &work_input);
+  static void produce_each(int num, std::vector<block_work_output_sptr> &work_output);
+  void set_output_multiple(int multiple);
+  int output_multiple() const { return d_output_multiple; }
+  bool output_multiple_set() const { return d_output_multiple_set; }
+  void set_relative_rate(double relative_rate) {
+    d_relative_rate = relative_rate;
+  }
+  double relative_rate() const { return d_relative_rate; }
 
-    /**
-     * @brief Abstract method to call signal processing work from a derived block
-     *
-     * @param work_input Vector of block_work_input structs
-     * @param work_output Vector of block_work_output structs
-     * @return work_return_code_t
-     */
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
-    {
-        throw std::runtime_error("work function has been called but not implemented");
-    }
+  virtual int get_param_id(const std::string &id) {
+    return d_param_str_map[id];
+  }
 
-    /**
-     * @brief Wrapper for work to perform special checks and take care of special
-     * cases for certain types of blocks, e.g. sync_block, decim_block
-     *
-     * @param work_input Vector of block_work_input structs
-     * @param work_output Vector of block_work_output structs
-     * @return work_return_code_t
-     */
-    virtual work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
-    {
-        return work(work_input, work_output);
-    };
-
-    void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
-    parameter_config d_parameters;
-    void add_param(param_sptr p) { d_parameters.add(p); }
-    pmtf::wrap request_parameter_query(int param_id);
-    void request_parameter_change(int param_id, pmtf::wrap new_value, bool block=true);
-    virtual void on_parameter_change(param_action_sptr action)
-    {
-        gr_log_debug(_debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
-        auto param = d_parameters.get(action->id());
-        param->set_pmt_value(action->pmt_value());
-    }
-
-    virtual void on_parameter_query(param_action_sptr action)
-    {
-        gr_log_debug(_debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
-        auto param = d_parameters.get(action->id());
-        action->set_pmt_value(param->pmt_value());
-    }
-
-    void consume_each(int num, std::vector<block_work_input_sptr>& work_input)
-    {
-        for (auto& input : work_input) {
-            input->consume(num);
-        }
-    }
-
-    void produce_each(int num, std::vector<block_work_output_sptr>& work_output)
-    {
-        for (auto& output : work_output) {
-            output->produce(num);
-        }
-    }
-
-    void set_output_multiple(int multiple)
-    {
-        if (multiple < 1)
-            throw std::invalid_argument("block::set_output_multiple");
-
-        d_output_multiple_set = true;
-        d_output_multiple = multiple;
-    }
-    int output_multiple() const { return d_output_multiple; }
-    bool output_multiple_set() const { return d_output_multiple_set; }
-
-    void set_relative_rate(double relative_rate) { d_relative_rate = relative_rate; }
-    double relative_rate() const { return d_relative_rate; }
-
-    virtual int get_param_id(const std::string& id){ return d_param_str_map[id]; }
-
-    /** 
-     * Every Block should have a param update message handler
-     */
-    virtual void handle_msg_param_update(pmtf::wrap msg)
-    {
-        // Update messages are a pmtf::map with the name of 
-        // the param as the "id" field, and the pmt::wrap
-        // that holds the update as the "value" field
-
-        auto id = pmtf::get_string(pmtf::get_map<std::string>(msg)["id"]).value();
-        auto value = pmtf::get_map<std::string>(msg)["value"];
-
-        request_parameter_change(get_param_id(id),
-                                    value, false);
-        
-    }
-
-    gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
+  /**
+   * Every Block should have a param update message handler
+   */
+  virtual void handle_msg_param_update(pmtf::wrap msg);
+  gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 
 typedef block::sptr block_sptr;
