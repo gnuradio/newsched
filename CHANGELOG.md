@@ -7,10 +7,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### meson build
 - Add .gitignore explicitly where autogeneration is expected rather than a global filter
 
-### soapy
-- Restructure the code generation to allow multiple GRC files from a single block yaml
-- Generate a .grc block for RTL-SDR and HackRF
-
 ### runtime
 - Allow for itemsize of 0 by default to be connected to anything
   - This allows a, e.g., copy block to be connected with no templating or setting of the item size
@@ -27,7 +23,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add default cmd message port to all blocks
 - Generic factory interface using yaml string configuration
 - Prefix path loading relative path to lib to give correct gr::prefix()
-  
+- Moved implementation out of block.hh
+
 ### qtgui
 - Update fft and filter blocks to allow for function qtgui
 
@@ -39,6 +36,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Port ID from the yml is rendered into the grc file
 - Port in recent changes from gnuradio 
 
+### blocks
+- Fixed bug in throttle that was causing flowgraph to hang
+
+### soapy
+- Restructure the code generation to allow multiple GRC files from a single block yaml
+- Generate a .grc block for RTL-SDR and HackRF
+
+### Scheduler-NBT
+- Update the logic to "kick" the scheduler when input has been blocked
+  
 ## [0.1.1] - [2021.11.11]
 
 Didn't take long to require a patch from the first release
