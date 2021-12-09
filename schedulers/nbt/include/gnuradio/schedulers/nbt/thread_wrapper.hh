@@ -44,6 +44,7 @@ private:
 
     bool d_flushing = false;
     int d_flush_cnt = 0;
+    std::atomic<bool> kick_pending = false;
 
 public:
     typedef std::shared_ptr<thread_wrapper> sptr;
