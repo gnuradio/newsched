@@ -65,10 +65,5 @@ newblock_cuda<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
-template class newblock<std::int16_t>;
-template class newblock<std::int32_t>;
-template class newblock<float>;
-template class newblock<gr_complex>;
-
 } /* namespace newmod */
 } /* namespace gr */
