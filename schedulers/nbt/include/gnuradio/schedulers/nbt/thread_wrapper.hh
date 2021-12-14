@@ -1,7 +1,7 @@
 #pragma once
 
-#include <gnuradio/block_group_properties.hh>
 #include <gnuradio/block.hh>
+#include <gnuradio/block_group_properties.hh>
 #include <gnuradio/concurrent_queue.hh>
 #include <gnuradio/flowgraph_monitor.hh>
 #include <gnuradio/neighbor_interface.hh>
@@ -73,6 +73,12 @@ public:
 
     void start();
     void stop();
+    void stop_blocks()
+    {
+        for (auto& b : d_blocks) {
+            b->stop();
+        }
+    }
     void wait();
     void run();
 
@@ -81,7 +87,12 @@ public:
     void handle_parameter_change(std::shared_ptr<param_change_action> item);
     static void thread_body(thread_wrapper* top);
 
-    void start_flushing() { d_flushing = true; d_flush_cnt = 0;}
+    void start_flushing()
+    {
+        d_flushing = true;
+        d_flush_cnt = 0;
+        push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    }
 };
 } // namespace schedulers
 } // namespace gr

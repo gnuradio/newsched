@@ -44,21 +44,9 @@ protected:
     message_port_sptr _msg_param_update;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
 
-    void notify_scheduler_input()
-    {
-        if (p_scheduler) {
-            this->p_scheduler->push_message(
-                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
-        }
-    }
-
-    void notify_scheduler_output()
-    {
-        if (p_scheduler) {
-            this->p_scheduler->push_message(
-                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT));
-        }
-    }
+    void notify_scheduler();
+    void notify_scheduler_input();
+    void notify_scheduler_output();
 
 public:
     /**

@@ -84,24 +84,26 @@ bool thread_wrapper::handle_work_notification()
         if (elem.second != executor_iteration_status::BLKD_IN &&
             elem.second != executor_iteration_status::BLKD_OUT) {
             // Ignore source blocks
-            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size())
-            {
+            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size()) {
                 all_blkd = false;
             }
         }
     }
 
-    if (d_flushing) { 
+    if (d_flushing) {
         if (all_blkd) {
             if (++d_flush_cnt >= 8) {
-                gr_log_debug(_debug_logger, "All blocks in thread {} blocked, pushing flushed", id());
+                gr_log_debug(_debug_logger,
+                             "All blocks in thread {} blocked, pushing flushed",
+                             id());
                 d_fgmon->push_message(
                     fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
                 return false;
+            } else {
+                push_message(std::make_shared<scheduler_action>(
+                    scheduler_action_t::NOTIFY_ALL, 0));
             }
-        }
-        else
-        {
+        } else {
             d_flush_cnt = 0;
             gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
         }
@@ -119,7 +121,8 @@ bool thread_wrapper::handle_work_notification()
     //             std::chrono::milliseconds(100)); // make configurable
     //         this->kick_pending = false;
     //         this->push_message(
-    //             std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT, 0));
+    //             std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT,
+    //             0));
     //     });
 
     //     th.detach();
@@ -162,13 +165,13 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
-    thread::set_thread_name(
-        GetCurrentThread(),
-        fmt::format("{}{}", block->name(), block->unique_id()));
+    thread::set_thread_name(GetCurrentThread(),
+                            fmt::format("{}{}", block->name(), block->unique_id()));
 #else
     thread::set_thread_name(pthread_self(),
-                            fmt::format("{}{}", top->d_block_group.name(),
-                                top->d_block_group.blocks()[0]->id()));
+                            fmt::format("{}{}",
+                                        top->d_block_group.name(),
+                                        top->d_block_group.blocks()[0]->id()));
 #endif
 
     // Set thread affinity if it was set before fg was started.
@@ -186,7 +189,6 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
     bool blocking_queue = true;
     while (!top->d_thread_stopped) {
-
         scheduler_message_sptr msg;
 
         // try to pop messages off the queue
@@ -194,12 +196,10 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         bool do_some_work = false;
         while (valid) {
             if (blocking_queue) {
-                gr_log_debug(top->_debug_logger,
-                                     "Going into blocking queue");
+                gr_log_debug(top->_debug_logger, "Going into blocking queue");
                 valid = top->pop_message(msg);
             } else {
-                gr_log_debug(top->_debug_logger,
-                                     "Going into nonblocking queue");
+                gr_log_debug(top->_debug_logger, "Going into nonblocking queue");
 
                 valid = top->pop_message_nonblocking(msg);
             }
@@ -234,6 +234,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                                      "fgm signaled EXIT, exiting thread");
                         // fgmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
+                        top->stop_blocks();
                         top->d_thread_stopped = true;
                         break;
                     case scheduler_action_t::NOTIFY_OUTPUT:
