@@ -1,6 +1,5 @@
 #pragma once
 
-#include <gnuradio/port.hh>
 #include <pmtf/wrap.hpp>
 
 namespace gr {

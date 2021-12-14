@@ -3,6 +3,7 @@
 #include <gnuradio/api.h>
 #include <gnuradio/buffer.hh>
 #include <gnuradio/neighbor_interface.hh>
+#include <gnuradio/scheduler_message.hh>
 #include <gnuradio/parameter_types.hh>
 #include <algorithm>
 #include <string>
