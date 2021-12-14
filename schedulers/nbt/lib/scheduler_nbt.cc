@@ -27,9 +27,7 @@ void scheduler_nbt::add_block_group(const std::vector<block_sptr>& blocks,
 
 void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
 {
-    for (auto& b : fg->calc_used_blocks()) {
-        b->set_scheduler(base());
-    }
+
 
     auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
     bufman->initialize_buffers(fg, _default_buf_properties);
@@ -49,7 +47,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
             _threads.push_back(t);
 
             std::vector<node_sptr> node_vec;
-            for (auto& b : bg.blocks()) { // domain adapters don't show up as blocks
+            for (auto& b : bg.blocks()) {
                 auto it = std::find(blocks.begin(), blocks.end(), b);
                 if (it != blocks.end()) {
                     blocks.erase(it);
@@ -57,6 +55,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
 
                 node_vec.push_back(b);
 
+                b->set_parent_intf(t);
                 for (auto& p : b->all_ports()) {
                     p->set_parent_intf(t); // give a shared pointer to the scheduler class
                 }
@@ -74,6 +73,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
         auto t = thread_wrapper::make(id(), block_group_properties({ b }), bufman, fgmon);
         _threads.push_back(t);
 
+        b->set_parent_intf(t);
         for (auto& p : b->all_ports()) {
             p->set_parent_intf(t); // give a shared pointer to the scheduler class
         }
