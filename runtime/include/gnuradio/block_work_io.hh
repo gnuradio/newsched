@@ -25,8 +25,11 @@ struct block_work_input {
     }
 
     template <typename T>
-    const T* items() const { return static_cast<const T*>(buffer->read_ptr()); }
-    const void * raw_items() const { return buffer->read_ptr(); }
+    const T* items() const
+    {
+        return static_cast<const T*>(buffer->read_ptr());
+    }
+    const void* raw_items() const { return buffer->read_ptr(); }
 
     uint64_t nitems_read() { return buffer->total_read(); }
 
@@ -37,8 +40,7 @@ struct block_work_input {
         return buffer->tags_in_window(item_start, item_end);
     }
 
-    static std::vector<const void*>
-    all_items(const std::vector<sptr>& work_inputs)
+    static std::vector<const void*> all_items(const std::vector<sptr>& work_inputs)
     {
         std::vector<const void*> ret(work_inputs.size());
         for (size_t idx = 0; idx < work_inputs.size(); idx++) {
@@ -68,8 +70,11 @@ struct block_work_output {
     }
 
     template <typename T>
-    T* items() const { return static_cast<T*>(buffer->write_ptr()); }
-    void * raw_items() const { return buffer->write_ptr(); }
+    T* items() const
+    {
+        return static_cast<T*>(buffer->write_ptr());
+    }
+    void* raw_items() const { return buffer->write_ptr(); }
 
     uint64_t nitems_written() { return buffer->total_written(); }
     void produce(int num) { n_produced = num; }
@@ -81,8 +86,7 @@ struct block_work_output {
         buffer->add_tag(offset, key, value, srcid);
     }
 
-    static std::vector<void*>
-    all_items(const std::vector<sptr>& work_outputs)
+    static std::vector<void*> all_items(const std::vector<sptr>& work_outputs)
     {
         std::vector<void*> ret(work_outputs.size());
         for (size_t idx = 0; idx < work_outputs.size(); idx++) {
@@ -107,6 +111,9 @@ enum class work_return_code_t {
     WORK_DONE =
         -1, /// this block has completed its processing and the flowgraph should be done
     WORK_OK = 0, /// work call was successful and return values in i/o structs are valid
+    WORK_CALLBACK_INITIATED =
+        1, /// rather than blocking in the work function, the block will call back to the
+           /// parent interface when it is ready to be called again
 };
 
 } // namespace gr

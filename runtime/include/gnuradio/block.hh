@@ -9,7 +9,7 @@
 #include <gnuradio/block_work_io.hh>
 #include <gnuradio/gpdict.hh>
 #include <gnuradio/node.hh>
-
+#include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/parameter.hh>
 
 #include <pmtf/map.hpp>
@@ -18,7 +18,6 @@
 
 namespace gr {
 
-class scheduler; // Forward declaration to scheduler class
 class pyblock_detail;
 /**
  * @brief The abstract base class for all signal processing blocks in the GR
@@ -40,7 +39,7 @@ private:
   double d_relative_rate = 1.0;
 
 protected:
-  std::shared_ptr<scheduler> p_scheduler = nullptr;
+  neighbor_interface_sptr p_scheduler = nullptr;
   std::map<std::string, int> d_param_str_map;
   message_port_sptr _msg_param_update;
   std::shared_ptr<pyblock_detail> d_pyblock_detail;
@@ -92,7 +91,7 @@ public:
     return work(work_input, work_output);
   };
 
-  void set_scheduler(std::shared_ptr<scheduler> sched) { p_scheduler = sched; }
+  void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
   parameter_config d_parameters;
   void add_param(param_sptr p) { d_parameters.add(p); }
   pmtf::wrap request_parameter_query(int param_id);
