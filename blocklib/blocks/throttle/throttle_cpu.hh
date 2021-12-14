@@ -2,6 +2,7 @@
 
 #include <gnuradio/blocks/throttle.hh>
 #include <chrono>
+#include <atomic>
 
 namespace gr {
 namespace blocks {
@@ -31,6 +32,8 @@ protected:
     uint64_t d_total_samples;
     double d_sample_rate;
     std::chrono::duration<double> d_sample_period;
+
+    std::atomic<bool> d_sleeping = false;
 };
 
 } // namespace blocks
