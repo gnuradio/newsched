@@ -62,7 +62,7 @@ if templated_arg:
     files = os.listdir(new_block_dir)
     for file in files:
         if '_t.' not in file:
-            if file == 'meson.build': # leave meson.build as is
+            if file == 'meson.build' or file == '.gitignore': # leave meson.build as is
                 continue
             else:
                 os.remove(os.path.join(new_block_dir, file))
