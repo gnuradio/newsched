@@ -15,11 +15,11 @@ block::block(const std::string& name)
     add_port(_msg_param_update);
 }
 
-void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p) { d_pyblock_detail = p; }
-std::shared_ptr<pyblock_detail> block::pb_detail()
+void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
 {
-    return d_pyblock_detail;
+    d_pyblock_detail = p;
 }
+std::shared_ptr<pyblock_detail> block::pb_detail() { return d_pyblock_detail; }
 bool block::start()
 {
     d_running = true;
@@ -153,4 +153,30 @@ pmtf::wrap block::request_parameter_query(int param_id)
         return action->pmt_value();
     }
 }
+
+void block::notify_scheduler()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL));
+    }
+}
+
+void block::notify_scheduler_input()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
+    }
+}
+
+void block::notify_scheduler_output()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT));
+    }
+}
+
+
 } // namespace gr
