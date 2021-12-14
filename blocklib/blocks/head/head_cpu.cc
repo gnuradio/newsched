@@ -42,6 +42,9 @@ work_return_code_t head_cpu::work(std::vector<block_work_input_sptr>& work_input
     d_ncopied_items += n;
     work_output[0]->n_produced = n;
 
+    if (d_ncopied_items >= d_nitems) {
+        return work_return_code_t::WORK_DONE; // Done!
+    }
     return work_return_code_t::WORK_OK;
 }
 
