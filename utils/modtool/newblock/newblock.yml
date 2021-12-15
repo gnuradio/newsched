@@ -13,7 +13,7 @@ parameters:
     grc:
         hide: part
 
-# Exampler Ports
+# Example Ports
 ports:
 -   domain: stream
     id: in
