@@ -7,6 +7,7 @@ namespace blocks {
 work_return_code_t nop_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                   std::vector<block_work_output_sptr>& work_output)
 {
+    produce_each(work_output[0]->n_items, work_output);
     return work_return_code_t::WORK_OK;
 }
 

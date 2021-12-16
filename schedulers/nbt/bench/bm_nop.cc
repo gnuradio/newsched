@@ -62,9 +62,9 @@ int main(int argc, char* argv[])
     }
 
     {
-        auto src = blocks::nop_source::make({sizeof(gr_complex) * veclen});
-        auto head = blocks::nop_head::make({sizeof(gr_complex) * veclen, samples / veclen});
-        auto snk = blocks::null_sink::make({sizeof(gr_complex) * veclen});
+        auto src = blocks::nop_source::make({1, sizeof(gr_complex) * veclen});
+        auto head = blocks::nop_head::make({samples / veclen, sizeof(gr_complex) * veclen });
+        auto snk = blocks::null_sink::make({1, sizeof(gr_complex) * veclen});
         std::vector<blocks::nop::sptr> blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
             blks[i] = blocks::nop::make({sizeof(gr_complex) * veclen});

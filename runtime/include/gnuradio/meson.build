@@ -39,4 +39,10 @@ runtime_headers = [
     'pyblock_detail.hh'
 ]
 
+runtime_headers += [
+    'moodycamel/blockingconcurrentqueue.h',
+    'moodycamel/concurrentqueue.h',
+    'moodycamel/lightweightsemaphore.h',
+]
+
 install_headers(runtime_headers, subdir : 'gnuradio')
