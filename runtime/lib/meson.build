@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, zmq_dep]
 
 libdir = get_option('libdir')
 prefix = get_option('prefix')
@@ -46,7 +46,8 @@ runtime_sources = [
   'buffer_cpu_vmcirc.cc',
   'buffer_cpu_vmcirc_sysv_shm.cc',
   # mmap requires librt - FIXME - handle this a conditional dependency
-  'buffer_cpu_vmcirc_mmap_shm_open.cc'
+  'buffer_cpu_vmcirc_mmap_shm_open.cc',
+  'buffer_net_zmq.cc'
 ]
 
 if USE_CUDA
