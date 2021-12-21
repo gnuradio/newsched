@@ -28,7 +28,8 @@ parameters:
     settable: false
 -   id: window
     label: Window
-    dtype: const std::vector<float>&
+    dtype: float
+    container: vector
     settable: false
 -   id: shift
     label: Shift

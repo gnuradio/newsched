@@ -24,6 +24,7 @@ parameters:
     label: Tag Propagation Policy
     dtype: gr::tag_propagation_policy_t
     settable: false
+    serializable: false
 -   id: itemsize
     label: Item Size
     dtype: size_t

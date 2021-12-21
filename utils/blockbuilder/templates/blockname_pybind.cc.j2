@@ -29,7 +29,7 @@ void bind_{{block}}(py::module& m)
         //.value("base", ::gr::{{module}}::{{block}}::available_impl::BASE ) 
         .export_values();
 
-    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] }} {{ param['id'] }},{%endfor%}{%endif%} gr::{{module}}::{{block}}::available_impl impl) {
+    {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{{ param['dtype'] if param['container'] != 'vector' else "std::vector<" + param['dtype'] + ">"}} {{ param['id'] }},{%endfor%}{%endif%} gr::{{module}}::{{block}}::available_impl impl) {
                        return {{block}}::make({ {% if parameters %}{% for param in parameters -%}{{ param['id'] }}{{ ", " if not loop.last }}{%endfor%}{%endif%} }, impl);
                    }),
         {% if parameters %} {% for param in parameters -%}

@@ -69,6 +69,7 @@ parameters:
     dtype: gui_hint
     cotr: false
     hide: part
+    serializable: false
 
 ports:
 -   domain: stream

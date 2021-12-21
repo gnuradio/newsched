@@ -21,7 +21,8 @@ typekeys:
 parameters:
 -   id: data
     label: Data
-    dtype: std::vector<T>
+    dtype: T
+    container: vector
     settable: false
 -   id: repeat
     label: Repeat
@@ -35,9 +36,11 @@ parameters:
     default: 1
 -   id: tags
     label: Tags
-    dtype: std::vector<gr::tag_t>
+    dtype: gr::tag_t
+    container: vector
     settable: false
     default: std::vector<gr::tag_t>()
+    serializable: false
 
 ports:
 -   domain: stream

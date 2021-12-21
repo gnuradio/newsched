@@ -3,6 +3,7 @@
 #include <pmtf/wrap.hpp>
 #include <pmtf/scalar.hpp>
 #include <pmtf/vector.hpp>
+#include <pmtf/string.hpp>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -103,6 +104,31 @@ public:
 protected:
     T _value;
 };
+
+class string_param : public param
+{
+public:
+    typedef std::shared_ptr<string_param> sptr;
+    static sptr make(const uint32_t id, const std::string name, const std::string& value)
+    {
+        return std::make_shared<string_param>(id, name, value);
+    }
+    string_param(const uint32_t id, const std::string name, const std::string& value)
+        : param(id, name, pmtf::string(value))
+    {
+    }
+    virtual ~string_param() {}
+
+    void set_value(const std::string& val)
+    {
+        set_pmt_value(pmtf::wrap(val));
+    }
+    std::string value()
+    {
+        return pmtf::get_string(pmt_value()).value();
+    }
+};
+
 
 class param_action
 {

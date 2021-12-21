@@ -29,7 +29,7 @@ public:
      * \param offset  begin this many items into file
      * \param len     produce only items [offset, offset+len)
      */
-    void open(const char* filename, bool repeat, uint64_t offset = 0, uint64_t len = 0);
+    void open(const std::string& filename, bool repeat, uint64_t offset = 0, uint64_t len = 0);
 
     /*!
      * \brief Close the file handle.

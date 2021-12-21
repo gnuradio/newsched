@@ -34,7 +34,11 @@ class {{ block }} : virtual public {{blocktype}}
 {% macro block_args(parameters) -%}
     struct block_args {
         {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr'] == true %}
+        {% if param['container'] == 'vector' -%}
+        std::vector<{{ param['dtype'] }}> {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
+        {% else %}
         {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
+        {% endif %}
         {% endif %}{% endfor -%}{% endif %}};
 {% endmacro %}
 
@@ -167,10 +171,14 @@ public:
         {% endif -%}
     {% endfor -%}
 protected:
-    enum params : uint32_t { {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}id_{{p['id']}},{% endif %}{% endfor %} num_params };
+    enum params : uint32_t { {% for p in parameters -%}{#% if p['settable'] or p['gettable'] %#}id_{{p['id']}},{#% endif %#}{% endfor %} num_params };
 {% for p in parameters -%}
-{% if p['settable'] or p['gettable'] %}
+{#% if p['settable'] or p['gettable'] %#}{% if 'serializable' not in p or p['serializable'] %}
+    {% if 'string' in p['dtype'] %}
+    string_param::sptr param_{{p['id']}};
+    {% else %}
     typename {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::sptr param_{{p['id']}};
+    {% endif %}
 {% endif %}
 {% endfor -%}
 {% endif -%}
@@ -180,9 +188,14 @@ protected:
 {% if parameters -%}
     d_param_str_map = {{"{"}} {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endif %} {% endfor -%}{{"}"}};
 {% for p in parameters -%}
-{% if p['settable'] or p['gettable']%}
+{#% if p['settable'] or p['gettable']%#}{% if 'serializable' not in p or p['serializable'] %}
+    {% if 'string' in p['dtype'] %}
+    param_{{p['id']}} = string_param::make(params::id_{{p['id']}}, 
+        "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    {% else %}
     param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
         "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    {% endif %}
     add_param(param_{{p['id']}});
 {% endif %}
 {% endfor -%}
