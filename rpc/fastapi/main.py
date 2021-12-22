@@ -5,6 +5,8 @@ from pydantic import BaseModel
 import importlib
 import time
 from newsched import gr
+import json
+import numpy as np
 
 class FlowgraphProperties(BaseModel):
     name: str
@@ -23,22 +25,20 @@ class Session:
         self.edges = {}
 
     # {"name": "Foo"}
-    def create_flowgraph(self, fg):
-        self.fgs[fg.name] = gr.flowgraph(fg.name)
+    def create_flowgraph(self, fg_name):
+        self.fgs[fg_name] = gr.flowgraph(fg_name)
         return "{status: 0}"
 
-    def start_flowgraph(self, fg):
-        self.fgs[fg.name].start()
+    def start_flowgraph(self, fg_name):
+        self.fgs[fg_name].start()
         return "{status: 0}"
 
-    def wait_flowgraph(self, fg):
-        self.fgs[fg.name].wait()
-        print('flowgraph done')
-        time.sleep(3)
+    def wait_flowgraph(self, fg_name):
+        self.fgs[fg_name].wait()
         return "{status: 0}"
 
-    def stop_flowgraph(self, fg):
-        self.fgs[fg.name].stop()
+    def stop_flowgraph(self, fg_name):
+        self.fgs[fg_name].stop()
         return "{status: 0}"
 
     # {"name": "src", "module": "blocks", "id": "vector_source_c", "properties": {"data": [1,2,3,4,5], "repeat": false }}
@@ -46,24 +46,42 @@ class Session:
     # {"name": "copy_1", "module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
     # {"name": "snk", "module": "blocks", "id": "vector_sink_c", "properties": {}}
 
-    def create_block(self, payload):
-        print(payload)
-        self.blocks[payload['name']] = importlib.import_module(
+    def create_block(self, block_name, payload):
+        self.blocks[block_name] = importlib.import_module(
             'newsched.' + payload['module']).__getattribute__(payload['id'])(**payload['properties'])
-
-        print(self.blocks[payload['name']])
 
         return "{status: 0}"
 
+    def block_method(self, block_name, method, payload):
+
+        ret = {}
+        ret['result'] = self.blocks[block_name].__getattribute__(method)(**payload)
+        print(ret['result'])
+
+        print(type(ret['result']))
+        print(type(ret['result'][0]))
+        def default_serializer(z):
+            # if isinstance(z, list) and isinstance(z[0], complex):
+            #     return {'re': [x.real() for x in z], 'im': [x.imag() for x in z]}
+            if isinstance(z, complex):
+                return (z.real, z.imag)
+
+            type_name = z.__class__.__name__
+            raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
+
+
+        # return ret
+        return json.dumps(ret, default = default_serializer)
+
     # {"flowgraph": "Foo", "src": ["copy_0",0], "snk": ["copy_1",1] }
     # {"flowgraph": "Foo", "src": ["copy_0",0], "snk": ["copy_1",1] }
-    def connect_blocks(self, payload):
+    def connect_blocks(self, fg_name, payload):
         print(self.blocks)
         src  = (self.blocks[payload['src'][0]],payload['src'][1])
         dest = (self.blocks[payload['dest'][0]],payload['dest'][1])
         print(src)
         print(dest)
-        edge = self.fgs[payload['flowgraph']].connect(src, dest)
+        edge = self.fgs[fg_name].connect(src, dest)
 
         # if the edge is named in the payload, the store the 
         if 'edge_name' in payload:
@@ -92,29 +110,33 @@ def create_app():
     async def root():
         return {"message": "Hello World"}
 
-    @app.post("/flowgraph/create")
-    async def create_flowgraph(fg: FlowgraphProperties):
-        return session.create_flowgraph(fg)
+    @app.post("/flowgraph/{fg_name}/create")
+    async def create_flowgraph(fg_name: str):
+        return session.create_flowgraph(fg_name)
 
-    @app.post("/flowgraph/start")
-    async def start_flowgraph(fg: FlowgraphProperties):
-        return session.start_flowgraph(fg)
+    @app.post("/flowgraph/{fg_name}/start")
+    async def start_flowgraph(fg_name: str):
+        return session.start_flowgraph(fg_name)
 
-    @app.post("/flowgraph/wait")
-    async def wait_flowgraph(fg: FlowgraphProperties):
-        return session.wait_flowgraph(fg)
+    @app.post("/flowgraph/{fg_name}/wait")
+    async def wait_flowgraph(fg_name: str):
+        return session.wait_flowgraph(fg_name)
 
-    @app.post("/flowgraph/stop")
-    async def stop_flowgraph(fg: FlowgraphProperties):
-        return session.stop_flowgraph(fg)
+    @app.post("/flowgraph/{fg_name}/stop")
+    async def stop_flowgraph(fg_name: str):
+        return session.stop_flowgraph(fg_name)
 
-    @app.post("/block/create")
-    async def create_block(payload: dict = Body(...)):
-        return session.create_block(payload)
+    @app.post("/block/{block_name}/create")
+    async def create_block(block_name: str, payload: dict = Body(...)):
+        return session.create_block(block_name, payload)
 
-    @app.post("/flowgraph/connect")
-    async def connect_blocks(payload: dict = Body(...)):
-        return session.connect_blocks(payload)
+    @app.post("/block/{block_name}/{method}")
+    async def block_method(block_name: str, method: str, payload: dict = Body(...)):
+        return session.block_method(block_name, method, payload)
+
+    @app.post("/flowgraph/{fg_name}/connect")
+    async def connect_blocks(fg_name: str, payload: dict = Body(...)):
+        return session.connect_blocks(fg_name, payload)
 
     return app
 
