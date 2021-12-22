@@ -1,0 +1,63 @@
+syntax = "proto3";
+package gnuradio;
+
+// The greeting service definition.
+service GNURadio {
+  // Sends a greeting
+  rpc CreateFlowgraph (FlowgraphCreateRequest) returns (GenericReply) {}
+  rpc CreateBlock (BlockCreateRequest) returns (GenericReply) {}
+  rpc ConnectBlocks (FlowgraphConnectBlocksRequest) returns (FlowgraphConnectBlocksReply) {}
+  rpc StartFlowgraph (FlowgraphActionRequest) returns (GenericReply) {}
+  rpc StopFlowgraph (FlowgraphActionRequest) returns (GenericReply) {}
+  rpc WaitFlowgraph (FlowgraphActionRequest) returns (GenericReply) {}
+}
+
+// The request message containing the user's name.
+message FlowgraphCreateRequest {
+  string name = 1;
+  bool secondary = 2;
+}
+
+message FlowgraphActionRequest {
+  string name = 1;
+}
+
+message FlowgraphConnectBlocksRequest {
+  string name = 1;
+  string src_block = 2;
+  oneof src_port {
+    string src_port_name = 3;
+    int32 src_port_index = 4;
+  }
+  string dest_block = 5;
+  oneof dest_port {
+    string dest_port_name = 6;
+    int32 dest_port_index = 7;
+  }
+  optional string edge_name = 8;
+}
+
+message FlowgraphConnectBlocksReply {
+  string message = 1;
+  string details = 2;
+  string edge_name = 3;
+}
+
+message BlockCreateRequest {
+  string name = 1;
+  string module = 2;
+  string block = 3;
+  string parameters = 4;
+}
+
+message BlockMethodRequest {
+  string name = 1;
+  string method = 2;
+  string parameters = 3;
+}
+
+
+message GenericReply {
+  string message = 1;
+  string details = 2;
+}
