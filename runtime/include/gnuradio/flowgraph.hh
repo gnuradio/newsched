@@ -1,38 +1,41 @@
 #pragma once
 
+#include <gnuradio/domain.hh>
 #include <gnuradio/flowgraph_monitor.hh>
 #include <gnuradio/graph.hh>
 #include <gnuradio/scheduler.hh>
-#include <gnuradio/domain.hh>
 
 namespace gr {
 
 /**
- * @brief Top level graph representing the flowgraph 
- * 
+ * @brief Top level graph representing the flowgraph
+ *
  */
 class flowgraph : public graph
 {
 private:
     std::vector<scheduler_sptr> d_schedulers;
     flat_graph_sptr d_flat_graph;
-    std::vector<graph_sptr> d_subgraphs;
     std::vector<flat_graph_sptr> d_flat_subgraphs;
 
     bool _monitor_thread_stopped = false;
     flowgraph_monitor_sptr d_fgmon;
-    bool _validated = false; // TODO - update when connections are added or things are changed
+    bool _validated =
+        false; // TODO - update when connections are added or things are changed
 
     // Dynamically Loaded Default Scheduler
     const std::string s_default_scheduler_name = "nbt";
+    const bool s_secondary = false;
     scheduler_sptr d_default_scheduler = nullptr;
     bool d_default_scheduler_inuse = true;
 
 public:
-    
     typedef std::shared_ptr<flowgraph> sptr;
-    static sptr make(const std::string& name = "flowgraph") { return std::make_shared<flowgraph>(name); }
-    flowgraph(const std::string& name = "flowgraph");
+    static sptr make(const std::string& name = "flowgraph", bool secondary = false)
+    {
+        return std::make_shared<flowgraph>(name, secondary);
+    }
+    flowgraph(const std::string& name = "flowgraph", bool secondary = false);
     virtual ~flowgraph() { _monitor_thread_stopped = true; };
     void set_scheduler(scheduler_sptr sched);
     void set_schedulers(std::vector<scheduler_sptr> sched);

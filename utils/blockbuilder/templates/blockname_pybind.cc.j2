@@ -41,7 +41,7 @@ void bind_{{block}}(py::module& m)
         {% endfor %}
         {% if parameters %}{% for p in parameters -%}
         {% if p['settable'] %}
-        .def("set_{{p['id']}}", &gr::{{module}}::{{block}}::set_{{p['id']}})
+        .def("set_{{p['id']}}", &gr::{{module}}::{{block}}::set_{{p['id']}},py::arg("{{p['id']}}"))
         {% endif -%}
         {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
         .def("{{p['id']}}", &gr::{{module}}::{{block}}::{{p['id']}})

@@ -6,7 +6,7 @@
 namespace gr {
 
 
-flowgraph::flowgraph(const std::string& name)
+flowgraph::flowgraph(const std::string& name, bool secondary) : s_secondary(secondary)
 {
     set_alias(name);
 
