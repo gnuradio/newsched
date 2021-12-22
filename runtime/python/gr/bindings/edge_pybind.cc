@@ -23,6 +23,6 @@ void bind_edge(py::module& m)
 
     py::class_<edge, std::shared_ptr<edge>>(m, "edge")
     .def("set_custom_buffer", &edge::set_custom_buffer)
+    .def("identifier", &edge::identifier)
         ;
-
 }
