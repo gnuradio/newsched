@@ -37,8 +37,7 @@ class add_2_f32_1_f32(gr.sync_block):
 
 class add_ff_numpy(math.add_ff):
     def __init__(self, dims=[1]):
-        math.add_ff.__init__(self, impl = math.add_ff.available_impl.base)
-        self.set_py_handle(self)
+        math.add_ff.__init__(self, impl = math.add_ff.available_impl.cpu)
 
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items
