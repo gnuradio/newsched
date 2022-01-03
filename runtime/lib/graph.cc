@@ -156,8 +156,10 @@ node_vector_t graph::calc_used_nodes()
 
     // Collect all blocks in the edge list
     for (auto& p : edges()) {
-        tmp.push_back(p->src().node());
-        tmp.push_back(p->dst().node());
+        if (p->src().node())
+            tmp.push_back(p->src().node());
+        if (p->dst().node())
+            tmp.push_back(p->dst().node());
     }
     for (auto n : _orphan_nodes) {
         tmp.push_back(n);
@@ -189,7 +191,8 @@ void graph::add_edge(edge_sptr edge)
 {
     // TODO: check that edge is not already in the graph
     _edges.push_back(edge);
-    if (edge->src().port()->type() == gr::port_type_t::STREAM)
+    if ((edge->src().port() && edge->src().port()->type() == gr::port_type_t::STREAM) ||
+        (edge->dst().port() && edge->dst().port()->type() == gr::port_type_t::STREAM))
     {
         _stream_edges.push_back(edge);
     }

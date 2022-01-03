@@ -93,10 +93,11 @@ void flowgraph::check_connections(const graph_sptr& g)
 {
     // Are all non-optional ports connected to something
     for (auto& node : g->calc_used_nodes()) {
+        if (node) {
         for (auto& port : node->output_ports()) {
-            if (!port->optional() && port->connected_ports().size() == 0) {
-                throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
-            }
+            // if (!port->optional() && port->connected_ports().size() == 0) {
+            //     throw std::runtime_error("Nothing connected [1] to " + node->name() + ": " + port->name());
+            // }
         }
         for (auto& port : node->input_ports()) {
             if (!port->optional()) {
@@ -104,17 +105,18 @@ void flowgraph::check_connections(const graph_sptr& g)
                 if (port->type() == port_type_t::STREAM) {
 
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
+                        // throw std::runtime_error("Nothing connected [2] to " + node->name() + ": " + port->name());
                     } else if (port->connected_ports().size() > 1) {
                         throw std::runtime_error("More than 1 port connected to " +
                                                  port->alias());
                     }
                 } else if (port->type() == port_type_t::MESSAGE) {
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
+                        throw std::runtime_error("Nothing connected [3] to " + node->name() + ": " + port->name());
                     }
                 }
             }
+        }
         }
     }
 

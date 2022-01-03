@@ -11,39 +11,41 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
         // every edge needs a buffer
         auto num_items = get_buffer_num_items(e, fg);
 
-        // If buffer has not yet been created, e.g. 1:N block connection
-        if (!e->src().port()->buffer()) {
+        if (e->src().port()) {
+            // If buffer has not yet been created, e.g. 1:N block connection
+            if (!e->src().port()->buffer()) {
 
-            // If src block is in this domain
-            if (std::find(fg->nodes().begin(), fg->nodes().end(), e->src().node()) !=
-                fg->nodes().end()) {
+                // If src block is in this domain
+                if (std::find(fg->nodes().begin(), fg->nodes().end(), e->src().node()) !=
+                    fg->nodes().end()) {
 
-                buffer_sptr buf;
-                if (e->has_custom_buffer()) {
-                    buf = e->buffer_factory()(
-                        num_items, e->itemsize(), e->buf_properties());
-                } else {
-                    buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
+                    buffer_sptr buf;
+                    if (e->has_custom_buffer()) {
+                        buf = e->buffer_factory()(
+                            num_items, e->itemsize(), e->buf_properties());
+                    } else {
+                        buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
+                    }
+                    e->src().port()->set_buffer(buf);
+
+                    GR_LOG_INFO(_logger,
+                                "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                                e->identifier(),
+                                buf->type(),
+                                buf->buf_size(),
+                                buf->num_items(),
+                                buf->item_size());
                 }
-                e->src().port()->set_buffer(buf);
-
+            } else {
+                auto buf = e->src().port()->buffer();
                 GR_LOG_INFO(_logger,
-                            "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
+                            "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
                             e->identifier(),
                             buf->type(),
                             buf->buf_size(),
                             buf->num_items(),
                             buf->item_size());
             }
-        } else {
-            auto buf = e->src().port()->buffer();
-            GR_LOG_INFO(_logger,
-                        "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
-                        e->identifier(),
-                        buf->type(),
-                        buf->buf_size(),
-                        buf->num_items(),
-                        buf->item_size());
         }
     }
 
@@ -64,23 +66,22 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             if (std::find(fg->nodes().begin(), fg->nodes().end(), ed[0]->dst().node()) !=
                 fg->nodes().end()) {
 
-                if (ed[0]->buf_properties() && ed[0]->buf_properties()->reader_factory())
-                {
+                if (ed[0]->buf_properties() &&
+                    ed[0]->buf_properties()->reader_factory()) {
                     GR_LOG_INFO(_logger,
                                 "Creating Buffer Reader for Edge: {}, Independently",
                                 ed[0]->identifier());
-                    p->set_buffer_reader(
-                        ed[0]->buf_properties()->reader_factory()( ed[0]->dst().port()->itemsize(), ed[0]->buf_properties()));
+                    p->set_buffer_reader(ed[0]->buf_properties()->reader_factory()(
+                        ed[0]->dst().port()->itemsize(), ed[0]->buf_properties()));
                     p->buffer_reader()->set_parent_intf(sched_intf);
-                }
-                else
-                {
-                    GR_LOG_INFO(_logger,
-                                "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
-                                ed[0]->identifier(),
-                                ed[0]->src().node()->alias());
-                    p->set_buffer_reader(
-                        ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
+                } else {
+                    GR_LOG_INFO(
+                        _logger,
+                        "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
+                        ed[0]->identifier(),
+                        ed[0]->src().identifier());
+                    p->set_buffer_reader(ed[0]->src().port()->buffer()->add_reader(
+                        ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
                 }
             }
         }
@@ -114,7 +115,7 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
         }
     }
 
-    size_t nitems = item_size == 0 ?  0 : (buf_size * 2) / item_size;
+    size_t nitems = item_size == 0 ? 0 : (buf_size * 2) / item_size;
 
     auto grblock = std::dynamic_pointer_cast<block>(e->src().node());
     if (grblock == nullptr) // might be a domain adapter, not a block

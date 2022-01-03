@@ -126,7 +126,8 @@ public:
     void notify_connected_ports(scheduler_message_sptr msg)
     {
         for (auto& p : _connected_ports) {
-            p->push_message(msg);
+            if (p)
+                p->push_message(msg);
         }
 
         // FIXME: To achieve maximum performance, we need to stimulate our own
@@ -154,7 +155,7 @@ public:
         std::vector<sptr>::iterator it =
             std::find_if(std::begin(_connected_ports), std::end(_connected_ports), pred);
 
-        if (it == std::end(_connected_ports)) {
+        if (it == std::end(_connected_ports) || !other_port) { // allow nullptr to be added
             _connected_ports.push_back(
                 other_port); // only connect if it is not already in there
         }
