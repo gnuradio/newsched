@@ -3,6 +3,7 @@
 #include <gnuradio/api.h>
 #include <gnuradio/flat_graph.hh>
 #include <gnuradio/logging.hh>
+#include <gnuradio/neighbor_interface.hh>
 
 namespace gr {
 
@@ -28,7 +29,8 @@ public:
     ~buffer_manager() {}
 
     void initialize_buffers(flat_graph_sptr fg,
-                            std::shared_ptr<buffer_properties> buf_props);
+                            std::shared_ptr<buffer_properties> buf_props,
+                            neighbor_interface_sptr sched_intf = nullptr);
 
 private:
     int get_buffer_num_items(edge_sptr e, flat_graph_sptr fg);

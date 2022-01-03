@@ -198,4 +198,29 @@ const std::vector<tag_t>& buffer_reader::tags() const
 }
 
 
+void buffer_reader::notify_scheduler()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL));
+    }
+}
+
+void buffer_reader::notify_scheduler_input()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
+    }
+}
+
+void buffer_reader::notify_scheduler_output()
+{
+    if (p_scheduler) {
+        this->p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_OUTPUT));
+    }
+}
+
+
 } // namespace gr

@@ -3,7 +3,8 @@
 namespace gr {
 
 void buffer_manager::initialize_buffers(flat_graph_sptr fg,
-                                        std::shared_ptr<buffer_properties> buf_props)
+                                        std::shared_ptr<buffer_properties> buf_props,
+                                        neighbor_interface_sptr sched_intf)
 {
     // not all edges may be used
     for (auto e : fg->stream_edges()) {
@@ -62,12 +63,25 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             // If dst block is in this domain, then add the reader to the source port
             if (std::find(fg->nodes().begin(), fg->nodes().end(), ed[0]->dst().node()) !=
                 fg->nodes().end()) {
-                GR_LOG_INFO(_logger,
-                            "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
-                            ed[0]->identifier(),
-                            ed[0]->src().node()->alias());
-                p->set_buffer_reader(
-                    ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
+
+                if (ed[0]->buf_properties() && ed[0]->buf_properties()->reader_factory())
+                {
+                    GR_LOG_INFO(_logger,
+                                "Creating Buffer Reader for Edge: {}, Independently",
+                                ed[0]->identifier());
+                    p->set_buffer_reader(
+                        ed[0]->buf_properties()->reader_factory()( ed[0]->dst().port()->itemsize(), ed[0]->buf_properties()));
+                    p->buffer_reader()->set_parent_intf(sched_intf);
+                }
+                else
+                {
+                    GR_LOG_INFO(_logger,
+                                "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
+                                ed[0]->identifier(),
+                                ed[0]->src().node()->alias());
+                    p->set_buffer_reader(
+                        ed[0]->src().port()->buffer()->add_reader(ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
+                }
             }
         }
     }

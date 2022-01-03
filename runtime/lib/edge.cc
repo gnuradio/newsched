@@ -48,6 +48,7 @@ bool edge::has_custom_buffer()
 }
 
 buffer_factory_function edge::buffer_factory() { return _buffer_properties->factory(); }
+buffer_reader_factory_function edge::buffer_reader_factory() { return _buffer_properties->reader_factory(); }
 std::shared_ptr<buffer_properties> edge::buf_properties() { return _buffer_properties; }
 
 } // namespace gr

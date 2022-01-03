@@ -37,7 +37,9 @@ public:
 
     // These methods are common to all the vmcircbufs
 
-    void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
+    void* read_ptr(size_t index) { 
+        return (void*)&_buffer[index]; 
+    }
     void* write_ptr();
 
     // virtual void post_read(int num_items);
