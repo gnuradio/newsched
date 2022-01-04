@@ -4,8 +4,9 @@
 
 namespace gr {
 
-struct neighbor_interface
+class neighbor_interface
 {
+public:
     neighbor_interface() {}
     virtual ~neighbor_interface() {}
     virtual void push_message(scheduler_message_sptr msg) = 0;

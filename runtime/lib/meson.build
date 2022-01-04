@@ -39,6 +39,7 @@ runtime_sources = [
   'graph_utils.cc',
   'flat_graph.cc',
   'flowgraph_monitor.cc',
+  'fgm_proxy.cc',
   'flowgraph.cc',
   'logging.cc',
   'pagesize.cc',

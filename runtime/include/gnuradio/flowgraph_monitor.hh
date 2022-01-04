@@ -2,6 +2,7 @@
 
 
 #include <gnuradio/concurrent_queue.hh>
+#include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/logging.hh>
 #include <thread>
 #include <vector>
@@ -54,24 +55,6 @@ public:
     virtual void push_message(fg_monitor_message msg) { msgq.push(msg); }
     void start();
     void stop() { push_message(fg_monitor_message(fg_monitor_message_t::KILL, 0, 0)); }
-
-    /**
-     * @brief Replace the specified scheduler pointer with a group of other scheduler
-     * pointers
-     *
-     * For Hierarchical schedulers, notify the Flowgraph Monitor that sub-schedulers will
-     * be doing the work This could be the case for a multi-threaded scheduler that breaks
-     * its graph into single threaded scheduler graphs.  In this case, the flowgraph
-     * monitor needs to be notified to monitor those threads instead
-     *
-     * @param original the scheduler pointer that was originally given to the flowgraph
-     * monitor when the flowgraph was first partitioned
-     * @param replacements the set of replacement scheduler pointers to be tracked instead
-     * @return true if the original scheduler was found
-     * @return false if the original scheduler was not found
-     */
-    bool replace_scheduler(std::shared_ptr<scheduler> original,
-                           const std::vector<std::shared_ptr<scheduler>> replacements);
 
 private:
     bool _monitor_thread_stopped = false;

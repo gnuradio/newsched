@@ -73,21 +73,4 @@ void flowgraph_monitor::start()
     monitor.detach();
 }
 
-bool flowgraph_monitor::replace_scheduler(
-    std::shared_ptr<scheduler> original,
-    const std::vector<std::shared_ptr<scheduler>> replacements)
-{
-    // find original in d_schedulers
-    auto it = std::find(d_schedulers.begin(), d_schedulers.end(), original);
-    if (it != d_schedulers.end()) {
-        d_schedulers.erase(it);
-        // replace it with the specified replacements
-        d_schedulers.insert( d_schedulers.end(), replacements.begin(), replacements.end() );
-        return true;
-    } else {
-        return false;
-    }
-    
-}
-
 } // namespace gr
