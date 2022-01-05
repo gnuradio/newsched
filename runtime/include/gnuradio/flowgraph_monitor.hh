@@ -88,7 +88,7 @@ public:
     virtual ~flowgraph_monitor() {}
 
     virtual void push_message(fg_monitor_message_sptr msg) { msgq.push(msg); }
-    void start();
+    void start(const std::string fgname = "");
     void stop() { push_message(fg_monitor_message::make(fg_monitor_message_t::KILL, 0, 0)); }
 
 private:
@@ -96,6 +96,7 @@ private:
     std::vector<std::shared_ptr<scheduler>> d_schedulers;
     std::vector<std::shared_ptr<fgm_proxy>> d_fgm_proxies;
 
+    logger_sptr _logger, _debug_logger;
 protected:
     concurrent_queue<fg_monitor_message_sptr> msgq;
     virtual bool pop_message(fg_monitor_message_sptr& msg) { return msgq.pop(msg); }

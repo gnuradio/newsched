@@ -228,7 +228,7 @@ void flowgraph::start()
         GR_LOG_ERROR(_logger, "No Scheduler Specified.");
     }
 
-    d_fgmon->start();
+    d_fgmon->start(alias());
     for (auto s : d_schedulers) {
         s->start();
     }

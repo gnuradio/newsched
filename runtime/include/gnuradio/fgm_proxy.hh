@@ -1,8 +1,8 @@
 #pragma once
 
+#include <gnuradio/logging.hh>
 #include <zmq.hpp>
 #include <thread>
-#include <gnuradio/logging.hh>
 
 namespace gr {
 
@@ -33,6 +33,13 @@ public:
     typedef std::shared_ptr<fgm_proxy> sptr;
     static sptr make(const std::string& ipaddr, int port, bool upstream);
     fgm_proxy(const std::string& ipaddr, int port, bool upstream);
+    virtual ~fgm_proxy()
+    {
+        _context.shutdown();
+        _client_socket.close();
+        _server_socket.close();
+        _context.close();
+    }
     void push_message(fg_monitor_message_sptr msg);
 
     void set_fgm(flowgraph_monitor_sptr fgm) { _fgm = fgm; }
@@ -40,11 +47,14 @@ public:
     void set_id(int id_) { _id = id_; }
     bool upstream() { return _upstream; }
 
-    void kill() { _rcv_done = true;
-    _context.shutdown();
-    _client_socket.close();
-    _server_socket.close();
-    _context.close(); }
+    void kill()
+    {
+        _rcv_done = true;
+        // _context.shutdown();
+        // _client_socket.close();
+        // _server_socket.close();
+        // _context.close();
+    }
 }; // namespace gr
 typedef fgm_proxy::sptr fgm_proxy_sptr;
 

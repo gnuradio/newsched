@@ -4,14 +4,14 @@
 #include <gnuradio/scheduler.hh>
 
 namespace gr {
-void flowgraph_monitor::start()
+void flowgraph_monitor::start(const std::string fgname)
 {
     empty_queue();
+    _logger = logging::get_logger("flowgraph_monitor " + fgname, "default");
+    _debug_logger = logging::get_logger("flowgraph_monitor_dbg " + fgname, "debug");
     // Start a monitor thread to keep track of when the schedulers signal info back to
     // the main thread
     std::thread monitor([this]() {
-        auto _logger = logging::get_logger("flowgraph_monitor", "default");
-        auto _debug_logger = logging::get_logger("flowgraph_monitor_dbg", "debug");
         while (!_monitor_thread_stopped) {
             // try to pop messages off the queue
             fg_monitor_message_sptr msg;
