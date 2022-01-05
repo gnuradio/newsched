@@ -29,6 +29,7 @@ void bind_sync_block(py::module&);
 void bind_edge(py::module&);
 void bind_graph(py::module&);
 void bind_flowgraph(py::module&);
+void bind_fgm_proxy(py::module&);
 void bind_scheduler(py::module&);
 void bind_buffer(py::module&);
 void bind_vmcircbuf(py::module&);
@@ -72,6 +73,7 @@ PYBIND11_MODULE(runtime_python, m)
     bind_domain(m);
     bind_graph(m);
     bind_flowgraph(m);
+    bind_fgm_proxy(m);
     bind_scheduler(m);
     bind_buffer(m);
     bind_buffer_net_zmq(m);

@@ -65,7 +65,7 @@ bool thread_wrapper::handle_work_notification()
             GR_LOG_DEBUG(
                 _debug_logger, "Signalling DONE to FGM from block {}", elem.first);
             d_fgmon->push_message(
-                fg_monitor_message(fg_monitor_message_t::DONE, id(), elem.first));
+                fg_monitor_message::make(fg_monitor_message_t::DONE, id(), elem.first));
             break; // only notify the fgmon once
         }
     }
@@ -97,7 +97,7 @@ bool thread_wrapper::handle_work_notification()
                              "All blocks in thread {} blocked, pushing flushed",
                              id());
                 d_fgmon->push_message(
-                    fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
+                    fg_monitor_message::make(fg_monitor_message_t::FLUSHED, id()));
                 return false;
             } else {
                 push_message(std::make_shared<scheduler_action>(
@@ -194,7 +194,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         // try to pop messages off the queue
         bool valid = true;
         bool do_some_work = false;
-        while (valid) {
+        while (valid && !top->d_thread_stopped) {
             if (blocking_queue) {
                 gr_log_debug(top->_debug_logger, "Going into blocking queue");
                 valid = top->pop_message(msg);

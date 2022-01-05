@@ -1,13 +1,17 @@
-#include <gnuradio/flowgraph_monitor.hh>
+#pragma once
 
-#include <gnuradio/scheduler.hh>
 #include <zmq.hpp>
 #include <thread>
+#include <gnuradio/logging.hh>
 
 namespace gr {
 
+class flowgraph_monitor;
+typedef std::shared_ptr<flowgraph_monitor> flowgraph_monitor_sptr;
 
-class fgm_proxy : public scheduler
+class fg_monitor_message;
+typedef std::shared_ptr<fg_monitor_message> fg_monitor_message_sptr;
+class fgm_proxy
 {
 private:
     flowgraph_monitor_sptr _fgm;
@@ -19,77 +23,30 @@ private:
 
     zmq::message_t _rcv_msg;
 
+    int _id;
+
+    logger_sptr _logger;
+
+    bool _rcv_done = false;
+
 public:
-    fgm_proxy(flowgraph_monitor_sptr fgm,
-              const std::string& ipaddr,
-              int port,
-              bool upstream)
-        : scheduler("fgm_proxy"),
-          _fgm(fgm),
-          _upstream(upstream),
-          _context(1),
-          _server_socket(_context, zmq::socket_type::pull),
-          _client_socket(_context, zmq::socket_type::push)
+    typedef std::shared_ptr<fgm_proxy> sptr;
+    static sptr make(const std::string& ipaddr, int port, bool upstream);
+    fgm_proxy(const std::string& ipaddr, int port, bool upstream);
+    void push_message(fg_monitor_message_sptr msg);
 
-    {
-        int sndhwm = 1;
-        int rcvhwm = 1;
-        _server_socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-        _server_socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
+    void set_fgm(flowgraph_monitor_sptr fgm) { _fgm = fgm; }
+    int id() { return _id; }
+    void set_id(int id_) { _id = id_; }
+    bool upstream() { return _upstream; }
 
-        _client_socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-        _client_socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
-
-        std::string svrendpoint = "tcp://*:" + std::to_string(upstream ? port : port + 1);
-        _server_socket.bind(svrendpoint);
-
-        std::string cliendpoint =
-            "tcp://" + ipaddr + ":" + std::to_string(upstream ? port + 1 : port);
-        _server_socket.connect(cliendpoint);
-
-        std::thread t([this]() {
-            while (true) { // (!this->_recv_done) {
-                _rcv_msg.rebuild();
-                auto res = _server_socket.recv(_rcv_msg, zmq::recv_flags::none);
-
-                auto rcvstring = _rcv_msg.to_string();
-
-                if (rcvstring == "DONE") {
-                    auto fgmmsg = fg_monitor_message(fg_monitor_message_t::DONE, id());
-                    _fgm->push_message(fgmmsg);
-                } else if (rcvstring == "FLUSHED") {
-                    auto fgmmsg = fg_monitor_message(fg_monitor_message_t::FLUSHED, id());
-                    _fgm->push_message(fgmmsg);
-                } else if (rcvstring == "KILL") {
-                    auto fgmmsg = fg_monitor_message(fg_monitor_message_t::KILL, id());
-                    _fgm->push_message(fgmmsg);
-                }
-            }
-        });
-        t.detach();
-    }
-
-    void push_message(scheduler_message_sptr msg)
-    {
-        if (msg->type() != scheduler_message_t::SCHEDULER_ACTION) {
-            throw std::runtime_error(
-                "Can only send scheduler action through fgm proxy interface");
-        }
-
-        auto action = std::static_pointer_cast<scheduler_action>(msg)->action();
-
-        std::string outgoing = "";
-        switch (action) {
-        case scheduler_action_t::DONE:
-            outgoing = "DONE";
-        case scheduler_action_t::EXIT:
-            outgoing = "EXIT";
-        default:;
-        }
-
-
-        auto res = _client_socket.send(zmq::buffer(outgoing), zmq::send_flags::none);
-    }
+    void kill() { _rcv_done = true;
+    _context.shutdown();
+    _client_socket.close();
+    _server_socket.close();
+    _context.close(); }
 }; // namespace gr
+typedef fgm_proxy::sptr fgm_proxy_sptr;
+
 
 } // namespace gr

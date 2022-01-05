@@ -8,6 +8,7 @@ runtime_pybind_sources = files([
     'edge_pybind.cc',
     'graph_pybind.cc',
     'flowgraph_pybind.cc',
+    'fgm_proxy_pybind.cc',
     'runtime_pybind.cc',
     'scheduler_pybind.cc',
     'buffer_pybind.cc',

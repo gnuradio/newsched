@@ -125,7 +125,7 @@ std::shared_ptr<gr::scheduler> factory(const std::string& options)
     auto opt_yaml = YAML::Load(options);
 
     auto buf_size = opt_yaml["buffer_size"].as<size_t>(32768);
-    auto name = opt_yaml["name"].as<std::string>("nbt");
+    auto name = opt_yaml["name"].as<std::string>("unparsed");
 
     return gr::schedulers::scheduler_nbt::make(name, buf_size);
 }

@@ -63,6 +63,21 @@ void flowgraph::add_scheduler(scheduler_sptr sched)
     for (auto s : d_schedulers) {
         s->set_id(idx++);
     }
+    for (auto s : d_fgm_proxies) {
+        s->set_id(idx++);
+    }
+}
+void flowgraph::add_fgm_proxy(fgm_proxy_sptr fgm_proxy)
+{
+    d_fgm_proxies.push_back(fgm_proxy);
+    // assign ids to the schedulers
+    int idx = 1;
+    for (auto s : d_schedulers) {
+        s->set_id(idx++);
+    }
+    for (auto s : d_fgm_proxies) {
+        s->set_id(idx++);
+    }
 }
 void flowgraph::clear_schedulers() { d_schedulers.clear(); }
 
@@ -168,7 +183,7 @@ void flowgraph::check_connections(const graph_sptr& g)
 
 void flowgraph::partition(std::vector<domain_conf>& confs)
 {
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
+    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
     // Create new subgraphs based on the partition configuration
 
     check_connections(base());
@@ -186,7 +201,11 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 void flowgraph::validate()
 {
     GR_LOG_TRACE(_debug_logger, "validate()");
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
+    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
+    for (auto& p : d_fgm_proxies)
+    {
+        p->set_fgm(d_fgmon);
+    }
 
     d_flat_graph = flat_graph::make_flat(base());
     check_connections(d_flat_graph);

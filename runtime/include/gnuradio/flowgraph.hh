@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/domain.hh>
+#include <gnuradio/fgm_proxy.hh>
 #include <gnuradio/flowgraph_monitor.hh>
 #include <gnuradio/graph.hh>
 #include <gnuradio/scheduler.hh>
@@ -15,6 +16,7 @@ class flowgraph : public graph
 {
 private:
     std::vector<scheduler_sptr> d_schedulers;
+    std::vector<fgm_proxy_sptr> d_fgm_proxies;
     flat_graph_sptr d_flat_graph;
     std::vector<flat_graph_sptr> d_flat_subgraphs;
 
@@ -40,6 +42,17 @@ public:
     void set_scheduler(scheduler_sptr sched);
     void set_schedulers(std::vector<scheduler_sptr> sched);
     void add_scheduler(scheduler_sptr sched);
+    void add_fgm_proxy(fgm_proxy_sptr fgm_proxy);
+    // fgm_proxy_sptr add_upstream_proxy(const std::string& ipaddr, int port)
+    // {
+    //     auto proxy_obj = std::make_shared<fgm_proxy>(d_fgmon, ipaddr, port, true);
+        
+    //     return proxy_obj;
+    // }
+    // fgm_proxy_sptr add_downstream_proxy(const std::string& ipaddr, int port)
+    // {
+    //     return std::make_shared<fgm_proxy>(d_fgmon, ipaddr, port, false);
+    // }
     void clear_schedulers();
     void partition(std::vector<domain_conf>& confs);
     void check_connections(const graph_sptr& g);
