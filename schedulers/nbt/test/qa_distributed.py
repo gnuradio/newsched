@@ -96,7 +96,8 @@ class test_basic(gr_unittest.TestCase):
         fg1.wait()
         fg2.wait()
  
-        print(snk1.data())
+        print(len(snk1.data()))
+        
         # self.assertEqual(input_data, snk1.data())
 
 

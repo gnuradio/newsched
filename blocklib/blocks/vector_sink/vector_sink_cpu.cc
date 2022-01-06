@@ -33,6 +33,7 @@ work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& 
         d_data.push_back(iptr[i]);
 
     work_input[0]->n_consumed = noutput_items;
+    GR_LOG_DEBUG(this->_debug_logger, "sizeof_data: {}", d_data.size());
     return work_return_code_t::WORK_OK;
 }
 

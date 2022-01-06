@@ -116,7 +116,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
             bytes_to_write = items_to_write * wi.item_size;
 
             if (n_bytes_in_circbuf <= 0) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
 

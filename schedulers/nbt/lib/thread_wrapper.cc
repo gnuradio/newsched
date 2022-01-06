@@ -92,7 +92,7 @@ bool thread_wrapper::handle_work_notification()
 
     if (d_flushing) {
         if (all_blkd) {
-            if (++d_flush_cnt >= 8) {
+            if (++d_flush_cnt >= 10) {//&& !(name().rfind("copy(3)", 0) == 0) ) {
                 gr_log_debug(_debug_logger,
                              "All blocks in thread {} blocked, pushing flushed",
                              id());
@@ -100,6 +100,8 @@ bool thread_wrapper::handle_work_notification()
                     fg_monitor_message::make(fg_monitor_message_t::FLUSHED, id()));
                 return false;
             } else {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(10)); // make configurable
                 push_message(std::make_shared<scheduler_action>(
                     scheduler_action_t::NOTIFY_ALL, 0));
             }
