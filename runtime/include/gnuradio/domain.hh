@@ -45,16 +45,18 @@ public:
     domain_conf(scheduler_sptr sched,
                 std::vector<node_sptr> blocks,
                 execution_host_properties_sptr host = nullptr)
-        : _sched(sched), _blocks(blocks)
+        : _sched(sched), _blocks(blocks), _execution_host(host)
     {
     }
 
     auto sched() { return _sched; }
     auto blocks() { return _blocks; }
+    auto execution_host() { return _execution_host; }
 
 private:
-    scheduler_sptr _sched;
+    scheduler_sptr _sched = nullptr;
     std::vector<node_sptr> _blocks;
+    execution_host_properties_sptr _execution_host = nullptr;
 
 };
 

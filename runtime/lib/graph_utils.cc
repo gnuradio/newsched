@@ -8,7 +8,6 @@ namespace gr {
 
 graph_partition_info_vec
 graph_utils::partition(graph_sptr input_graph,
-                       std::vector<scheduler_sptr> scheds,
                        std::vector<domain_conf>& confs)
 {
     graph_partition_info_vec ret;
@@ -16,7 +15,6 @@ graph_utils::partition(graph_sptr input_graph,
 
     edge_vector_t domain_crossings;
     std::vector<domain_conf> crossing_confs;
-    std::vector<scheduler_sptr> crossing_scheds;
 
     std::map<nodeid_t, scheduler_sptr> block_to_scheduler_map;
 

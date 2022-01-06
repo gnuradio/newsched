@@ -183,11 +183,28 @@ void flowgraph::check_connections(const graph_sptr& g)
 
 void flowgraph::partition(std::vector<domain_conf>& confs)
 {
+    // the schedulers contained in confs should be complete with the flowgraph
+    // So we can add them here
+    clear_schedulers();
+    for (auto& conf : confs)
+    {
+        if (!conf.execution_host()) { // <-- this scheduler is running locally
+            add_scheduler(conf.sched());
+        }
+
+        // if flowgraph is remote, we need to programatically recreate the flowgraph
+        // and the disjoint edges
+
+
+    }
+
+    
+
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
     // Create new subgraphs based on the partition configuration
 
     check_connections(base());
-    auto graph_part_info = graph_utils::partition(base(), d_schedulers, confs);
+    auto graph_part_info = graph_utils::partition(base(), confs);
 
     d_flat_subgraphs.clear();
     for (auto& info : graph_part_info) {
