@@ -92,7 +92,7 @@ struct parameter_config
     std::map<std::string, pmtf::pmt> param_map;
     std::map<int, pmtf::pmt> param_map_int;
     size_t num() { return param_map.size(); }
-    void add(const std::string& name, int id, pmtf::pmt b) { 
+    void add(const std::string& name, int id, const pmtf::pmt& b) { 
         param_map[name] = b; 
         param_map_int[id] = b;
         }

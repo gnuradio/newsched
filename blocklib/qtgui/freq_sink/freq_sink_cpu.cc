@@ -306,7 +306,7 @@ void freq_sink_cpu<T>::set_trigger_mode(trigger_mode mode,
     d_trigger_mode = mode;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmtf::string(tag_key);
+    d_trigger_tag_key = tag_key;
     d_triggered = false;
     d_trigger_count = 0;
 

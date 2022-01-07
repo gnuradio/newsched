@@ -101,7 +101,7 @@ public:
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
     parameter_config d_parameters;
-    void add_param(const std::string& name, int id, pmtf::pmt p) { d_parameters.add(name, id, p); }
+    void add_param(const std::string& name, int id, const pmtf::pmt& p) { d_parameters.add(name, id, p); }
     pmtf::pmt request_parameter_query(int param_id);
     void request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
     virtual void on_parameter_change(param_action_sptr action);

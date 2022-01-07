@@ -27,7 +27,7 @@ namespace {{module}} {
     }
 }
 
-{{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}") {
+{{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}", "{{ module }}") {
  {{ macros.ports(ports, parameters) }}
  {{ macros.parameter_instantiations(parameters) }}
 }

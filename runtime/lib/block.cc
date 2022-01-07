@@ -3,6 +3,8 @@
 #include <pmtf/wrap.hpp>
 
 #include <gnuradio/pyblock_detail.hh>
+#include "base64/base64.h"
+
 namespace gr {
 
 block::block(const std::string& name,
@@ -184,10 +186,13 @@ std::string block::to_json()
     // Example string describing this block
     // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
     std::string ret = fmt::format("{{ ""module"": ""{}"", ""id"": ""{}"", ""properties"": {{", s_module, name()+suffix());
-    // for (auto& param : d_parameters.params)
-    // {
-    //     ret += fmt::format("{}:{}",param->
-    // }
+    for(auto [key, val]: d_parameters.params){
+        cout << key << ": " << val << endl;
+    }
+    for (auto& param : d_parameters.params)
+    {
+        ret += fmt::format("{}:{}",param->
+    }
 }
 
 } // namespace gr

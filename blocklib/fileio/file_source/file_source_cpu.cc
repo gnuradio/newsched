@@ -37,8 +37,7 @@ file_source_cpu::file_source_cpu(const file_source::block_args& args) : sync_blo
       d_repeat(args.repeat),
       d_updated(false),
       d_file_begin(true),
-      d_repeat_cnt(0),
-      d_add_begin_tag(nullptr)
+      d_repeat_cnt(0)
 {
 
     open(args.filename, args.repeat, args.offset, args.len);
