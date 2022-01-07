@@ -228,7 +228,7 @@ void file_source_cpu::do_update()
     }
 }
 
-void file_source_cpu::set_begin_tag(pmtf::wrap val) { d_add_begin_tag = val; }
+void file_source_cpu::set_begin_tag(pmtf::pmt val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                   std::vector<block_work_output_sptr>& work_output)
@@ -252,7 +252,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
     while (size) {
 
         // Add stream tag whenever the file starts again
-        if (d_file_begin && d_add_begin_tag != nullptr) {
+        if (d_file_begin && !d_add_begin_tag.empty()) {
             work_output[0]->buffer->add_tag(work_output[0]->buffer->total_written() +
                                                noutput_items - size,
                                            d_add_begin_tag,
@@ -289,7 +289,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
                     throw std::runtime_error("can't fseek()");
                 }
                 d_items_remaining = d_length_items;
-                if (d_add_begin_tag != nullptr) {
+                if (!d_add_begin_tag.empty()) {
                     d_file_begin = true;
                     d_repeat_cnt++;
                 }

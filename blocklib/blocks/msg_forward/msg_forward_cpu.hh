@@ -16,10 +16,10 @@ public:
 
 protected:
     size_t d_itemsize;
-    void handle_msg_in(pmtf::wrap msg)
+    void handle_msg_in(pmtf::pmt msg)
     {
         gr_log_info(
-            _logger, "{} got message: {}", this->alias(), pmtf::get_string(msg).value());
+            _logger, "{} got message: {}", this->alias(), pmtf::get_string(msg).data());
         d_msg_cnt++;
         get_message_port("out")->post(msg);
     }

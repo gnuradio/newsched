@@ -45,19 +45,19 @@ private:
 typedef std::shared_ptr<scheduler_action> scheduler_action_sptr;
 
 
-typedef std::function<void(pmtf::wrap)> message_port_callback_fcn;
+typedef std::function<void(pmtf::pmt)> message_port_callback_fcn;
 class msgport_message : public scheduler_message
 {
 public:
-    msgport_message(pmtf::wrap msg, message_port_callback_fcn cb)
+    msgport_message(pmtf::pmt msg, message_port_callback_fcn cb)
         : scheduler_message(scheduler_message_t::MSGPORT_MESSAGE), _msg(msg), _cb(cb)
     {
     }
     void set_callback(message_port_callback_fcn cb) { _cb = cb;}
     message_port_callback_fcn callback() { return _cb;}
-    pmtf::wrap message() { return _msg;}
+    pmtf::pmt message() { return _msg;}
 private:
-    pmtf::wrap _msg; 
+    pmtf::pmt _msg; 
     message_port_callback_fcn _cb;
 };
 typedef std::shared_ptr<msgport_message> msgport_message_sptr;

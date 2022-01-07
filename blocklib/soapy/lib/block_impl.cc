@@ -138,8 +138,8 @@ const std::string CMD_BANK_KEY = "bank";
 const std::string CMD_DATA_KEY = "data";
 
 // Common default values for pmt::dict_ref
-const pmtf::wrap PMT_EMPTYSTR = pmtf::string("");
-const pmtf::wrap PMT_ZERO = pmtf::scalar<int>(0);
+const pmtf::pmt PMT_EMPTYSTR = pmtf::string("");
+const pmtf::pmt PMT_ZERO = pmtf::scalar<int>(0);
 
 /*
  * The private constructor
@@ -279,81 +279,81 @@ block_impl::block_impl(int direction,
 
     // message_port_register_in(pmtf::string("cmd"));
     // set_msg_handler(pmtf::string("cmd"),
-    //                 [this](pmtf::wrap pmt) { this->msg_handler_cmd(pmt); });
-    // register_msg_cmd_handler(CMD_FREQ_KEY, [this](pmtf::wrap val, size_t channel) {
+    //                 [this](pmtf::pmt pmt) { this->msg_handler_cmd(pmt); });
+    // register_msg_cmd_handler(CMD_FREQ_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_frequency(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GAIN_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GAIN_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_gain(val, channel);
     // });
 
-    // register_msg_cmd_handler(CMD_RATE_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_RATE_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_samp_rate(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_BW_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_BW_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_bw(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_ANTENNA_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_ANTENNA_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_antenna(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GAINMODE_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GAINMODE_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_gain_mode(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_frequency_correction(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_FREQCORR_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_frequency_correction(val, channel);
     // });
     // register_msg_cmd_handler(CMD_DCOFFSETMODE_KEY,
-    //                          [this](pmtf::wrap val, size_t channel) {
+    //                          [this](pmtf::pmt val, size_t channel) {
     //                              this->cmd_handler_dc_offset_mode(val, channel);
     //                          });
-    // register_msg_cmd_handler(CMD_DCOFFSET_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_DCOFFSET_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_dc_offset(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_IQBAL_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_IQBAL_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_iq_balance(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_IQBALMODE_KEY, [this](pmtf::wrap val, size_t channel)
+    // register_msg_cmd_handler(CMD_IQBALMODE_KEY, [this](pmtf::pmt val, size_t channel)
     // {
     //     this->cmd_handler_iq_balance_mode(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_MCR_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_MCR_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_master_clock_rate(val, channel);
     // });
     // register_msg_cmd_handler(CMD_REFCLOCKRATE_KEY,
-    //                          [this](pmtf::wrap val, size_t channel) {
+    //                          [this](pmtf::pmt val, size_t channel) {
     //                              this->cmd_handler_reference_clock_rate(val, channel);
     //                          });
-    // register_msg_cmd_handler(CMD_CLOCKSRC_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_CLOCKSRC_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_clock_source(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_TIMESRC_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_TIMESRC_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_time_source(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_HWTIME_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_HWTIME_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_hardware_time(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_REG_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_REG_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_register(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_REGS_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_REGS_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_registers(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_SETTING_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_SETTING_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_setting(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GPIO_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GPIO_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_gpio(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_GPIODIR_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_GPIODIR_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_gpio_dir(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_I2C_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_I2C_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_i2c(val, channel);
     // });
-    // register_msg_cmd_handler(CMD_UART_KEY, [this](pmtf::wrap val, size_t channel) {
+    // register_msg_cmd_handler(CMD_UART_KEY, [this](pmtf::pmt val, size_t channel) {
     //     this->cmd_handler_uart(val, channel);
     // });
 }
@@ -391,7 +391,7 @@ bool block_impl::stop()
 
 block_impl::~block_impl() {}
 
-void block_impl::register_msg_cmd_handler(const pmtf::wrap& cmd, cmd_handler_t handler)
+void block_impl::register_msg_cmd_handler(const pmtf::pmt& cmd, cmd_handler_t handler)
 {
     // d_cmd_handlers[cmd] = handler;
 }
@@ -1243,7 +1243,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 
 /* End public API implementation */
 
-// void block_impl::cmd_handler_frequency(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_frequency(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: freq must be float/int");
@@ -1252,7 +1252,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_frequency(channel, pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_gain(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_gain(pmtf::pmt val, size_t channel)
 // {
 //     // For compatibility, accept either a numeric value for setting the
 //     // overall gain or a dict with a gain element and element-specific
@@ -1279,7 +1279,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 // }
 
-// void block_impl::cmd_handler_samp_rate(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_samp_rate(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: rate must be float/int");
@@ -1288,7 +1288,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_sample_rate(channel, pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_bw(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_bw(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: bw must be float/int");
@@ -1297,7 +1297,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_bandwidth(channel, pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_antenna(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_antenna(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_symbol()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: ant must be string");
@@ -1306,7 +1306,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_antenna(channel, pmt::symbol_to_string(val));
 // }
 
-// void block_impl::cmd_handler_gain_mode(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_gain_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: gain mode must be bool");
@@ -1315,7 +1315,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_gain_mode(channel, pmt::to_bool(val));
 // }
 
-// void block_impl::cmd_handler_frequency_correction(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_frequency_correction(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: frequency correction must be float/int");
@@ -1324,7 +1324,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_frequency_correction(channel, pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_dc_offset_mode(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_dc_offset_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: DC offset mode must be bool");
@@ -1333,7 +1333,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_dc_offset_mode(channel, pmt::to_bool(val));
 // }
 
-// void block_impl::cmd_handler_dc_offset(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_dc_offset(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_number()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: DC offset must be numeric");
@@ -1342,7 +1342,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_dc_offset(channel, pmt::to_complex(val));
 // }
 
-// void block_impl::cmd_handler_iq_balance(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_iq_balance(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_number()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance must be numeric");
@@ -1351,7 +1351,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_iq_balance(channel, pmt::to_complex(val));
 // }
 
-// void block_impl::cmd_handler_iq_balance_mode(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_iq_balance_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance mode must be bool");
@@ -1360,7 +1360,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_iq_balance_mode(channel, pmt::to_bool(val));
 // }
 
-// void block_impl::cmd_handler_master_clock_rate(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_master_clock_rate(pmtf::pmt val, size_t)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: master clock rate must be float/int");
@@ -1369,7 +1369,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_master_clock_rate(pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_reference_clock_rate(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_reference_clock_rate(pmtf::pmt val, size_t)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: reference clock rate must be float/int");
@@ -1378,7 +1378,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_reference_clock_rate(pmtf::scalar<double>(val));
 // }
 
-// void block_impl::cmd_handler_clock_source(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_clock_source(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_symbol()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: clock source must be string");
@@ -1387,7 +1387,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_clock_source(pmt::symbol_to_string(val));
 // }
 
-// void block_impl::cmd_handler_time_source(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_time_source(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_symbol()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: time source must be string");
@@ -1396,7 +1396,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_time_source(pmt::symbol_to_string(val));
 // }
 
-// void block_impl::cmd_handler_hardware_time(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_hardware_time(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: hardware time must be a dict");
@@ -1417,7 +1417,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     set_hardware_time(static_cast<long long>(time), name);
 // }
 
-// void block_impl::cmd_handler_register(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_register(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: register write param must be a dict");
@@ -1440,7 +1440,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     write_register(name, static_cast<unsigned>(addr), static_cast<unsigned>(value));
 // }
 
-// void block_impl::cmd_handler_registers(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_registers(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a dict");
@@ -1465,7 +1465,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // }
 
 // // TODO: any way to call channel-less version?
-// void block_impl::cmd_handler_setting(pmtf::wrap val, size_t channel)
+// void block_impl::cmd_handler_setting(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must be a dict");
@@ -1490,7 +1490,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 // }
 
-// void block_impl::cmd_handler_gpio(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_gpio(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: setting must be a dict");
@@ -1515,9 +1515,9 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 // }
 
-// void block_impl::cmd_handler_gpio_dir(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_gpio_dir(pmtf::pmt val, size_t)
 // {
-//     static const pmtf::wrap CMD_DIR_KEY = pmtf::string("dir");
+//     static const pmtf::pmt CMD_DIR_KEY = pmtf::string("dir");
 
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: GPIO dir must be a dict");
@@ -1543,7 +1543,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 // }
 
-// void block_impl::cmd_handler_i2c(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_i2c(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: I2C must be a dict");
@@ -1562,7 +1562,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     write_i2c(static_cast<int>(addr), data);
 // }
 
-// void block_impl::cmd_handler_uart(pmtf::wrap val, size_t)
+// void block_impl::cmd_handler_uart(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
 //         GR_LOG_ERROR(_debug_logger, "soapy: UART must be a dict");
@@ -1582,7 +1582,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     write_uart(name, data);
 // }
 
-// void block_impl::msg_handler_cmd(pmtf::wrap msg)
+// void block_impl::msg_handler_cmd(pmtf::pmt msg)
 // {
 //     const long CHANNEL_ALL = 0x12345678; // arbitrary
 
@@ -1592,7 +1592,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 
 //     // Channel not specified means apply to all
-//     const pmtf::wrap channel_all_pmt = pmt::from_long(CHANNEL_ALL);
+//     const pmtf::pmt channel_all_pmt = pmt::from_long(CHANNEL_ALL);
 //     size_t channel = pmt::to_long(pmt::dict_ref(msg, CMD_CHAN_KEY, channel_all_pmt));
 
 //     if (channel != CHANNEL_ALL && channel >= d_nchan) {
@@ -1603,9 +1603,9 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     }
 
 //     for (size_t i = 0; i < pmt::length(msg); i++) {
-//         const pmtf::wrap item = pmt::nth(i, msg);
-//         const pmtf::wrap key = pmt::car(item);
-//         const pmtf::wrap val = pmt::cdr(item);
+//         const pmtf::pmt item = pmt::nth(i, msg);
+//         const pmtf::pmt key = pmt::car(item);
+//         const pmtf::pmt val = pmt::cdr(item);
 //         if (key == CMD_CHAN_KEY) {
 //             continue;
 //         }

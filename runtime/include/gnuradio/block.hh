@@ -33,6 +33,8 @@ class GR_RUNTIME_API block : public gr::node, public std::enable_shared_from_thi
 {
 private:
     bool d_running = false;
+    const std::string s_module;
+    std::string d_suffix = "";
     tag_propagation_policy_t d_tag_propagation_policy;
     int d_output_multiple = 1;
     bool d_output_multiple_set = false;
@@ -67,8 +69,6 @@ public:
 
     tag_propagation_policy_t tag_propagation_policy();
     void set_tag_propagation_policy(tag_propagation_policy_t policy);
-    const std::string s_module;
-    std::string d_suffix;
 
     void set_pyblock_detail(std::shared_ptr<pyblock_detail> p);
     std::shared_ptr<pyblock_detail> pb_detail();
@@ -102,8 +102,8 @@ public:
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
     parameter_config d_parameters;
     void add_param(param_sptr p) { d_parameters.add(p); }
-    pmtf::wrap request_parameter_query(int param_id);
-    void request_parameter_change(int param_id, pmtf::wrap new_value, bool block = true);
+    pmtf::pmt request_parameter_query(int param_id);
+    void request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
     static void consume_each(int num, std::vector<block_work_input_sptr>& work_input);
@@ -121,7 +121,7 @@ public:
     /**
      * Every Block should have a param update message handler
      */
-    virtual void handle_msg_param_update(pmtf::wrap msg);
+    virtual void handle_msg_param_update(pmtf::pmt msg);
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 

@@ -12,7 +12,7 @@ block::block(const std::string& name,
     // {# add message handler port for parameter updates#}
     _msg_param_update = message_port::make("param_update", port_direction_t::INPUT);
     _msg_param_update->register_callback(
-        [this](pmtf::wrap msg) { this->handle_msg_param_update(msg); });
+        [this](pmtf::pmt msg) { this->handle_msg_param_update(msg); });
     add_port(_msg_param_update);
 }
 
@@ -88,19 +88,19 @@ void block::set_output_multiple(int multiple)
     d_output_multiple = multiple;
 }
 
-void block::handle_msg_param_update(pmtf::wrap msg)
+void block::handle_msg_param_update(pmtf::pmt msg)
 {
     // Update messages are a pmtf::map with the name of
     // the param as the "id" field, and the pmt::wrap
     // that holds the update as the "value" field
 
-    auto id = pmtf::get_string(pmtf::get_map<std::string>(msg)["id"]).value();
-    auto value = pmtf::get_map<std::string>(msg)["value"];
+    auto id = pmtf::get_string(pmtf::get_map(msg)["id"]).data();
+    auto value = pmtf::get_map(msg)["value"];
 
     request_parameter_change(get_param_id(id), value, false);
 }
 
-void block::request_parameter_change(int param_id, pmtf::wrap new_value, bool block)
+void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool block)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler && d_running) {
@@ -126,13 +126,13 @@ void block::request_parameter_change(int param_id, pmtf::wrap new_value, bool bl
     }
 }
 
-pmtf::wrap block::request_parameter_query(int param_id)
+pmtf::pmt block::request_parameter_query(int param_id)
 {
     // call back to the scheduler if ptr is not null
     if (p_scheduler && d_running) {
         std::condition_variable cv;
         std::mutex m;
-        pmtf::wrap newval;
+        pmtf::pmt newval;
         auto lam = [&](param_action_sptr a) {
             std::unique_lock<std::mutex> lk(m);
             newval = a->pmt_value();
