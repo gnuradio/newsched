@@ -109,29 +109,32 @@ void flowgraph::check_connections(const graph_sptr& g)
     // Are all non-optional ports connected to something
     for (auto& node : g->calc_used_nodes()) {
         if (node) {
-        for (auto& port : node->output_ports()) {
-            // if (!port->optional() && port->connected_ports().size() == 0) {
-            //     throw std::runtime_error("Nothing connected [1] to " + node->name() + ": " + port->name());
-            // }
-        }
-        for (auto& port : node->input_ports()) {
-            if (!port->optional()) {
+            for (auto& port : node->output_ports()) {
+                // if (!port->optional() && port->connected_ports().size() == 0) {
+                //     throw std::runtime_error("Nothing connected [1] to " + node->name()
+                //     + ": " + port->name());
+                // }
+            }
+            for (auto& port : node->input_ports()) {
+                if (!port->optional()) {
 
-                if (port->type() == port_type_t::STREAM) {
+                    if (port->type() == port_type_t::STREAM) {
 
-                    if (port->connected_ports().size() < 1) {
-                        // throw std::runtime_error("Nothing connected [2] to " + node->name() + ": " + port->name());
-                    } else if (port->connected_ports().size() > 1) {
-                        throw std::runtime_error("More than 1 port connected to " +
-                                                 port->alias());
-                    }
-                } else if (port->type() == port_type_t::MESSAGE) {
-                    if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected [3] to " + node->name() + ": " + port->name());
+                        if (port->connected_ports().size() < 1) {
+                            // throw std::runtime_error("Nothing connected [2] to " +
+                            // node->name() + ": " + port->name());
+                        } else if (port->connected_ports().size() > 1) {
+                            throw std::runtime_error("More than 1 port connected to " +
+                                                     port->alias());
+                        }
+                    } else if (port->type() == port_type_t::MESSAGE) {
+                        if (port->connected_ports().size() < 1) {
+                            throw std::runtime_error("Nothing connected [3] to " +
+                                                     node->name() + ": " + port->name());
+                        }
                     }
                 }
             }
-        }
         }
     }
 
@@ -186,19 +189,11 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     // the schedulers contained in confs should be complete with the flowgraph
     // So we can add them here
     clear_schedulers();
-    for (auto& conf : confs)
-    {
+    for (auto& conf : confs) {
         if (!conf.execution_host()) { // <-- this scheduler is running locally
             add_scheduler(conf.sched());
         }
-
-        // if flowgraph is remote, we need to programatically recreate the flowgraph
-        // and the disjoint edges
-
-
     }
-
-    
 
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
     // Create new subgraphs based on the partition configuration
@@ -206,11 +201,23 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     check_connections(base());
     auto graph_part_info = graph_utils::partition(base(), confs);
 
-    d_flat_subgraphs.clear();
+    int conf_index = 0;
     for (auto& info : graph_part_info) {
-        d_flat_subgraphs.push_back(flat_graph::make_flat(info.subgraph));
-        info.scheduler->initialize(d_flat_subgraphs[d_flat_subgraphs.size() - 1],
-                                   d_fgmon);
+        auto flattened_graph = flat_graph::make_flat(info.subgraph);
+
+        if (confs[conf_index].execution_host()) {
+            // Serialize and reprogram the flattened graph on the remote side
+
+            // 1. Create flowgraph
+
+            // 2. Create Blocks
+
+            // 3. Connect Blocks (or add edges)
+        } else {
+            info.scheduler->initialize(flattened_graph, d_fgmon);
+        }
+
+        conf_index++;
     }
     _validated = true;
 }
@@ -219,8 +226,7 @@ void flowgraph::validate()
 {
     GR_LOG_TRACE(_debug_logger, "validate()");
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
-    for (auto& p : d_fgm_proxies)
-    {
+    for (auto& p : d_fgm_proxies) {
         p->set_fgm(d_fgmon);
     }
 

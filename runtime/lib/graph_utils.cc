@@ -1,14 +1,13 @@
 #include <gnuradio/graph_utils.hh>
 
 #include <gnuradio/block.hh>
+#include <gnuradio/buffer_net_zmq.hh>
 #include <gnuradio/domain.hh>
-
 namespace gr {
 
 
-graph_partition_info_vec
-graph_utils::partition(graph_sptr input_graph,
-                       std::vector<domain_conf>& confs)
+graph_partition_info_vec graph_utils::partition(graph_sptr input_graph,
+                                                std::vector<domain_conf>& confs)
 {
     graph_partition_info_vec ret;
     std::map<scheduler_sptr, size_t> sched_index_map;
@@ -43,7 +42,8 @@ graph_utils::partition(graph_sptr input_graph,
                     // Is the other block in our current partition
                     if (std::find(blocks.begin(), blocks.end(), other_block) !=
                         blocks.end()) {
-                        g->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
+                        g->connect(e->src(), e->dst())
+                            ->set_custom_buffer(e->buf_properties());
                     } else {
                         // add this edge to the list of domain crossings
                         // domain_crossings.push_back(std::make_tuple(g,e));
@@ -88,7 +88,7 @@ graph_utils::partition(graph_sptr input_graph,
     }
 
     // For the crossing, make sure the edge that crosses the domain is included
-    
+
     int crossing_index = 0;
     for (auto c : domain_crossings) {
 
@@ -97,7 +97,8 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c->src().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->src().node()) !=
+                blocks.end()) {
                 src_block_graph = g;
                 break;
             }
@@ -108,7 +109,8 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c->dst().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->dst().node()) !=
+                blocks.end()) {
                 dst_block_graph = g;
                 break;
             }
@@ -118,8 +120,23 @@ graph_utils::partition(graph_sptr input_graph,
             throw std::runtime_error("Cannot find both sides of domain crossing");
         }
 
-        src_block_graph->add_edge(c);
-        dst_block_graph->add_edge(c);
+        // Crossings are associated with the downstream port
+        // so the execution host here corresponds with the dst block
+        if (auto host = crossing_confs[crossing_index].execution_host()) {
+            // In this case we need to duplicate the edge and add a custom buffer
+            // to each side
+            auto upstream_edge = edge::make(c->src(), c->dst());
+            auto downstream_edge = edge::make(c->src(), c->dst());
+            upstream_edge->set_custom_buffer(
+                buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
+            downstream_edge->set_custom_buffer(
+                buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
+            src_block_graph->add_edge(upstream_edge);
+            dst_block_graph->add_edge(downstream_edge);
+        } else {
+            src_block_graph->add_edge(c);
+            dst_block_graph->add_edge(c);
+        }
 
         crossing_index++;
     }

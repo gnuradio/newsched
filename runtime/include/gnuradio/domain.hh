@@ -17,27 +17,28 @@ class execution_host_properties
     std::string _ipaddr;
     int _port;
 
-    public:
-    execution_host_properties(const std::string& ipaddr, int port) : 
-    _ipaddr(ipaddr), _port(port)
+public:
+    execution_host_properties(const std::string& ipaddr, int port)
+        : _ipaddr(ipaddr), _port(port)
     {
-
     }
-
-    static std::shared_ptr<execution_host_properties> make(const std::string& ipaddr, int port)
+    static std::shared_ptr<execution_host_properties> make(const std::string& ipaddr,
+                                                           int port)
     {
         return std::make_shared<execution_host_properties>(ipaddr, port);
     }
+    std::string ipaddr() { return _ipaddr; }
+    int port() { return _port; }
 };
 typedef std::shared_ptr<execution_host_properties> execution_host_properties_sptr;
 
 /**
  * @brief Domain Configuration
- * 
+ *
  * A struct to contain all the necessary information about a domain:
  *  - Scheduler
  *  - Blocks
- *  
+ *
  */
 class domain_conf
 {
@@ -57,7 +58,6 @@ private:
     scheduler_sptr _sched = nullptr;
     std::vector<node_sptr> _blocks;
     execution_host_properties_sptr _execution_host = nullptr;
-
 };
 
 typedef std::vector<domain_conf> domain_conf_vec;

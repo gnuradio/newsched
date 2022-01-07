@@ -18,7 +18,6 @@ private:
     std::vector<scheduler_sptr> d_schedulers;
     std::vector<fgm_proxy_sptr> d_fgm_proxies;
     flat_graph_sptr d_flat_graph;
-    std::vector<flat_graph_sptr> d_flat_subgraphs;
 
     bool _monitor_thread_stopped = false;
     flowgraph_monitor_sptr d_fgmon;

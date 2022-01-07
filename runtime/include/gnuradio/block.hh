@@ -49,12 +49,14 @@ protected:
     void notify_scheduler_output();
 
 public:
+
     /**
      * @brief Construct a new block object
      *
      * @param name The non-unique name of this block representing the block type
      */
-    block(const std::string& name);
+    block(const std::string& name,
+          const std::string& module = "");
     virtual ~block(){};
     virtual bool start();
     virtual bool stop();
@@ -65,6 +67,9 @@ public:
 
     tag_propagation_policy_t tag_propagation_policy();
     void set_tag_propagation_policy(tag_propagation_policy_t policy);
+    const std::string s_module;
+    std::string d_suffix;
+
     void set_pyblock_detail(std::shared_ptr<pyblock_detail> p);
     std::shared_ptr<pyblock_detail> pb_detail();
     /**
@@ -110,6 +115,8 @@ public:
     double relative_rate() const { return d_relative_rate; }
 
     virtual int get_param_id(const std::string& id) { return d_param_str_map[id]; }
+    virtual std::string suffix() { return ""; }
+    std::string to_json();
 
     /**
      * Every Block should have a param update message handler

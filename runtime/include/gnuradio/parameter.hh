@@ -205,12 +205,9 @@ public:
     }
 };
 
-class parameter_config
+struct parameter_config
 {
-private:
     std::vector<param_sptr> params;
-
-public:
     size_t num() { return params.size(); }
     void add(param_sptr b) { params.push_back(b); }
     param_sptr get(const uint32_t id)
