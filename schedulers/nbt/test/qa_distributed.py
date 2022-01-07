@@ -100,37 +100,37 @@ class test_basic(gr_unittest.TestCase):
         
         # self.assertEqual(input_data, snk1.data())
 
-    def test_moreintegrated(self):
-        nsamples = 100000
-        input_data = list(range(nsamples))
+    # def test_moreintegrated(self):
+    #     nsamples = 100000
+    #     input_data = list(range(nsamples))
 
-        src = blocks.vector_source_f(input_data, False)
-        cp1 = blocks.copy(gr.sizeof_float)
-        cp2 = blocks.copy(gr.sizeof_float)
-        snk = blocks.vector_sink_f()
+    #     src = blocks.vector_source_f(input_data, False)
+    #     cp1 = blocks.copy(gr.sizeof_float)
+    #     cp2 = blocks.copy(gr.sizeof_float)
+    #     snk = blocks.vector_sink_f()
 
-        fg1 = gr.flowgraph("FG On Local Host")
+    #     fg1 = gr.flowgraph("FG On Local Host")
 
-        fg1.connect(src, 0, cp1, 0)
-        fg1.connect(cp2, 0, snk, 0)
+    #     fg1.connect(src, 0, cp1, 0)
+    #     fg1.connect(cp2, 0, snk, 0)
 
-        # Indicate which scheduler to use in each domain
-        sched1 = nbt.scheduler_nbt("nbtsched_host")
-        sched2 = nbt.scheduler_nbt("nbtsched_remote")
-        domain_confs = [
-            gr.domain_conf(sched1, [src, cp1]),
-            gr.domain_conf(sched2, [cp2, snk], gr.remote_execution_host("127.0.0.1", 1234))
-        ]
+    #     # Indicate which scheduler to use in each domain
+    #     sched1 = nbt.scheduler_nbt("nbtsched_host")
+    #     sched2 = nbt.scheduler_nbt("nbtsched_remote")
+    #     domain_confs = [
+    #         gr.domain_conf(sched1, [src, cp1]),
+    #         gr.domain_conf(sched2, [cp2, snk], gr.remote_execution_host("127.0.0.1", 1234))
+    #     ]
 
-        fg1.partition(domain_confs)
+    #     fg1.partition(domain_confs)
 
-        fg1.start()
-        fg1.wait()
+    #     fg1.start()
+    #     fg1.wait()
 
-        # Will need to get the data serialized from the remote host
-        rx_data = snk.data()
+    #     # Will need to get the data serialized from the remote host
+    #     rx_data = snk.data()
         
-        self.assertEqual(input_data, rx_data)
+    #     self.assertEqual(input_data, rx_data)
 
 if __name__ == "__main__":
     gr_unittest.run(test_basic)
