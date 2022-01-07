@@ -175,10 +175,13 @@ protected:
 {% for p in parameters -%}
 {#% if p['settable'] or p['gettable'] %#}{% if 'serializable' not in p or p['serializable'] %}
     {% if 'string' in p['dtype'] %}
-    string_param::sptr param_{{p['id']}};
+    //string_param::sptr param_{{p['id']}};
+    pmtf::string param_{{p['id']}};
     {% else %}
-    typename {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::sptr param_{{p['id']}};
+    //typename {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}> param_{{p['id']}};
+    typename pmtf::{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}> param_{{p['id']}};
     {% endif %}
+    
 {% endif %}
 {% endfor -%}
 {% endif -%}
@@ -190,13 +193,15 @@ protected:
 {% for p in parameters -%}
 {#% if p['settable'] or p['gettable']%#}{% if 'serializable' not in p or p['serializable'] %}
     {% if 'string' in p['dtype'] %}
-    param_{{p['id']}} = string_param::make(params::id_{{p['id']}}, 
-        "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    //param_{{p['id']}} = string_param::make(params::id_{{p['id']}}, 
+    //    "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    param_{{p['id']}} = pmtf::string({{"args."+p['id'] if 'cotr' not in p or p['cotr']}});
     {% else %}
-    param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
-        "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    //param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
+    //    "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    param_{{p['id']}} = pmtf::{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{"args."+p['id'] if 'cotr' not in p or p['cotr']}});
     {% endif %}
-    add_param(param_{{p['id']}});
+    add_param("{{p['id']}}", d_param_str_map["{{p['id']}}"], param_{{p['id']}});
 {% endif %}
 {% endfor -%}
 {% endif -%}

@@ -58,7 +58,7 @@ template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not 
 {
     return pmtf::get_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
                 request_parameter_query(params::id_{{p['id']}}))
-        .value(); 
+        .native(); 
 }
 {% endif %}
 {% endfor -%}
