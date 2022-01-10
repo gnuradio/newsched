@@ -1,3 +1,6 @@
 [submodule "subprojects/pmt"]
 	path = subprojects/pmt
 	url = https://github.com/gnuradio/pmt
+[submodule "subprojects/json"]
+	path = subprojects/json
+	url = https://github.com/nlohmann/json
