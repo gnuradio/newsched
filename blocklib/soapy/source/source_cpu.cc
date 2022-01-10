@@ -19,8 +19,7 @@ namespace soapy {
 
 template <>
 source_cpu<gr_complex>::source_cpu(const typename source<gr_complex>::block_args& args)
-    : gr::block("soapy_source"),
-      source<gr_complex>(args),
+    : source<gr_complex>(args),
       block_impl(SOAPY_SDR_RX,
                  args.device,
                  SOAPY_SDR_CF32,

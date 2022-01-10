@@ -10,7 +10,7 @@ class complex_to_mag_squared_cpu : public complex_to_mag_squared
 {
 public:
     complex_to_mag_squared_cpu(const block_args& args)
-        : sync_block("complex_to_mag_squared"), complex_to_mag_squared(args), d_vlen(args.vlen)
+        : complex_to_mag_squared(args), d_vlen(args.vlen)
     {
         // const int alignment_multiple = volk_get_alignment() / sizeof(float);
         // set_output_multiple(std::max(1, alignment_multiple));

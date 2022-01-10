@@ -185,16 +185,31 @@ std::string block::to_json()
 {
     // Example string describing this block
     // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
-    std::string ret = fmt::format("{{ ""module"": ""{}"", ""id"": ""{}"", ""properties"": {{", s_module, name()+suffix());
-    // for(auto [key, val]: d_parameters.params){
-    //     Base64encode_len
-    //     val.
-    //     ret += fmt::format("{}:{}", key, 
-    // }
-    // for (auto& param : d_parameters.params)
-    // {
-        
-    // }
+    std::string ret = fmt::format("{{ \"module\": \"{}\", \"id\": \"{}\", \"properties\": {{ ", s_module, name()+suffix());
+    int idx = 0;
+    for(auto [key, val]: d_parameters.param_map){
+        if (idx > 0)
+        {
+            ret += ",";
+        }
+        std::stringbuf sb; // fake channel
+        auto nbytes = val.serialize(sb);
+        std::string pre_encoded_str(nbytes,'0');
+        sb.sgetn(pre_encoded_str.data(), nbytes);
+        auto nencoded_bytes = Base64encode_len(nbytes);
+        std::string encoded_str(nencoded_bytes,'0');
+        // int Base64encode(char * coded_dst, const char *plain_src,int len_plain_src);
+        auto nencoded = Base64encode(encoded_str.data(), pre_encoded_str.data(), nbytes);
+        ret += fmt::format("\"{}\": \"{}\"", key, encoded_str);
+        idx++;
+    }
+    ret += " } }";
+    return ret;
+}
+
+void from_json(const std::string& json_str)
+{
+    
 }
 
 } // namespace gr

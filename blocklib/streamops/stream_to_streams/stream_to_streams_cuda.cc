@@ -17,7 +17,7 @@ namespace gr {
 namespace streamops {
 
 stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
-    : block("stream_to_streams_cuda"), stream_to_streams(args), d_itemsize(args.itemsize)
+    : stream_to_streams(args), d_itemsize(args.itemsize)
 {
     d_out_items.resize(args.nstreams);
     p_kernel =

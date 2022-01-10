@@ -9,7 +9,7 @@ namespace math {
 class conjugate_cpu : public conjugate
 {
 public:
-    conjugate_cpu(const block_args& args) : sync_block("conjugate"), conjugate(args)
+    conjugate_cpu(const block_args& args) : conjugate(args)
     {
         // const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
         // set_output_multiple(std::max(1, alignment_multiple));

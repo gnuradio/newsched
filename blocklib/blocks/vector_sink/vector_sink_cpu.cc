@@ -17,7 +17,7 @@ namespace blocks {
 
 template <class T>
 vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& args)
-    : sync_block("vector_sink"), vector_sink<T>(args), d_vlen(args.vlen)
+    : vector_sink<T>(args), d_vlen(args.vlen)
 {
     d_data.reserve(d_vlen * args.reserve_items);
 }

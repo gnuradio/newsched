@@ -18,8 +18,7 @@ namespace filter {
 template <class T>
 pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
     const typename pfb_channelizer<T>::block_args& args)
-    : block("pfb_channelizer"), 
-      pfb_channelizer<T>(args),
+    : pfb_channelizer<T>(args),
 
       polyphase_filterbank(args.numchans, args.taps),
       d_oversample_rate(args.oversample_rate),

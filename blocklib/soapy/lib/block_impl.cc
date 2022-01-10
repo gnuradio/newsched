@@ -152,8 +152,7 @@ block_impl::block_impl(int direction,
                        const std::string& stream_args,
                        const std::vector<std::string>& tune_args,
                        const std::vector<std::string>& other_settings)
-    : gr::block("soapy_block"),
-      d_direction(direction),
+    : d_direction(direction),
       d_nchan(nchan),
       d_stream_args(stream_args),
       d_channels(nchan)

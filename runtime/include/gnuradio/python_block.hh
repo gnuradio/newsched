@@ -36,7 +36,7 @@ typedef enum {
 
 
 
-class GR_RUNTIME_API python_block : virtual public gr::block
+class GR_RUNTIME_API python_block : public gr::block
 {
 private:
     py::handle d_py_handle;
@@ -60,7 +60,7 @@ public:
          }
 };
 
-class GR_RUNTIME_API python_sync_block : virtual public gr::sync_block
+class GR_RUNTIME_API python_sync_block : public gr::sync_block
 {
 private:
     py::handle d_py_handle;

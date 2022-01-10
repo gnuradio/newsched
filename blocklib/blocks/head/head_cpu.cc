@@ -15,7 +15,7 @@ namespace gr {
 namespace blocks {
 
 head_cpu::head_cpu(const block_args& args)
-    : sync_block("head"), head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
+    : head(args), d_itemsize(args.itemsize), d_nitems(args.nitems)
 {
 }
 

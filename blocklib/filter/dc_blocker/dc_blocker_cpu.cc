@@ -17,8 +17,7 @@ namespace filter {
 
 template <class T>
 dc_blocker_cpu<T>::dc_blocker_cpu(const typename dc_blocker<T>::block_args& args)
-    : sync_block("dc_blocker"),
-      dc_blocker<T>(args),
+    : dc_blocker<T>(args),
       d_length(args.D),
       d_long_form(args.long_form),
       d_ma_0(args.D),

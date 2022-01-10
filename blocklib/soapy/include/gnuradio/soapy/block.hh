@@ -18,9 +18,11 @@
 namespace gr {
 namespace soapy {
 
-class SOAPY_API block : virtual public gr::block
+class SOAPY_API block : public gr::block
 {
 public:
+    block(const std::string& name,
+          const std::string& module="") : gr::block(name, module) {}
     /*!
      * A key that uniquely identifies the device driver.
      * This key identifies the underlying implementation.

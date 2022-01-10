@@ -28,7 +28,7 @@
 {% endmacro %}
 
 {% macro class_statement(block, blocktype) -%}
-class {{ block }} : virtual public {{blocktype}}
+class {{ block }} : public {{blocktype}}
 {% endmacro %}
 
 {% macro block_args(parameters) -%}

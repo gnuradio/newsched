@@ -18,8 +18,7 @@ namespace filter {
 template <class T>
 moving_average_cpu<T>::moving_average_cpu(
     const typename moving_average<T>::block_args& args)
-    : block("moving_average"), 
-      moving_average<T>(args),
+    : moving_average<T>(args),
       d_length(args.length),
       d_scale(args.scale),
       d_max_iter(args.max_iter),

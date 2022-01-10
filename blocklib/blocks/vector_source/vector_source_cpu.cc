@@ -11,8 +11,7 @@ namespace blocks {
 
 template <class T>
 vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_args& args)
-    : sync_block("vector_source"),
-      vector_source<T>(args),
+    : vector_source<T>(args),
       d_data(args.data),
       d_repeat(args.repeat),
       d_offset(0),

@@ -16,12 +16,16 @@ using namespace gr;
 
 TEST(SchedulerMTTest, TwoSinks)
 {
-    int nsamples = 100000;
+    int nsamples = 1000;
     std::vector<float> input_data(nsamples);
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make_cpu({input_data, false});
+    auto str = src->to_json();
+
+    std::cout << str << std::endl;
+
     auto snk1 = blocks::vector_sink_f::make({});
     auto snk2 = blocks::vector_sink_f::make({});
 

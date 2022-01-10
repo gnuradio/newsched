@@ -17,7 +17,7 @@ namespace math {
 
 template <class T>
 add_cuda<T>::add_cuda(const typename add<T>::block_args& args)
-    : sync_block("add_cuda"), add<T>(args), d_vlen(args.vlen), d_nports(args.nports)
+    : add<T>(args), d_vlen(args.vlen), d_nports(args.nports)
 {
     d_in_items.resize(d_nports);
     p_add_kernel =

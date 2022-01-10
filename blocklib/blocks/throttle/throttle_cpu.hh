@@ -11,7 +11,7 @@ class throttle_cpu : public throttle
 {
 public:
     throttle_cpu(block_args args)
-        : sync_block("throttle"), throttle(args),
+        : throttle(args),
           d_itemsize(args.itemsize),
           d_ignore_tags(args.ignore_tags)
     {

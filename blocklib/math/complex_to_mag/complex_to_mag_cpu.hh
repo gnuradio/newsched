@@ -8,7 +8,7 @@ namespace math {
 class complex_to_mag_cpu : public complex_to_mag
 {
 public:
-    complex_to_mag_cpu(const block_args& args) : sync_block("complex_to_mag"), complex_to_mag(args), d_vlen(args.vlen)
+    complex_to_mag_cpu(const block_args& args) : complex_to_mag(args), d_vlen(args.vlen)
     {
         // const int alignment_multiple = volk_get_alignment() / sizeof(float);
         // set_output_multiple(std::max(1, alignment_multiple));

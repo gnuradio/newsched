@@ -44,8 +44,7 @@ typename dc_blocker<T>::sptr dc_blocker<T>::make(int D, bool long_form)
 
 template <class T>
 dc_blocker<T>::dc_blocker(int D, bool long_form)
-    : sync_block("dc_blocker"),
-      d_length(D),
+    : d_length(D),
       d_long_form(long_form),
       d_ma_0(D),
       d_ma_1(D)
