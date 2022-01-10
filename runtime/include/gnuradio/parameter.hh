@@ -33,7 +33,9 @@ public:
     {
     }
     uint32_t id() const { return _id; }
-    pmtf::pmt pmt_value() { return _pmt_value; }
+    pmtf::pmt pmt_value() {
+         return _pmt_value; 
+    }
     void set_pmt_value(pmtf::pmt val) { _pmt_value = val; }
     uint64_t at_sample() { return _at_sample; }
     void set_at_sample(uint64_t val) { _at_sample = val; }
@@ -96,11 +98,11 @@ struct parameter_config
         param_map[name] = b; 
         param_map_int[id] = b;
         }
-    pmtf::pmt get(const std::string& name)
+    pmtf::pmt& get(const std::string& name)
     {
         return param_map[name];
     }
-    pmtf::pmt get(int id)
+    pmtf::pmt& get(int id)
     {
         return param_map_int[id];
     }

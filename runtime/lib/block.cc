@@ -55,7 +55,7 @@ void block::on_parameter_change(param_action_sptr action)
 {
     gr_log_debug(
         _debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
-    auto param = d_parameters.get(action->id());
+    auto& param = d_parameters.get(action->id());
     param = action->pmt_value();
 }
 
@@ -186,13 +186,15 @@ std::string block::to_json()
     // Example string describing this block
     // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
     std::string ret = fmt::format("{{ ""module"": ""{}"", ""id"": ""{}"", ""properties"": {{", s_module, name()+suffix());
-    for(auto [key, val]: d_parameters.params){
-        cout << key << ": " << val << endl;
-    }
-    for (auto& param : d_parameters.params)
-    {
-        ret += fmt::format("{}:{}",param->
-    }
+    // for(auto [key, val]: d_parameters.params){
+    //     Base64encode_len
+    //     val.
+    //     ret += fmt::format("{}:{}", key, 
+    // }
+    // for (auto& param : d_parameters.params)
+    // {
+        
+    // }
 }
 
 } // namespace gr

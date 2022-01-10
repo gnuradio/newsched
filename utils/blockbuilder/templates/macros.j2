@@ -189,7 +189,8 @@ protected:
 
 {% macro parameter_instantiations(parameters) -%}
 {% if parameters -%}
-    d_param_str_map = {{"{"}} {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endif %} {% endfor -%}{{"}"}};
+    //d_param_str_map = {{"{"}} {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endif %} {% endfor -%}{{"}"}};
+    d_param_str_map = {{"{"}} {% for p in parameters -%}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endfor -%}{{"}"}};
 {% for p in parameters -%}
 {#% if p['settable'] or p['gettable']%#}{% if 'serializable' not in p or p['serializable'] %}
     {% if 'string' in p['dtype'] %}
