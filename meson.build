@@ -60,6 +60,9 @@ pmtf_dep = libpmtf.get_variable('pmtf_dep')
 libjson = subproject('json')
 json_dep = libjson.get_variable('nlohmann_json_dep')
 
+libcpphttp = subproject('cpp-httplib')
+cpphttp_dep = libcpphttp.get_variable('cpp_httplib_dep')
+
 cmake = import('cmake')
 
 if (get_option('enable_testing'))

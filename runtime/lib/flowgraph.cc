@@ -2,6 +2,7 @@
 #include <gnuradio/graph_utils.hh>
 
 #include <dlfcn.h>
+#include <httplib.h>
 
 namespace gr {
 
@@ -205,16 +206,24 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     for (auto& info : graph_part_info) {
         auto flattened_graph = flat_graph::make_flat(info.subgraph);
 
-        if (confs[conf_index].execution_host()) {
+        if (auto host = confs[conf_index].execution_host()) {
             // Serialize and reprogram the flattened graph on the remote side
-
+            httplib::Client cli("http://" + host->ipaddr() + ":" + std::to_string(host->port()) );
             // 1. Create flowgraph
+            auto res = cli.Get("/flowgraph/foo/create");
 
             // 2. Create Blocks
+            for (auto& b : confs[conf_index].blocks())
+            {
+                // curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_source_c", "parameters": {"data": [1,2,3,4,5], "repeat": false }}' http://127.0.0.1:8000/block/src/create
+                cli.Post(("/block/" + b->alias() + "/create").c_str(), std::static_pointer_cast<block>(b)->to_json().c_str(), "application/json");
+            }
 
             // 3. Connect Blocks (or add edges)
 
-            
+            // 4. Create Scheduler
+
+
         } else {
             info.scheduler->initialize(flattened_graph, d_fgmon);
         }
