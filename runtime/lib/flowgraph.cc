@@ -213,6 +213,8 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
             // 2. Create Blocks
 
             // 3. Connect Blocks (or add edges)
+
+            
         } else {
             info.scheduler->initialize(flattened_graph, d_fgmon);
         }
