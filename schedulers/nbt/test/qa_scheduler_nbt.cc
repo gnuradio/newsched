@@ -26,6 +26,8 @@ TEST(SchedulerMTTest, TwoSinks)
 
     std::cout << str << std::endl;
 
+    src->from_json(str);
+
     auto snk1 = blocks::vector_sink_f::make({});
     auto snk2 = blocks::vector_sink_f::make({});
 

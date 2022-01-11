@@ -117,6 +117,7 @@ public:
     virtual int get_param_id(const std::string& id) { return d_param_str_map[id]; }
     virtual std::string suffix() { return ""; }
     std::string to_json();
+    void from_json(const std::string& json_str);
 
     /**
      * Every Block should have a param update message handler

@@ -3,10 +3,10 @@
 curl -v -H "Content-Type: application/json" -X POST http://127.0.0.1:8000/flowgraph/foo/create
 
 # Create Blocks
-curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_source_c", "properties": {"data": [1,2,3,4,5], "repeat": false }}' http://127.0.0.1:8000/block/src/create
-curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}' http://127.0.0.1:8000/block/copy_0/create
-curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}' http://127.0.0.1:8000/block/copy_1/create
-curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_sink_c", "properties": {}}' http://127.0.0.1:8000/block/snk/create
+curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_source_c", "parameters": {"data": [1,2,3,4,5], "repeat": false }}' http://127.0.0.1:8000/block/src/create
+curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "copy", "parameters": {"itemsize": 8}}' http://127.0.0.1:8000/block/copy_0/create
+curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "copy", "parameters": {"itemsize": 8}}' http://127.0.0.1:8000/block/copy_1/create
+curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_sink_c", "parameters": {}}' http://127.0.0.1:8000/block/snk/create
 
 
 # Connect Blocks

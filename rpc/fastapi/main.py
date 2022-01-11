@@ -48,7 +48,7 @@ class Session:
 
     def create_block(self, block_name, payload):
         self.blocks[block_name] = importlib.import_module(
-            'newsched.' + payload['module']).__getattribute__(payload['id'])(**payload['properties'])
+            'newsched.' + payload['module']).__getattribute__(payload['id'])(**payload['parameters'])
 
         return "{status: 0}"
 

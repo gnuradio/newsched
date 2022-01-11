@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, zmq_dep]
+runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, zmq_dep, json_dep]
 
 libdir = get_option('libdir')
 prefix = get_option('prefix')
