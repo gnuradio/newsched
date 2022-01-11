@@ -39,7 +39,7 @@ inline void volk_add<gr_complex>(gr_complex* out, const gr_complex* add, unsigne
 
 template <class T>
 add_cpu<T>::add_cpu(const typename add<T>::block_args& args)
-    : add<T>(args), d_vlen(args.vlen), d_nports(args.nports)
+    : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen), d_nports(args.nports)
 {
     // set_alignment(std::max(1, int(volk_get_alignment() / sizeof(T))));
     // this->set_output_multiple(std::max(1, int(volk_get_alignment() / sizeof(T))));

@@ -17,7 +17,7 @@ namespace filter {
 template <class T>
 moving_average_cuda<T>::moving_average_cuda(
     const typename moving_average<T>::block_args& args)
-    : moving_average<T>(args),
+    : INHERITED_CONSTRUCTORS(T),
       d_length(args.length),
       d_scale(args.scale),
       d_max_iter(args.max_iter),

@@ -32,5 +32,13 @@ template class {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else o
 {% endfor -%}
 {% endif -%}
 
+{%if typekeys | length == 1 -%}
+#define INHERITED_CONSTRUCTORS(type) {{blocktype}}("{{block}}", "{{module}}"), {{block}}<type>(args)
+{%elif typekeys | length == 2 -%}
+#define INHERITED_CONSTRUCTORS(type1,type2) {{blocktype}}("{{block}}", "{{module}}"), {{block}}<type1,type2>(args)
+{%else-%}
+#define INHERITED_CONSTRUCTORS {{blocktype}}("{{block}}", "{{module}}"), {{block}}(args)
+{% endif %}
+
 } // namespace {{module}}
 } // namespace gr

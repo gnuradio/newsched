@@ -16,7 +16,7 @@ namespace gr {
 namespace streamops {
 
 interleaved_short_to_complex_cpu::interleaved_short_to_complex_cpu(const block_args& args)
-    : interleaved_short_to_complex(args), d_scalar(args.scale_factor), d_swap(args.swap)
+    : INHERITED_CONSTRUCTORS, d_scalar(args.scale_factor), d_swap(args.swap)
 {
 }
 

@@ -6,7 +6,7 @@ namespace fileio {
 
 file_sink_cpu::file_sink_cpu(const block_args& args)
     : file_sink_base(args.filename, true, args.append),
-      file_sink(args),
+      INHERITED_CONSTRUCTORS,
       d_itemsize(args.itemsize)
       
 {

@@ -28,7 +28,8 @@
 namespace gr {
 namespace fileio {
 
-file_source_cpu::file_source_cpu(const file_source::block_args& args) : file_source(args), 
+file_source_cpu::file_source_cpu(const file_source::block_args& args) : 
+      INHERITED_CONSTRUCTORS, 
       d_itemsize(args.itemsize),
       d_start_offset_items(args.offset),
       d_length_items(args.len),

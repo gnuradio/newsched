@@ -18,7 +18,7 @@ namespace qtgui {
 
 template <class T>
 freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
-    : freq_sink<T>(args),
+    : INHERITED_CONSTRUCTORS(T),
       d_fftsize(args.fftsize),
       //   d_fft_shift(fftsize),
       d_fftavg(1.0),
