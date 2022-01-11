@@ -57,7 +57,7 @@ parameters:
     settable: false
 -   id: name
     label: Name
-    dtype: const std::string&
+    dtype: std::string
     settable: false
 -   id: nconnections
     label: Num Connections

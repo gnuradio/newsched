@@ -110,6 +110,7 @@ class {{ block }} : public {{blocktype}}
 {% macro implementations(implementations) -%}
     enum class available_impl { {% for impl in implementations %}{{ impl['id'] | upper }},{% endfor %} PYSHELL };
     static sptr make(const block_args& args, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
+    static sptr make_from_params(const std::string& json_str, available_impl impl = available_impl::{{implementations[0]['id'] | upper }});
 
     {% set vars = {'pyshell': False} %}
     {% for impl in implementations %}

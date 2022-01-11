@@ -3,7 +3,7 @@
 #include <pmtf/wrap.hpp>
 
 #include <gnuradio/pyblock_detail.hh>
-#include "base64/base64.h"
+#include <gnuradio/base64/base64.h>
 
 #include <nlohmann/json.hpp>
 
@@ -231,6 +231,14 @@ void block::from_json(const std::string& json_str)
 
     }
 
+}
+
+pmtf::pmt block::deserialize_param_to_pmt(const std::string& param_value)
+{
+    std::string bufplain(param_value.size(), '0');
+    Base64decode(bufplain.data(), param_value.data());
+    std::stringbuf sb(bufplain);
+    return pmtf::pmt::deserialize(sb);
 }
 
 } // namespace gr

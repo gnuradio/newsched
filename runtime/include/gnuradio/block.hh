@@ -50,6 +50,8 @@ protected:
     void notify_scheduler_input();
     void notify_scheduler_output();
 
+    static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
+
 public:
 
     /**

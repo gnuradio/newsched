@@ -16,7 +16,7 @@ using namespace gr;
 
 TEST(SchedulerMTTest, TwoSinks)
 {
-    int nsamples = 1000;
+    int nsamples = 100;
     std::vector<float> input_data(nsamples);
     for (int i = 0; i < nsamples; i++) {
         input_data[i] = i;
@@ -26,15 +26,17 @@ TEST(SchedulerMTTest, TwoSinks)
 
     std::cout << str << std::endl;
 
-    src->from_json(str);
+    // src->from_json(str);
+    std::string str2 = "{ \"data\": \"uAEAAAwAAAAIAAoACQAEAAgAAAAMAAAAAA8GAAgABAAGAAAABAAAAGQAAAAAAAAAAACAPwAAAEAAAEBAAACAQAAAoEAAAMBAAADgQAAAAEEAABBBAAAgQQAAMEEAAEBBAABQQQAAYEEAAHBBAACAQQAAiEEAAJBBAACYQQAAoEEAAKhBAACwQQAAuEEAAMBBAADIQQAA0EEAANhBAADgQQAA6EEAAPBBAAD4QQAAAEIAAARCAAAIQgAADEIAABBCAAAUQgAAGEIAABxCAAAgQgAAJEIAAChCAAAsQgAAMEIAADRCAAA4QgAAPEIAAEBCAABEQgAASEIAAExCAABQQgAAVEIAAFhCAABcQgAAYEIAAGRCAABoQgAAbEIAAHBCAAB0QgAAeEIAAHxCAACAQgAAgkIAAIRCAACGQgAAiEIAAIpCAACMQgAAjkIAAJBCAACSQgAAlEIAAJZCAACYQgAAmkIAAJxCAACeQgAAoEIAAKJCAACkQgAApkIAAKhCAACqQgAArEIAAK5CAACwQgAAskIAALRCAAC2QgAAuEIAALpCAAC8QgAAvkIAAMBCAADCQgAAxEIAAMZC\",\"repeat\": \"KAAAAAwAAAAIAA4ABwAIAAgAAAAAAAAODAAAAAAABgAIAAcABgAAAAAAAAA=\",\"vlen\": \"LAAAAAwAAAAIAA4ABwAIAAgAAAAAAAANDAAAAAAABgAMAAQABgAAAAEAAAAAAAAA\" }";
+    auto src2 = blocks::vector_source_f::make_from_params(str2);
 
     auto snk1 = blocks::vector_sink_f::make({});
     auto snk2 = blocks::vector_sink_f::make({});
 
 
     auto fg = flowgraph::make();
-    fg->connect(src, 0, snk1, 0);
-    fg->connect(src, 0, snk2, 0);
+    fg->connect(src2, 0, snk1, 0);
+    fg->connect(src2, 0, snk2, 0);
 
     fg->start();
     fg->wait();
