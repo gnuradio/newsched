@@ -210,13 +210,15 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
             // Serialize and reprogram the flattened graph on the remote side
             httplib::Client cli("http://" + host->ipaddr() + ":" + std::to_string(host->port()) );
             // 1. Create flowgraph
-            auto res = cli.Get("/flowgraph/foo/create");
+            auto res = cli.Post("/flowgraph/foo/create");
 
             // 2. Create Blocks
             for (auto& b : confs[conf_index].blocks())
             {
+                auto randstr = nodeid_generator::get_unique_string();
+                std::string newblockname = b->name() + "_" + randstr;
                 // curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_source_c", "parameters": {"data": [1,2,3,4,5], "repeat": false }}' http://127.0.0.1:8000/block/src/create
-                cli.Post(("/block/" + b->alias() + "/create").c_str(), std::static_pointer_cast<block>(b)->to_json().c_str(), "application/json");
+                cli.Post(("/block/" + newblockname + "/create").c_str(), std::static_pointer_cast<block>(b)->to_json().c_str(), "application/json");
             }
 
             // 3. Connect Blocks (or add edges)

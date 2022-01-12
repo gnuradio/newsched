@@ -47,8 +47,12 @@ class Session:
     # {"name": "snk", "module": "blocks", "id": "vector_sink_c", "properties": {}}
 
     def create_block(self, block_name, payload):
-        self.blocks[block_name] = importlib.import_module(
-            'newsched.' + payload['module']).__getattribute__(payload['id'])(**payload['parameters'])
+        if 'format' in payload and payload['format'] == 'b64':
+            self.blocks[block_name] = importlib.import_module(
+                'newsched.' + payload['module']).__getattribute__(payload['id']).make_from_params(json.dumps(payload['parameters']))
+        else:
+            self.blocks[block_name] = importlib.import_module(
+                'newsched.' + payload['module']).__getattribute__(payload['id'])(**payload['parameters'])
 
         return "{status: 0}"
 
