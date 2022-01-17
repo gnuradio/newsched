@@ -16,6 +16,11 @@ namespace gr {
 struct graph_partition_info {
     scheduler_sptr scheduler;
     graph_sptr subgraph;
+
+    bool operator==(const graph_partition_info&other)
+    {
+        return (scheduler == other.scheduler && subgraph == other.subgraph);
+    }
 };
 
 typedef std::vector<graph_partition_info> graph_partition_info_vec;

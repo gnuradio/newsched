@@ -225,9 +225,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
             cli.Post(
                 "/flowgraph/foo/proxy/create", proxy_json.dump(), "application/json");
 
-            auto local_proxy = fgm_proxy::make(host->ipaddr(), 54422, true);
-            local_proxy->set_fgm(d_fgmon);
-            add_fgm_proxy(local_proxy);
+            add_fgm_proxy(fgm_proxy::make(host->ipaddr(), 54422, true));
 
             // 2. Create Blocks
             for (auto& b : confs[conf_index].blocks()) {
@@ -280,24 +278,54 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                                                 edge->dst().node()->rpc_name(),
                                                 edge->dst().port()->index()) } };
                     auto res = cli.Post("/flowgraph/foo/edge/create",
-                             j2.dump().c_str(),
-                             "application/json");
-                             std::string x = res->body;
+                                        j2.dump().c_str(),
+                                        "application/json");
+                    std::string x = res->body;
                     std::cout << res->body << std::endl;
-                    auto edge_name = nlohmann::json::parse(res->body)["edge"].get<std::string>();
+                    auto edge_name =
+                        nlohmann::json::parse(res->body)["edge"].get<std::string>();
 
-                    auto net_properties = buffer_net_zmq_properties::make(host->ipaddr(), 1234);
+                    auto net_properties =
+                        buffer_net_zmq_properties::make(host->ipaddr(), 1234);
 
-                    res = cli.Post(fmt::format("/flowgraph/foo/edge/{}/set_custom_buffer",edge_name).c_str(),
-                             net_properties->to_json(),
-                             "application/json");
+                    res = cli.Post(
+                        fmt::format("/flowgraph/foo/edge/{}/set_custom_buffer", edge_name)
+                            .c_str(),
+                        net_properties->to_json(),
+                        "application/json");
 
-                    auto e = edge::make(
-                        edge->src().node(), edge->src().port(), nullptr, nullptr);
-                    e->set_custom_buffer(
-                        buffer_net_zmq_properties::make(host->ipaddr(), 1234));
+                    // The edge already exists
+                    for (auto& gpi : graph_part_info) {
+                        if (gpi == info) {
+                            continue;
+                        }
+                        auto found_edges = gpi.subgraph->find_edge(edge->src().port());
 
-                    add_edge(e);
+                        if (found_edges.size() > 0)
+                        {
+                            found_edges[0]->set_custom_buffer(net_properties);
+                        }
+                    }
+                    #if 0
+                        auto e = edge::make(
+                            edge->src().node(), edge->src().port(), nullptr, nullptr);
+                        e->set_custom_buffer(net_properties);
+
+                        // Since this is the remote graph processing, need to find the
+                        // subgraph that contains this src node
+                        bool found = false;
+                        for (auto& gpi : graph_part_info) {
+                            for (auto& n : gpi.subgraph->nodes()) {
+                                if (e->src().node() == n) {
+                                    found = true;
+                                    gpi.subgraph->add_edge(e);
+                                    break;
+                                }
+                            }
+                            if (found)
+                                break;
+                        }
+                    #endif
                 } else {
                     throw std::runtime_error(
                         "Neither end of edge is remote. Shouldn't happen.");
@@ -312,6 +340,9 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     conf_index = 0;
 
     d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies, alias());
+    for (auto& proxy : d_fgm_proxies) {
+        proxy->set_fgm(d_fgmon);
+    }
     for (auto& info : graph_part_info) {
         auto flattened_graph = flat_graph::make_flat(info.subgraph);
 

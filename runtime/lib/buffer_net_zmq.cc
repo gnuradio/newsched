@@ -150,6 +150,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
             if (n_bytes_left_in_msg == 0)
             {
                 _msg.rebuild();
+                _debug_logger->debug("going into recv");
                 _socket.recv(_msg, zmq::recv_flags::none);
                 GR_LOG_DEBUG(_debug_logger, "received msg with size {} items", _msg.size() / wi.item_size);
                 _msg_idx = 0;
