@@ -30,5 +30,7 @@ void bind_buffer_net_zmq(py::module& m)
         //     }), py::arg("ipaddr"), py::arg("port"))
         .def_static(
             "make", &buffer_net_zmq_properties::make, py::arg("ipaddr"), py::arg("port") )
+        .def_static(
+            "make_from_params", &buffer_net_zmq_properties::make_from_params, py::arg("json_str") )
             ;
 }

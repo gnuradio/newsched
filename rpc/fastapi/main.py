@@ -8,8 +8,10 @@ from newsched import gr
 import json
 import numpy as np
 
+
 class FlowgraphProperties(BaseModel):
     name: str
+
 
 class BlockProperties(BaseModel):
     name: str
@@ -27,6 +29,10 @@ class Session:
     # {"name": "Foo"}
     def create_flowgraph(self, fg_name):
         self.fgs[fg_name] = gr.flowgraph(fg_name)
+        return "{status: 0}"
+
+    def validate_flowgraph(self, fg_name):
+        self.fgs[fg_name].validate()
         return "{status: 0}"
 
     def start_flowgraph(self, fg_name):
@@ -59,11 +65,13 @@ class Session:
     def block_method(self, block_name, method, payload):
 
         ret = {}
-        ret['result'] = self.blocks[block_name].__getattribute__(method)(**payload)
+        ret['result'] = self.blocks[block_name].__getattribute__(
+            method)(**payload)
         print(ret['result'])
 
         print(type(ret['result']))
         print(type(ret['result'][0]))
+
         def default_serializer(z):
             # if isinstance(z, list) and isinstance(z[0], complex):
             #     return {'re': [x.real() for x in z], 'im': [x.imag() for x in z]}
@@ -71,35 +79,40 @@ class Session:
                 return (z.real, z.imag)
 
             type_name = z.__class__.__name__
-            raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
-
+            raise TypeError(
+                f"Object of type '{type_name}' is not JSON serializable")
 
         # return ret
-        return json.dumps(ret, default = default_serializer)
+        return json.dumps(ret, default=default_serializer)
 
     # {"flowgraph": "Foo", "src": ["copy_0",0], "snk": ["copy_1",1] }
     # {"flowgraph": "Foo", "src": ["copy_0",0], "snk": ["copy_1",1] }
     def connect_blocks(self, fg_name, payload):
         print(self.blocks)
-        src  = (self.blocks[payload['src'][0]],payload['src'][1])
-        dest = (self.blocks[payload['dest'][0]],payload['dest'][1])
+        src = (self.blocks[payload['src'][0]], payload['src'][1])
+        dest = (self.blocks[payload['dest'][0]], payload['dest'][1])
         print(src)
         print(dest)
         edge = self.fgs[fg_name].connect(src, dest)
 
-        # if the edge is named in the payload, the store the 
+        # if the edge is named in the payload, the store the
         if 'edge_name' in payload:
             edge_name = payload['edge_name']
         else:
             edge_name = edge.identifier()
 
-        return f"{{\"status\": 0, \"edge\": {edge_name}}}"
+        self.edges[edge_name] = edge
+
+        return json.dumps({"status": 0, "edge": edge_name})
 
     '{"src": ["src",0], "ipaddr":"127.0.0.1", "port":1234 }'
+
     def create_edge(self, fg_name, payload):
 
-        src  = (self.blocks[payload['src'][0]],payload['src'][1]) if payload['src'] else None
-        dest = (self.blocks[payload['dest'][0]],payload['dest'][1]) if payload['dest'] else None
+        src = (self.blocks[payload['src'][0]],
+               payload['src'][1]) if 'src' in payload and payload['src'] else None
+        dest = (self.blocks[payload['dest'][0]],
+                payload['dest'][1]) if 'dest' in payload and  payload['dest'] else None
 
         # edge = self.fgs[fg_name].connect(src, dest)
         if (src and dest):
@@ -112,18 +125,29 @@ class Session:
             edge = gr.edge(None, None,
                            dest[0], dest[0].get_port(dest[1], gr.port_type_t.STREAM, gr.port_direction_t.INPUT))
 
-        if (not (src and dest)):
-            edge.set_custom_buffer(gr.buffer_net_zmq_properties.make(payload['ipaddr'], payload['port']))
+        # if (not (src and dest)):
+        #     edge.set_custom_buffer(gr.buffer_net_zmq_properties.make(
+        #         payload['ipaddr'], payload['port']))
 
         self.fgs[fg_name].add_edge(edge)
 
-        # if the edge is named in the payload, the store the 
+        # if the edge is named in the payload, the store the
         if 'edge_name' in payload:
             edge_name = payload['edge_name']
         else:
             edge_name = edge.identifier()
 
-        return f"{{\"status\": 0, \"edge\": {edge_name}}}"
+        self.edges[edge_name] = edge
+        
+        # return json.dumps({"status": 0, 'tmp': 444, "edge": edge_name})
+        return {"status": 0, 'tmp': 444, "edge": edge_name}
+
+    def set_custom_buffer(self, fg_name, edge_name, payload):
+        print(payload)
+        buf_props = gr.__getattribute__(payload['id']).make_from_params(json.dumps(payload['parameters']))
+        self.edges[edge_name].set_custom_buffer(buf_props)
+
+        return json.dumps({"status": 0, "edge": edge_name})
 
     def create_fgm_proxy(self, fg_name, payload):
         ipaddr = payload['ipaddr']
@@ -132,6 +156,7 @@ class Session:
 
         proxy2 = gr.fgm_proxy(ipaddr, port, upstream)
         self.fgs[fg_name].add_fgm_proxy(proxy2)
+
 
 def create_app():
 
@@ -154,6 +179,10 @@ def create_app():
     @app.post("/flowgraph/{fg_name}/create")
     async def create_flowgraph(fg_name: str):
         return session.create_flowgraph(fg_name)
+
+    @app.post("/flowgraph/{fg_name}/validate")
+    async def validate_flowgraph(fg_name: str):
+        return session.validate_flowgraph(fg_name)
 
     @app.post("/flowgraph/{fg_name}/start")
     async def start_flowgraph(fg_name: str):
@@ -183,10 +212,13 @@ def create_app():
     async def create_edge(fg_name: str, payload: dict = Body(...)):
         return session.create_edge(fg_name, payload)
 
+    @app.post("/flowgraph/{fg_name}/edge/{edge_name}/set_custom_buffer")
+    async def set_custom_buffer(fg_name: str, edge_name : str, payload: dict = Body(...)):
+        return session.set_custom_buffer(fg_name, edge_name, payload)
+
     @app.post("/flowgraph/{fg_name}/proxy/create")
     async def connect_blocks(fg_name: str, payload: dict = Body(...)):
         return session.create_fgm_proxy(fg_name, payload)
-
 
     return app
 

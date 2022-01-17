@@ -1,6 +1,6 @@
+#include <gnuradio/buffer_net_zmq.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/graph_utils.hh>
-#include <gnuradio/buffer_net_zmq.hh>
 
 #include <dlfcn.h>
 #include <httplib.h>
@@ -206,7 +206,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
     int conf_index = 0;
     for (auto& info : graph_part_info) {
-        
+
         if (auto host = confs[conf_index].execution_host()) {
             // Serialize and reprogram the flattened graph on the remote side
             httplib::Client cli("http://" + host->ipaddr() + ":" +
@@ -215,6 +215,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
             auto res = cli.Post("/flowgraph/foo/create");
 
             // 1a. Create Scheduler Objects
+            // use the default for now
 
             // 1b. Create Flowgraph Proxy Objects
             nlohmann::json proxy_json = {
@@ -226,6 +227,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                 "/flowgraph/foo/proxy/create", proxy_json.dump(), "application/json");
 
             auto local_proxy = fgm_proxy::make(host->ipaddr(), 54422, true);
+            local_proxy->set_fgm(d_fgmon);
             add_fgm_proxy(local_proxy);
 
             // 2. Create Blocks
@@ -266,18 +268,37 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                              j2.dump().c_str(),
                              "application/json");
 
-                    auto e = edge::make(nullptr, nullptr, edge->dst().node(), edge->dst().port());
-                    e->set_custom_buffer(buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
+                    auto e = edge::make(
+                        nullptr, nullptr, edge->dst().node(), edge->dst().port());
+                    e->set_custom_buffer(
+                        buffer_net_zmq_properties::make(host->ipaddr(), 1234));
 
-                    
+                    add_edge(e);
+
                 } else if (edge->dst().node()->is_remote()) {
                     nlohmann::json j2 = { { "dest",
                                             std::pair<std::string, int>(
                                                 edge->dst().node()->rpc_name(),
                                                 edge->dst().port()->index()) } };
-                    cli.Post("/flowgraph/foo/edge/create",
+                    auto res = cli.Post("/flowgraph/foo/edge/create",
                              j2.dump().c_str(),
                              "application/json");
+                             std::string x = res->body;
+                    std::cout << res->body << std::endl;
+                    auto edge_name = nlohmann::json::parse(res->body)["edge"].get<std::string>();
+
+                    auto net_properties = buffer_net_zmq_properties::make(host->ipaddr(), 1234);
+
+                    res = cli.Post(fmt::format("/flowgraph/foo/edge/{}/set_custom_buffer",edge_name).c_str(),
+                             net_properties->to_json(),
+                             "application/json");
+
+                    auto e = edge::make(
+                        edge->src().node(), edge->src().port(), nullptr, nullptr);
+                    e->set_custom_buffer(
+                        buffer_net_zmq_properties::make(host->ipaddr(), 1234));
+
+                    add_edge(e);
                 } else {
                     throw std::runtime_error(
                         "Neither end of edge is remote. Shouldn't happen.");
@@ -288,13 +309,15 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     }
 
     // Since we have to wait for flowgraph proxy objects to be created above
-    // 4. Create Scheduler
+    // 4. Initialize the scheduler
     conf_index = 0;
     for (auto& info : graph_part_info) {
         auto flattened_graph = flat_graph::make_flat(info.subgraph);
 
         if (auto host = confs[conf_index].execution_host()) {
-
+            httplib::Client cli("http://" + host->ipaddr() + ":" +
+                                std::to_string(host->port()));
+            cli.Post("/flowgraph/foo/validate");
         } else {
             info.scheduler->initialize(flattened_graph, d_fgmon);
         }
@@ -303,7 +326,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     }
 
     _validated = true;
-} 
+}
 
 void flowgraph::validate()
 {
@@ -335,7 +358,6 @@ void flowgraph::start()
     }
 
     d_fgmon->start();
-
 }
 void flowgraph::stop()
 {

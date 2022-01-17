@@ -3,8 +3,8 @@
 #include <gnuradio/api.h>
 #include <gnuradio/buffer.hh>
 #include <gnuradio/neighbor_interface.hh>
-#include <gnuradio/scheduler_message.hh>
 #include <gnuradio/parameter_types.hh>
+#include <gnuradio/scheduler_message.hh>
 #include <algorithm>
 #include <string>
 #include <typeindex>
@@ -129,13 +129,6 @@ public:
             if (p)
                 p->push_message(msg);
         }
-
-        // FIXME: To achieve maximum performance, we need to stimulate our own
-        //  thread by pushing messages into the queue and causing the next
-        //  call to work() to be immediately evaluated
-        // Without this, performance is significantly worse than the GR TPB
-        //  scheduler.  This needs more investigation
-        // this->push_message(msg);
     }
     // Inbound messages
     virtual void push_message(scheduler_message_sptr msg)
@@ -144,7 +137,12 @@ public:
         if (_parent_intf) {
             _parent_intf->push_message(msg);
         } else {
-            throw std::runtime_error("port has no parent interface");
+            // In the case of distributed flowgraphs, the local version
+            // of the remote node will get called here
+            // in which case, it really needs to signal to the remote
+            // flowgraph -- how to do that???
+            
+            // throw std::runtime_error("port has no parent interface");
         }
     }
 
@@ -155,7 +153,8 @@ public:
         std::vector<sptr>::iterator it =
             std::find_if(std::begin(_connected_ports), std::end(_connected_ports), pred);
 
-        if (it == std::end(_connected_ports) || !other_port) { // allow nullptr to be added
+        if (it == std::end(_connected_ports) ||
+            !other_port) { // allow nullptr to be added
             _connected_ports.push_back(
                 other_port); // only connect if it is not already in there
         }

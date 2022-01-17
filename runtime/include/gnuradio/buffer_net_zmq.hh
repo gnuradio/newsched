@@ -24,7 +24,6 @@ private:
     zmq::socket_t _socket;
 
 
-
 public:
     typedef std::shared_ptr<buffer_net_zmq> sptr;
     buffer_net_zmq(size_t num_items,
@@ -36,21 +35,16 @@ public:
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
-    void* read_ptr(size_t index) {
-        return nullptr;
-    }
-    virtual size_t space_available() override
-    {
-        return _num_items;
-    }
-    virtual void* write_ptr() override {
-        return _buffer.data();
-    }
+    void* read_ptr(size_t index) { return nullptr; }
+    virtual size_t space_available() override { return _num_items; }
+    virtual void* write_ptr() override { return _buffer.data(); }
 
-    virtual void post_write(int num_items) override {
+    virtual void post_write(int num_items) override
+    {
         // send the data from buffer over the socket
         GR_LOG_DEBUG(_debug_logger, "sending {} items", num_items);
-        auto res = _socket.send(zmq::buffer(write_ptr(), num_items * _item_size), zmq::send_flags::none);
+        auto res = _socket.send(zmq::buffer(write_ptr(), num_items * _item_size),
+                                zmq::send_flags::none);
         GR_LOG_DEBUG(_debug_logger, "send returned code {}", *res);
     }
 
@@ -66,7 +60,7 @@ class buffer_net_zmq_reader : public buffer_reader
 {
 private:
     zmq::context_t _context;
-    zmq::socket_t _socket;  
+    zmq::socket_t _socket;
     zmq::message_t _msg;
     size_t _msg_idx = 0;
     size_t _msg_size = 0;
@@ -82,27 +76,25 @@ public:
     bool _recv_done = false;
     static buffer_reader_sptr make(size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props);
-    buffer_net_zmq_reader(
-                          std::shared_ptr<buffer_properties> buf_props,
+    buffer_net_zmq_reader(std::shared_ptr<buffer_properties> buf_props,
                           size_t itemsize,
-                                   const std::string& ipaddr,
-                                   int port);
+                          const std::string& ipaddr,
+                          int port);
 
     virtual ~buffer_net_zmq_reader(){};
 
-    virtual bool read_info(buffer_info_t& info) { 
+    virtual bool read_info(buffer_info_t& info)
+    {
         auto ret = _circbuf_rdr->read_info(info);
-        return  ret;
-
+        return ret;
     }
-    void* read_ptr() { 
-        return _circbuf_rdr->read_ptr(); 
-    }
+    void* read_ptr() { return _circbuf_rdr->read_ptr(); }
 
     // Tags not supported yet
     const std::vector<tag_t>& tags() const override { return _circbuf->tags(); }
     std::vector<tag_t> get_tags(size_t num_items) { return {}; }
-    virtual void post_read(int num_items) {
+    virtual void post_read(int num_items)
+    {
         GR_LOG_DEBUG(_debug_logger, "post_read: {}", num_items);
         _circbuf_rdr->post_read(num_items);
     }
@@ -127,8 +119,13 @@ public:
             std::make_shared<buffer_net_zmq_properties>(ipaddr, port));
     }
 
+    static std::shared_ptr<buffer_properties>
+    make_from_params(const std::string& json_str);
+
     auto port() { return _port; }
     auto ipaddr() { return _ipaddr; }
+
+    std::string to_json() override;
 
 private:
     std::string _ipaddr;

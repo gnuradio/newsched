@@ -2,8 +2,25 @@
 #include <gnuradio/buffer_net_zmq.hh>
 #include <thread>
 #include <chrono>
-
+#include <nlohmann/json.hpp>
 namespace gr {
+
+
+std::shared_ptr<buffer_properties>
+buffer_net_zmq_properties::make_from_params(const std::string& json_str)
+{
+    auto json_obj = nlohmann::json::parse(json_str);
+    return make(json_obj["ipaddr"], json_obj["port"]);
+}
+
+std::string buffer_net_zmq_properties::to_json()
+{
+    nlohmann::json j = { { "id", "buffer_net_zmq_properties" },
+                            { "parameters",
+                            { { "ipaddr", _ipaddr }, { "port", _port } } } };
+
+    return j.dump();
+}
 
 buffer_sptr buffer_net_zmq::make(size_t num_items,
                                  size_t item_size,
