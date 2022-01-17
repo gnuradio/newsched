@@ -1,8 +1,10 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/graph_utils.hh>
+#include <gnuradio/buffer_net_zmq.hh>
 
 #include <dlfcn.h>
 #include <httplib.h>
+#include <nlohmann/json.hpp>
 
 namespace gr {
 
@@ -196,7 +198,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
         }
     }
 
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
+    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies, alias());
     // Create new subgraphs based on the partition configuration
 
     check_connections(base());
@@ -204,27 +206,94 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
     int conf_index = 0;
     for (auto& info : graph_part_info) {
-        auto flattened_graph = flat_graph::make_flat(info.subgraph);
-
+        
         if (auto host = confs[conf_index].execution_host()) {
             // Serialize and reprogram the flattened graph on the remote side
-            httplib::Client cli("http://" + host->ipaddr() + ":" + std::to_string(host->port()) );
+            httplib::Client cli("http://" + host->ipaddr() + ":" +
+                                std::to_string(host->port()));
             // 1. Create flowgraph
             auto res = cli.Post("/flowgraph/foo/create");
 
+            // 1a. Create Scheduler Objects
+
+            // 1b. Create Flowgraph Proxy Objects
+            nlohmann::json proxy_json = {
+                { "ipaddr", "127.0.0.1" }, // need to know what the local host ip addr is
+                { "port", 54422 },
+                { "upstream", false }
+            };
+            cli.Post(
+                "/flowgraph/foo/proxy/create", proxy_json.dump(), "application/json");
+
+            auto local_proxy = fgm_proxy::make(host->ipaddr(), 54422, true);
+            add_fgm_proxy(local_proxy);
+
             // 2. Create Blocks
-            for (auto& b : confs[conf_index].blocks())
-            {
+            for (auto& b : confs[conf_index].blocks()) {
                 auto randstr = nodeid_generator::get_unique_string();
                 std::string newblockname = b->name() + "_" + randstr;
-                // curl -v -H "Content-Type: application/json" POST      -d '{"module": "blocks", "id": "vector_source_c", "parameters": {"data": [1,2,3,4,5], "repeat": false }}' http://127.0.0.1:8000/block/src/create
-                cli.Post(("/block/" + newblockname + "/create").c_str(), std::static_pointer_cast<block>(b)->to_json().c_str(), "application/json");
+                b->set_rpc_name(newblockname);
+                // curl -v -H "Content-Type: application/json" POST      -d '{"module":
+                // "blocks", "id": "vector_source_c", "parameters": {"data": [1,2,3,4,5],
+                // "repeat": false }}' http://127.0.0.1:8000/block/src/create
+                cli.Post(("/block/" + newblockname + "/create").c_str(),
+                         std::static_pointer_cast<block>(b)->to_json().c_str(),
+                         "application/json");
             }
 
             // 3. Connect Blocks (or add edges)
+            for (auto& edge : info.subgraph->edges()) {
+                if (edge->src().node()->is_remote() && edge->dst().node()->is_remote()) {
+                    // curl -v -H "Content-Type: application/json" POST      -d '{"src":
+                    // ["src",0], "dest": ["copy_0",0] }'
+                    // http://127.0.0.1:8000/flowgraph/foo/connect
+                    nlohmann::json j2 = {
+                        { "src",
+                          std::pair<std::string, int>(edge->src().node()->rpc_name(),
+                                                      edge->src().port()->index()) },
+                        { "dest",
+                          std::pair<std::string, int>(edge->dst().node()->rpc_name(),
+                                                      edge->dst().port()->index()) },
+                    };
+                    cli.Post(
+                        "/flowgraph/foo/connect", j2.dump().c_str(), "application/json");
+                } else if (edge->src().node()->is_remote()) {
+                    nlohmann::json j2 = { { "src",
+                                            std::pair<std::string, int>(
+                                                edge->src().node()->rpc_name(),
+                                                edge->src().port()->index()) } };
+                    cli.Post("/flowgraph/foo/edge/create",
+                             j2.dump().c_str(),
+                             "application/json");
 
-            // 4. Create Scheduler
+                    auto e = edge::make(nullptr, nullptr, edge->dst().node(), edge->dst().port());
+                    e->set_custom_buffer(buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
 
+                    
+                } else if (edge->dst().node()->is_remote()) {
+                    nlohmann::json j2 = { { "dest",
+                                            std::pair<std::string, int>(
+                                                edge->dst().node()->rpc_name(),
+                                                edge->dst().port()->index()) } };
+                    cli.Post("/flowgraph/foo/edge/create",
+                             j2.dump().c_str(),
+                             "application/json");
+                } else {
+                    throw std::runtime_error(
+                        "Neither end of edge is remote. Shouldn't happen.");
+                }
+            }
+        }
+        conf_index++;
+    }
+
+    // Since we have to wait for flowgraph proxy objects to be created above
+    // 4. Create Scheduler
+    conf_index = 0;
+    for (auto& info : graph_part_info) {
+        auto flattened_graph = flat_graph::make_flat(info.subgraph);
+
+        if (auto host = confs[conf_index].execution_host()) {
 
         } else {
             info.scheduler->initialize(flattened_graph, d_fgmon);
@@ -232,13 +301,14 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
 
         conf_index++;
     }
+
     _validated = true;
-}
+} 
 
 void flowgraph::validate()
 {
     GR_LOG_TRACE(_debug_logger, "validate()");
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies);
+    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies, alias());
     for (auto& p : d_fgm_proxies) {
         p->set_fgm(d_fgmon);
     }
@@ -264,10 +334,8 @@ void flowgraph::start()
         GR_LOG_ERROR(_logger, "No Scheduler Specified.");
     }
 
-    d_fgmon->start(alias());
-    for (auto s : d_schedulers) {
-        s->start();
-    }
+    d_fgmon->start();
+
 }
 void flowgraph::stop()
 {

@@ -22,6 +22,8 @@ public:
     {
         return std::make_shared<scheduler_nbt>(name, fixed_buf_size);
     }
+    static sptr make_from_params(const std::string& json_str);
+    
     scheduler_nbt(const std::string name = "multi_threaded",
                  const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
@@ -52,6 +54,7 @@ public:
     void stop();
     void wait();
     void run();
+    std::string to_json() override;
 };
 } // namespace schedulers
 } // namespace gr

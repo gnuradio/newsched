@@ -120,23 +120,23 @@ graph_partition_info_vec graph_utils::partition(graph_sptr input_graph,
             throw std::runtime_error("Cannot find both sides of domain crossing");
         }
 
-        // Crossings are associated with the downstream port
-        // so the execution host here corresponds with the dst block
-        if (auto host = crossing_confs[crossing_index].execution_host()) {
-            // In this case we need to duplicate the edge and add a custom buffer
-            // to each side
-            auto upstream_edge = edge::make(c->src(), c->dst());
-            auto downstream_edge = edge::make(c->src(), c->dst());
-            upstream_edge->set_custom_buffer(
-                buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
-            downstream_edge->set_custom_buffer(
-                buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
-            src_block_graph->add_edge(upstream_edge);
-            dst_block_graph->add_edge(downstream_edge);
-        } else {
-            src_block_graph->add_edge(c);
-            dst_block_graph->add_edge(c);
-        }
+        // // Crossings are associated with the downstream port
+        // // so the execution host here corresponds with the dst block
+        // if (auto host = crossing_confs[crossing_index].execution_host()) {
+        //     // In this case we need to duplicate the edge and add a custom buffer
+        //     // to each side
+        //     auto upstream_edge = edge::make(c->src(), c->dst());
+        //     auto downstream_edge = edge::make(c->src(), c->dst());
+        //     upstream_edge->set_custom_buffer(
+        //         buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
+        //     downstream_edge->set_custom_buffer(
+        //         buffer_net_zmq_properties::make(host->ipaddr(), host->port()));
+        //     src_block_graph->add_edge(upstream_edge);
+        //     dst_block_graph->add_edge(downstream_edge);
+        // } else {
+        //     src_block_graph->add_edge(c);
+        //     dst_block_graph->add_edge(c);
+        // }
 
         crossing_index++;
     }

@@ -112,6 +112,7 @@ class test_basic(gr_unittest.TestCase):
         fg1 = gr.flowgraph("FG On Local Host")
 
         fg1.connect(src, 0, cp1, 0)
+        fg1.connect(cp1, 0, cp2, 0) # Implicitly a domain crossing
         fg1.connect(cp2, 0, snk, 0)
 
         # Indicate which scheduler to use in each domain

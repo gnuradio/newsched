@@ -4,7 +4,10 @@
 #include <gnuradio/scheduler.hh>
 
 namespace gr {
-void flowgraph_monitor::start(const std::string fgname)
+flowgraph_monitor::flowgraph_monitor(std::vector<std::shared_ptr<scheduler>>& sched_ptrs,
+                                     std::vector<std::shared_ptr<fgm_proxy>>& proxy_ptrs,
+                                     const std::string& fgname)
+    : d_schedulers(sched_ptrs), d_fgm_proxies(proxy_ptrs)
 {
     empty_queue();
     _logger = logging::get_logger("flowgraph_monitor " + fgname, "default");
@@ -25,7 +28,18 @@ void flowgraph_monitor::start(const std::string fgname)
                             fg_monitor_message::make(fg_monitor_message_t::KILL));
                     }
                     break;
-                } else if (msg->type() == fg_monitor_message_t::DONE) {
+                } 
+                else if (msg->type() == fg_monitor_message_t::START)
+                {
+                    for (auto s : d_schedulers) {
+                        s->start();
+                    }
+                    for (auto& s : d_fgm_proxies) {
+                        s->push_message(
+                            fg_monitor_message::make(fg_monitor_message_t::START));
+                    }
+                }
+                else if (msg->type() == fg_monitor_message_t::DONE) {
                     GR_LOG_DEBUG(_debug_logger, "DONE");
                     // One scheduler signaled it is done
                     // Notify the other schedulers that they need to flush
@@ -111,15 +125,13 @@ void flowgraph_monitor::start(const std::string fgname)
                         }
 
                         _monitor_thread_stopped = true;
-
                     }
                 }
             }
         }
     });
     monitor.detach();
-} // namespace gr
-
+} // TODO: bound the queue size
 
 std::map<fg_monitor_message_t, std::string> fg_monitor_message::string_map = {
     { fg_monitor_message_t::UNKNOWN, "UNKNOWN" },

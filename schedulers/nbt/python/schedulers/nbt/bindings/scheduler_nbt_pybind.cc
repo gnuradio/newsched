@@ -45,6 +45,7 @@ PYBIND11_MODULE(scheduler_nbt_python, m)
         .def(py::init(&gr::schedulers::scheduler_nbt::make),
             py::arg("name") = "multi_threaded",
             py::arg("fixed_buf_size") = 32768)
+        .def_static("make_from_params", &::gr::schedulers::scheduler_nbt::make_from_params)
         .def("add_block_group", &gr::schedulers::scheduler_nbt::add_block_group,
             py::arg("blocks"),
             py::arg("name") = "",

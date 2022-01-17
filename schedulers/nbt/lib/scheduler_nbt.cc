@@ -1,8 +1,15 @@
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
 
 namespace gr {
 namespace schedulers {
+
+scheduler_nbt::sptr scheduler_nbt::make_from_params(const std::string& json_str)
+{
+    auto json_obj = nlohmann::json::parse(json_str);
+    return make(json_obj["name"], json_obj["buf_size"]);
+}
 
 void scheduler_nbt::push_message(scheduler_message_sptr msg)
 {
@@ -18,8 +25,8 @@ void scheduler_nbt::push_message(scheduler_message_sptr msg)
 }
 
 void scheduler_nbt::add_block_group(const std::vector<block_sptr>& blocks,
-                                   const std::string& name,
-                                   const std::vector<unsigned int>& affinity_mask)
+                                    const std::string& name,
+                                    const std::vector<unsigned int>& affinity_mask)
 {
     _block_groups.push_back(
         std::move(block_group_properties(blocks, name, affinity_mask)));
@@ -108,6 +115,15 @@ void scheduler_nbt::run()
     for (const auto& thd : _threads) {
         thd->wait();
     }
+}
+
+std::string scheduler_nbt::to_json()
+{
+    nlohmann::json j = { { "id", "scheduler_nbt" },
+                         { "parameters",
+                           { { "name", _name }, { "buffer_size", s_fixed_buf_size } } } };
+
+    return j.dump();
 }
 
 } // namespace schedulers

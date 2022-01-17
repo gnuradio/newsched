@@ -33,6 +33,9 @@ public:
     virtual void stop() = 0;
     virtual void wait() = 0;
 
+    // Provide enough information about the scheduler to replicate it elsewhere
+    virtual std::string to_json() = 0;
+
     std::string name() { return _name; }
     int id() { return _id; }
     void set_id(int id) { _id = id; }
@@ -49,8 +52,6 @@ protected:
     logger_sptr _debug_logger;
 
     std::shared_ptr<buffer_properties> _default_buf_properties = nullptr;
-
-private:
     std::string _name;
     int _id;
 };

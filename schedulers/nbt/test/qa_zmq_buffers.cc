@@ -18,9 +18,9 @@ using namespace gr;
 
 TEST(SchedulerMTTest, ZMQBuffers)
 {
-    int nsamples = 100000;
+    size_t nsamples = 100000;
     std::vector<float> input_data(nsamples);
-    for (int i = 0; i < nsamples; i++) {
+    for (size_t i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make({input_data, true});
@@ -43,7 +43,7 @@ TEST(SchedulerMTTest, ZMQBuffers)
     EXPECT_EQ(snk1->data(), input_data);
 
     auto data = snk1->data();
-    for (int i=0; i<data.size(); i++)
+    for (size_t i=0; i<data.size(); i++)
     {
         if (input_data[i] != data[i])
         {

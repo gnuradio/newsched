@@ -95,6 +95,43 @@ class Session:
 
         return f"{{\"status\": 0, \"edge\": {edge_name}}}"
 
+    '{"src": ["src",0], "ipaddr":"127.0.0.1", "port":1234 }'
+    def create_edge(self, fg_name, payload):
+
+        src  = (self.blocks[payload['src'][0]],payload['src'][1]) if payload['src'] else None
+        dest = (self.blocks[payload['dest'][0]],payload['dest'][1]) if payload['dest'] else None
+
+        # edge = self.fgs[fg_name].connect(src, dest)
+        if (src and dest):
+            edge = gr.edge(src[0], src[0].get_port(src[1], gr.port_type_t.STREAM, gr.port_direction_t.OUTPUT),
+                           dest[0], dest[0].get_port(dest[1], gr.port_type_t.STREAM, gr.port_direction_t.INPUT))
+        elif (src):
+            edge = gr.edge(src[0], src[0].get_port(src[1], gr.port_type_t.STREAM, gr.port_direction_t.OUTPUT),
+                           None, None)
+        elif (dest):
+            edge = gr.edge(None, None,
+                           dest[0], dest[0].get_port(dest[1], gr.port_type_t.STREAM, gr.port_direction_t.INPUT))
+
+        if (not (src and dest)):
+            edge.set_custom_buffer(gr.buffer_net_zmq_properties.make(payload['ipaddr'], payload['port']))
+
+        self.fgs[fg_name].add_edge(edge)
+
+        # if the edge is named in the payload, the store the 
+        if 'edge_name' in payload:
+            edge_name = payload['edge_name']
+        else:
+            edge_name = edge.identifier()
+
+        return f"{{\"status\": 0, \"edge\": {edge_name}}}"
+
+    def create_fgm_proxy(self, fg_name, payload):
+        ipaddr = payload['ipaddr']
+        port = payload['port']
+        upstream = payload['upstream']
+
+        proxy2 = gr.fgm_proxy(ipaddr, port, upstream)
+        self.fgs[fg_name].add_fgm_proxy(proxy2)
 
 def create_app():
 
@@ -141,6 +178,15 @@ def create_app():
     @app.post("/flowgraph/{fg_name}/connect")
     async def connect_blocks(fg_name: str, payload: dict = Body(...)):
         return session.connect_blocks(fg_name, payload)
+
+    @app.post("/flowgraph/{fg_name}/edge/create")
+    async def create_edge(fg_name: str, payload: dict = Body(...)):
+        return session.create_edge(fg_name, payload)
+
+    @app.post("/flowgraph/{fg_name}/proxy/create")
+    async def connect_blocks(fg_name: str, payload: dict = Body(...)):
+        return session.create_fgm_proxy(fg_name, payload)
+
 
     return app
 

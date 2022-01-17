@@ -2,12 +2,12 @@
 
 
 #include <gnuradio/concurrent_queue.hh>
+#include <gnuradio/fgm_proxy.hh>
 #include <gnuradio/logging.hh>
 #include <gnuradio/neighbor_interface.hh>
 #include <string>
 #include <thread>
 #include <vector>
-#include <gnuradio/fgm_proxy.hh>
 
 namespace gr {
 
@@ -38,8 +38,10 @@ public:
 
     std::string to_string()
     {
-        return fmt::format(
-            "{{ type: {}, schedid: {}, blkid: {} }}", string_map[type()], schedid(), blkid());
+        return fmt::format("{{ type: {}, schedid: {}, blkid: {} }}",
+                           string_map[type()],
+                           schedid(),
+                           blkid());
     }
 
     static sptr from_string(const std::string& str)
@@ -79,17 +81,19 @@ class flowgraph_monitor
 
 public:
     flowgraph_monitor(std::vector<std::shared_ptr<scheduler>>& sched_ptrs,
-                      std::vector<std::shared_ptr<fgm_proxy>>& proxy_ptrs)
-        : d_schedulers(sched_ptrs),
-          d_fgm_proxies(proxy_ptrs)
-    {
-
-    } // TODO: bound the queue size
+                      std::vector<std::shared_ptr<fgm_proxy>>& proxy_ptrs,
+                      const std::string& fgname = "");
     virtual ~flowgraph_monitor() {}
 
     virtual void push_message(fg_monitor_message_sptr msg) { msgq.push(msg); }
-    void start(const std::string fgname = "");
-    void stop() { push_message(fg_monitor_message::make(fg_monitor_message_t::KILL, 0, 0)); }
+    void start()
+    {
+        push_message(fg_monitor_message::make(fg_monitor_message_t::START, 0, 0));
+    }
+    void stop()
+    {
+        push_message(fg_monitor_message::make(fg_monitor_message_t::KILL, 0, 0));
+    }
 
 private:
     bool _monitor_thread_stopped = false;
@@ -97,6 +101,7 @@ private:
     std::vector<std::shared_ptr<fgm_proxy>> d_fgm_proxies;
 
     logger_sptr _logger, _debug_logger;
+
 protected:
     concurrent_queue<fg_monitor_message_sptr> msgq;
     virtual bool pop_message(fg_monitor_message_sptr& msg) { return msgq.pop(msg); }

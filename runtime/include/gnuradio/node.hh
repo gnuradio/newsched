@@ -37,6 +37,9 @@ protected:
     logger_sptr _logger;
     logger_sptr _debug_logger;
 
+    bool d_rpc = false;
+    std::string d_rpc_name = "";
+
     void add_port(port_sptr p)
     {
         d_all_ports.push_back(p);
@@ -160,7 +163,16 @@ public:
             return nullptr;
         }
     }
+
+    void set_rpc_name(const std::string& rpc_name) {
+        d_rpc = true;
+        d_rpc_name = rpc_name;
+    }
+    std::string rpc_name() { return d_rpc_name; }
+    bool is_remote() { return d_rpc; }
 };
+
+
 
 typedef node::sptr node_sptr;
 typedef std::vector<node_sptr> node_vector_t;
