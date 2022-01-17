@@ -198,7 +198,6 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
         }
     }
 
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies, alias());
     // Create new subgraphs based on the partition configuration
 
     check_connections(base());
@@ -311,6 +310,8 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
     // Since we have to wait for flowgraph proxy objects to be created above
     // 4. Initialize the scheduler
     conf_index = 0;
+
+    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers, d_fgm_proxies, alias());
     for (auto& info : graph_part_info) {
         auto flattened_graph = flat_graph::make_flat(info.subgraph);
 
