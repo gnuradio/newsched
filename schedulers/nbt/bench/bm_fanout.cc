@@ -14,40 +14,27 @@
 
 #include <iostream>
 
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
+#include "CLI/App.hpp"
+#include "CLI/Formatter.hpp"
+#include "CLI/Config.hpp"
 
 using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    uint64_t samples;
-    int nblocks;
-    int veclen;
-    int buffer_type;
+    uint64_t samples = 15000000;
+    int nblocks = 1;
+    int veclen = 1;
+    int buffer_type = 0;
     bool rt_prio = false;
 
-    po::options_description desc("Basic Test Flow Graph");
-    desc.add_options()("help,h", "display help")
-        ("samples", po::value<uint64_t>(&samples)->default_value(15000000),"Number of samples")
-        ("veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")
-        ("nblocks", po::value<int>(&nblocks)->default_value(1), "Number of copy blocks")
-        ("buffer", po::value<int>(&buffer_type)->default_value(0), "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")
-        ("rt_prio", "Enable Real-time priority");
+    CLI::App app{"App description"};
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
-
-    if (vm.count("help")) {
-        std::cout << desc << std::endl;
-        return 0;
-    }
-
-    if (vm.count("rt_prio")) {
-        rt_prio = true;
-    }
-
+    app.add_option("--samples", samples, "Number of Samples");
+    app.add_option("--veclen", veclen, "Vector Length");
+    app.add_option("--nblocks", nblocks, "Number of copy blocks");
+    app.add_option("--buffer_type", buffer_type, "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned");
+    app.add_flag("--rt_prio", rt_prio, "Enable Real-time priority");
 
     if (rt_prio && gr::enable_realtime_scheduling() != RT_OK) {
         std::cout << "Error: failed to enable real-time scheduling." << std::endl;

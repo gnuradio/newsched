@@ -20,47 +20,34 @@
 #include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <iostream>
 
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
-
 using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    uint64_t samples;
-    int mem_model;
-    size_t buffer_size;
-    int nblocks;
-    size_t load;
+    uint64_t samples = 15000000;
+    int mem_model = 0;
+    size_t buffer_size = 8192;
+    int nblocks = 4;
+    size_t load = 1;
     bool rt_prio = false;
     bool single_mapped = false;
 
-    po::options_description desc("CUDA Copy Benchmarking Flowgraph");
-    desc.add_options()("help,h", "display help")(
-        "samples,N",
-        po::value<uint64_t>(&samples)->default_value(15000000),
-        "Number of samples")(
-        "nblocks,b", po::value<int>(&nblocks)->default_value(4), "Num FFT Blocks")(
-        "load,l", po::value<size_t>(&load)->default_value(1), "Num FFT Blocks")(
-        "memmodel,m", po::value<int>(&mem_model)->default_value(0), "Memory Model")(
-        "bufsize,s", po::value<size_t>(&buffer_size)->default_value(8192), "Buffer Size")(
-        "rt_prio", "Enable Real-time priority")(
-        "sm", "Enable Single Mapped CUDA buffers (for memmodel 0)");
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+    CLI::App app{"App description"};
 
-    if (vm.count("help")) {
-        std::cout << desc << std::endl;
-        return 0;
-    }
+    // app.add_option("-h,--help", "display help");
+    app.add_option("-N,--samples", samples, "Number of Samples");
+    app.add_option("-l,--load", load, "Load");
+    app.add_option("-b,--nblocks", nblocks, "Number of copy blocks");
+    app.add_option("-m,--memmodel", mem_model, "Memory Model");
+    app.add_option("--buffer_type", buffer_type, "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned");
+    app.add_option("-s,--bufsize", buffer_size, "Buffer Size in bytes");
+    app.add_flag("--rt_prio", rt_prio, "Enable Real-time priority");
+    app.add_flag("--sm", single_mapped, "Single Mapped");
 
-    if (vm.count("rt_prio")) {
-        rt_prio = true;
-    }
+    CLI11_PARSE(app, argc, argv);
 
-    if (vm.count("sm")) {
-        single_mapped = true;
+    if (rt_prio && gr::enable_realtime_scheduling() != RT_OK) {
+        std::cout << "Error: failed to enable real-time scheduling." << std::endl;
     }
 
     std::vector<blocks::load::sptr> copy_blks(nblocks);

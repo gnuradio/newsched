@@ -19,7 +19,6 @@ IMPLEMENT_CPU = true
 SCRIPTS_DIR=join_paths(meson.project_source_root(),'utils','blockbuilder','scripts')
 
 boost_dep = dependency('boost', modules : ['system','thread'], version : '>=1.65')
-boost_po_dep = dependency('boost', modules : ['program_options'], version : '>=1.65')
 volk_dep = dependency('volk', version : '>=2.2')
 yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
@@ -54,6 +53,9 @@ endif
 # pmtf_dep = dependency('pmtf', version : '>=0.0.2')
 libpmtf = subproject('pmt')
 pmtf_dep = libpmtf.get_variable('pmtf_dep')
+
+libCLI11 = subproject('CLI11')
+CLI11_dep = libCLI11.get_variable('CLI11_dep')
 
 cmake = import('cmake')
 

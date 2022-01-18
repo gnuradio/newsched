@@ -14,59 +14,37 @@
 
 #include <iostream>
 
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
+#include "CLI/App.hpp"
+#include "CLI/Formatter.hpp"
+#include "CLI/Config.hpp"
 
 using namespace gr;
 
 int main(int argc, char* argv[])
 {
-    uint64_t samples;
-    unsigned int nblocks;
-    unsigned int nthreads;
-    int veclen;
-    int buffer_type;
-    int buffer_size;
+    uint64_t samples = 15000000;
+    unsigned int nblocks = 4;
+    unsigned int nthreads = 0;
+    int veclen = 1;
+    int buffer_type = 1;
+    int buffer_size = 32768;
     bool rt_prio = false;
    
     std::vector<unsigned int> cpu_affinity;
 
-    po::options_description desc("Basic Test Flow Graph");
-    desc.add_options()("help,h", "display help")(
-        "samples",
-        po::value<uint64_t>(&samples)->default_value(15000000),
-        "Number of samples")(
-        "veclen", po::value<int>(&veclen)->default_value(1), "Vector Length")(
-        "nblocks", po::value<unsigned int>(&nblocks)->default_value(1), "Number of copy blocks")(
-        "nthreads",
-        po::value<unsigned int>(&nthreads)->default_value(0),
-        "Number of threads (0: tpb")(
-        "buffer",
-        po::value<int>(&buffer_type)->default_value(1),
-        "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned")(
-        "buffer_size",
-        po::value<int>(&buffer_size)->default_value(32768),
-        "Buffer Size in bytes")(
-        "rt_prio", "Enable Real-time priority")(
-        "cpus", po::value<std::vector<unsigned int>>()->multitoken(), "Pin threads to CPUs (if nthreads > 0, will pin to 0,1,..,N"
-        );
+    CLI::App app{"App description"};
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+    // app.add_option("-h,--help", "display help");
+    app.add_option("--samples", samples, "Number of Samples");
+    app.add_option("--veclen", veclen, "Vector Length");
+    app.add_option("--nblocks", nblocks, "Number of copy blocks");
+    app.add_option("--nthreads", nthreads, "Number of threads (0: tpb)");
+    app.add_option("--buffer_type", buffer_type, "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned");
+    app.add_option("--buffer_size", buffer_size, "Buffer Size in bytes");
+    app.add_flag("--rt_prio", rt_prio, "Enable Real-time priority");
+    app.add_option("--cpus", cpu_affinity, "Pin threads to CPUs (if nthreads > 0, will pin to 0,1,..,N");
 
-    if (vm.count("help")) {
-        std::cout << desc << std::endl;
-        return 0;
-    }
-
-    if (vm.count("rt_prio")) {
-        rt_prio = true;
-    }
-
-    if (vm.count("cpus")) {
-      cpu_affinity = vm["cpus"].as<std::vector<unsigned int>>();
-    }
+    CLI11_PARSE(app, argc, argv);
 
     if (rt_prio && gr::enable_realtime_scheduling() != RT_OK) {
         std::cout << "Error: failed to enable real-time scheduling." << std::endl;
