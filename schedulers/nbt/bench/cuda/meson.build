@@ -9,5 +9,5 @@ executable('bm_nbt_cuda_copy',
                    cuda_dep,
                    newsched_blocklib_blocks_dep,
                    newsched_scheduler_nbt_dep,
-                   boost_po_dep], 
+                   CLI11_dep], 
     install : true)
