@@ -13,7 +13,10 @@
 #endif
 
 #include <gnuradio/constants.hh>
-#include <boost/dll/runtime_symbol_info.hpp>
+//#include <boost/dll/runtime_symbol_info.hpp>
+#include <dlfcn.h>
+#include <iostream>
+#include <memory>
 #include <cstdlib>
 #include <filesystem>
 
@@ -28,7 +31,13 @@ const std::string prefix()
         return prefix;
 
     path prefix_rel_lib = "@prefix_relative_to_lib@";
-    path gr_runtime_lib_path = boost::dll::this_line_location().string();
+    //path gr_runtime_lib_path = boost::dll::this_line_location().string();
+    Dl_info info;
+    // Some of the libc headers miss `const` in `dladdr(const void*, Dl_info*)`
+
+    auto ptr = std::addressof(::gr::prefix);
+    const int res = dladdr(const_cast<void*>(reinterpret_cast<void *>(ptr)), &info);
+    path gr_runtime_lib_path = info.dli_fname;
     // Canonize before decomposing path so result is reliable and without symlinks
     path canonical_lib_path = std::filesystem::canonical(gr_runtime_lib_path);
     path prefix_path = canonical_lib_path.parent_path() / prefix_rel_lib;
