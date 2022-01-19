@@ -11,7 +11,7 @@
 import numpy as np
 from newsched import gr, gr_unittest, blocks, math
 
-
+#This test is a pure python block that inherits from sync_block
 class add_2_f32_1_f32(gr.sync_block):
     def __init__(self, dims=[1]):
         gr.sync_block.__init__(
@@ -35,10 +35,11 @@ class add_2_f32_1_f32(gr.sync_block):
 
         return gr.work_return_t.WORK_OK
 
+# This test extends the existing add_ff block by adding a custom python implementation
 class add_ff_numpy(math.add_ff):
     def __init__(self, dims=[1]):
-        math.add_ff.__init__(self, impl = math.add_ff.available_impl.base)
-        self.set_py_handle(self)
+        math.add_ff.__init__(self, impl = math.add_ff.available_impl.pyshell)
+        self.set_pyblock_detail(gr.pyblock_detail(self))
 
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items
