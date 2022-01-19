@@ -12,6 +12,10 @@
 // #include <gnuradio/sys_paths.h>
 #include <fftw3.h>
 #include <volk/volk.h>
+#include <fstream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifdef _WIN32 // http://www.fftw.org/install/windows.html#DLLwisdom
 static void my_fftw_write_char(char c, void* f) { fputc(c, (FILE*)f); }
@@ -39,13 +43,13 @@ static int my_fftw_read_char(void* f) { return fgetc((FILE*)f); }
 
 #include <gnuradio/prefs.hh>
 
-#include <boost/interprocess/sync/file_lock.hpp>
+// #include <boost/interprocess/sync/file_lock.hpp>
 namespace fs = std::filesystem;
 
 namespace gr {
 namespace fft {
 static std::mutex wisdom_thread_mutex;
-boost::interprocess::file_lock wisdom_lock;
+// boost::interprocess::file_lock wisdom_lock;
 static bool wisdom_lock_init_done = false; // Modify while holding 'wisdom_thread_mutex'
 
 gr_complex* malloc_complex(int size)
@@ -94,7 +98,7 @@ static void wisdom_lock_init()
                                  wisdom_lock_file);
     }
     close(fd);
-    wisdom_lock = boost::interprocess::file_lock(wisdom_lock_file.c_str());
+    // wisdom_lock = boost::interprocess::file_lock(wisdom_lock_file.c_str());
     wisdom_lock_init_done = true;
 }
 
@@ -102,13 +106,13 @@ static void lock_wisdom()
 {
     wisdom_thread_mutex.lock();
     wisdom_lock_init();
-    wisdom_lock.lock();
+    // wisdom_lock.lock();
 }
 
 static void unlock_wisdom()
 {
     // Assumes 'lock_wisdom' has already been called (i.e. this file_lock is valid)
-    wisdom_lock.unlock();
+    // wisdom_lock.unlock();
     wisdom_thread_mutex.unlock();
 }
 
