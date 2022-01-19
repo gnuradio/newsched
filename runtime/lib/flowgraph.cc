@@ -286,13 +286,7 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                         nlohmann::json::parse(res->body)["edge"].get<std::string>();
 
                     auto net_properties =
-                        buffer_net_zmq_properties::make(host->ipaddr(), 1234);
-
-                    res = cli.Post(
-                        fmt::format("/flowgraph/foo/edge/{}/set_custom_buffer", edge_name)
-                            .c_str(),
-                        net_properties->to_json(),
-                        "application/json");
+                        buffer_net_zmq_properties::make(host->ipaddr(), 1234); // FIXME - get port dynamically
 
                     // The edge already exists
                     for (auto& gpi : graph_part_info) {
@@ -306,26 +300,13 @@ void flowgraph::partition(std::vector<domain_conf>& confs)
                             found_edges[0]->set_custom_buffer(net_properties);
                         }
                     }
-                    #if 0
-                        auto e = edge::make(
-                            edge->src().node(), edge->src().port(), nullptr, nullptr);
-                        e->set_custom_buffer(net_properties);
 
-                        // Since this is the remote graph processing, need to find the
-                        // subgraph that contains this src node
-                        bool found = false;
-                        for (auto& gpi : graph_part_info) {
-                            for (auto& n : gpi.subgraph->nodes()) {
-                                if (e->src().node() == n) {
-                                    found = true;
-                                    gpi.subgraph->add_edge(e);
-                                    break;
-                                }
-                            }
-                            if (found)
-                                break;
-                        }
-                    #endif
+                    res = cli.Post(
+                        fmt::format("/flowgraph/foo/edge/{}/set_custom_buffer", edge_name)
+                            .c_str(),
+                        net_properties->to_json(),
+                        "application/json");
+                        
                 } else {
                     throw std::runtime_error(
                         "Neither end of edge is remote. Shouldn't happen.");
