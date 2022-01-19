@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/api.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
 
 ////////////////////////////////////////////////////////////////////////
 // Use architecture defines to determine the implementation
@@ -143,11 +143,14 @@ inline gr::high_res_timer_type gr::high_res_timer_tps(void)
 ////////////////////////////////////////////////////////////////////////
 inline gr::high_res_timer_type gr::high_res_timer_epoch(void)
 {
+    std::chrono::time_point currently = std::chrono::time_point_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now()
+    );
+    std::chrono::duration nanos_since_utc_epoch = currently.time_since_epoch();
+
     static const double hrt_ticks_per_utc_ticks =
-        gr::high_res_timer_tps() /
-        double(boost::posix_time::time_duration::ticks_per_second());
-    boost::posix_time::time_duration utc =
-        boost::posix_time::microsec_clock::universal_time() -
-        boost::posix_time::from_time_t(0);
-    return gr::high_res_timer_now() - utc.ticks() * hrt_ticks_per_utc_ticks;
+            gr::high_res_timer_tps() /
+            double(1000000000);
+
+    return gr::high_res_timer_now() - nanos_since_utc_epoch.count() * hrt_ticks_per_utc_ticks;
 }
