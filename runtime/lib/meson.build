@@ -41,6 +41,7 @@ runtime_sources = [
   'flowgraph_monitor.cc',
   'flowgraph.cc',
   'logging.cc',
+  'nodeid_generator.cc',
   'pagesize.cc',
   'sys_paths.cc',
   'buffer_cpu_vmcirc.cc',
