@@ -56,9 +56,7 @@ void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
 {
-    return pmtf::get_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
-                request_parameter_query(params::id_{{p['id']}}))
-        .value(); 
+    return pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(request_parameter_query(params::id_{{p['id']}}));
 }
 {% endif %}
 {% endfor -%}

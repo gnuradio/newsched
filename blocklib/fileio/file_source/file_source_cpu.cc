@@ -228,7 +228,7 @@ void file_source_cpu::do_update()
     }
 }
 
-void file_source_cpu::set_begin_tag(pmtf::wrap val) { d_add_begin_tag = val; }
+void file_source_cpu::set_begin_tag(pmtf::pmt val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                   std::vector<block_work_output_sptr>& work_output)

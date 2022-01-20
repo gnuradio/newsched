@@ -20,7 +20,7 @@
 namespace gr {
 namespace soapy {
 
-using cmd_handler_t = std::function<void(pmtf::wrap, size_t)>;
+using cmd_handler_t = std::function<void(pmtf::pmt, size_t)>;
 struct device_deleter {
     void operator()(SoapySDR::Device* d) { SoapySDR::Device::unmake(d); }
 };
@@ -41,10 +41,10 @@ private:
     std::string d_stream_args;
     std::vector<size_t> d_channels;
     std::string d_soapy_type;
-    std::map<pmtf::wrap, cmd_handler_t> d_cmd_handlers;
+    std::map<pmtf::pmt, cmd_handler_t> d_cmd_handlers;
     kwargs_list_t d_tune_args;
 
-    void register_msg_cmd_handler(const pmtf::wrap& cmd, cmd_handler_t handler);
+    void register_msg_cmd_handler(const pmtf::pmt& cmd, cmd_handler_t handler);
 
     /*!
      * \brief Raise std::invalid_argument if channel is invalid
@@ -230,14 +230,14 @@ protected:
     //  * corresponding handler.
     //  * \param msg a PMT dictionary
     //  */
-    // void msg_handler_cmd(pmtf::wrap msg);
+    // void msg_handler_cmd(pmtf::pmt msg);
 
     // /*!
     //  * Set the center frequency of the RX chain.
     //  * @param val center frequency in Hz
     //  * @param channel an available channel on the device
     //  */
-    // void cmd_handler_frequency(pmtf::wrap val, size_t channel);
+    // void cmd_handler_frequency(pmtf::pmt val, size_t channel);
 
     // /*!
     //  * Set the overall gain for the specified chain.
@@ -246,47 +246,47 @@ protected:
     //  * @param val the new amplification value in dB
     //  * @param channel an avalaible channel on the device
     //  */
-    // void cmd_handler_gain(pmtf::wrap val, size_t channel);
+    // void cmd_handler_gain(pmtf::pmt val, size_t channel);
 
     // /*!
     //  * Set the baseband sample rate for the RX chain.
     //  * @param val the sample rate samples per second
     //  * @param channel an available channel on the device
     //  */
-    // void cmd_handler_samp_rate(pmtf::wrap val, size_t channel);
+    // void cmd_handler_samp_rate(pmtf::pmt val, size_t channel);
 
     // /*!
     //  * Set the baseband filter width for the RX chain.
     //  * @param val baseband filter width in Hz
     //  * @param channel an available channel on the device
     //  */
-    // void cmd_handler_bw(pmtf::wrap val, size_t channel);
+    // void cmd_handler_bw(pmtf::pmt val, size_t channel);
 
     // /*!
     //  * Set the anntena element for the RX chain.
     //  * @param val name of the anntena
     //  * @param channel an available channel on the device
     //  */
-    // void cmd_handler_antenna(pmtf::wrap val, size_t channel);
+    // void cmd_handler_antenna(pmtf::pmt val, size_t channel);
 
-    // void cmd_handler_gain_mode(pmtf::wrap val, size_t channel);
-    // void cmd_handler_frequency_correction(pmtf::wrap val, size_t channel);
-    // void cmd_handler_dc_offset_mode(pmtf::wrap val, size_t channel);
-    // void cmd_handler_dc_offset(pmtf::wrap val, size_t channel);
-    // void cmd_handler_iq_balance(pmtf::wrap val, size_t channel);
-    // void cmd_handler_iq_balance_mode(pmtf::wrap val, size_t channel);
-    // void cmd_handler_master_clock_rate(pmtf::wrap val, size_t);
-    // void cmd_handler_reference_clock_rate(pmtf::wrap val, size_t);
-    // void cmd_handler_clock_source(pmtf::wrap val, size_t);
-    // void cmd_handler_time_source(pmtf::wrap val, size_t);
-    // void cmd_handler_hardware_time(pmtf::wrap val, size_t);
-    // void cmd_handler_register(pmtf::wrap val, size_t);
-    // void cmd_handler_registers(pmtf::wrap val, size_t);
-    // void cmd_handler_setting(pmtf::wrap val, size_t channel);
-    // void cmd_handler_gpio(pmtf::wrap val, size_t);
-    // void cmd_handler_gpio_dir(pmtf::wrap val, size_t);
-    // void cmd_handler_i2c(pmtf::wrap val, size_t);
-    // void cmd_handler_uart(pmtf::wrap val, size_t);
+    // void cmd_handler_gain_mode(pmtf::pmt val, size_t channel);
+    // void cmd_handler_frequency_correction(pmtf::pmt val, size_t channel);
+    // void cmd_handler_dc_offset_mode(pmtf::pmt val, size_t channel);
+    // void cmd_handler_dc_offset(pmtf::pmt val, size_t channel);
+    // void cmd_handler_iq_balance(pmtf::pmt val, size_t channel);
+    // void cmd_handler_iq_balance_mode(pmtf::pmt val, size_t channel);
+    // void cmd_handler_master_clock_rate(pmtf::pmt val, size_t);
+    // void cmd_handler_reference_clock_rate(pmtf::pmt val, size_t);
+    // void cmd_handler_clock_source(pmtf::pmt val, size_t);
+    // void cmd_handler_time_source(pmtf::pmt val, size_t);
+    // void cmd_handler_hardware_time(pmtf::pmt val, size_t);
+    // void cmd_handler_register(pmtf::pmt val, size_t);
+    // void cmd_handler_registers(pmtf::pmt val, size_t);
+    // void cmd_handler_setting(pmtf::pmt val, size_t channel);
+    // void cmd_handler_gpio(pmtf::pmt val, size_t);
+    // void cmd_handler_gpio_dir(pmtf::pmt val, size_t);
+    // void cmd_handler_i2c(pmtf::pmt val, size_t);
+    // void cmd_handler_uart(pmtf::pmt val, size_t);
 
     /*** End message handlers ***/
 };

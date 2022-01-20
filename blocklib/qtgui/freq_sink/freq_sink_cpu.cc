@@ -565,10 +565,10 @@ void freq_sink_cpu<T>::check_clicked()
 }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_set_freq(pmtf::wrap msg)
+// void freq_sink_cpu<T>::handle_set_freq(pmtf::pmt msg)
 // {
 //     if (pmt::is_pair(msg)) {
-//         pmtf::wrap x = pmt::cdr(msg);
+//         pmtf::pmt x = pmt::cdr(msg);
 //         if (pmt::is_real(x)) {
 //             d_center_freq = pmt::to_double(x);
 //             d_qApplication->postEvent(d_main_gui,
@@ -578,10 +578,10 @@ void freq_sink_cpu<T>::check_clicked()
 // }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_set_bw(pmtf::wrap msg)
+// void freq_sink_cpu<T>::handle_set_bw(pmtf::pmt msg)
 // {
 //     if (pmt::is_pair(msg)) {
-//         pmtf::wrap x = pmt::cdr(msg);
+//         pmtf::pmt x = pmt::cdr(msg);
 //         if (pmt::is_real(x)) {
 //             d_bandwidth = pmt::to_double(x);
 //             d_qApplication->postEvent(d_main_gui,
@@ -646,10 +646,10 @@ void freq_sink_cpu<T>::_test_trigger_norm(int nitems,
 }
 
 // template <class T>
-// void freq_sink_cpu<T>::handle_pdus(pmtf::wrap msg)
+// void freq_sink_cpu<T>::handle_pdus(pmtf::pmt msg)
 // {
 //     size_t len;
-//     pmtf::wrap dict, samples;
+//     pmtf::pmt dict, samples;
 
 //     // Test to make sure this is either a PDU or a uniform vector of
 //     // samples. Get the samples PMT and the dictionary if it's a PDU.

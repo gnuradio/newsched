@@ -20,15 +20,15 @@ class tag_t
 {
 public:
     uint64_t offset = 0;
-    pmtf::wrap key = nullptr;
-    pmtf::wrap value = nullptr;
-    pmtf::wrap srcid = nullptr;
+    pmtf::pmt key = nullptr;
+    pmtf::pmt value = nullptr;
+    pmtf::pmt srcid = nullptr;
     bool modified = false;
     tag_t() {}
     tag_t(uint64_t offset,
-          pmtf::wrap key,
-          pmtf::wrap value,
-          pmtf::wrap srcid = nullptr)
+          pmtf::pmt key,
+          pmtf::pmt value,
+          pmtf::pmt srcid = nullptr)
         : offset(offset), key(key), value(value), srcid(srcid)
     {
     }
