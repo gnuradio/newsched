@@ -31,9 +31,13 @@ public:
      * @return uint32_t the global id
      */
     static uint32_t get_id() { return get_instance().get_id_(); }
+    static std::string get_unique_string() {
+        return get_instance().get_unique_string_();
+    }
 
 private:
     std::vector<uint32_t> _used_ids;
+    std::vector<std::string> _used_strings;
     uint32_t _last_id = 0;
     nodeid_generator() {}
 
@@ -52,6 +56,8 @@ private:
 
         return next_id;
     }
+
+    std::string get_unique_string_();
 
 public:
     nodeid_generator(nodeid_generator const&) = delete;
