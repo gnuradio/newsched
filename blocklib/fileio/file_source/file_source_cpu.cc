@@ -37,8 +37,7 @@ file_source_cpu::file_source_cpu(const file_source::block_args& args) : sync_blo
       d_repeat(args.repeat),
       d_updated(false),
       d_file_begin(true),
-      d_repeat_cnt(0),
-      d_add_begin_tag(nullptr)
+      d_repeat_cnt(0)
 {
 
     open(args.filename, args.repeat, args.offset, args.len);
@@ -252,7 +251,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
     while (size) {
 
         // Add stream tag whenever the file starts again
-        if (d_file_begin && d_add_begin_tag != nullptr) {
+        if (d_file_begin && !d_add_begin_tag.empty()) {
             work_output[0]->buffer->add_tag(work_output[0]->buffer->total_written() +
                                                noutput_items - size,
                                            d_add_begin_tag,
@@ -289,7 +288,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
                     throw std::runtime_error("can't fseek()");
                 }
                 d_items_remaining = d_length_items;
-                if (d_add_begin_tag != nullptr) {
+                if (!d_add_begin_tag.empty()) {
                     d_file_begin = true;
                     d_repeat_cnt++;
                 }
