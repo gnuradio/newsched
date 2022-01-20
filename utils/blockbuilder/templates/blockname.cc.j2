@@ -45,9 +45,7 @@ void {{block}}::set_{{p['id']}}({{p['dtype']}} {{p['id']}})
 {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 {{p['dtype']}} {{block}}::{{p['id']}}()
 {
-    return pmtf::get_{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>(
-                request_parameter_query(params::id_{{p['id']}}))
-        .value(); 
+    return pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(request_parameter_query(params::id_{{p['id']}}));
 }
 {% endif %}
 {% endfor -%}

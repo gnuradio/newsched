@@ -26,11 +26,11 @@ class param
 public:
     typedef std::shared_ptr<param> sptr;
     static sptr
-    make(const uint32_t id, const std::string name, pmtf::wrap pmt_value = nullptr)
+    make(const uint32_t id, const std::string name, pmtf::pmt pmt_value = nullptr)
     {
         return std::make_shared<param>(id, name, pmt_value);
     }
-    param(const uint32_t id, const std::string name, pmtf::wrap pmt_value)
+    param(const uint32_t id, const std::string name, pmtf::pmt pmt_value)
         : _id(id), _name(name), _pmt_value(pmt_value)
     {
     }
@@ -41,14 +41,14 @@ public:
     const auto name() { return _name; }
     const auto pmt_value() { return _pmt_value; }
 
-    void set_pmt_value(pmtf::wrap val) { _pmt_value = val; };
+    void set_pmt_value(pmtf::pmt val) { _pmt_value = val; };
 
 
 protected:
     const uint32_t _id;
     const std::string _name;
     param_type_t _type; // should be some sort of typeinfo, but worst case enum or string
-    pmtf::wrap _pmt_value;
+    pmtf::pmt _pmt_value;
 };
 
 template <class T>
@@ -108,23 +108,23 @@ class param_action
 {
 protected:
     uint32_t _id;
-    pmtf::wrap _pmt_value;
+    pmtf::pmt _pmt_value;
     uint64_t _at_sample;
 
 public:
     typedef std::shared_ptr<param_action> sptr;
     static sptr
-    make(uint32_t id, pmtf::wrap pmt_value = nullptr, uint64_t at_sample = 0)
+    make(uint32_t id, pmtf::pmt pmt_value = nullptr, uint64_t at_sample = 0)
     {
         return std::make_shared<param_action>(id, pmt_value, at_sample);
     }
-    param_action(uint32_t id, pmtf::wrap pmt_value, uint64_t at_sample)
+    param_action(uint32_t id, pmtf::pmt pmt_value, uint64_t at_sample)
         : _id(id), _pmt_value(pmt_value), _at_sample(at_sample)
     {
     }
     uint32_t id() const { return _id; }
-    pmtf::wrap pmt_value() { return _pmt_value; }
-    void set_pmt_value(pmtf::wrap val) { _pmt_value = val; }
+    pmtf::pmt pmt_value() { return _pmt_value; }
+    void set_pmt_value(pmtf::pmt val) { _pmt_value = val; }
     uint64_t at_sample() { return _at_sample; }
     void set_at_sample(uint64_t val) { _at_sample = val; }
 };

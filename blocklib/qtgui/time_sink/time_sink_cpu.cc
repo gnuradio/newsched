@@ -30,7 +30,7 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
     }
     // // setup PDU handling input port
     // message_port_register_in(pmtf::string("in"));
-    // set_msg_handler(pmtf::string("in"), [this](pmtf::wrap msg) { this->handle_pdus(msg); });
+    // set_msg_handler(pmtf::string("in"), [this](pmtf::pmt msg) { this->handle_pdus(msg); });
 
     // +1 for the PDU buffer
     for (unsigned int n = 0; n < d_nconnections + 1; n++) {
