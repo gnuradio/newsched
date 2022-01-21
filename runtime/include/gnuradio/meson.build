@@ -43,6 +43,7 @@ runtime_headers += [
     'moodycamel/blockingconcurrentqueue.h',
     'moodycamel/concurrentqueue.h',
     'moodycamel/lightweightsemaphore.h',
+    'base64/base64.h'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')

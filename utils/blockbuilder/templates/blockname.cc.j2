@@ -2,6 +2,7 @@
 {{ macros.header() }}
 
 #include <gnuradio/{{module}}/{{block}}.hh>
+#include <nlohmann/json.hpp>
 
 namespace gr {
 namespace {{module}} {
@@ -26,6 +27,24 @@ namespace {{module}} {
             "invalid implementation specified");
     }
 }
+
+{{block}}::sptr {{block}}::make_from_params(const std::string& json_str, available_impl impl)
+{
+    block_args args;
+
+    // Parse the json string
+    using json = nlohmann::json;
+    auto json_obj = json::parse(json_str);
+
+    {% for p in parameters -%}
+    {% if ('cotr' not in p or p['cotr']) and ('serializable' not in p or p['serializable'])%}
+    args.{{p['id']}} = pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(deserialize_param_to_pmt(json_obj["{{p['id']}}"].get<std::string>()));
+    {% endif %}
+    {% endfor -%}
+
+    return make(args, impl);
+}
+
 
 {{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}", "{{ module }}") {
  {{ macros.ports(ports, parameters) }}

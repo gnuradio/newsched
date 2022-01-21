@@ -36,6 +36,9 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
         py::arg("{{ param['id'] }}"){% if 'default' in param %} = {{param['default']}}{% endif %},{% endif %}
         {% endfor -%} {% endif %}
                    py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
+        .def_static("make_from_params", &::gr::{{module}}::{{block}}<{{typestr}}>::make_from_params, 
+        py::arg("json_str"),
+        py::arg("impl") = gr::{{module}}::{{block}}<{{typestr}}>::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
         {% if 'binding' in cb %}
         .def("{{cb['id']}}", {{cb['binding']}})
