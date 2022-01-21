@@ -41,10 +41,10 @@
 namespace gr {
 namespace fileio {
 
-file_sink_base::file_sink_base(const char* filename, bool is_binary, bool append)
+file_sink_base::file_sink_base(const std::string& filename, bool is_binary, bool append)
     : d_fp(0), d_new_fp(0), d_updated(false), d_is_binary(is_binary), d_append(append)
 {
-    if (!open(filename))
+    if (!open(filename.c_str()))
         throw std::runtime_error("can't open file");
 
     d_logger = logging::get_logger("file_sink_base", "default");

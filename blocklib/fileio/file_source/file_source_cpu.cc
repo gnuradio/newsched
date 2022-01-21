@@ -89,7 +89,7 @@ bool file_source_cpu::seek(int64_t seek_point, int whence)
 }
 
 
-void file_source_cpu::open(const char* filename,
+void file_source_cpu::open(const std::string& filename,
                        bool repeat,
                        uint64_t start_offset_items,
                        uint64_t length_items)
@@ -102,7 +102,7 @@ void file_source_cpu::open(const char* filename,
         d_new_fp = 0;
     }
 
-    if ((d_new_fp = fopen(filename, "rb")) == NULL) {
+    if ((d_new_fp = fopen(filename.c_str(), "rb")) == NULL) {
         GR_LOG_ERROR(_logger, "{}:{}", filename, strerror(errno));
         throw std::runtime_error("can't open file");
     }
