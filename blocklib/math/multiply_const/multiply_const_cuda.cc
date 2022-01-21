@@ -19,7 +19,7 @@ namespace math {
 template <class T>
 multiply_const_cuda<T>::multiply_const_cuda(
     const typename multiply_const<T>::block_args& args)
-    : multiply_const<T>(args), d_k(args.k), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(T), d_k(args.k), d_vlen(args.vlen)
 {
     p_kernel = std::make_shared<cusp::multiply_const<T>>(args.k);
 
@@ -30,7 +30,7 @@ multiply_const_cuda<T>::multiply_const_cuda(
 template <>
 multiply_const_cuda<gr_complex>::multiply_const_cuda(
     const typename multiply_const<gr_complex>::block_args& args)
-    : multiply_const<gr_complex>(args), d_k(args.k), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(gr_complex), d_k(args.k), d_vlen(args.vlen)
 {
     p_kernel = std::make_shared<cusp::multiply_const<gr_complex>>((thrust::complex<float>)args.k);
 

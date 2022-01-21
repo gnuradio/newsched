@@ -20,6 +20,10 @@
 #include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <iostream>
 
+#include "CLI/App.hpp"
+#include "CLI/Formatter.hpp"
+#include "CLI/Config.hpp"
+
 using namespace gr;
 
 int main(int argc, char* argv[])
@@ -39,7 +43,6 @@ int main(int argc, char* argv[])
     app.add_option("-l,--load", load, "Load");
     app.add_option("-b,--nblocks", nblocks, "Number of copy blocks");
     app.add_option("-m,--memmodel", mem_model, "Memory Model");
-    app.add_option("--buffer_type", buffer_type, "Buffer Type (0:simple, 1:vmcirc, 2:cuda, 3:cuda_pinned");
     app.add_option("-s,--bufsize", buffer_size, "Buffer Size in bytes");
     app.add_flag("--rt_prio", rt_prio, "Enable Real-time priority");
     app.add_flag("--sm", single_mapped, "Single Mapped");

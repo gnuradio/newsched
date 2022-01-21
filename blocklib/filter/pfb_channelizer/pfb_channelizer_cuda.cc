@@ -19,7 +19,7 @@ namespace filter {
 template <class T>
 pfb_channelizer_cuda<T>::pfb_channelizer_cuda(
     const typename pfb_channelizer<T>::block_args& args)
-    : pfb_channelizer<T>(args),
+    : INHERITED_CONSTRUCTORS(T),
     d_nchans(args.numchans)
 {
     d_in_items.resize(1);
