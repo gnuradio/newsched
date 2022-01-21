@@ -16,7 +16,7 @@ extern void apply_newblock(
 
 extern void get_block_and_grid(int* minGrid, int* minBlock);
 
-newblock_cuda::newblock_cuda(block_args args) : newblock(args), d_itemsize(args.itemsize)
+newblock_cuda::newblock_cuda(block_args args) : newblock(args)
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
@@ -32,10 +32,7 @@ work_return_code_t newblock_cuda::work(std::vector<block_work_input_sptr>& work_
     // Block specific code goes here
     cudaStreamSynchronize(d_stream);
 
-
-    // Tell runtime system how many output items we produced.
-    work_output[0].n_produced = // noutput_items;
-        (((noutput_items * d_itemsize) / d_block_size) * d_block_size) / d_itemsize;
+    //produce_each(n, work_output);
     return work_return_code_t::WORK_OK;
 }
 } // namespace newmod

@@ -18,7 +18,6 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
-    const size_t d_itemsize;
     double d_samps_per_sec;
     bool d_ignore_tags;
 

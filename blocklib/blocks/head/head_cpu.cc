@@ -15,7 +15,7 @@ namespace gr {
 namespace blocks {
 
 head_cpu::head_cpu(const block_args& args)
-    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize), d_nitems(args.nitems)
+    : INHERITED_CONSTRUCTORS, d_nitems(args.nitems)
 {
 }
 

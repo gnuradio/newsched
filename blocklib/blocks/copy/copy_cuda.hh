@@ -17,8 +17,6 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
-    size_t d_itemsize;
-
     int d_block_size;
     int d_min_grid_size;
     cudaStream_t d_stream;

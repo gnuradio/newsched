@@ -13,7 +13,6 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 private:
-    size_t d_itemsize;
     size_t d_nitems;
     size_t d_ncopied_items = 0;
 };

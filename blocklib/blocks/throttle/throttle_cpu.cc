@@ -7,7 +7,6 @@ namespace blocks {
 
 throttle_cpu::throttle_cpu(block_args args)
     : INHERITED_CONSTRUCTORS,
-        d_itemsize(args.itemsize),
         d_ignore_tags(args.ignore_tags)
 {
     set_sample_rate(args.samples_per_sec);

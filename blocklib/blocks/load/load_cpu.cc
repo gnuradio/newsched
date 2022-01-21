@@ -4,14 +4,14 @@
 namespace gr {
 namespace blocks {
 
-load_cpu::load_cpu(block_args args) : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize), d_load(args.iterations) {}
+load_cpu::load_cpu(block_args args) : INHERITED_CONSTRUCTORS, d_load(args.iterations) {}
 
 work_return_code_t load_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                   std::vector<block_work_output_sptr>& work_output)
 {
     auto iptr = work_input[0]->items<uint8_t>();
     auto optr = work_output[0]->items<uint8_t>();
-    int size = work_output[0]->n_items * d_itemsize;
+    int size = work_output[0]->n_items * work_output[0]->buffer->item_size();
 
     // std::load(iptr, iptr + size, optr);
     for (size_t i=0; i < d_load; i++)

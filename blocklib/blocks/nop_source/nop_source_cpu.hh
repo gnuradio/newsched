@@ -13,7 +13,6 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
-    size_t d_itemsize;
     size_t d_nports;
 };
 

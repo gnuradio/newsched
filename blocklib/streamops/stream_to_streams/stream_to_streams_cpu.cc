@@ -16,7 +16,7 @@ namespace gr {
 namespace streamops {
 
 stream_to_streams_cpu::stream_to_streams_cpu(const block_args& args)
-    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
+    : INHERITED_CONSTRUCTORS
 {
 }
 
@@ -32,11 +32,12 @@ stream_to_streams_cpu::work(std::vector<block_work_input_sptr>& work_input,
     size_t nstreams = work_output.size();
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
+    auto itemsize = work_output[0]->buffer->item_size();
 
     for (size_t i = 0; i < total_items; i++) {
         for (size_t j = 0; j < nstreams; j++) {
-            memcpy(work_output[j]->items<uint8_t>()+i*d_itemsize, in_ptr, d_itemsize);
-            in_ptr += d_itemsize;
+            memcpy(work_output[j]->items<uint8_t>()+i*itemsize, in_ptr, itemsize);
+            in_ptr += itemsize;
         }
     }
 
