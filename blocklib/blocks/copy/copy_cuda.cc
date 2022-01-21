@@ -11,7 +11,7 @@
 namespace gr {
 namespace blocks {
 
-copy_cuda::copy_cuda(block_args args) : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
+copy_cuda::copy_cuda(block_args args) : INHERITED_CONSTRUCTORS
 {
     cudaStreamCreate(&d_stream);
 }

@@ -15,7 +15,7 @@ namespace gr {
 namespace blocks {
 
 nop_head_cpu::nop_head_cpu(const block_args& args)
-    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize), d_nitems(args.nitems)
+    : INHERITED_CONSTRUCTORS, d_nitems(args.nitems)
 {
 }
 
@@ -35,7 +35,7 @@ work_return_code_t nop_head_cpu::work(std::vector<block_work_input_sptr>& work_i
         return work_return_code_t::WORK_OK;
     }
 
-    // memcpy(optr, iptr, n * d_itemsize);
+    // Do Nothing
 
     d_ncopied_items += n;
     work_output[0]->n_produced = n;

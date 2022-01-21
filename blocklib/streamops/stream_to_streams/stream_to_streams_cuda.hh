@@ -15,7 +15,8 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 private:
-    size_t d_itemsize;
+    size_t d_nstreams;
+
     std::vector<void *> d_out_items;
 
     std::shared_ptr<cusp::deinterleave> p_kernel;

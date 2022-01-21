@@ -17,14 +17,10 @@ namespace gr {
 namespace streamops {
 
 stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
-    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
+    : INHERITED_CONSTRUCTORS, d_nstreams(args.nstreams)
 {
     d_out_items.resize(args.nstreams);
-    p_kernel =
-        std::make_shared<cusp::deinterleave>((int)args.nstreams, 1, (int)args.itemsize);
-
     cudaStreamCreate(&d_stream);
-    p_kernel->set_stream(d_stream);
 }
 
 work_return_code_t
@@ -34,13 +30,22 @@ stream_to_streams_cuda::work(std::vector<block_work_input_sptr>& work_input,
     auto noutput_items = work_output[0]->n_items;
     auto ninput_items = work_input[0]->n_items;
     size_t nstreams = work_output.size();
+    auto itemsize = work_output[0]->buffer->item_size();
+
+    if (!p_kernel) {
+        p_kernel =
+            std::make_shared<cusp::deinterleave>((int)d_nstreams, 1, (int)itemsize);
+        p_kernel->set_stream(d_stream);
+    }
+
+    
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
 
     d_out_items = block_work_output::all_items(work_output);
 
     p_kernel->launch_default_occupancy(
-        { work_input[0]->items<uint8_t>() }, d_out_items, d_itemsize * total_items * nstreams);
+        { work_input[0]->items<uint8_t>() }, d_out_items, itemsize * total_items * nstreams);
     cudaStreamSynchronize(d_stream);
 
     produce_each(total_items, work_output);

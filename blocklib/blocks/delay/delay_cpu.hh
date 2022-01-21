@@ -16,7 +16,6 @@ public:
     void set_dly(size_t d);
 
 protected:
-    const size_t d_itemsize;
     size_t d_delay = 0;
     int d_delta = 0;
 

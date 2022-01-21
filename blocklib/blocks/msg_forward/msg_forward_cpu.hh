@@ -15,7 +15,6 @@ public:
     virtual size_t message_count() { return d_msg_cnt; }
 
 protected:
-    size_t d_itemsize;
     void handle_msg_in(pmtf::pmt msg)
     {
         gr_log_info(

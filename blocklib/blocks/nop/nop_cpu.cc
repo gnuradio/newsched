@@ -4,7 +4,7 @@
 namespace gr {
 namespace blocks {
 
-nop_cpu::nop_cpu(block_args args) : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize) {}
+nop_cpu::nop_cpu(block_args args) : INHERITED_CONSTRUCTORS {}
 
 work_return_code_t nop_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                   std::vector<block_work_output_sptr>& work_output)
