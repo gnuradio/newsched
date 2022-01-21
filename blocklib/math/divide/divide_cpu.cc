@@ -17,13 +17,13 @@ namespace math {
 
 template <class T>
 divide_cpu<T>::divide_cpu(const typename divide<T>::block_args& args)
-    : sync_block("divide"), divide<T>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(T), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
 }
 
 template <>
 divide_cpu<float>::divide_cpu(const typename divide<float>::block_args& args)
-    : sync_block("divide_ff"), divide<float>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(float), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
     // const int alignment_multiple = volk_get_alignment() / sizeof(float);
     // set_output_multiple(std::max(1, alignment_multiple));
@@ -31,7 +31,7 @@ divide_cpu<float>::divide_cpu(const typename divide<float>::block_args& args)
 
 template <>
 divide_cpu<gr_complex>::divide_cpu(const typename divide<gr_complex>::block_args& args)
-    : sync_block("divide_cc"), divide<gr_complex>(args), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(gr_complex), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_output_multiple(std::max(1, alignment_multiple));

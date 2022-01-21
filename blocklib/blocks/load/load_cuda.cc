@@ -12,7 +12,7 @@
 namespace gr {
 namespace blocks {
 
-load_cuda::load_cuda(block_args args) : sync_block("load_cuda"), load(args), d_itemsize(args.itemsize), d_load(args.iterations)
+load_cuda::load_cuda(block_args args) : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize), d_load(args.iterations)
 
 {
     load_cu::get_block_and_grid(&d_min_grid_size, &d_block_size);

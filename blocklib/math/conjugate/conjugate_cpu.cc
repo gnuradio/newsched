@@ -5,8 +5,14 @@
 namespace gr {
 namespace math {
 
+conjugate_cpu::conjugate_cpu(const block_args& args) : INHERITED_CONSTRUCTORS
+{
+    // const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
+    // set_output_multiple(std::max(1, alignment_multiple));
+}
+
 work_return_code_t conjugate_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                  std::vector<block_work_output_sptr>& work_output)
+                                       std::vector<block_work_output_sptr>& work_output)
 {
     auto noutput_items = work_output[0]->n_items;
 

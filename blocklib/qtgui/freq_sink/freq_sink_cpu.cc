@@ -18,8 +18,7 @@ namespace qtgui {
 
 template <class T>
 freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
-    : sync_block("freq_sink"),
-      freq_sink<T>(args),
+    : INHERITED_CONSTRUCTORS(T),
       d_fftsize(args.fftsize),
       //   d_fft_shift(fftsize),
       d_fftavg(1.0),
@@ -306,7 +305,7 @@ void freq_sink_cpu<T>::set_trigger_mode(trigger_mode mode,
     d_trigger_mode = mode;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmtf::string(tag_key);
+    d_trigger_tag_key = tag_key;
     d_triggered = false;
     d_trigger_count = 0;
 

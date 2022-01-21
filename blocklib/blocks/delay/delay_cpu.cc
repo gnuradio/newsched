@@ -4,7 +4,7 @@
 namespace gr {
 namespace blocks {
 
-delay_cpu::delay_cpu(const block_args& args) : block("delay"), delay(args), d_itemsize(args.itemsize)
+delay_cpu::delay_cpu(const block_args& args) : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
 {
     set_dly(args.dly);
 }

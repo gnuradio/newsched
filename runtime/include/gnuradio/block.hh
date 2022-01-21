@@ -33,6 +33,8 @@ class GR_RUNTIME_API block : public gr::node, public std::enable_shared_from_thi
 {
 private:
     bool d_running = false;
+    const std::string s_module;
+    std::string d_suffix = "";
     tag_propagation_policy_t d_tag_propagation_policy;
     int d_output_multiple = 1;
     bool d_output_multiple_set = false;
@@ -54,7 +56,8 @@ public:
      *
      * @param name The non-unique name of this block representing the block type
      */
-    block(const std::string& name);
+    block(const std::string& name,
+          const std::string& module = "");
     virtual ~block(){};
     virtual bool start();
     virtual bool stop();
@@ -110,6 +113,7 @@ public:
     double relative_rate() const { return d_relative_rate; }
 
     virtual int get_param_id(const std::string& id) { return d_param_str_map[id]; }
+    virtual std::string suffix() { return ""; }
 
     /**
      * Every Block should have a param update message handler

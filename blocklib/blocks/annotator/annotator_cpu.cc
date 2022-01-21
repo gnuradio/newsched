@@ -20,8 +20,7 @@ namespace gr {
 namespace blocks {
 
 annotator_cpu::annotator_cpu(const block_args& args)
-    : sync_block("annotator"),
-      annotator(args),
+    : INHERITED_CONSTRUCTORS,
       d_when(args.when),
       d_num_inputs(args.num_inputs),
       d_num_outputs(args.num_outputs),

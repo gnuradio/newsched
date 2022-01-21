@@ -6,7 +6,7 @@
 namespace gr {
 namespace fileio {
 
-class file_sink_cpu : public file_sink, virtual public file_sink_base
+class file_sink_cpu : public file_sink, public file_sink_base
 {
 public:
     file_sink_cpu(const block_args& args);

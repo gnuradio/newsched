@@ -17,8 +17,7 @@ namespace qtgui {
 
 template <class T>
 time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
-    : sync_block("time_sink"),
-      time_sink<T>(args),
+    : INHERITED_CONSTRUCTORS(T),
       d_size(args.size),
       d_buffer_size(2 * args.size),
       d_samp_rate(args.samp_rate),

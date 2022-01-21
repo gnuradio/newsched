@@ -16,7 +16,7 @@ namespace gr {
 namespace streamops {
 
 stream_to_streams_cpu::stream_to_streams_cpu(const block_args& args)
-    : block("stream_to_streams"), stream_to_streams(args), d_itemsize(args.itemsize)
+    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
 {
 }
 
