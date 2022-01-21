@@ -3,6 +3,10 @@
 #include <pmtf/wrap.hpp>
 
 #include <gnuradio/pyblock_detail.hh>
+#include <gnuradio/base64/base64.h>
+
+#include <nlohmann/json.hpp>
+
 namespace gr {
 
 block::block(const std::string& name,
@@ -179,5 +183,56 @@ void block::notify_scheduler_output()
     }
 }
 
+std::string block::to_json()
+{
+    // Example string describing this block
+    // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
+    std::string ret = fmt::format("{{ \"module\": \"{}\", \"id\": \"{}\", \"format\": \"b64\", \"parameters\": {{ ", s_module, name()+suffix());
+    int idx = 0;
+    for(auto [key, val]: d_parameters.param_map){
+        if (idx > 0)
+        {
+            ret += ",";
+        }
+        std::stringbuf sb; // fake channel
+        auto nbytes = val.serialize(sb);
+        std::string pre_encoded_str(nbytes,'0');
+        sb.sgetn(pre_encoded_str.data(), nbytes);
+        auto nencoded_bytes = Base64encode_len(nbytes);
+        std::string encoded_str(nencoded_bytes,'0');
+        // int Base64encode(char * coded_dst, const char *plain_src,int len_plain_src);
+        auto nencoded = Base64encode(encoded_str.data(), pre_encoded_str.data(), nbytes);
+        encoded_str.resize(nencoded-1); // because it null terminates
+        ret += fmt::format("\"{}\": \"{}\"", key, encoded_str);
+        idx++;
+    }
+    ret += " } }";
+    return ret;
+}
+
+void block::from_json(const std::string& json_str)
+{
+    using json = nlohmann::json;
+    auto json_obj = json::parse(json_str);
+    for (auto& [key, value] : json_obj["parameters"].items()) {
+        // deserialize from the b64 string
+        auto s = value.get<std::string>();
+        std::string bufplain(s.size(), '0');
+        Base64decode(bufplain.data(), s.data());
+        std::stringbuf sb(bufplain);
+        auto p = pmtf::pmt::deserialize(sb);
+        auto& block_pmt = d_parameters.get(key);
+        block_pmt = p;
+    }
+
+}
+
+pmtf::pmt block::deserialize_param_to_pmt(const std::string& param_value)
+{
+    std::string bufplain(param_value.size(), '0');
+    Base64decode(bufplain.data(), param_value.data());
+    std::stringbuf sb(bufplain);
+    return pmtf::pmt::deserialize(sb);
+}
 
 } // namespace gr

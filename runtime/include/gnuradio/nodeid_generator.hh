@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <vector>
+#include <cstdint>
+#include <string>
 
 namespace gr {
 

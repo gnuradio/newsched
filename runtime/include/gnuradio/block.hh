@@ -50,6 +50,8 @@ protected:
     void notify_scheduler_input();
     void notify_scheduler_output();
 
+    static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
+
 public:
     /**
      * @brief Construct a new block object
@@ -114,6 +116,8 @@ public:
 
     virtual int get_param_id(const std::string& id) { return d_param_str_map[id]; }
     virtual std::string suffix() { return ""; }
+    std::string to_json();
+    void from_json(const std::string& json_str);
 
     /**
      * Every Block should have a param update message handler
