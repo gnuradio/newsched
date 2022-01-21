@@ -57,6 +57,10 @@ pmtf_dep = libpmtf.get_variable('pmtf_dep')
 libCLI11 = subproject('CLI11')
 CLI11_dep = libCLI11.get_variable('CLI11_dep')
 
+libjson = subproject('json')
+json_dep = libjson.get_variable('nlohmann_json_dep')
+
+
 cmake = import('cmake')
 
 if (get_option('enable_testing'))
