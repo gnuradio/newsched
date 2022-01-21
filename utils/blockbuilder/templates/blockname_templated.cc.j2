@@ -36,7 +36,7 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 }
 
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
-{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{blocktype}}("") {
+{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}", "{{ module }}") {
  {{ macros.ports(ports, parameters, typekeys) }}
  {{ macros.parameter_instantiations(parameters) }}
 
@@ -64,6 +64,9 @@ template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not 
 {%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
+
+template <>
+std::string {{block}}<{{ opt['value']}}>::suffix(){ return "_{{opt['suffix']}}"; }
 template class {{block}}<{{ opt['value']}}>;
 {% endfor -%}
 {% else -%}
@@ -71,6 +74,8 @@ template class {{block}}<{{ opt['value']}}>;
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
 {% for opt2 in key2['options'] -%}
+template <>
+std::string {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>::suffix(){ return "_{{opt1['suffix']}}_{{opt2['suffix']}}"; }
 template class {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>;
 {% endfor -%}
 {% endfor -%}

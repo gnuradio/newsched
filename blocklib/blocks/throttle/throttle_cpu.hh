@@ -10,13 +10,7 @@ namespace blocks {
 class throttle_cpu : public throttle
 {
 public:
-    throttle_cpu(block_args args)
-        : sync_block("throttle"), throttle(args),
-          d_itemsize(args.itemsize),
-          d_ignore_tags(args.ignore_tags)
-    {
-        set_sample_rate(args.samples_per_sec);
-    }
+    throttle_cpu(block_args args);
     void set_sample_rate(double rate);
 
     bool start();

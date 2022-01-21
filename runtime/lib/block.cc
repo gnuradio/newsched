@@ -5,8 +5,9 @@
 #include <gnuradio/pyblock_detail.hh>
 namespace gr {
 
-block::block(const std::string& name)
-    : node(name), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
+block::block(const std::string& name,
+          const std::string& module)
+    : node(name), s_module(module), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
 {
     // {# add message handler port for parameter updates#}
     _msg_param_update = message_port::make("param_update", port_direction_t::INPUT);

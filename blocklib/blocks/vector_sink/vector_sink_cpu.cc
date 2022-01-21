@@ -17,7 +17,7 @@ namespace blocks {
 
 template <class T>
 vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& args)
-    : sync_block("vector_sink"), vector_sink<T>(args), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen)
 {
     d_data.reserve(d_vlen * args.reserve_items);
 }
@@ -32,7 +32,10 @@ work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& 
     for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
         d_data.push_back(iptr[i]);
 
+    std::cout << d_data.size() << std::endl;
+
     work_input[0]->n_consumed = noutput_items;
+    GR_LOG_DEBUG(this->_debug_logger, "sizeof_data: {}", d_data.size());
     return work_return_code_t::WORK_OK;
 }
 

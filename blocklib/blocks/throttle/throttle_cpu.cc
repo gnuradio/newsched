@@ -1,12 +1,16 @@
 #include "throttle_cpu.hh"
+#include "throttle_cpu_gen.hh"
 #include <thread>
 
 namespace gr {
 namespace blocks {
 
-throttle::sptr throttle::make_cpu(const block_args& args)
+throttle_cpu::throttle_cpu(block_args args)
+    : INHERITED_CONSTRUCTORS,
+        d_itemsize(args.itemsize),
+        d_ignore_tags(args.ignore_tags)
 {
-    return std::make_shared<throttle_cpu>(args);
+    set_sample_rate(args.samples_per_sec);
 }
 
 void throttle_cpu::set_sample_rate(double rate)

@@ -4,9 +4,16 @@
 
 namespace gr {
 namespace math {
+complex_to_mag_squared_cpu::complex_to_mag_squared_cpu(const block_args& args)
+    : INHERITED_CONSTRUCTORS, d_vlen(args.vlen)
+{
+    // const int alignment_multiple = volk_get_alignment() / sizeof(float);
+    // set_output_multiple(std::max(1, alignment_multiple));
+}
 
-work_return_code_t complex_to_mag_squared_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                  std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+complex_to_mag_squared_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                                 std::vector<block_work_output_sptr>& work_output)
 {
     auto noutput_items = work_output[0]->n_items;
     int noi = noutput_items * d_vlen;

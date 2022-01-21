@@ -6,8 +6,7 @@ namespace fft {
 
 template <class T, bool forward>
 fft_cpu<T, forward>::fft_cpu(const typename fft<T, forward>::block_args& args) 
-    : sync_block("fft"),
-      fft<T, forward>(args),
+    : INHERITED_CONSTRUCTORS(T,forward),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
       d_fft(args.fft_size)

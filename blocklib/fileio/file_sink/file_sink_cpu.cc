@@ -5,9 +5,8 @@ namespace gr {
 namespace fileio {
 
 file_sink_cpu::file_sink_cpu(const block_args& args)
-    : sync_block("file_sink"),
+    : INHERITED_CONSTRUCTORS,
       file_sink_base(args.filename, true, args.append),
-      file_sink(args),
       d_itemsize(args.itemsize)
       
 {

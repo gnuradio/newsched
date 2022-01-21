@@ -20,7 +20,8 @@ inline static unsigned int round_down(unsigned int n, unsigned int multiple)
 class GR_RUNTIME_API sync_block : public block
 {
 public:
-    sync_block(const std::string& name) : block(name) {}
+    sync_block(const std::string& name,
+          const std::string& module="") : block(name, module) {}
 
     /**
      * @brief Performs checks on inputs and outputs before and after the call
