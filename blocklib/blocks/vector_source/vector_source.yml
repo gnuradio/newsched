@@ -24,6 +24,8 @@ parameters:
     dtype: T
     container: vector
     settable: false
+    grc:
+      default: '[0, 0, 0]'
 -   id: repeat
     label: Repeat
     dtype: bool
@@ -40,6 +42,8 @@ parameters:
     container: vector
     settable: false
     default: std::vector<gr::tag_t>()
+    grc:
+      default: '[]'
     serializable: false
 
 ports:
