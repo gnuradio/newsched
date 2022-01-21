@@ -52,8 +52,8 @@ void block::on_parameter_change(param_action_sptr action)
 {
     gr_log_debug(
         _debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
-    auto param = d_parameters.get(action->id());
-    param->set_pmt_value(action->pmt_value());
+    auto& param = d_parameters.get(action->id());
+    param = action->pmt_value();
 }
 
 void block::on_parameter_query(param_action_sptr action)
@@ -61,7 +61,7 @@ void block::on_parameter_query(param_action_sptr action)
     gr_log_debug(
         _debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
     auto param = d_parameters.get(action->id());
-    action->set_pmt_value(param->pmt_value());
+    action->set_pmt_value(param);
 }
 
 void block::consume_each(int num, std::vector<block_work_input_sptr>& work_input)

@@ -33,7 +33,7 @@ protected:
     gr::logger_sptr d_logger, d_debug_logger;
 
 protected:
-    file_sink_base(const char* filename, bool is_binary, bool append);
+    file_sink_base(const std::string& filename, bool is_binary, bool append);
 
 public:
     file_sink_base() {}

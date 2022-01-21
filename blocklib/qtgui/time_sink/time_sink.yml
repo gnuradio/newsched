@@ -39,7 +39,7 @@ parameters:
     settable: false
 -   id: name
     label: Name
-    dtype: const std::string&
+    dtype: std::string
     settable: false
 -   id: nconnections
     label: Num Connections
@@ -56,6 +56,7 @@ parameters:
     dtype: gui_hint
     hide: part
     cotr: false
+    serializable: false
 # Includes go in the blockname.hh
 includes: 
   - value: qapplication.h

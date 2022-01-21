@@ -11,7 +11,7 @@ parameters:
     settable: false
 -   id: filename
     label: Filename
-    dtype: const char *
+    dtype: std::string
     settable: false
 -   id: append
     label: Append

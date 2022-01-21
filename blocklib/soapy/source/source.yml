@@ -168,7 +168,7 @@ includes:
 parameters:
 -   id: device
     label: Device
-    dtype: const std::string&
+    dtype: std::string
     settable: false
     grc:
       hid: 'all'
@@ -180,28 +180,32 @@ parameters:
         hide: 'all'
 -   id: dev_args
     label: Device Args
-    dtype: const std::string&
+    dtype: std::string
     settable: false
     default: '""'
 -   id: stream_args
     label: Stream Args
-    dtype: const std::string&
+    dtype: std::string
     settable: false
     default: '""'
     grc:
         hide: 'all'
 -   id: tune_args
     label: Tune Args
-    dtype: const std::vector<std::string>&
+    dtype: std::string
+    container: vector
     settable: false
+    serializable: false # don't support vectors of strings yet
     default: std::vector<std::string>{""}
     grc:
         default: '[]'
         hide: 'all'
 -   id: other_settings
     label: Other Settings
-    dtype: const std::vector<std::string>&
+    dtype: std::string
+    container: vector
     settable: false
+    serializable: false # don't support vectors of strings yet
     default: std::vector<std::string>{""}
     grc:
         default: '[]'

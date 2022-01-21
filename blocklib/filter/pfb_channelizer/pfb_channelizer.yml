@@ -19,7 +19,8 @@ parameters:
     settable: false
 -   id: taps
     label: Filter Taps
-    dtype: std::vector<float>
+    dtype: float
+    container: vector
     settable: false
 -   id: oversample_rate
     label: Oversample Rate
