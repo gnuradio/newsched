@@ -101,6 +101,7 @@ public:
 
     bool has_custom_buffer();
     buffer_factory_function buffer_factory();
+    buffer_reader_factory_function buffer_reader_factory();
     std::shared_ptr<buffer_properties> buf_properties();
 };
 

@@ -7,6 +7,8 @@
 #include <mutex>
 #include <vector>
 #include <gnuradio/logging.hh>
+#include <gnuradio/neighbor_interface.hh>
+
 namespace gr {
 
 /**
@@ -33,6 +35,9 @@ typedef std::function<std::shared_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>
     buffer_factory_function;
 
+typedef std::function<std::shared_ptr<buffer_reader>(
+    size_t, std::shared_ptr<buffer_properties>)>
+    buffer_reader_factory_function;
 
 /**
  * @brief Base class for passing custom buffer properties into factory method
@@ -89,6 +94,10 @@ public:
         return shared_from_this();
     }
     buffer_factory_function factory() { return _bff; }
+    buffer_reader_factory_function reader_factory() { return _brff; }
+
+    auto independent_reader() { return _independent_reader; }
+    
 
 protected:
     size_t _buffer_size = 0;
@@ -100,6 +109,9 @@ protected:
     size_t _min_buffer_read = 0;
 
     buffer_factory_function _bff = nullptr;
+    buffer_reader_factory_function _brff = nullptr;
+
+    bool _independent_reader = false;
 };
 
 /**
@@ -276,7 +288,7 @@ public:
     virtual ~buffer_reader() {}
     size_t read_index() { return _read_index; }
     void set_read_index(size_t r) { _read_index = r; }
-    void* read_ptr() { return _buffer->read_ptr(_read_index); }
+    virtual void* read_ptr() { return _buffer->read_ptr(_read_index); }
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
@@ -326,9 +338,17 @@ public:
      * items
      * @return std::vector<tag_t> Returns the vector of tags
      */
-    std::vector<tag_t> get_tags(size_t num_items);
+    virtual std::vector<tag_t> get_tags(size_t num_items);
 
-    const std::vector<tag_t>& tags() const;
+    virtual const std::vector<tag_t>& tags() const;
+
+    void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
+    void notify_scheduler();
+    void notify_scheduler_input();
+    void notify_scheduler_output();
+
+protected:
+    neighbor_interface_sptr p_scheduler = nullptr;
 };
 
 } // namespace gr

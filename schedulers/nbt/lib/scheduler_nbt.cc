@@ -30,7 +30,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
 
 
     auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
-    bufman->initialize_buffers(fg, _default_buf_properties);
+    bufman->initialize_buffers(fg, _default_buf_properties, base());
 
 
     //  Partition the flowgraph according to how blocks are specified in groups

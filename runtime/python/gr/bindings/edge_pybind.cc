@@ -22,7 +22,10 @@ void bind_edge(py::module& m)
     using edge = ::gr::edge;
 
     py::class_<edge, std::shared_ptr<edge>>(m, "edge")
-    .def("set_custom_buffer", &edge::set_custom_buffer)
-        ;
-
+        .def(py::init(
+            [](gr::node_sptr a, gr::port_sptr b, gr::node_sptr c, gr::port_sptr d) {
+                return ::gr::edge::make(a, b, c, d);
+            }))
+        .def("set_custom_buffer", &edge::set_custom_buffer)
+        .def("identifier", &edge::identifier);
 }

@@ -56,8 +56,11 @@ block_vector_t flat_graph::calc_downstream_blocks(block_sptr block, port_sptr po
     block_vector_t tmp;
 
     for (auto& p : edges())
-        if (static_cast<block_endpoint>(p->src()) == block_endpoint(block, port))
-            tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
+        if (static_cast<block_endpoint>(p->src()) == block_endpoint(block, port)) {
+            if (p->dst().node()) {
+                tmp.push_back(static_cast<block_endpoint>(p->dst()).block());
+            }
+        }
 
     return unique_vector<block_sptr>(tmp);
 }
