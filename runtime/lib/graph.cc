@@ -191,7 +191,8 @@ void graph::add_edge(edge_sptr edge)
 {
     // TODO: check that edge is not already in the graph
     _edges.push_back(edge);
-    if (edge->src().port()->type() == gr::port_type_t::STREAM)
+    if ((edge->src().port() && edge->src().port()->type() == gr::port_type_t::STREAM) ||
+        (edge->dst().port() && edge->dst().port()->type() == gr::port_type_t::STREAM))
     {
         _stream_edges.push_back(edge);
     }

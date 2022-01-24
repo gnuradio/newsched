@@ -61,9 +61,6 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     auto sched1 = schedulers::scheduler_nbt::make("sched1");
     auto sched2 = schedulers::scheduler_nbt::make("sched2");
 
-    fg->add_scheduler(sched1);
-    fg->add_scheduler(sched2);
-
     domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }),
                            domain_conf(sched2, { mult2, snk }) };
 
