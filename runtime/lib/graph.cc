@@ -156,8 +156,10 @@ node_vector_t graph::calc_used_nodes()
 
     // Collect all blocks in the edge list
     for (auto& p : edges()) {
-        tmp.push_back(p->src().node());
-        tmp.push_back(p->dst().node());
+        if (p->src().node())
+            tmp.push_back(p->src().node());
+        if (p->dst().node())
+            tmp.push_back(p->dst().node());
     }
     for (auto n : _orphan_nodes) {
         tmp.push_back(n);
