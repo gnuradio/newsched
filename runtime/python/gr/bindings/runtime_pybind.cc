@@ -35,6 +35,7 @@ void bind_vmcircbuf(py::module&);
 void bind_domain(py::module&);
 void bind_constants(py::module&);
 void bind_python_block(py::module&);
+void bind_buffer_net_zmq(py::module& m);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
 void bind_buffer_cuda_pinned(py::module&);
@@ -73,6 +74,7 @@ PYBIND11_MODULE(runtime_python, m)
     bind_flowgraph(m);
     bind_scheduler(m);
     bind_buffer(m);
+    bind_buffer_net_zmq(m);
     bind_vmcircbuf(m);
     bind_constants(m);
     bind_python_block(m);

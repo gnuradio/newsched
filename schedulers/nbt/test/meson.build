@@ -71,6 +71,19 @@ if get_option('enable_testing')
         install : true)
     test('NBT Tags Tests', e)
 
+    srcs = ['qa_zmq_buffers.cc']
+    e = executable('qa_zmq_buffers', 
+        srcs, 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: [newsched_runtime_dep,
+                    newsched_blocklib_blocks_dep,
+                    newsched_blocklib_math_dep,
+                    newsched_scheduler_nbt_dep,
+                    gtest_dep], 
+        install : true)
+    test('NBT ZMQ Custom Buffers', e)
+
     test('Basic Python', py3, args : files('qa_basic.py'), env: TEST_ENV)
     test('Block Parameters', py3, args : files('qa_parameters.py'), env: TEST_ENV)
     test('Python Blocks', py3, args : files('qa_python_block.py'), env: TEST_ENV)
