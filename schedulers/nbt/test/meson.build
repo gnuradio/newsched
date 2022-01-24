@@ -29,7 +29,7 @@ if get_option('enable_testing')
                     newsched_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)
-    test('NBT Block Grouping Tests', e)
+    test('NBT Block Grouping Tests', e, env: TEST_ENV)
 
     srcs = ['qa_single_mapped_buffers.cc']
     e = executable('qa_single_mapped_buffers', 
@@ -56,7 +56,7 @@ if get_option('enable_testing')
                     newsched_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)
-    # test('NBT Message Port Tests', e)
+    # test('NBT Message Port Tests', e, env: TEST_ENV)
 
     srcs = ['qa_tags.cc']
     e = executable('qa_tags', 
@@ -69,7 +69,7 @@ if get_option('enable_testing')
                     newsched_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)
-    test('NBT Tags Tests', e)
+    test('NBT Tags Tests', e, env: TEST_ENV)
 
     srcs = ['qa_zmq_buffers.cc']
     e = executable('qa_zmq_buffers', 
@@ -82,7 +82,7 @@ if get_option('enable_testing')
                     newsched_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)
-    test('NBT ZMQ Custom Buffers', e)
+    test('NBT ZMQ Custom Buffers', e, env: TEST_ENV)
 
     test('Basic Python', py3, args : files('qa_basic.py'), env: TEST_ENV)
     test('Block Parameters', py3, args : files('qa_parameters.py'), env: TEST_ENV)
