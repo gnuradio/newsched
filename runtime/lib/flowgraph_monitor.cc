@@ -24,7 +24,7 @@ void flowgraph_monitor::start()
                     GR_LOG_DEBUG(_debug_logger, "DONE");
                     // One scheduler signaled it is done
                     // Notify the other schedulers that they need to flush
-                    // std::this_thread::sleep_for(std::chrono::milliseconds(100)); // DEBUG
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // DEBUG
                     for (auto& s : d_schedulers) {
                         s->push_message(
                             std::make_shared<scheduler_action>(scheduler_action_t::DONE, 0));

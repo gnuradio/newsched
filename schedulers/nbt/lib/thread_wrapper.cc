@@ -116,6 +116,7 @@ bool thread_wrapper::handle_work_notification()
                     fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
                 return false;
             } else {
+                // std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
                 push_message(std::make_shared<scheduler_action>(
                     scheduler_action_t::NOTIFY_ALL, 0));
             }
