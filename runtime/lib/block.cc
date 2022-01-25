@@ -2,22 +2,28 @@
 #include <gnuradio/scheduler.hh>
 #include <pmtf/wrap.hpp>
 
-#include <gnuradio/pyblock_detail.hh>
 #include <gnuradio/base64/base64.h>
+#include <gnuradio/pyblock_detail.hh>
 
 #include <nlohmann/json.hpp>
 
 namespace gr {
 
-block::block(const std::string& name,
-          const std::string& module)
-    : node(name), s_module(module), d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
+block::block(const std::string& name, const std::string& module)
+    : node(name),
+      s_module(module),
+      d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
 {
     // {# add message handler port for parameter updates#}
     _msg_param_update = message_port::make("param_update", port_direction_t::INPUT);
     _msg_param_update->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_param_update(msg); });
     add_port(_msg_param_update);
+
+    _msg_system = message_port::make("system", port_direction_t::INPUT);
+    _msg_system->register_callback(
+        [this](pmtf::pmt msg) { this->handle_msg_system(msg); });
+    add_port(_msg_system);
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
@@ -104,6 +110,16 @@ void block::handle_msg_param_update(pmtf::pmt msg)
     request_parameter_change(get_param_id(id), value, false);
 }
 
+void block::handle_msg_system(pmtf::pmt msg)
+{
+    auto str_msg = pmtf::get_as<std::string>(msg);
+    if (str_msg == "done") {
+        d_finished = true;
+        p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, id()));
+    }
+}
+
 void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool block)
 {
     // call back to the scheduler if ptr is not null
@@ -187,22 +203,24 @@ std::string block::to_json()
 {
     // Example string describing this block
     // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
-    std::string ret = fmt::format("{{ \"module\": \"{}\", \"id\": \"{}\", \"format\": \"b64\", \"parameters\": {{ ", s_module, name()+suffix());
+    std::string ret = fmt::format(
+        "{{ \"module\": \"{}\", \"id\": \"{}\", \"format\": \"b64\", \"parameters\": {{ ",
+        s_module,
+        name() + suffix());
     int idx = 0;
-    for(auto [key, val]: d_parameters.param_map){
-        if (idx > 0)
-        {
+    for (auto [key, val] : d_parameters.param_map) {
+        if (idx > 0) {
             ret += ",";
         }
         std::stringbuf sb; // fake channel
         auto nbytes = val.serialize(sb);
-        std::string pre_encoded_str(nbytes,'0');
+        std::string pre_encoded_str(nbytes, '0');
         sb.sgetn(pre_encoded_str.data(), nbytes);
         auto nencoded_bytes = Base64encode_len(nbytes);
-        std::string encoded_str(nencoded_bytes,'0');
+        std::string encoded_str(nencoded_bytes, '0');
         // int Base64encode(char * coded_dst, const char *plain_src,int len_plain_src);
         auto nencoded = Base64encode(encoded_str.data(), pre_encoded_str.data(), nbytes);
-        encoded_str.resize(nencoded-1); // because it null terminates
+        encoded_str.resize(nencoded - 1); // because it null terminates
         ret += fmt::format("\"{}\": \"{}\"", key, encoded_str);
         idx++;
     }
@@ -224,7 +242,6 @@ void block::from_json(const std::string& json_str)
         auto& block_pmt = d_parameters.get(key);
         block_pmt = p;
     }
-
 }
 
 pmtf::pmt block::deserialize_param_to_pmt(const std::string& param_value)

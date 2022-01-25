@@ -36,6 +36,10 @@ public:
         while(!done)
            done = !q.try_dequeue(msg);
     }
+    size_t size_approx()
+    {
+        return q.size_approx();
+    }
 
 private:
     moodycamel::BlockingConcurrentQueue<T> q;

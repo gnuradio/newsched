@@ -31,7 +31,13 @@ void thread_wrapper::start()
         b->start();
     }
     push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+    {
+        std::lock_guard<std::mutex> lk(_start_mutex);
+        _ready_to_start = true;
+    }
+    _start_cv.notify_one();
 }
+
 void thread_wrapper::stop()
 {
     d_thread_stopped = true;
@@ -81,7 +87,17 @@ bool thread_wrapper::handle_work_notification()
             // kick = true;
         }
 
-        if (elem.second != executor_iteration_status::BLKD_IN &&
+        if (elem.second == executor_iteration_status::MSG_ONLY)
+        {
+            //     gr_log_debug(_debug_logger,
+            //                  "size_approx {}",
+            //                  msgq.size_approx());
+            // if (msgq.size_approx() != 0)
+            // {
+            //     all_blkd = false;
+            // }
+        }
+        else if (elem.second != executor_iteration_status::BLKD_IN &&
             elem.second != executor_iteration_status::BLKD_OUT) {
             // Ignore source blocks
             if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size()) {
@@ -161,7 +177,7 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
 
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
-    GR_LOG_INFO(top->_logger, "starting thread");
+    GR_LOG_INFO(top->_debug_logger, "starting thread");
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
@@ -186,6 +202,10 @@ void thread_wrapper::thread_body(thread_wrapper* top)
     // if (block->thread_priority() > 0) {
     //     gr::thread::set_thread_priority(d->thread, block->thread_priority());
     // }
+
+    // Wait here until the block starts
+    std::unique_lock<std::mutex> lk(top->_start_mutex);
+    top->_start_cv.wait(lk, [top]{return top->_ready_to_start;});
 
     bool blocking_queue = true;
     while (!top->d_thread_stopped) {

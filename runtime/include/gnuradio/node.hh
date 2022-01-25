@@ -85,6 +85,36 @@ public:
         return result;
     }
 
+
+    std::vector<message_port_sptr> input_message_ports()
+    {
+        std::vector<message_port_sptr> result;
+        for (auto& p : d_input_ports)
+            if (p->type() == port_type_t::MESSAGE)
+                result.push_back(std::static_pointer_cast<message_port>(p));
+
+        return result;
+    }
+    std::vector<message_port_sptr> output_message_ports()
+    {
+        std::vector<message_port_sptr> result;
+        for (auto& p : d_output_ports)
+            if (p->type() == port_type_t::MESSAGE)
+                result.push_back(std::static_pointer_cast<message_port>(p));
+
+        return result;
+    }
+
+    message_port_sptr input_message_port(const std::string& port_name)
+    {
+        message_port_sptr result = nullptr;
+        for (auto& p : d_input_ports)
+            if (p->type() == port_type_t::MESSAGE && p->name() == port_name)
+                result = std::static_pointer_cast<message_port>(p);
+
+        return result;
+    }
+
     std::string name() const { return d_name; };
     std::string alias() const { return d_alias; }
 

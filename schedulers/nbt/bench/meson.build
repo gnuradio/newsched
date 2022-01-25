@@ -34,6 +34,18 @@ executable('bm_nbt_nop',
                    CLI11_dep], 
     install : true)
 
+srcs = ['bm_msg_forward.cc']
+executable('bm_msg_forward', 
+    srcs, 
+    include_directories : incdir, 
+    link_language : 'cpp',
+    dependencies: [newsched_runtime_dep,
+                   newsched_blocklib_blocks_dep,
+                   newsched_scheduler_nbt_dep,
+                   CLI11_dep], 
+    install : true)
+
+
 if cuda_dep.found() and get_option('enable_cuda')
     subdir('cuda')
 endif

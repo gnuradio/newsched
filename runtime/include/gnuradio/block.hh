@@ -44,7 +44,9 @@ protected:
     neighbor_interface_sptr p_scheduler = nullptr;
     std::map<std::string, int> d_param_str_map;
     message_port_sptr _msg_param_update;
+    message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
+    bool d_finished = false;
 
     void notify_scheduler();
     void notify_scheduler_input();
@@ -64,6 +66,8 @@ public:
     virtual bool start();
     virtual bool stop();
     virtual bool done();
+
+    bool finished() { return d_finished; }
 
     typedef std::shared_ptr<block> sptr;
     sptr base() { return shared_from_this(); }
@@ -123,6 +127,9 @@ public:
      * Every Block should have a param update message handler
      */
     virtual void handle_msg_param_update(pmtf::pmt msg);
+    
+    virtual void handle_msg_system(pmtf::pmt msg);
+
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 

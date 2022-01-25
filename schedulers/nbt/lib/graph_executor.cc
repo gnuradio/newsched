@@ -24,9 +24,27 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         std::vector<block_work_input_sptr> work_input;   //(num_input_ports);
         std::vector<block_work_output_sptr> work_output; //(num_output_ports);
 
+        // If a block is a message port only block, it will raise the finished() flag
+        // to indicate that the rest of the flowgraph should clean up
+        if (b->finished()) {
+            per_block_status[b->id()] = executor_iteration_status::DONE;
+            GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+            continue;
+        }
+
+        auto input_stream_ports = b->input_stream_ports();
+        auto output_stream_ports = b->output_stream_ports();
+
+        if (input_stream_ports.size() == 0 && output_stream_ports.size() == 0)
+        {
+            // There is no streaming work to do for this block
+            per_block_status[b->id()] = executor_iteration_status::MSG_ONLY;
+            continue;
+        }
+
         // for each input port of the block
         bool ready = true;
-        for (auto p : b->input_stream_ports()) {
+        for (auto p : input_stream_ports) {
             auto p_buf = p->buffer_reader();
             auto max_read = p_buf->max_buffer_read();
             auto min_read = p_buf->min_buffer_read();
@@ -63,7 +81,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         }
 
         // for each output port of the block
-        for (auto p : b->output_stream_ports()) {
+        for (auto p : output_stream_ports) {
 
             // When a block has multiple output buffers, it adds the restriction
             // that the work call can only produce the minimum available across
