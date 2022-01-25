@@ -7,6 +7,8 @@
 #include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/scheduler_message.hh>
 #include <thread>
+#include <condition_variable>
+#include <mutex>
 
 #include "graph_executor.hh"
 
@@ -93,6 +95,10 @@ public:
         d_flush_cnt = 0;
         push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
     }
+
+    std::mutex _start_mutex;
+    std::condition_variable _start_cv;
+    bool _ready_to_start = false;
 };
 } // namespace schedulers
 } // namespace gr

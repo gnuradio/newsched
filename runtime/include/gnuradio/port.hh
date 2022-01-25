@@ -292,7 +292,11 @@ public:
     void register_callback(message_port_callback_fcn fcn) { _callback_fcn = fcn; }
     void post(pmtf::pmt msg) // should be a pmt, just pass strings for now
     {
-        notify_connected_ports(std::make_shared<msgport_message>(msg, _callback_fcn));
+        if (direction() == port_direction_t::OUTPUT )
+            notify_connected_ports(std::make_shared<msgport_message>(msg, _callback_fcn));
+        else {
+            push_message(std::make_shared<msgport_message>(msg, _callback_fcn));
+        }
     }
     virtual void push_message(scheduler_message_sptr msg)
     {

@@ -9,6 +9,7 @@ enum class executor_iteration_status {
     BLKD_IN,         // no progress; we're blocked waiting for input data.
     BLKD_OUT,        // no progress; we're blocked waiting for output buffer space.
     DONE,            // we're done; don't call me again.
+    MSG_ONLY,        // Block with no stream ports
 };
 
 class executor

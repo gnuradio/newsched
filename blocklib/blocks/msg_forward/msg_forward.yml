@@ -6,10 +6,11 @@ includes:
   - value: pmtf/wrap.hpp
 
 parameters:
--   id: itemsize
-    label: Item Size
+-   id: max_messages
+    label: Max Messages
     dtype: size_t
     settable: false
+    default: 0
 
 ports:
 -   domain: message
