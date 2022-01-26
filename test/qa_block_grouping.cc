@@ -8,6 +8,7 @@
 #include <gnuradio/blocks/vector_source.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -52,12 +53,11 @@ TEST(SchedulerBlockGrouping, BasicBlockGrouping)
             }
             fg->connect(mult_blks[nblocks*ngroups-1], 0, snk, 0);
             
-            fg->add_scheduler(sch);
-            fg->validate();
-
-
-            fg->start();
-            fg->wait();
+            auto rt = runtime::make();
+            rt->add_scheduler(sch);
+            rt->initialize(fg);
+            rt->start();
+            rt->wait();
 
             std::cout << "ngroups: " << ngroups << ", nblocks: " << nblocks << std::endl;
         

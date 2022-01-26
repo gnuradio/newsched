@@ -7,7 +7,7 @@ sources = [
 ]
 
 filter_sources += sources
-filter_deps += [newsched_runtime_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep]
+filter_deps += [newsched_gr_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep]
 link_args = []
 block_cpp_args = ['-DHAVE_CPU']
 if USE_CUDA

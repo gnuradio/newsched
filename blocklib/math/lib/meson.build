@@ -2,7 +2,7 @@ math_sources += [
     'fast_atan2f.cc'
 ]
 
-math_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
+math_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep]
 
 link_args = []
 block_cpp_args = ['-DHAVE_CPU', '-DHAVE_NUMPY']

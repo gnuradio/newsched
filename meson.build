@@ -96,4 +96,9 @@ if (get_option('enable_python'))
   subdir('grc')
   subdir('domains/grc')
 endif
-
+if (get_option('enable_testing'))
+    subdir('test')
+endif
+if (get_option('enable_bench'))
+    subdir('bench')
+endif

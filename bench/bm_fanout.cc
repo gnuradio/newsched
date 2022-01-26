@@ -11,6 +11,7 @@
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/runtime.hh>
 
 #include <iostream>
 
@@ -69,14 +70,13 @@ int main(int argc, char* argv[])
             }
         }
 
-        auto sched1 = schedulers::scheduler_nbt::make("sched1");
-        fg->add_scheduler(sched1);
-        fg->validate();
+        auto rt = runtime::make();
+        rt->initialize(fg);
 
         auto t1 = std::chrono::steady_clock::now();
 
-        fg->start();
-        fg->wait();
+        rt->start();
+        rt->wait();
 
         auto t2 = std::chrono::steady_clock::now();
         auto time =

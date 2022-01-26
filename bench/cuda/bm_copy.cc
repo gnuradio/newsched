@@ -12,6 +12,7 @@
 #include <gnuradio/logging.hh>
 #include <gnuradio/realtime.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/runtime.hh>
 
 #include <gnuradio/buffer_cuda.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
         sizeof(gr_complex) * buffer_size *
             2); // This sizing should be handled in buffer_managment but it is not yet
     sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
-    fg->set_scheduler(sched);
+    
     if (mem_model == 0) {
         if (single_mapped)
             fg->connect(head, 0, copy_blks[0], 0)
@@ -111,14 +112,16 @@ int main(int argc, char* argv[])
             ->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
     }
 
-    fg->validate();
+    auto rt = runtime::make();
+    rt->add_scheduler(sched);
+    rt->initialize(fg);
 
     if (rt_prio && gr::enable_realtime_scheduling() != gr::rt_status_t::RT_OK)
         std::cout << "Unable to enable realtime scheduling " << std::endl;
 
     auto t1 = std::chrono::steady_clock::now();
-    fg->start();
-    fg->wait();
+    rt->start();
+    rt->wait();
 
     auto t2 = std::chrono::steady_clock::now();
     auto time =

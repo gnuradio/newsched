@@ -13,6 +13,7 @@
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
 #include <gnuradio/buffer_net_zmq.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -36,8 +37,10 @@ TEST(SchedulerMTTest, ZMQBuffers)
     fg->connect(copy2, 0, hd, 0);
     fg->connect(hd, 0, snk1, 0);
 
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);

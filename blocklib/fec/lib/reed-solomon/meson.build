@@ -45,7 +45,7 @@ newsched_blocklib_fec_lib = library('newsched-blocklib-fec',
     sources, 
     include_directories : incdir, 
     install : true, 
-    dependencies : [newsched_runtime_dep],
+    dependencies : [newsched_gr_dep],
     pic : true)
 
 newsched_blocklib_fec_dep = declare_dependency(include_directories : incdir,

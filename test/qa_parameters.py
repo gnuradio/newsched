@@ -7,9 +7,11 @@ class test_basic(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_basic(self):
         run_time = 1
@@ -23,8 +25,8 @@ class test_basic(gr_unittest.TestCase):
         self.tb.connect([src, throttle, mult1, snk1])
         self.tb.connect(mult1,snk2)
         
-        self.tb.validate()
-        self.tb.start()
+        self.rt.initialize(self.tb)
+        self.rt.start()
 
         start = time()
         k = 1.0
@@ -51,7 +53,7 @@ class test_basic(gr_unittest.TestCase):
 
         sleep(0.25)
 
-        self.tb.stop()
+        self.rt.stop()
 
         # Search for the values that we set in the values we queried
         all_values_found = True

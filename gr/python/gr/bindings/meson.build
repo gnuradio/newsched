@@ -16,11 +16,12 @@ runtime_pybind_sources = files([
     'buffer_net_zmq_pybind.cc',
     'constants_pybind.cc',
     'python_block_pybind.cc',
-    'pyblock_detail_pybind.cc'
+    'pyblock_detail_pybind.cc',
+    'runtime_pybind.cc'
  ] )
 
 cpp_args = []
-runtime_pybind_deps = [newsched_runtime_dep, python3_dep, pybind11_dep, pmtf_dep]
+runtime_pybind_deps = [newsched_gr_dep, python3_dep, pybind11_dep, pmtf_dep]
 if USE_CUDA
     runtime_pybind_sources += [
         'buffer_cuda_pybind.cc', 

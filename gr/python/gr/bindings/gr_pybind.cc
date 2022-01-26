@@ -36,6 +36,7 @@ void bind_domain(py::module&);
 void bind_constants(py::module&);
 void bind_python_block(py::module&);
 void bind_buffer_net_zmq(py::module& m);
+void bind_runtime(py::module&);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
 void bind_buffer_cuda_pinned(py::module&);
@@ -78,6 +79,7 @@ PYBIND11_MODULE(gr_python, m)
     bind_vmcircbuf(m);
     bind_constants(m);
     bind_python_block(m);
+    bind_runtime(m);
     
     #ifdef HAVE_CUDA
     bind_buffer_cuda(m);

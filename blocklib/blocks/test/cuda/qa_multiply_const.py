@@ -15,9 +15,11 @@ class test_multiply_const(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_000(self):
         k = 4.0
@@ -31,7 +33,8 @@ class test_multiply_const(gr_unittest.TestCase):
 
         tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
-        tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         dst_data = dst.data()
         self.assertEqual(expected_data, dst_data)
 
@@ -47,7 +50,8 @@ class test_multiply_const(gr_unittest.TestCase):
 
         tb.connect(src, op).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.H2D))
         tb.connect(op, dst).set_custom_buffer(gr.buffer_cuda_properties.make(gr.buffer_cuda_type.D2H))
-        tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         dst_data = dst.data()
         self.assertEqual(expected_data, dst_data)
 

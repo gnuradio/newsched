@@ -34,15 +34,18 @@ class test_file_source(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_file_source(self):
         src = fileio.file_source(gr.sizeof_float, self._datafilename)
         snk = blocks.vector_sink_f()
         self.tb.connect(src, snk)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
 
         result_data = snk.data()
         self.assertFloatTuplesAlmostEqual(self._vector, result_data)
@@ -68,7 +71,8 @@ class test_file_source(gr_unittest.TestCase):
         snk = blocks.vector_sink_f()
 
         self.tb.connect(src, snk)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
 
         result_data = snk.data()
         self.assertFloatTuplesAlmostEqual(expected_result, result_data)
@@ -84,7 +88,8 @@ class test_file_source(gr_unittest.TestCase):
             len=600)
         snk = blocks.vector_sink_f()
         self.tb.connect(src, snk)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
 
         result_data = snk.data()
         self.assertFloatTuplesAlmostEqual(expected_result, result_data)

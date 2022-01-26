@@ -58,6 +58,7 @@ class test_block_gateway(gr_unittest.TestCase):
 
     def test_add_ff_deriv(self):
         tb = gr.flowgraph()
+        rt = gr.runtime()
         src0 = blocks.vector_source_f([1, 3, 5, 7, 9], False)
         src1 = blocks.vector_source_f([0, 2, 4, 6, 8], False)
         adder = add_ff_numpy()
@@ -65,7 +66,8 @@ class test_block_gateway(gr_unittest.TestCase):
         tb.connect((src0, 0), (adder, 0))
         tb.connect((src1, 0), (adder, 1))
         tb.connect(adder, sink)
-        tb.run()
+        rt.initialize(tb)
+        rt.run()
         self.assertEqual(sink.data(), [1, 5, 9, 13, 17])
 
     # def test_add_f32(self):

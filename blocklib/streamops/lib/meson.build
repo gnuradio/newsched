@@ -2,7 +2,7 @@ sources = [
 ]
 
 streamops_sources += sources
-streamops_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
+streamops_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 link_args = []

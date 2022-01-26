@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 from newsched import gr_unittest, gr, blocks
-from newsched.schedulers import nbt
 
 class test_basic(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_basic(self):
         nsamples = 100000
@@ -26,9 +27,9 @@ class test_basic(gr_unittest.TestCase):
         self.tb.connect(src, 0, cp2, 0)
         self.tb.connect(cp2, 0, snk2, 0)
 
-        self.tb.start()
-        self.tb.wait()
-
+        self.rt.initialize(self.tb)
+        self.rt.run()
+        
         self.assertEqual(input_data, snk1.data())
         self.assertEqual(input_data, snk2.data())
 

@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-runtime_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, zmq_dep, json_dep]
+gr_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, zmq_dep, json_dep]
 
 libdir = get_option('libdir')
 prefix = get_option('prefix')
@@ -32,6 +32,7 @@ runtime_sources = [
   'buffer_cpu_simple.cc',
   'buffer_sm.cc',
   'realtime.cc',
+  'runtime.cc',
   'thread.cc',
   'parameter_types.cc',
   'edge.cc',
@@ -58,7 +59,7 @@ if USE_CUDA
     'buffer_cuda_pinned.cc',
     'buffer_cuda_sm.cc'
   ]
-  runtime_deps += cuda_dep
+  gr_deps += cuda_dep
 endif
 
 if (pybind11_dep.found() and python3_dep.found() and python3_embed_dep.found() and get_option('enable_python'))
@@ -66,7 +67,7 @@ runtime_sources += [
   'python_block.cc',
   'pyblock_detail.cc'
 ]
-runtime_deps += [python3_dep, python3_embed_dep, pybind11_dep]
+gr_deps += [python3_dep, python3_embed_dep, pybind11_dep]
 endif
 
 cpp_args = []
@@ -262,17 +263,17 @@ if compiler.compiles(code, name : 'HAVE_STD_FILESYSTEM')
 endif
 
 
-newsched_runtime_lib = library('newsched-runtime', 
+newsched_gr_lib = library('newsched-runtime', 
     runtime_sources, 
     install : true, 
-    dependencies : runtime_deps,
+    dependencies : gr_deps,
     link_language : 'cpp',
     include_directories : incdir,
     cpp_args : cpp_args)
 
-newsched_runtime_dep = declare_dependency(include_directories : incdir,
-					   dependencies: runtime_deps, # have to disable this for blocklib_blocks_cuda_cu to link
-					   link_with : newsched_runtime_lib)
+newsched_gr_dep = declare_dependency(include_directories : incdir,
+					   dependencies: gr_deps, # have to disable this for blocklib_blocks_cuda_cu to link
+					   link_with : newsched_gr_lib)
 
 
 # TODO - export this as a subproject of newsched
