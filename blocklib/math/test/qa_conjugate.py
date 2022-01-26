@@ -16,6 +16,7 @@ class test_conjugate (gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
@@ -35,7 +36,8 @@ class test_conjugate (gr_unittest.TestCase):
 
         self.tb.connect(src, op)
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 

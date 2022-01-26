@@ -7,6 +7,7 @@ class test_add_numpy(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
@@ -21,7 +22,8 @@ class test_add_numpy(gr_unittest.TestCase):
         self.tb.connect((src0, 0), (adder, 0))
         self.tb.connect((src1, 0), (adder, 1))
         self.tb.connect([adder, mult, sink])
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         self.assertEqual(expected_result, sink.data())
 
 

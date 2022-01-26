@@ -19,9 +19,11 @@ class test_file_sink(gr_unittest.TestCase):
     def setUp(self):
         os.environ['GR_CONF_CONTROLPORT_ON'] = 'False'
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_file_sink(self):
         data = range(1000)
@@ -32,7 +34,8 @@ class test_file_sink(gr_unittest.TestCase):
             snk = fileio.file_sink(gr.sizeof_float, temp.name)
             snk.set_unbuffered(True) # FIXME: comes from base class no pybind yet
             self.tb.connect(src, snk)
-            self.tb.run()
+            self.rt.initialize(self.tb)
+            self.rt.run()
 
             # Check file length (float: 4 * nsamples)
             file_size = os.stat(temp.name).st_size

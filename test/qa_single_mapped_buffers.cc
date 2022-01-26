@@ -10,6 +10,7 @@
 #include <gnuradio/buffer_sm.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -44,8 +45,11 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
     }
     fg->connect(mult_blks[nblocks - 1], 0, snk, 0);
 
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
+
 
     for (int i = 0; i < nsamples; i++) {
         expected_data[i] = gr_complex(k * 2 * i, k * (2 * i + 1));
@@ -98,8 +102,10 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
         fg->connect(mult_blks[i], 0, sink_blks[i], 0)->set_custom_buffer(SM_BUFFER_ARGS);
     }
 
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     for (int n = 0; n < nblocks; n++) {
 

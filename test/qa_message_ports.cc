@@ -8,6 +8,7 @@
 #include <gnuradio/blocks/msg_forward.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -23,18 +24,15 @@ TEST(SchedulerMTMessagePassing, Forward)
     fg->connect(blk1, "out", blk2, "in");
     fg->connect(blk2, "out", blk3, "in");
 
-    std::shared_ptr<schedulers::scheduler_nbt> sched(new schedulers::scheduler_nbt());
-    fg->set_scheduler(sched);
-
-    fg->validate();
-
     auto src_port = blk1->get_message_port("out");
     for (int i=0; i<10; i++)
     {
         src_port->post(pmtf::string("message"));
     }
 
-    fg->start();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
 
     // auto start = std::chrono::steady_clock::now();
   
@@ -58,6 +56,6 @@ TEST(SchedulerMTMessagePassing, Forward)
     }
 
     EXPECT_EQ(cnt, 10);
-    fg->stop();
+    rt->stop();
 
 }

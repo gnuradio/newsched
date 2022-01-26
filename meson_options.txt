@@ -1,7 +1,9 @@
 option('enable_testing', type : 'boolean', value : true)
+option('enable_bench', type : 'boolean', value : true)
 option('enable_cuda', type : 'boolean', value : false)
 option('enable_python', type : 'boolean', value : true)
 
+#TODO: expand this out for all blocklib modules
 option('enable_gr_blocks', type : 'boolean', value : true)
 option('enable_gr_fft', type : 'boolean', value : true)
 option('enable_gr_qtgui', type : 'boolean', value : true)

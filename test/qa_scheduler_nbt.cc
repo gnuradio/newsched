@@ -11,6 +11,7 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -30,8 +31,10 @@ TEST(SchedulerMTTest, TwoSinks)
     fg->connect(src, 0, snk1, 0);
     fg->connect(src, 0, snk2, 0);
 
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk2->data().size(), input_data.size());
@@ -61,13 +64,12 @@ TEST(SchedulerMTTest, MultiDomainBasic)
     auto sched1 = schedulers::scheduler_nbt::make("sched1");
     auto sched2 = schedulers::scheduler_nbt::make("sched2");
 
-    domain_conf_vec dconf{ domain_conf(sched1, { src, mult1 }),
-                           domain_conf(sched2, { mult2, snk }) };
-
-    fg->partition(dconf);
-
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->add_scheduler({sched1, { src, mult1 } });
+    rt->add_scheduler({sched2, { mult2, snk }});
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk->data(), expected_data);
 }
@@ -112,8 +114,10 @@ TEST(SchedulerMTTest, BlockFanout)
             }
         }
 
-        fg->start();
-        fg->wait();
+        auto rt = runtime::make();
+        rt->initialize(fg);
+        rt->start();
+        rt->wait();
 
         for (int n = 0; n < nblocks; n++) {
             for (int i = 0; i < nsamples; i++) {
@@ -160,8 +164,10 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
 
     // TODO: Validate the buffers that were created
 
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk2->data().size(), input_data.size());

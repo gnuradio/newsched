@@ -123,6 +123,7 @@ primes_transformed = ((4377 + 4516j),
 class test_fft(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
         self.fft_size = 32
 
     def tearDown(self):
@@ -143,7 +144,8 @@ class test_fft(gr_unittest.TestCase):
         dst = blocks.vector_sink_c(self.fft_size)
         self.tb.connect(src, 0, op, 0)
         self.tb.connect(op, 0, dst, 0)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assert_fft_ok2(expected_result, result_data)
 
@@ -157,7 +159,8 @@ class test_fft(gr_unittest.TestCase):
         dst = blocks.vector_sink_c(self.fft_size)
         self.tb.connect(src, 0, op, 0)
         self.tb.connect(op, 0, dst, 0)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assert_fft_ok2(expected_result, result_data)
 

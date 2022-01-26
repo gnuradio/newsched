@@ -18,9 +18,11 @@ class test_type_conversions(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     # def test_char_to_float_identity(self):
     #     src_data = (1, 2, 3, 4, 5)
@@ -125,7 +127,8 @@ class test_type_conversions(gr_unittest.TestCase):
         dst = blocks.vector_sink_f()
         self.tb.connect(src, op)
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         self.assertFloatTuplesAlmostEqual(expected_data, dst.data(), 5)
 
     def test_complex_to_mag_squared(self):
@@ -136,7 +139,8 @@ class test_type_conversions(gr_unittest.TestCase):
         dst = blocks.vector_sink_f()
         self.tb.connect(src, op)
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         self.assertFloatTuplesAlmostEqual(expected_data, dst.data())
 
     # def test_complex_to_arg(self):

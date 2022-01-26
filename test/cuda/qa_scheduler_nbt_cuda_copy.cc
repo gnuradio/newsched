@@ -13,6 +13,7 @@
 #include <gnuradio/buffer_cuda_pinned.hh>
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -41,13 +42,13 @@ TEST(SchedulerMTTest, CudaCopyBasic)
     fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
 
     auto sched = schedulers::scheduler_nbt::make("sched", 32768);
-    fg->set_scheduler(sched);
     sched->add_block_group({ copy1, copy2 });
 
-    fg->validate();
-
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->add_scheduler(sched);
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);
@@ -80,14 +81,11 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     // fg->connect(copy1, 0, copy2, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
     // fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
 
-    auto sched = schedulers::scheduler_nbt::make("sched", 32768);
-    fg->set_scheduler(sched);
-    // by not adding block group, each block in its own thread
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
-    fg->validate();
-
-    fg->start();
-    fg->wait();
 
     auto outdata = snk1->data();
 
@@ -124,13 +122,13 @@ TEST(SchedulerMTTest, CudaCopySingleMapped)
     fg->connect(copy2, 0, snk1, 0)->set_custom_buffer(CUDA_BUFFER_SM_ARGS_D2H);
 
     auto sched = schedulers::scheduler_nbt::make("sched", 32768);
-    fg->set_scheduler(sched);
     sched->add_block_group({ copy1, copy2 });
 
-    fg->validate();
-
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->add_scheduler(sched);
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     EXPECT_EQ(snk1->data().size(), input_data.size());
     EXPECT_EQ(snk1->data(), input_data);

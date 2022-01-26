@@ -17,9 +17,11 @@ class test_delay(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def test_000(self):
         delta_t = 0
@@ -33,7 +35,8 @@ class test_delay(gr_unittest.TestCase):
 
         tb.connect(src, op)
         tb.connect(op, dst)
-        tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         dst_data = dst.data()
         self.assertEqual(expected_result, dst_data)
 
@@ -49,7 +52,8 @@ class test_delay(gr_unittest.TestCase):
 
         tb.connect(src, op)
         tb.connect(op, dst)
-        tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         dst_data = dst.data()
         self.assertEqual(expected_result, dst_data)
 

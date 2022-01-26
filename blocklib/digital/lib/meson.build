@@ -1,4 +1,4 @@
-digital_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep]
+digital_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep]
 
 digital_sources += ['constellation.cc']
 

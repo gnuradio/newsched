@@ -16,9 +16,11 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.flowgraph()
+        self.rt = gr.runtime()
 
     def tearDown(self):
         self.tb = None
+        self.rt = None
 
     def help_ii(self, src_data, exp_data, op):
         for s in zip(list(range(len(src_data))), src_data):
@@ -26,7 +28,8 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
             self.tb.connect(src, 0, op, s[0])
         dst = blocks.vector_sink_i()
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 
@@ -36,7 +39,8 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
             self.tb.connect(src, 0, op, s[0])
         dst = blocks.vector_sink_s()
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 
@@ -46,7 +50,8 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
             self.tb.connect(src, 0, op, s[0])
         dst = blocks.vector_sink_f()
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 
@@ -56,7 +61,8 @@ class test_add_mult_div_sub(gr_unittest.TestCase):
             self.tb.connect(src, 0, op, s[0])
         dst = blocks.vector_sink_c()
         self.tb.connect(op, dst)
-        self.tb.run()
+        self.rt.initialize(self.tb)
+        self.rt.run()
         result_data = dst.data()
         self.assertEqual(exp_data, result_data)
 

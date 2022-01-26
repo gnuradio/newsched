@@ -13,6 +13,7 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/runtime.hh>
 
 using namespace gr;
 
@@ -44,13 +45,10 @@ TEST(SchedulerMTTags, OneToOne)
               << "NOTE: This is supposed to produce an error from block_executor"
               << std::endl;
 
-    auto sched = schedulers::scheduler_nbt::make();
-    fg->set_scheduler(sched);
-
-    fg->validate();
-
-    fg->start();
-    fg->wait();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     std::vector<gr::tag_t> tags0 = ann0->data();
     std::vector<gr::tag_t> tags1 = ann1->data();
@@ -93,11 +91,10 @@ TEST(SchedulerMTTags, t1)
     fg->connect(ann3, 0, snk0, 0);
     fg->connect(ann4, 0, snk1, 0);
 
-    auto sched = schedulers::scheduler_nbt::make();
-    fg->set_scheduler(sched);
-    fg->validate();
-
-    fg->run();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     std::vector<gr::tag_t> tags0 = ann0->data();
     std::vector<gr::tag_t> tags3 = ann3->data();
@@ -143,11 +140,10 @@ TEST(SchedulerMTTags,t2)
     fg->connect(ann4, 0, snk2, 0);
 
 
-    auto sched = schedulers::scheduler_nbt::make();
-    fg->set_scheduler(sched);
-    fg->validate();
-
-    fg->run();
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
 
     std::vector<gr::tag_t> tags0 = ann0->data();
     std::vector<gr::tag_t> tags1 = ann1->data();
@@ -199,14 +195,11 @@ TEST(SchedulerMTTags, t3)
 
     auto sched = schedulers::scheduler_nbt::make();
     sched->add_block_group({src,head,ann0,ann1,ann2,ann3,ann4,snk0,snk1});
-    fg->set_scheduler(sched);
-    
-
-    fg->validate();
-
-    fg->start();
-    fg->wait();
-
+    auto rt = runtime::make();
+    rt->add_scheduler(sched);
+    rt->initialize(fg);
+    rt->start();
+    rt->wait();
     auto tags0 = ann0->data();
     auto tags3 = ann3->data();
     auto tags4 = ann4->data();

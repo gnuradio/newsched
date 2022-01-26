@@ -29,7 +29,7 @@ qtgui_moc_sources = qt5_mod.compile_moc(headers: moc_srcs)
 qtgui_sources += qtgui_moc_sources
 
 
-qtgui_deps += [newsched_runtime_dep, newsched_blocklib_filter_dep, volk_dep, fmt_dep, pmtf_dep, qt5widgets_dep, qwt_dep]
+qtgui_deps += [newsched_gr_dep, newsched_blocklib_filter_dep, volk_dep, fmt_dep, pmtf_dep, qt5widgets_dep, qwt_dep]
 
 block_cpp_args = ['-DHAVE_CPU','-DQWT_DLL']
 

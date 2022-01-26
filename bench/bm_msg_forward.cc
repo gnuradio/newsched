@@ -6,6 +6,7 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/realtime.hh>
 #include <pmtf/base.hpp>
+#include <gnuradio/runtime.hh>
 
 #include <iostream>
 
@@ -56,7 +57,7 @@ int main(int argc, char* argv[])
 
         fg->validate();
 
-        for(int p = 0; p < samples; p++) {
+        for(size_t p = 0; p < samples; p++) {
             pmtf::pmt msg = pmtf::vector<uint8_t>(pdu_size, 0x42);
             msg_blks[0]->input_message_port("in")->post(msg);
         }
@@ -65,8 +66,11 @@ int main(int argc, char* argv[])
         // std::this_thread::sleep_for(std::chrono::seconds(3));
         auto t1 = std::chrono::steady_clock::now();
 
-        fg->start();
-        fg->wait();
+        auto rt = runtime::make();
+        rt->initialize(fg);
+        rt->start();
+        rt->wait();
+
 
         auto t2 = std::chrono::steady_clock::now();
         auto time =

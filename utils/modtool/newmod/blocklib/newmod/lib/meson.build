@@ -1,5 +1,5 @@
 newmod_sources += []
-newmod_deps += [newsched_runtime_dep, volk_dep, fmt_dep, pmtf_dep, python3_embed_dep]
+newmod_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep, python3_embed_dep]
 
 block_cpp_args = ['-DHAVE_CPU']
 

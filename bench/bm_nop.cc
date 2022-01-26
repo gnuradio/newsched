@@ -11,6 +11,7 @@
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
 #include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/runtime.hh>
 
 #include <iostream>
 
@@ -70,8 +71,6 @@ int main(int argc, char* argv[])
         }
 
         auto sched = schedulers::scheduler_nbt::make("nbt", 32768);
-        fg->add_scheduler(sched);
-
         if (buffer_type == 1) {
             sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
         }
@@ -102,10 +101,13 @@ int main(int argc, char* argv[])
 
         fg->validate();
 
+        auto rt = runtime::make();
+        rt->add_scheduler(sched);
+        rt->initialize(fg);
         auto t1 = std::chrono::steady_clock::now();
+        rt->start();
+        rt->wait();
 
-        fg->start();
-        fg->wait();
 
         auto t2 = std::chrono::steady_clock::now();
         auto time =
