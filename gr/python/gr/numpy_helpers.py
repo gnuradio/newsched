@@ -13,7 +13,7 @@
 import numpy
 import ctypes
 
-from . import runtime_python as gr
+from . import gr_python as gr
 
 ########################################################################
 # Magic to turn pointers into numpy arrays
