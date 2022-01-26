@@ -8,7 +8,7 @@ runtime_pybind_sources = files([
     'edge_pybind.cc',
     'graph_pybind.cc',
     'flowgraph_pybind.cc',
-    'runtime_pybind.cc',
+    'gr_pybind.cc',
     'scheduler_pybind.cc',
     'buffer_pybind.cc',
     'domain_pybind.cc',
@@ -29,7 +29,7 @@ if USE_CUDA
     runtime_pybind_deps += cuda_dep
     cpp_args = '-DHAVE_CUDA'
 endif
-newsched_runtime_pybind = py3_inst.extension_module('runtime_python',
+newsched_runtime_pybind = py3_inst.extension_module('gr_python',
     runtime_pybind_sources, 
     dependencies : runtime_pybind_deps,
     link_language : 'cpp',

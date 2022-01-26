@@ -13,8 +13,8 @@
 import numpy
 import ctypes
 
-from . import runtime_python as gr
-from .runtime_python import python_block, python_sync_block
+from . import gr_python as gr
+from .gr_python import python_block, python_sync_block
 
 
 ########################################################################
