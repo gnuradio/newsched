@@ -16,6 +16,10 @@ namespace gr {
 struct graph_partition_info {
     scheduler_sptr scheduler;
     graph_sptr subgraph;
+    bool operator==(const graph_partition_info&other)
+    {
+        return (scheduler == other.scheduler && subgraph == other.subgraph);
+    }
 };
 
 typedef std::vector<graph_partition_info> graph_partition_info_vec;
@@ -30,10 +34,6 @@ struct graph_utils {
      * @param neighbor_intf_map 
      * @return graph_partition_info_vec 
      */
-    static graph_partition_info_vec
-    partition(graph_sptr input_graph,
-              std::vector<scheduler_sptr> scheds,
-              std::vector<domain_conf>& confs);
     static graph_partition_info_vec
     partition(graph_sptr input_graph,
               std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs);

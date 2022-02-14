@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/graph.hh>
+#include <gnuradio/flat_graph.hh>
 
 namespace gr {
 
@@ -17,6 +18,7 @@ public:
     flowgraph(const std::string& name = "flowgraph");
     virtual ~flowgraph() { };
     static void check_connections(const graph_sptr& g);
+    flat_graph_sptr make_flat();
 };
 
 typedef flowgraph::sptr flowgraph_sptr;

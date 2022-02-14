@@ -2,7 +2,8 @@
 
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/scheduler.hh>
-#include <gnuradio/flowgraph_monitor.hh>
+#include <gnuradio/runtime_monitor.hh>
+#include <gnuradio/runtime_proxy.hh>
 
 namespace gr {
 class runtime
@@ -31,6 +32,9 @@ public:
      */
     void add_scheduler(scheduler_sptr sched);
 
+    void add_proxy(runtime_proxy_sptr proxy);
+
+
 private:
     bool d_initialized = false;
     std::vector<scheduler_sptr> d_schedulers;
@@ -39,6 +43,7 @@ private:
     const std::string s_default_scheduler_name = "nbt";
     scheduler_sptr d_default_scheduler = nullptr;
     bool d_default_scheduler_inuse = true;
-    flowgraph_monitor_sptr d_fgmon;
+    runtime_monitor_sptr d_rtmon;
+    std::vector<runtime_proxy_sptr> d_runtime_proxies;
 };
 } // namespace gr

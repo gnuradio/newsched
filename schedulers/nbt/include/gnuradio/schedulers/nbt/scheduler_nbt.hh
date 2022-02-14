@@ -47,7 +47,7 @@ public:
      * @param block_sched_map for each block in this flowgraph, a map of neighboring
      * schedulers
      */
-    void initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon);
+    void initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon);
     void start();
     void stop();
     void wait();

@@ -13,7 +13,7 @@ runtime_headers = [
     'edge.hh',
     'flat_graph.hh',
     'flowgraph.hh',
-    'flowgraph_monitor.hh',
+    'runtime_monitor.hh',
     'gpdict.hh',
     'graph.hh',
     'graph_utils.hh',
@@ -42,8 +42,7 @@ runtime_headers = [
 runtime_headers += [
     'moodycamel/blockingconcurrentqueue.h',
     'moodycamel/concurrentqueue.h',
-    'moodycamel/lightweightsemaphore.h',
-    'base64/base64.h'
+    'moodycamel/lightweightsemaphore.h'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')

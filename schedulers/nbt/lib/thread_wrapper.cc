@@ -9,7 +9,7 @@ namespace schedulers {
 thread_wrapper::thread_wrapper(int id,
                                block_group_properties bgp,
                                buffer_manager::sptr bufman,
-                               flowgraph_monitor_sptr fgmon)
+                               runtime_monitor_sptr rtmon)
     : _id(id), d_block_group(bgp), d_blocks(bgp.blocks())
 {
     _logger = logging::get_logger(bgp.name(), "default");
@@ -19,7 +19,7 @@ thread_wrapper::thread_wrapper(int id,
         d_block_id_to_block_map[b->id()] = b;
     }
 
-    d_fgmon = fgmon;
+    d_rtmon = rtmon;
     _exec = std::make_unique<graph_executor>(bgp.name());
     _exec->initialize(bufman, d_blocks);
     d_thread = std::thread(thread_body, this);
@@ -69,9 +69,9 @@ bool thread_wrapper::handle_work_notification()
     for (auto elem : s) {
         if (elem.second == executor_iteration_status::DONE) {
             GR_LOG_DEBUG(
-                _debug_logger, "Signalling DONE to FGM from block {}", elem.first);
-            d_fgmon->push_message(
-                fg_monitor_message(fg_monitor_message_t::DONE, id(), elem.first));
+                _debug_logger, "Signalling DONE to RTMON from block {}", elem.first);
+            d_rtmon->push_message(
+                rt_monitor_message::make(rt_monitor_message_t::DONE, id(), elem.first));
             break; // only notify the fgmon once
         }
     }
@@ -112,11 +112,11 @@ bool thread_wrapper::handle_work_notification()
                 gr_log_debug(_debug_logger,
                              "All blocks in thread {} blocked, pushing flushed",
                              id());
-                d_fgmon->push_message(
-                    fg_monitor_message(fg_monitor_message_t::FLUSHED, id()));
+                d_rtmon->push_message(
+                    rt_monitor_message::make(rt_monitor_message_t::FLUSHED, id()));
                 return false;
             } else {
-                // std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
+                std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
                 push_message(std::make_shared<scheduler_action>(
                     scheduler_action_t::NOTIFY_ALL, 0));
             }
@@ -215,7 +215,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         // try to pop messages off the queue
         bool valid = true;
         bool do_some_work = false;
-        while (valid) {
+        while (valid && !top->d_thread_stopped) {
             if (blocking_queue) {
                 gr_log_debug(top->_debug_logger, "Going into blocking queue");
                 valid = top->pop_message(msg);
@@ -236,24 +236,24 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     auto action = std::static_pointer_cast<scheduler_action>(msg);
                     switch (action->action()) {
                     case scheduler_action_t::DONE:
-                        // fgmon says that we need to be done, wrap it up
+                        // rtmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
 
-                        // if a block (e.g. head block) has told the fgmon that we are
+                        // if a block (e.g. head block) has told the rtmon that we are
                         // done, need to push the rest of the samples through the pipeline
                         // -- hang in this state until all the blocks in this thread
                         // report
                         //    either BLKD_IN or BLKD_OUT
                         gr_log_debug(top->_debug_logger,
-                                     "fgm signaled DONE, start flushing");
+                                     "rtmon signaled DONE, start flushing");
                         top->start_flushing();
                         do_some_work = true;
 
                         break;
                     case scheduler_action_t::EXIT:
                         gr_log_debug(top->_debug_logger,
-                                     "fgm signaled EXIT, exiting thread");
-                        // fgmon says that we need to be done, wrap it up
+                                     "rtmon signaled EXIT, exiting thread");
+                        // rtmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
                         top->stop_blocks();
                         top->d_thread_stopped = true;
@@ -313,6 +313,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             blocking_queue = true;
         }
     }
+
+    gr_log_debug(top->_debug_logger, "Exiting Thread");
 }
 
 } // namespace schedulers

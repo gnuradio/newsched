@@ -50,24 +50,51 @@ void runtime::add_scheduler(scheduler_sptr sched)
     for (auto s : d_schedulers) {
         s->set_id(idx++);
     }
+    for (auto s : d_runtime_proxies) {
+        s->set_id(idx++);
+    }
+}
+
+void runtime::add_proxy(runtime_proxy_sptr proxy)
+{
+    d_runtime_proxies.push_back(proxy);
+    // assign ids to the schedulers
+    int idx = 1;
+    for (auto s : d_schedulers) {
+        s->set_id(idx++);
+    }
+    for (auto s : d_runtime_proxies) {
+        s->set_id(idx++);
+    }
 }
 
 void runtime::initialize(flowgraph_sptr fg)
 {
-    d_fgmon = std::make_shared<flowgraph_monitor>(d_schedulers);
     flowgraph::check_connections(fg);
-
+    auto _logger =
+        logging::get_logger(fmt::format("runtime_init_{}", fg->name()), "default");
+    GR_LOG_INFO(_logger, "initialize {}", d_schedulers.size());
+    
     if (d_schedulers.size() == 1)
     {
+        d_rtmon = std::make_shared<runtime_monitor>(
+            d_schedulers, d_runtime_proxies, fg->alias());
+        for (auto& p : d_runtime_proxies) {
+            GR_LOG_DEBUG(_logger, ".");
+            p->set_runtime_monitor(d_rtmon);
+        }
         d_schedulers[0]->initialize(flat_graph::make_flat(fg),
-                                   d_fgmon);
+                                   d_rtmon);
     }
     else
     {
         auto graph_part_info = graph_utils::partition(fg, d_scheduler_confs);
+        d_rtmon = std::make_shared<runtime_monitor>(
+            d_schedulers, d_runtime_proxies, fg->alias());
         for (auto& info : graph_part_info) {
+
             info.scheduler->initialize(flat_graph::make_flat(info.subgraph),
-                                    d_fgmon);
+                                    d_rtmon);
         }
     }
 
@@ -78,16 +105,13 @@ void runtime::start() {
     if (!d_initialized) {
         throw new std::runtime_error("Runtime must be initialized prior to runtime start()");
     }
-    d_fgmon->start();
-    for (auto s : d_schedulers) {
-        s->start();
-    }
+    d_rtmon->start();
 }
 void runtime::stop() {
     for (auto s : d_schedulers) {
         s->stop();
     }
-    d_fgmon->stop();
+    d_rtmon->stop();
 }
 void runtime::wait() {
     for (auto s : d_schedulers) {
