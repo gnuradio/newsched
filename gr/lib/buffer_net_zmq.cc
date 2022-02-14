@@ -167,4 +167,13 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
     t.detach();
 }
 
+std::string buffer_net_zmq_properties::to_json()
+{
+    nlohmann::json j = { { "id", "buffer_net_zmq_properties" },
+                            { "parameters",
+                            { { "ipaddr", _ipaddr }, { "port", _port } } } };
+
+    return j.dump();
+}
+
 } // namespace gr
