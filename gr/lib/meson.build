@@ -25,7 +25,9 @@ constants_file = configure_file(input: 'constants.cc.in',
 
 runtime_sources = [
   constants_file,
+  'node.cc',
   'block.cc',
+  'port.cc',
   'buffer.cc',
   'buffer_sm.cc',
   'buffer_management.cc',

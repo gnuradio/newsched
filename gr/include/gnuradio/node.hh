@@ -59,7 +59,10 @@ protected:
 
 public:
     node() : d_name("") {}
-    node(const std::string& name) : d_name(name), d_alias(name) { d_id = nodeid_generator::get_id(); }
+    node(const std::string& name) : d_name(name), d_alias(name)
+    {
+        d_id = nodeid_generator::get_id();
+    }
     virtual ~node() {}
     typedef std::shared_ptr<node> sptr;
 
@@ -135,9 +138,7 @@ public:
 
     port_sptr get_port(const std::string& name)
     {
-        auto pred = [name](port_sptr p) {
-            return (p->name() == name);
-        };
+        auto pred = [name](port_sptr p) { return (p->name() == name); };
         std::vector<port_sptr>::iterator it =
             std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);
 

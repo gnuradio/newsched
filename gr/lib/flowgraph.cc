@@ -16,8 +16,10 @@ size_t get_port_itemsize(port_sptr port)
     size_t size = 0;
     if (port->connected_ports().size() > 0) {
         auto cp = port->connected_ports()[0];
+        auto p = std::dynamic_pointer_cast<port_base>(cp);
         // use data_size since this includes vector sizing
-        size = cp->data_size();
+        if (p)
+            size = p->data_size();
     }
     return size;
 }
@@ -27,8 +29,9 @@ std::string get_port_format_descriptor(port_sptr port)
     std::string fd = "";
     if (port->connected_ports().size() > 0) {
         auto cp = port->connected_ports()[0];
-        // use data_size since this includes vector sizing
-        fd = cp->format_descriptor();
+        auto p = std::dynamic_pointer_cast<port_base>(cp);
+        if (p)
+            fd = p->format_descriptor();
     }
     return fd;
 }
@@ -107,6 +110,11 @@ void flowgraph::check_connections(const graph_sptr& g)
             }
         }
     }
+}
+
+flat_graph_sptr flowgraph::make_flat()
+{
+    return flat_graph::make_flat(base());
 }
 
 } // namespace gr
