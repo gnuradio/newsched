@@ -2,7 +2,6 @@
 #include <gnuradio/scheduler.hh>
 #include <pmtf/wrap.hpp>
 
-#include <gnuradio/base64/base64.h>
 #include <gnuradio/pyblock_detail.hh>
 
 #include <nlohmann/json.hpp>
