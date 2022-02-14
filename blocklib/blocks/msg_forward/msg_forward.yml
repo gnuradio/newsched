@@ -11,6 +11,13 @@ parameters:
     dtype: size_t
     settable: false
     default: 0
+-   id: message_count
+    label: Message Count
+    dtype: size_t
+    cotr: false
+    gettable: true
+    grc:
+      hide: all
 
 ports:
 -   domain: message
@@ -23,9 +30,9 @@ ports:
     direction: output
     optional: true
 
-callbacks:
--   id: message_count
-    return: size_t
+# callbacks:
+# -   id: message_count
+#     return: size_t
 
 implementations:
 -   id: cpu
