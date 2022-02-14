@@ -38,6 +38,7 @@ public:
     edge_vector_t& stream_edges() { return _stream_edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
     node_vector_t& nodes() { return _nodes; }
+    node_vector_t all_nodes();
     edge_sptr connect(const node_endpoint& src,
                  const node_endpoint& dst);
     edge_sptr connect(node_sptr src_node,
