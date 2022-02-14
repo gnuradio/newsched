@@ -62,7 +62,7 @@ e = executable('qa_message_ports',
                 newsched_scheduler_nbt_dep,
                 gtest_dep], 
     install : true)
-# test('NBT Message Port Tests', e, env: TEST_ENV)
+test('NBT Message Port Tests', e, env: TEST_ENV)
 
 srcs = ['qa_tags.cc']
 e = executable('qa_tags', 

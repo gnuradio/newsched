@@ -24,14 +24,16 @@ TEST(SchedulerMTMessagePassing, Forward)
     fg->connect(blk1, "out", blk2, "in");
     fg->connect(blk2, "out", blk3, "in");
 
-    auto src_port = blk1->get_message_port("out");
+    auto rt = runtime::make();
+    rt->initialize(fg);
+    
+    auto src_port = blk1->get_message_port("in");
     for (int i=0; i<10; i++)
     {
         src_port->post(pmtf::string("message"));
     }
 
-    auto rt = runtime::make();
-    rt->initialize(fg);
+
     rt->start();
 
     // auto start = std::chrono::steady_clock::now();
