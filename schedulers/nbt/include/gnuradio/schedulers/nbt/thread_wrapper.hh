@@ -3,7 +3,7 @@
 #include <gnuradio/block.hh>
 #include <gnuradio/block_group_properties.hh>
 #include <gnuradio/concurrent_queue.hh>
-#include <gnuradio/flowgraph_monitor.hh>
+#include <gnuradio/runtime_monitor.hh>
 #include <gnuradio/neighbor_interface.hh>
 #include <gnuradio/scheduler_message.hh>
 #include <thread>
@@ -42,7 +42,7 @@ private:
     logger_sptr _logger;
     logger_sptr _debug_logger;
 
-    flowgraph_monitor_sptr d_fgmon;
+    runtime_monitor_sptr d_rtmon;
 
     bool d_flushing = false;
     int d_flush_cnt = 0;
@@ -54,15 +54,15 @@ public:
     static sptr make(int id,
                      block_group_properties bgp,
                      buffer_manager::sptr bufman,
-                     flowgraph_monitor_sptr fgmon)
+                     runtime_monitor_sptr rtmon)
     {
-        return std::make_shared<thread_wrapper>(id, bgp, bufman, fgmon);
+        return std::make_shared<thread_wrapper>(id, bgp, bufman, rtmon);
     }
 
     thread_wrapper(int id,
                    block_group_properties bgp,
                    buffer_manager::sptr bufman,
-                   flowgraph_monitor_sptr fgmon);
+                   runtime_monitor_sptr rtmon);
     int id() { return _id; }
     const std::string& name() { return d_block_group.name(); }
 

@@ -7,7 +7,7 @@
 
 #include <gnuradio/buffer.hh>
 #include <gnuradio/flat_graph.hh>
-#include <gnuradio/flowgraph_monitor.hh>
+#include <gnuradio/runtime_monitor.hh>
 #include <gnuradio/logging.hh>
 #include <gnuradio/scheduler_message.hh>
 namespace gr {
@@ -27,7 +27,7 @@ public:
     };
     virtual ~scheduler() {}
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
-    virtual void initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon) = 0;
+    virtual void initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon) = 0;
     virtual void push_message(scheduler_message_sptr msg) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;

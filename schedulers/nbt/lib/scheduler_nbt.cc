@@ -25,13 +25,11 @@ void scheduler_nbt::add_block_group(const std::vector<block_sptr>& blocks,
         std::move(block_group_properties(blocks, name, affinity_mask)));
 }
 
-void scheduler_nbt::initialize(flat_graph_sptr fg, flowgraph_monitor_sptr fgmon)
+void scheduler_nbt::initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon)
 {
-
 
     auto bufman = std::make_shared<buffer_manager>(s_fixed_buf_size);
     bufman->initialize_buffers(fg, _default_buf_properties, base());
-
 
     //  Partition the flowgraph according to how blocks are specified in groups
     //  By default, one Thread Per Block
