@@ -14,9 +14,13 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
                                     std::vector<block_work_output_sptr>& work_output) override;
 
-    std::vector<T> data()
+    void on_parameter_query(param_action_sptr action) override
     {
-        return d_data;
+        gr_log_debug(
+            this->_debug_logger, "block {}: on_parameter_query param_id: {}", this->id(), action->id());
+        pmtf::pmt param = d_data;
+        // auto data = pmtf::get_as<std::vector<float>>(*param);
+        action->set_pmt_value(param);
     }
 
 protected:

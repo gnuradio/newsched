@@ -43,6 +43,7 @@ private:
 protected:
     neighbor_interface_sptr p_scheduler = nullptr;
     std::map<std::string, int> d_param_str_map;
+    std::map<int, std::string> d_str_param_map;
     message_port_sptr _msg_param_update;
     message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
@@ -52,7 +53,6 @@ protected:
     void notify_scheduler_input();
     void notify_scheduler_output();
 
-    static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
 
 public:
     /**
@@ -105,9 +105,12 @@ public:
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
     parameter_config d_parameters;
-    void add_param(const std::string& name, int id, const pmtf::pmt& p) { d_parameters.add(name, id, p); }
+    void add_param(const std::string& name, int id, pmt_sptr p) { d_parameters.add(name, id, p); }
     pmtf::pmt request_parameter_query(int param_id);
+    pmtf::pmt request_parameter_query(const std::string& param_str) { return request_parameter_query(get_param_id(param_str)); }
     void request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
+    void request_parameter_change(const std::string& param_str, pmtf::pmt new_value, bool block = true) 
+        { return request_parameter_change(get_param_id(param_str), new_value, block); };
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
     static void consume_each(int num, std::vector<block_work_input_sptr>& work_input);
@@ -119,6 +122,7 @@ public:
     double relative_rate() const { return d_relative_rate; }
 
     virtual int get_param_id(const std::string& id) { return d_param_str_map[id]; }
+    virtual std::string get_param_str(const int id) { return d_str_param_map[id]; }
     virtual std::string suffix() { return ""; }
     std::string to_json();
     void from_json(const std::string& json_str);
@@ -130,6 +134,8 @@ public:
     
     virtual void handle_msg_system(pmtf::pmt msg);
 
+    static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
+    static sptr cast(node_sptr n) { return std::static_pointer_cast<block>(n); }
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 

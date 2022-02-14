@@ -91,18 +91,18 @@ public:
 
 struct parameter_config
 {
-    std::map<std::string, pmtf::pmt> param_map;
-    std::map<int, pmtf::pmt> param_map_int;
+    std::map<std::string, pmt_sptr> param_map;
+    std::map<int, pmt_sptr> param_map_int;
     size_t num() { return param_map.size(); }
-    void add(const std::string& name, int id, const pmtf::pmt& b) { 
+    void add(const std::string& name, int id, pmt_sptr b) { 
         param_map[name] = b; 
         param_map_int[id] = b;
         }
-    pmtf::pmt& get(const std::string& name)
+    pmt_sptr get(const std::string& name)
     {
         return param_map[name];
     }
-    pmtf::pmt& get(int id)
+    pmt_sptr get(int id)
     {
         return param_map_int[id];
     }

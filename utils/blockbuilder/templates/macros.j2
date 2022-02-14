@@ -176,11 +176,9 @@ protected:
 {% for p in parameters -%}
 {#% if p['settable'] or p['gettable'] %#}{% if 'serializable' not in p or p['serializable'] %}
     {% if 'string' in p['dtype'] %}
-    //string_param::sptr param_{{p['id']}};
-    pmtf::string param_{{p['id']}};
+    pmt_sptr param_{{p['id']}};
     {% else %}
-    //typename {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}> param_{{p['id']}};
-    typename pmtf::{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}> param_{{p['id']}};
+    pmt_sptr param_{{p['id']}};
     {% endif %}
     
 {% endif %}
@@ -192,16 +190,21 @@ protected:
 {% if parameters -%}
     //d_param_str_map = {{"{"}} {% for p in parameters -%}{% if p['settable'] or p['gettable'] %}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endif %} {% endfor -%}{{"}"}};
     d_param_str_map = {{"{"}} {% for p in parameters -%}{{"{"}}"{{p['id']}}", id_{{p['id']}}{{"}"}},{% endfor -%}{{"}"}};
+    d_str_param_map = {{"{"}} {% for p in parameters -%}{{"{"}}id_{{p['id']}}, "{{p['id']}}"{{"}"}},{% endfor -%}{{"}"}};
 {% for p in parameters -%}
 {#% if p['settable'] or p['gettable']%#}{% if 'serializable' not in p or p['serializable'] %}
     {% if 'string' in p['dtype'] %}
     //param_{{p['id']}} = string_param::make(params::id_{{p['id']}}, 
     //    "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
-    param_{{p['id']}} = pmtf::string({{"args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    param_{{p['id']}} = std::make_shared<pmtf::pmt>(pmtf::string({{"args."+p['id'] if 'cotr' not in p or p['cotr']}}));
     {% else %}
     //param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
     //    "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
-    param_{{p['id']}} = pmtf::{{ 'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({{"args."+p['id'] if 'cotr' not in p or p['cotr']}});
+    {%if 'cotr' not in p or p['cotr']%}
+    param_{{p['id']}} = std::make_shared<pmtf::pmt>({{"args."+p['id']}});
+    {%else%}
+    param_{{p['id']}} = std::make_shared<pmtf::pmt>(pmtf::{{'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>());
+    {%endif%}
     {% endif %}
     add_param("{{p['id']}}", d_param_str_map["{{p['id']}}"], param_{{p['id']}});
 {% endif %}

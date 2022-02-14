@@ -5,6 +5,7 @@
 #include <complex>
 #include <typeindex>
 #include <vector>
+#include <pmtf/base.hpp>
 
 typedef std::vector<int> gr_vector_int;
 typedef std::vector<unsigned int> gr_vector_uint;
@@ -14,3 +15,5 @@ typedef std::vector<void*> gr_vector_void_star;
 typedef std::vector<const void*> gr_vector_const_void_star;
 typedef std::complex<float> gr_complex;
 typedef std::complex<double> gr_complexd;
+
+typedef std::shared_ptr<pmtf::pmt> pmt_sptr;
