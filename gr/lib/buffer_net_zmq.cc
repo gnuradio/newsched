@@ -130,7 +130,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 
             if (bytes_to_write > 0)
             {
-                memcpy(wi.ptr, _msg.data() + _msg_idx, bytes_to_write);
+                memcpy(wi.ptr, (uint8_t *)_msg.data() + _msg_idx, bytes_to_write);
                 GR_LOG_DEBUG(_debug_logger, "copied {} items", bytes_to_write / wi.item_size);
                 _msg_idx += bytes_to_write;
                 n_bytes_left_in_msg = _msg.size() - _msg_idx;
@@ -142,9 +142,11 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
             {
                 _msg.rebuild();
                 GR_LOG_DEBUG(_debug_logger, "going into recv");
-                _socket.recv(_msg, zmq::recv_flags::none);
-                GR_LOG_DEBUG(_debug_logger, "received msg with size {} items", _msg.size() / wi.item_size);
-                _msg_idx = 0;
+                auto r = _socket.recv(_msg, zmq::recv_flags::none);
+                if (r) {
+                    GR_LOG_DEBUG(_debug_logger, "received msg with size {} items", _msg.size() / wi.item_size);
+                    _msg_idx = 0;
+                }
             }
             // GR_LOG_DEBUG(_debug_logger, "recv: {}", wi.n_items);
             // auto ret = this->_socket.recv(
