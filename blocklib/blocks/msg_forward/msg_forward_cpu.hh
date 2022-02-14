@@ -12,7 +12,7 @@ public:
     msg_forward_cpu(block_args args);
     virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
                                     std::vector<block_work_output_sptr>& work_output) override;
-    virtual size_t message_count() { return d_msg_cnt; }
+    // virtual size_t message_count() { return d_msg_cnt; }
 
 protected:
     void handle_msg_in(pmtf::pmt msg)
@@ -21,10 +21,16 @@ protected:
         // gr_log_info(
         //     _logger, "{} got message: {}", this->alias(), pmtf::get_string(msg).data());
         // GR_LOG_INFO(_logger, "got msg on block {}", alias());
-        d_msg_cnt++;
+        // d_msg_cnt++;
+
+        size_t msg_cnt = pmtf::get_as<size_t>(*param_message_count);
+        *param_message_count = ++msg_cnt;
+
         gr_log_debug(
-            _debug_logger, "{}", d_msg_cnt);
-        if (d_max_messages && d_msg_cnt >= d_max_messages)
+            _debug_logger, "{}", msg_cnt);
+        gr_log_info(
+            _logger, "{}", msg_cnt);
+        if (d_max_messages && msg_cnt >= d_max_messages)
         {
             input_message_port("system")->post("done");
         }
