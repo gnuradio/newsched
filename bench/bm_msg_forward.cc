@@ -55,7 +55,8 @@ int main(int argc, char* argv[])
             fg->connect(msg_blks[i-1], "out", msg_blks[i], "in");
         }
 
-        fg->validate();
+        auto rt = runtime::make();
+        rt->initialize(fg);
 
         for(size_t p = 0; p < samples; p++) {
             pmtf::pmt msg = pmtf::vector<uint8_t>(pdu_size, 0x42);
@@ -66,8 +67,7 @@ int main(int argc, char* argv[])
         // std::this_thread::sleep_for(std::chrono::seconds(3));
         auto t1 = std::chrono::steady_clock::now();
 
-        auto rt = runtime::make();
-        rt->initialize(fg);
+
         rt->start();
         rt->wait();
 
