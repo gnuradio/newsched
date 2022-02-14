@@ -63,8 +63,8 @@ void block::on_parameter_change(param_action_sptr action)
 {
     gr_log_debug(
         _debug_logger, "block {}: on_parameter_change param_id: {}", id(), action->id());
-    auto& param = d_parameters.get(action->id());
-    param = action->pmt_value();
+    auto param = d_parameters.get(action->id());
+    *param = action->pmt_value();
 }
 
 void block::on_parameter_query(param_action_sptr action)
@@ -72,7 +72,7 @@ void block::on_parameter_query(param_action_sptr action)
     gr_log_debug(
         _debug_logger, "block {}: on_parameter_query param_id: {}", id(), action->id());
     auto param = d_parameters.get(action->id());
-    action->set_pmt_value(param);
+    action->set_pmt_value(*param);
 }
 
 void block::consume_each(int num, std::vector<block_work_input_sptr>& work_input)
@@ -203,29 +203,18 @@ std::string block::to_json()
 {
     // Example string describing this block
     // {"module": "blocks", "id": "copy", "properties": {"itemsize": 8}}
-    std::string ret = fmt::format(
-        "{{ \"module\": \"{}\", \"id\": \"{}\", \"format\": \"b64\", \"parameters\": {{ ",
-        s_module,
-        name() + suffix());
-    int idx = 0;
+
+    nlohmann::json json_obj;
+
+    json_obj["module"] = s_module;
+    json_obj["id"] = name() + suffix();
+    json_obj["format"] = "b64";
     for (auto [key, val] : d_parameters.param_map) {
-        if (idx > 0) {
-            ret += ",";
-        }
-        std::stringbuf sb; // fake channel
-        auto nbytes = val.serialize(sb);
-        std::string pre_encoded_str(nbytes, '0');
-        sb.sgetn(pre_encoded_str.data(), nbytes);
-        auto nencoded_bytes = Base64encode_len(nbytes);
-        std::string encoded_str(nencoded_bytes, '0');
-        // int Base64encode(char * coded_dst, const char *plain_src,int len_plain_src);
-        auto nencoded = Base64encode(encoded_str.data(), pre_encoded_str.data(), nbytes);
-        encoded_str.resize(nencoded - 1); // because it null terminates
-        ret += fmt::format("\"{}\": \"{}\"", key, encoded_str);
-        idx++;
+        auto encoded_str = val->to_base64();
+        json_obj["parameters"][key] = encoded_str;
     }
-    ret += " } }";
-    return ret;
+
+    return json_obj.dump();
 }
 
 void block::from_json(const std::string& json_str)
@@ -234,22 +223,16 @@ void block::from_json(const std::string& json_str)
     auto json_obj = json::parse(json_str);
     for (auto& [key, value] : json_obj["parameters"].items()) {
         // deserialize from the b64 string
-        auto s = value.get<std::string>();
-        std::string bufplain(s.size(), '0');
-        Base64decode(bufplain.data(), s.data());
-        std::stringbuf sb(bufplain);
-        auto p = pmtf::pmt::deserialize(sb);
-        auto& block_pmt = d_parameters.get(key);
-        block_pmt = p;
+        auto p = pmtf::pmt::from_base64(value.get<std::string>());
+        auto block_pmt = d_parameters.get(key);
+        *block_pmt = p;
     }
 }
 
-pmtf::pmt block::deserialize_param_to_pmt(const std::string& param_value)
+// This should go into pmt
+pmtf::pmt block::deserialize_param_to_pmt(const std::string& encoded_str)
 {
-    std::string bufplain(param_value.size(), '0');
-    Base64decode(bufplain.data(), param_value.data());
-    std::stringbuf sb(bufplain);
-    return pmtf::pmt::deserialize(sb);
+    return pmtf::pmt::from_base64(encoded_str);
 }
 
 } // namespace gr

@@ -26,7 +26,7 @@ work_return_code_t
 multiply_const_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
                                 std::vector<block_work_output_sptr>& work_output)
 {
-    auto k = param_k.value();
+    auto k = pmtf::get_as<float>(*this->param_k);
 
     auto in = work_input[0]->items<float>();
     auto out = work_output[0]->items<float>();
@@ -43,7 +43,7 @@ work_return_code_t
 multiply_const_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
                                      std::vector<block_work_output_sptr>& work_output)
 {
-    auto k = param_k.value();
+    auto k = pmtf::get_as<gr_complex>(*this->param_k);
 
     const auto in = work_input[0]->items<gr_complex>();
     auto out = work_output[0]->items<gr_complex>();
@@ -60,7 +60,7 @@ work_return_code_t
 multiply_const_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
                             std::vector<block_work_output_sptr>& work_output)
 {
-    auto k = this->param_k.value();
+    auto k = pmtf::get_as<T>(*this->param_k);
 
     // Pre-generate these from modtool, for example
     auto iptr = work_input[0]->items<T>();
