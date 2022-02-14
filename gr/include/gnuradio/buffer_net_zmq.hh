@@ -126,6 +126,8 @@ public:
     auto port() { return _port; }
     auto ipaddr() { return _ipaddr; }
 
+    std::string to_json() override;
+
 private:
     std::string _ipaddr;
     int _port;

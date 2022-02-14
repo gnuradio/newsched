@@ -98,6 +98,7 @@ public:
 
     auto independent_reader() { return _independent_reader; }
     
+    virtual std::string to_json() { return "{ }"; }
 
 protected:
     size_t _buffer_size = 0;
