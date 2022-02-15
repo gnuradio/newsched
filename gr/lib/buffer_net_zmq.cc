@@ -39,10 +39,8 @@ buffer_net_zmq::buffer_net_zmq(size_t num_items,
     _debug_logger = logging::get_logger("buffer_net_zmq", "debug");
     set_type("buffer_net_zmq");
     _buffer.resize(_buf_size);
-    int sndhwm = 1;
-    int rcvhwm = 1;
-    _socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-    _socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
+    _socket.set(zmq::sockopt::sndhwm, 1);
+    _socket.set(zmq::sockopt::rcvhwm, 1);
     std::string endpoint = "tcp://*:" + std::to_string(port);
     std::cout << "snd_endpoint: " << endpoint << std::endl;
     _socket.bind(endpoint);
@@ -102,10 +100,8 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 
     std::string endpoint = "tcp://" + ipaddr + ":" + std::to_string(port);
     GR_LOG_DEBUG(_debug_logger, "rcv_endpoint: {}", endpoint);
-    int sndhwm = 1;
-    int rcvhwm = 1;
-    _socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-    _socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
+    _socket.set(zmq::sockopt::sndhwm, 1);
+    _socket.set(zmq::sockopt::rcvhwm, 1);
     // _socket.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     _socket.connect(endpoint);
     GR_LOG_DEBUG(_debug_logger, "   ... connected");

@@ -18,10 +18,8 @@ public:
     message_port_proxy_upstream()
         : _context(1), _socket(_context, zmq::socket_type::push)
     {
-        int sndhwm = 1;
-        int rcvhwm = 1;
-        _socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-        _socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
+        _socket.set(zmq::sockopt::sndhwm, 1);
+        _socket.set(zmq::sockopt::rcvhwm, 1);
     }
     virtual ~message_port_proxy_upstream()
     {
@@ -68,20 +66,15 @@ public:
     {
         _logger = logging::get_logger("message_proxy_downstream", "default");
         // _debug_logger = logging::get_logger("message_proxy_downstream"+ "_dbg", "debug");
-        int sndhwm = 1;
-        int rcvhwm = 1;
-        _socket.setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-        _socket.setsockopt(ZMQ_RCVHWM, &rcvhwm, sizeof(rcvhwm));
+        _socket.set(zmq::sockopt::sndhwm, 1);
+        _socket.set(zmq::sockopt::rcvhwm, 1);
         
         std::string svrendpoint = "tcp://*:" + std::to_string(_port);
         std::cout << "binding " << svrendpoint << std::endl;
         _socket.bind(svrendpoint);
 
         if (_port == 0) {
-            char bind_endpoint[2048];
-            size_t bind_endpoint_len = 2048;
-            _socket.getsockopt(ZMQ_LAST_ENDPOINT, bind_endpoint, &bind_endpoint_len);
-            std::string endpoint_str(bind_endpoint);
+            std::string endpoint_str = _socket.get(zmq::sockopt::last_endpoint);
             auto colon_index = endpoint_str.find_last_of(':');
             std::string port_str =
                 std::string(endpoint_str.begin() + colon_index + 1, endpoint_str.end());
