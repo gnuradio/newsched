@@ -19,5 +19,6 @@ void bind_node(py::module& m)
         .def("name", &node::name)
         .def("alias", &node::alias)
         .def("get_port", py::overload_cast<unsigned int, gr::port_type_t, gr::port_direction_t>(&gr::node::get_port))
+        .def("get_message_port", &node::get_message_port)
         ;
 }

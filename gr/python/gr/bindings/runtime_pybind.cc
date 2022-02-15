@@ -29,6 +29,7 @@ void bind_runtime(py::module& m) {
         .def(py::init(&gr::runtime::make))
         .def("add_scheduler",  py::overload_cast<std::pair<gr::scheduler_sptr, std::vector<gr::node_sptr>>>(&gr::runtime::add_scheduler), py::arg("conf"))
         .def("add_scheduler",  py::overload_cast<gr::scheduler_sptr>(&gr::runtime::add_scheduler), py::arg("sched"))
+        .def("add_proxy", &gr::runtime::add_proxy)
         // .def("clear_schedulers", &gr::flowgraph::clear_schedulers)
         .def("initialize", &gr::runtime::initialize)
         .def("start", &gr::runtime::start)
