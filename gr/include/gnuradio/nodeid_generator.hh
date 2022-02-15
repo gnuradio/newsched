@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <ctime>
 
 namespace gr {
 
@@ -21,6 +22,7 @@ class nodeid_generator
 public:
     static nodeid_generator& get_instance()
     {
+        srand(static_cast<unsigned int>(time(0)));
         static nodeid_generator instance;
         return instance;
     }

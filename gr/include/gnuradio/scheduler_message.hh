@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pmtf/wrap.hpp>
+#include <nlohmann/json.hpp>
 
 namespace gr {
 
@@ -16,10 +17,16 @@ enum class scheduler_message_t {
 class scheduler_message
 {
 public:
+    scheduler_message() {}
     scheduler_message(scheduler_message_t type) : _type(type) {}
+    virtual ~scheduler_message() {}
     scheduler_message_t type() { return _type; }
     void set_blkid(int64_t blkid_) { _blkid = blkid_; }
     int64_t blkid() { return _blkid; }
+    virtual std::string to_json() { return "{ }";}
+    virtual std::shared_ptr<scheduler_message> from_json(const std::string& str) {
+        throw std::runtime_error("from_json not implemented in scheduler_message base class");
+    }
 
 private:
     scheduler_message_t _type;
@@ -49,6 +56,7 @@ typedef std::function<void(pmtf::pmt)> message_port_callback_fcn;
 class msgport_message : public scheduler_message
 {
 public:
+    msgport_message() {}
     msgport_message(pmtf::pmt msg, message_port_callback_fcn cb)
         : scheduler_message(scheduler_message_t::MSGPORT_MESSAGE), _msg(msg), _cb(cb)
     {
@@ -56,6 +64,22 @@ public:
     void set_callback(message_port_callback_fcn cb) { _cb = cb;}
     message_port_callback_fcn callback() { return _cb;}
     pmtf::pmt message() { return _msg;}
+    std::string to_json() override {
+        nlohmann::json ret;
+        ret["type"] = "msgport_message";
+        ret["msg"] = _msg.to_base64();
+        return ret.dump();
+    }
+    scheduler_message_sptr from_json(const std::string& str)
+    {
+        auto json_obj = nlohmann::json::parse(str);
+        if (json_obj["type"] != "msgport_message")
+        {
+            throw std::runtime_error("Invalid message type for msgport_message");
+        }
+        auto msg = pmtf::pmt::from_base64(str);
+        return std::make_shared<msgport_message>(msg, nullptr);
+    }
 private:
     pmtf::pmt _msg; 
     message_port_callback_fcn _cb;
