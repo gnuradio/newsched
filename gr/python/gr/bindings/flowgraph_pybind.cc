@@ -21,7 +21,14 @@ namespace py = pybind11;
 
 void bind_flowgraph(py::module& m)
 {
+    py::class_<gr::flat_graph, gr::graph, gr::node, std::shared_ptr<gr::flat_graph>>(
+        m, "flat_graph")
+        ;
+
     py::class_<gr::flowgraph, gr::graph, gr::node, std::shared_ptr<gr::flowgraph>>(
         m, "flowgraph")
-        .def(py::init(&gr::flowgraph::make), py::arg("name")="flowgraph");
+        .def(py::init(&gr::flowgraph::make), py::arg("name")="flowgraph")
+        .def_static("check_connections", &gr::flowgraph::check_connections)
+        .def("make_flat", &::gr::flowgraph::make_flat)
+        ;
 }

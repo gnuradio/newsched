@@ -20,6 +20,12 @@ namespace py = pybind11;
 void bind_edge(py::module& m)
 {
     using edge = ::gr::edge;
+    using node_endpoint = ::gr::node_endpoint;
+
+    py::class_<node_endpoint, std::shared_ptr<node_endpoint>>(m, "endpoint")
+        .def("node", &node_endpoint::node)
+        .def("port", &node_endpoint::port)
+        ;
 
     py::class_<edge, std::shared_ptr<edge>>(m, "edge")
         .def(py::init(
@@ -27,5 +33,8 @@ void bind_edge(py::module& m)
                 return ::gr::edge::make(a, b, c, d);
             }))
         .def("set_custom_buffer", &edge::set_custom_buffer)
-        .def("identifier", &edge::identifier);
+        .def("identifier", &edge::identifier)
+        .def("src", &edge::src)
+        .def("dst", &edge::dst)
+        ;
 }

@@ -20,11 +20,17 @@ void bind_port(py::module& m)
 
     using message_port = ::gr::message_port;
     using untyped_port = ::gr::untyped_port;
-    
-    py::class_<port_base, std::shared_ptr<port_base>>(
+
+     py::class_<gr::port_interface, std::shared_ptr<gr::port_interface>>(
+        m, "port_interface")
+        ;
+
+    py::class_<port_base, gr::port_interface, std::shared_ptr<port_base>>(
         m, "port_base")
         .def("format_descriptor", &gr::port_base::format_descriptor)
         .def("dims", &gr::port_base::dims)
+        .def("index", &gr::port_base::index)
+        .def("connect", &gr::port_base::connect)
         ;
 
     py::class_<port_f, port_base, std::shared_ptr<port_f>>(
@@ -48,8 +54,9 @@ void bind_port(py::module& m)
         .def(py::init(&port_b::make),py::arg("name"), py::arg("direction"), py::arg("dims")=std::vector<size_t>{1}, py::arg("optional")=false, py::arg("multiplicity")=1)
         ;
 
-    py::class_<message_port, port_base, std::shared_ptr<message_port>>(
+    py::class_<message_port, port_base, gr::port_interface, std::shared_ptr<message_port>>(
         m, "message_port")
+        .def("post", &message_port::post)
         ;
 
     py::class_<untyped_port, port_base, std::shared_ptr<untyped_port>>(
@@ -72,5 +79,7 @@ void bind_port(py::module& m)
         .value("STREAM", gr::port_type_t::STREAM ) 
         .value("MESSAGE", gr::port_type_t::MESSAGE)             
         .export_values();
+
+    py::implicitly_convertible<gr::port_interface, gr::message_port>();
 
 }
