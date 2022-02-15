@@ -30,7 +30,7 @@ def die(error, message):
 
 def check_gnuradio_import():
     try:
-        from newsched import gr
+        from gnuradio import gr
     except ImportError as err:
         die(err, GR_IMPORT_ERROR_MESSAGE)
 
@@ -41,7 +41,7 @@ def run_main():
 
     if not script_path.endswith(source_tree_subpath):
         # run the installed version
-        from newsched.grc.compiler import main
+        from gnuradio.grc.compiler import main
     else:
         print("Running from source tree")
         sys.path.insert(1, script_path[:-len(source_tree_subpath)])

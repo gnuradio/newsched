@@ -1,7 +1,7 @@
-from newsched import blocks
-from newsched.math.numpy import add_ff, multiply_const_ff
-from newsched import gr
-from newsched import gr_unittest
+from gnuradio import blocks
+from gnuradio.math.numpy import add_ff, multiply_const_ff
+from gnuradio import gr
+from gnuradio import gr_unittest
 
 class test_add_numpy(gr_unittest.TestCase):
 

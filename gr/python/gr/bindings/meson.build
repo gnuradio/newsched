@@ -39,7 +39,7 @@ newsched_runtime_pybind = py3_inst.extension_module('gr_python',
     link_language : 'cpp',
     install : true,
     cpp_args : cpp_args,
-    install_dir : join_paths(py3_inst.get_install_dir(),'newsched','gr')
+    install_dir : join_paths(py3_inst.get_install_dir(),'gnuradio','gr')
 )
 
 newsched_runtime_pybind_dep = declare_dependency(

@@ -11,7 +11,7 @@
 import os
 import tempfile
 import array
-from newsched import gr, gr_unittest, blocks, fileio
+from gnuradio import gr, gr_unittest, blocks, fileio
 
 
 class test_file_sink(gr_unittest.TestCase):

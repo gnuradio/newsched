@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from newsched import gr_unittest, gr, blocks
+from gnuradio import gr_unittest, gr, blocks
 
 class test_basic(gr_unittest.TestCase):
 

@@ -8,15 +8,15 @@
 # Title: Not titled yet
 # GNU Radio version: 3.9.0.0-git
 
-from newsched import gr, blocks, streamops, fft
-from newsched.filter import firdes
-from newsched.schedulers import nbt
+from gnuradio import gr, blocks, streamops, fft
+from gnuradio.filter import firdes
+from gnuradio.schedulers import nbt
 import sys
 import signal
 from argparse import ArgumentParser
-from newsched.fft import window
+from gnuradio.fft import window
 import time
-from newsched import filter
+from gnuradio import filter
 
 class benchmark_pfb_channelizer(gr.flowgraph):
 

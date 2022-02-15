@@ -8,8 +8,8 @@ grc:
   templates:
     imports: |-
       from PyQt5 import Qt
-      from newsched import qtgui
-      from newsched.filter import firdes
+      from gnuradio import qtgui
+      from gnuradio.filter import firdes
       import sip
     make: |
       <%

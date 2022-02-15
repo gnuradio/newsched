@@ -9,7 +9,7 @@
 #
 
 import numpy as np
-from newsched import gr, gr_unittest, blocks, math
+from gnuradio import gr, gr_unittest, blocks, math
 
 #This test is a pure python block that inherits from sync_block
 class add_2_f32_1_f32(gr.sync_block):

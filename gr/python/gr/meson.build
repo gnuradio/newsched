@@ -19,4 +19,4 @@ configure_file(copy: true,
 )
 endforeach
 
-py3_inst.install_sources(files(srcs), subdir : join_paths('newsched','gr'))
+py3_inst.install_sources(files(srcs), subdir : join_paths('gnuradio','gr'))

@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks, streamops
+from gnuradio import gr, gr_unittest, blocks, streamops
 
 # from math import sqrt, atan2
 
