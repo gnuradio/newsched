@@ -10,7 +10,7 @@
 
 import numpy as np
 import cupy as cp
-from newsched import gr, gr_unittest, blocks
+from gnuradio import gr, gr_unittest, blocks
 
 
 class add_2_f32_1_f32(gr.cupy_sync_block):

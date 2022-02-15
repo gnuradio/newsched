@@ -21,7 +21,7 @@ endforeach
 d = {
   'blocks' : {{module}}_pybind_names,
   'module' : '{{module}}',
-  'imports' : ['newsched.gr']
+  'imports' : ['gnuradio.gr']
 }
 
 gen_{{module}}_pybind = custom_target('gen_{{module}}_pybind',
@@ -42,7 +42,7 @@ newsched_blocklib_{{module}}_pybind = py3_inst.extension_module('{{module}}_pyth
     dependencies : [newsched_blocklib_{{module}}_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
     install : true,
-    install_dir : join_paths(py3_inst.get_install_dir(),'newsched','{{module}}')
+    install_dir : join_paths(py3_inst.get_install_dir(),'gnuradio','{{module}}')
 )
 
 newsched_blocklib_{{module}}_pybind_dep = declare_dependency(include_directories : incdir,
@@ -51,4 +51,4 @@ newsched_blocklib_{{module}}_pybind_dep = declare_dependency(include_directories
 
 
 # Target for pure python
-py3_inst.install_sources(srcs, subdir : join_paths('newsched','{{module}}'))
+py3_inst.install_sources(srcs, subdir : join_paths('gnuradio','{{module}}'))

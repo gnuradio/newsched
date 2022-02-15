@@ -1,4 +1,4 @@
-from newsched import gr, soapy, blocks
+from gnuradio import gr, soapy, blocks
 
 samp_rate = 250000
 

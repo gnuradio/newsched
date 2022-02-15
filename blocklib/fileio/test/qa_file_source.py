@@ -12,7 +12,7 @@ import os
 import tempfile
 import array
 # import pmt
-from newsched import gr, gr_unittest, blocks, fileio
+from gnuradio import gr, gr_unittest, blocks, fileio
 
 
 class test_file_source(gr_unittest.TestCase):

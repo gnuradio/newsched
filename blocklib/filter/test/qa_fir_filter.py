@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, filter, blocks
+from gnuradio import gr, gr_unittest, filter, blocks
 
 
 def fir_filter(x, taps, decim=1):

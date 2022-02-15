@@ -10,7 +10,7 @@ import argparse
 import os
 import subprocess
 
-from newsched import gr
+from gnuradio import gr
 
 from .core import Messages
 from .core.platform import Platform

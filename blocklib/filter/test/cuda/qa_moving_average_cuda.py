@@ -21,7 +21,7 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks, filter
+from gnuradio import gr, gr_unittest, blocks, filter
 import numpy as np
 
 import math, random

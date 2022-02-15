@@ -37,7 +37,7 @@ PYBIND11_MODULE(scheduler_nbt_python, m)
     init_numpy();
 
     // Allow access to base block methods
-    py::module::import("newsched.gr");
+    py::module::import("gnuradio.gr");
 
     using nbt = gr::schedulers::scheduler_nbt;
     py::class_<nbt,  gr::scheduler, std::shared_ptr<nbt>>(

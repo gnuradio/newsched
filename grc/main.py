@@ -34,7 +34,7 @@ LOG_LEVELS = {
 
 def main():
     # FIXME: need gr.version
-    from newsched import gr
+    from gnuradio import gr
     parser = argparse.ArgumentParser(
         description=VERSION_AND_DISCLAIMER_TEMPLATE % "newsched")
     parser.add_argument('flow_graphs', nargs='*')

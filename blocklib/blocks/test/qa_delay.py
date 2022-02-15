@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks
+from gnuradio import gr, gr_unittest, blocks
 # import pmt
 
 

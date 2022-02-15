@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, analog, blocks
+from gnuradio import gr, gr_unittest, analog, blocks
 
 
 class test_agc(gr_unittest.TestCase):

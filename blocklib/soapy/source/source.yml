@@ -13,7 +13,7 @@ inherits: gr::soapy::block
 #   flags: [python]
 #   templates:
 #       imports: |- 
-#         from newsched import soapy
+#         from gnuradio import soapy
 #       make: |-
 #         self.${id} = soapy.source_${T.fcn}(${device},${nchan})
 #         self.${id}.set_sample_rate(0, samp_rate)
@@ -57,7 +57,7 @@ grc_multiple:
         hide: ${'all' if agc else 'part'}
       templates:
         imports: |- 
-            from newsched import soapy
+            from gnuradio import soapy
         make: |
             None
             dev = 'driver=rtlsdr'
@@ -129,7 +129,7 @@ grc_multiple:
         hide: part
 
       templates:
-        imports: from newsched import soapy
+        imports: from gnuradio import soapy
         make: |
             None
             dev = 'driver=hackrf'

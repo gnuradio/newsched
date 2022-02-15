@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks, math
+from gnuradio import gr, gr_unittest, blocks, math
 
 
 class test_add_mult_div_sub(gr_unittest.TestCase):

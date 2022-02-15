@@ -22,10 +22,10 @@ if __name__ == '__main__':
             print("Warning: failed to XInitThreads()")
 
 from PyQt5 import Qt
-from newsched import qtgui, soapy, fft
+from gnuradio import qtgui, soapy, fft
 import sip
-from newsched import blocks
-from newsched import gr
+from gnuradio import blocks
+from gnuradio import gr
 import sys
 import signal
 

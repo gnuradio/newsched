@@ -21,7 +21,7 @@
 id: {{module}}_{% if grc and 'id' in grc %}{{grc['id']}}{% else %}{{block}}{%endif%}
 label: '{% if grc and 'label' in grc %}{{grc['label']}}{% else %}{{label if label else block}}{%endif%}'
 {% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
-category: '[newsched]/{{module}}'
+category: '[GR 4.0]/{{module}}'
 
 parameters:
 {% if typekeys -%} {# We have a templated block, enable type parameter#}
@@ -103,7 +103,7 @@ templates:
 {{grc['templates']['make'] | indent(width=8,first=True)}}
 {% else -%}{# Do the default template #}
 templates:
-    imports: from newsched import {{module}}
+    imports: from gnuradio import {{module}}
     make: {{module}}.{{block}}{% if typekeys -%}{% for key in typekeys %}_{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
         {% if parameters %}{%- for param in parameters -%}
           {%- if 'cotr' not in param or param['cotr'] -%}

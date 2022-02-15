@@ -9,7 +9,7 @@
 #
 
 
-from newsched import gr, gr_unittest, fft, filter, blocks, streamops, math as grmath
+from gnuradio import gr, gr_unittest, fft, filter, blocks, streamops, math as grmath
 import math
 import cmath
 

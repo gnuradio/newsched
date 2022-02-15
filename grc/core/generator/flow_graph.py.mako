@@ -82,7 +82,7 @@ def snippets_${section}(fg):
     param_str = ', '.join(['self'] + ['%s=%s'%(param.name, param.templates.render('make')) for param in parameters])
 %>\
 % if generate_options == 'qt_gui':
-from newsched import qtgui
+from gnuradio import qtgui
 
 class ${class_name}(Qt.QWidget):
     def start(self):

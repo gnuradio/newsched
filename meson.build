@@ -94,7 +94,7 @@ subdir('schedulers')
 subdir('docs')
 subdir('utils')
 if (get_option('enable_python'))
-  subdir('python/newsched')
+  subdir('python/gnuradio')
   subdir('grc')
   subdir('domains/grc')
 endif

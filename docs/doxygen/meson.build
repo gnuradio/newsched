@@ -27,7 +27,7 @@ if doxygen.found()
                             configuration: cdata,
                             install: false)
 
-  datadir = join_paths(get_option('datadir'), 'doc','newsched')
+  datadir = join_paths(get_option('datadir'), 'doc','gnuradio')
 
   # TODO: Figure out how to install docs
   html_target = custom_target('doc',

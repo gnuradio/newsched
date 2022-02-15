@@ -1,5 +1,5 @@
-from newsched import math
-from newsched import gr
+from gnuradio import math
+from gnuradio import gr
 
 class multiply_const_ff(math.multiply_const_ff):
     def __init__(self, *args, **kwargs):
