@@ -19,7 +19,7 @@ protected:
     {
 
         // gr_log_info(
-        //     _logger, "{} got message: {}", this->alias(), pmtf::get_string(msg).data());
+        //     _logger, "{} got message: {}", this->alias(), pmtf::string(msg).data());
         // GR_LOG_INFO(_logger, "got msg on block {}", alias());
         // d_msg_cnt++;
 

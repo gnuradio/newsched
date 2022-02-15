@@ -103,8 +103,8 @@ void block::handle_msg_param_update(pmtf::pmt msg)
     // the param as the "id" field, and the pmt::wrap
     // that holds the update as the "value" field
 
-    auto id = pmtf::get_string(pmtf::get_map(msg)["id"]).data();
-    auto value = pmtf::get_map(msg)["value"];
+    auto id = pmtf::string(pmtf::map(msg)["id"]).data();
+    auto value = pmtf::map(msg)["value"];
 
     request_parameter_change(get_param_id(id), value, false);
 }
