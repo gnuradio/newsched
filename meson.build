@@ -50,8 +50,6 @@ if USE_CUDA
 cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
 endif
 
-zmq_dep = dependency('libzmq', required : true)
-
 # pmtf_dep = dependency('pmtf', version : '>=0.0.2')
 libpmtf = subproject('pmt')
 pmtf_dep = libpmtf.get_variable('pmtf_dep')
@@ -66,6 +64,9 @@ libcpphttp = subproject('cpp-httplib')
 cpphttp_dep = libcpphttp.get_variable('cpp_httplib_dep')
 
 cmake = import('cmake')
+
+libcppzmq = cmake.subproject('cppzmq')
+cppzmq_dep = libcppzmq.dependency('cppzmq')
 
 if (get_option('enable_testing'))
     TEST_ENV = environment()
