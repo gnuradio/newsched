@@ -28,7 +28,7 @@
 {% endmacro %}
 
 {% macro class_statement(block, blocktype) -%}
-class {{ block }} : virtual public {{blocktype}}
+class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ inherits }}#}
 {% endmacro %}
 
 {% macro block_args(parameters) -%}
@@ -132,6 +132,7 @@ class {{ block }} : virtual public {{blocktype}}
 
 {% macro callbacks(callbacks) -%}
     {% for cb in callbacks -%}
+    {% if 'inherited' not in cb or not cb['inherited'] -%}
     virtual  {{cb['return']}} {{cb['id']}} (
     {% if 'args' in cb -%}
     {% for arg in cb['args'] -%}
@@ -139,6 +140,7 @@ class {{ block }} : virtual public {{blocktype}}
     {% endfor -%}
     {% endif -%}
     ) {% if cb['const'] %}const {%endif%} = 0;
+    {% endif -%}
     {% endfor %} 
 {% endmacro %}
 

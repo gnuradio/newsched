@@ -31,6 +31,9 @@ endif
 if get_option('enable_gr_qtgui')
 subdir('qtgui')
 endif
+if get_option('enable_gr_zeromq')
+subdir('zeromq')
+endif
 if (ENABLE_GR_SOAPY)
   subdir('soapy')
 endif
