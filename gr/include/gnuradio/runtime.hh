@@ -12,7 +12,7 @@ public:
     typedef std::shared_ptr<runtime> sptr; 
     static sptr make() {return std::make_shared<runtime>();}
     runtime();
-    void initialize(flowgraph_sptr fg);
+    void initialize(graph_sptr fg);
     void start();
     void stop();
     void wait();

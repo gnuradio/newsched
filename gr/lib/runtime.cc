@@ -68,7 +68,7 @@ void runtime::add_proxy(runtime_proxy_sptr proxy)
     }
 }
 
-void runtime::initialize(flowgraph_sptr fg)
+void runtime::initialize(graph_sptr fg)
 {
     flowgraph::check_connections(fg);
     auto _logger =
