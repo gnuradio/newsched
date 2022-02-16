@@ -1,15 +1,12 @@
 #include <gnuradio/flowgraph.hh>
 #include <gnuradio/graph_utils.hh>
 
-#include <dlfcn.h>
+#include <gnuradio/runtime.hh>
 
 namespace gr {
 
 
-flowgraph::flowgraph(const std::string& name)
-{
-    set_alias(name);
-}
+flowgraph::flowgraph(const std::string& name) { set_alias(name); }
 
 size_t get_port_itemsize(port_sptr port)
 {
@@ -43,7 +40,8 @@ void flowgraph::check_connections(const graph_sptr& g)
     for (auto& node : g->calc_used_nodes()) {
         for (auto& port : node->output_ports()) {
             if (!port->optional() && port->connected_ports().size() == 0) {
-                throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
+                throw std::runtime_error("Nothing connected to " + node->name() + ": " +
+                                         port->name());
             }
         }
         for (auto& port : node->input_ports()) {
@@ -52,14 +50,18 @@ void flowgraph::check_connections(const graph_sptr& g)
                 if (port->type() == port_type_t::STREAM) {
 
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
-                    } else if (port->connected_ports().size() > 1) {
+                        throw std::runtime_error("Nothing connected to " + node->name() +
+                                                 ": " + port->name());
+                    }
+                    else if (port->connected_ports().size() > 1) {
                         throw std::runtime_error("More than 1 port connected to " +
                                                  port->alias());
                     }
-                } else if (port->type() == port_type_t::MESSAGE) {
+                }
+                else if (port->type() == port_type_t::MESSAGE) {
                     if (port->connected_ports().size() < 1) {
-                        throw std::runtime_error("Nothing connected to " + node->name() + ": " + port->name());
+                        throw std::runtime_error("Nothing connected to " + node->name() +
+                                                 ": " + port->name());
                     }
                 }
             }
@@ -112,9 +114,37 @@ void flowgraph::check_connections(const graph_sptr& g)
     }
 }
 
-flat_graph_sptr flowgraph::make_flat()
+flat_graph_sptr flowgraph::make_flat() { return flat_graph::make_flat(base()); }
+
+void flowgraph::start()
 {
-    return flat_graph::make_flat(base());
+    if (!d_runtime_sptr) {
+        d_runtime_sptr = gr::runtime::make();
+        d_runtime_sptr->initialize(base());
+    }
+
+    d_runtime_sptr->start();
+}
+void flowgraph::stop()
+{
+    if (!d_runtime_sptr) {
+        throw new std::runtime_error("stop: No runtime has been created");
+    }
+    d_runtime_sptr->stop();
+}
+void flowgraph::wait()
+{
+    if (!d_runtime_sptr) {
+        throw new std::runtime_error("wait: No runtime has been created");
+    }
+    d_runtime_sptr->wait();
+}
+void flowgraph::run()
+{
+    if (!d_runtime_sptr) {
+        throw new std::runtime_error("run: No runtime has been created");
+    }
+    d_runtime_sptr->run();
 }
 
 } // namespace gr

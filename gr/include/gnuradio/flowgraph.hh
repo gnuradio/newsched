@@ -9,6 +9,7 @@ namespace gr {
  * @brief Top level graph representing the flowgraph 
  * 
  */
+class runtime;
 class flowgraph : public graph
 {
 public:
@@ -19,6 +20,15 @@ public:
     virtual ~flowgraph() { };
     static void check_connections(const graph_sptr& g);
     flat_graph_sptr make_flat();
+
+    void start();
+    void stop();
+    void wait();
+    void run();
+
+private:
+    std::shared_ptr<gr::runtime> d_runtime_sptr = nullptr;
+
 };
 
 typedef flowgraph::sptr flowgraph_sptr;

@@ -16,10 +16,8 @@ import time
 class qa_zeromq_pushpull (gr_unittest.TestCase):
 
     def setUp(self):
-        self.send_tb = gr.flowgraph()
-        self.recv_tb = gr.flowgraph()
-        self.send_rt = gr.runtime()
-        self.recv_rt = gr.runtime()
+        self.send_tb = gr.top_block()
+        self.recv_tb = gr.top_block()
 
     def tearDown(self):
         self.send_tb = None
@@ -35,16 +33,12 @@ class qa_zeromq_pushpull (gr_unittest.TestCase):
         sink = blocks.vector_sink_f(vlen)
         self.send_tb.connect(src, zeromq_push_sink)
         self.recv_tb.connect(zeromq_pull_source, sink)
-        self.send_rt.initialize(self.send_tb)
-        self.recv_rt.initialize(self.recv_tb)
-        self.recv_rt.start()
+        self.recv_tb.start()
         time.sleep(0.5)
-        self.send_rt.start()
+        self.send_tb.start()
         time.sleep(0.5)
-        self.recv_rt.stop()
-        self.send_rt.stop()
-        # self.recv_rt.wait()
-        # self.send_rt.wait()
+        self.recv_tb.stop()
+        self.send_tb.stop()
         self.assertFloatTuplesAlmostEqual(sink.data(), src_data)
 
 
