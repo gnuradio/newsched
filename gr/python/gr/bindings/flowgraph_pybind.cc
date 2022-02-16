@@ -30,5 +30,10 @@ void bind_flowgraph(py::module& m)
         .def(py::init(&gr::flowgraph::make), py::arg("name")="flowgraph")
         .def_static("check_connections", &gr::flowgraph::check_connections)
         .def("make_flat", &::gr::flowgraph::make_flat)
+
+        .def("start", &::gr::flowgraph::start)
+        .def("stop", &::gr::flowgraph::stop)
+        .def("wait", &::gr::flowgraph::wait)
+        .def("run", &::gr::flowgraph::run)
         ;
 }
