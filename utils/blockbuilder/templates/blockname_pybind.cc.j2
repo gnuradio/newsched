@@ -13,7 +13,7 @@ void bind_{{block}}(py::module& m)
 {
     using {{block}} = ::gr::{{module}}::{{block}};
 
-    py::class_<{{block}},
+    py::class_<{{block}}, {{ inherits }}{{',' if inherits}} 
     {% if blocktype == 'sync' -%}
     gr::sync_block, gr::block, gr::node, 
     {% else -%}
@@ -40,7 +40,9 @@ void bind_{{block}}(py::module& m)
         py::arg("json_str"),
         py::arg("impl") = gr::{{module}}::{{block}}::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
+        {% if 'inherited' not in cb or not cb['inherited']%}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
+        {% endif -%}
         {% endfor %}
         {% if parameters %}{% for p in parameters -%}
         {% if p['settable'] %}
@@ -48,7 +50,7 @@ void bind_{{block}}(py::module& m)
         {% endif -%}
         {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
         .def("{{p['id']}}", &gr::{{module}}::{{block}}::{{p['id']}})
-        {% endif %}
+        {% endif -%}
         {% endfor %}{% endif %}  
                    ;
 }

@@ -19,7 +19,7 @@ size_t get_port_itemsize(port_sptr port)
         auto p = std::dynamic_pointer_cast<port_base>(cp);
         // use data_size since this includes vector sizing
         if (p)
-            size = p->data_size();
+            size = p->itemsize();
     }
     return size;
 }

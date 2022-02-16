@@ -83,7 +83,8 @@ if (get_option('enable_testing'))
       join_paths( meson.build_root(),'blocklib','math','lib'),
       join_paths( meson.build_root(),'blocklib','qtgui','lib'),
       join_paths( meson.build_root(),'blocklib','soapy','lib'),
-      join_paths( meson.build_root(),'blocklib','streamops','lib')
+      join_paths( meson.build_root(),'blocklib','streamops','lib'),
+      join_paths( meson.build_root(),'blocklib','zmq','lib')
     )
     TEST_ENV.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
 
