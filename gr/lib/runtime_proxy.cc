@@ -1,6 +1,6 @@
-#include <gnuradio/runtime_proxy.hh>
-#include <gnuradio/flowgraph.hh>
-#include <gnuradio/runtime_monitor.hh>
+#include <gnuradio/runtime_proxy.h>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/runtime_monitor.h>
 #include <chrono>
 #include <thread>
 #include <charconv>

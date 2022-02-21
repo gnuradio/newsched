@@ -13,7 +13,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/pyblock_detail.hh>
+#include <gnuradio/pyblock_detail.h>
 
 void bind_pyblock_detail(py::module& m)
 {

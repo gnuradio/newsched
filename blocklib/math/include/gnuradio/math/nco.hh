@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <gnuradio/math/math.hh>
 #include <gnuradio/math/sincos.hh>
 

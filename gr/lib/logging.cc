@@ -1,4 +1,4 @@
-#include <gnuradio/logging.hh>
+#include <gnuradio/logging.h>
 
 /**
  * @brief GR Logging Macros and convenience functions

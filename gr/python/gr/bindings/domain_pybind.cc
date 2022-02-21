@@ -13,7 +13,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/domain.hh>
+#include <gnuradio/domain.h>
 // pydoc.h is automatically generated in the build directory
 // #include <edge_pydoc.h>
 

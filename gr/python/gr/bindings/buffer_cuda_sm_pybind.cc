@@ -13,7 +13,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/buffer_cuda_sm.hh>
+#include <gnuradio/buffer_cuda_sm.h>
 // pydoc.h is automatically generated in the build directory
 // #include <edge_pydoc.h>
 

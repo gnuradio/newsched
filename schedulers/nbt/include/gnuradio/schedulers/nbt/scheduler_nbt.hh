@@ -1,8 +1,8 @@
-#include <gnuradio/block_group_properties.hh>
-#include <gnuradio/domain.hh>
-#include <gnuradio/graph_utils.hh>
-#include <gnuradio/scheduler.hh>
-#include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/block_group_properties.h>
+#include <gnuradio/domain.h>
+#include <gnuradio/graph_utils.h>
+#include <gnuradio/scheduler.h>
+#include <gnuradio/buffer_cpu_vmcirc.h>
 
 #include "thread_wrapper.hh"
 namespace gr {

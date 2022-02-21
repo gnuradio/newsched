@@ -8,17 +8,17 @@
 #include <gnuradio/blocks/null_source.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
-#include <gnuradio/flowgraph.hh>
-#include <gnuradio/logging.hh>
-#include <gnuradio/realtime.hh>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/logging.h>
+#include <gnuradio/realtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/runtime.h>
 
 #include <gnuradio/buffer_cuda.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
 #include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
 #include <iostream>
 
 #include "CLI/App.hpp"

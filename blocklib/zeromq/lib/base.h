@@ -12,8 +12,8 @@
 #pragma once 
 
 #include "zmq_common_impl.h"
-#include <gnuradio/tag.hh>
-#include <gnuradio/logging.hh>
+#include <gnuradio/tag.h>
+#include <gnuradio/logging.h>
 
 namespace gr {
 namespace zeromq {

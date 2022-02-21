@@ -15,7 +15,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/python_block.hh>
+#include <gnuradio/python_block.h>
 // PYBIND11_MAKE_OPAQUE(std::vector<gr::block_work_output>);
 // PYBIND11_MAKE_OPAQUE(std::vector<uint8_t>);
 void bind_python_block(py::module& m)

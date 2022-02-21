@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/logging.hh>
+#include <gnuradio/logging.h>
 #include <cstdio>
 #include <mutex>
 

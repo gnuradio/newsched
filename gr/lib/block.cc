@@ -1,8 +1,8 @@
-#include <gnuradio/block.hh>
-#include <gnuradio/scheduler.hh>
+#include <gnuradio/block.h>
+#include <gnuradio/scheduler.h>
 #include <pmtf/wrap.hpp>
 
-#include <gnuradio/pyblock_detail.hh>
+#include <gnuradio/pyblock_detail.h>
 
 #include <nlohmann/json.hpp>
 

@@ -1,1 +1,1 @@
-#include <gnuradio/pyblock_detail.hh>
+#include <gnuradio/pyblock_detail.h>

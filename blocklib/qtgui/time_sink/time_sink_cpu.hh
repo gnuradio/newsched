@@ -2,7 +2,7 @@
 
 #include <gnuradio/qtgui/time_sink.hh>
 
-#include <gnuradio/high_res_timer.hh>
+#include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/timedisplayform.h>
 
 #include <mutex>

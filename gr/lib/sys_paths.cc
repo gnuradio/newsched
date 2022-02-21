@@ -7,7 +7,7 @@
  *
  */
 
-#include <gnuradio/sys_paths.hh>
+#include <gnuradio/sys_paths.h>
 #include <cstdio>  //P_tmpdir (maybe)
 #include <cstdlib> //getenv
 

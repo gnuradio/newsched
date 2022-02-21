@@ -17,7 +17,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
 
-#include <gnuradio/message_port_proxy.hh>
+#include <gnuradio/message_port_proxy.h>
 
 namespace py = pybind11;
 

@@ -8,10 +8,10 @@
 #include <gnuradio/math/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
-#include <gnuradio/flowgraph.hh>
+#include <gnuradio/flowgraph.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-#include <gnuradio/buffer_cpu_vmcirc.hh>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
+#include <gnuradio/runtime.h>
 
 using namespace gr;
 

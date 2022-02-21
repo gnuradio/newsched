@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <stdexcept>
 
 namespace gr {

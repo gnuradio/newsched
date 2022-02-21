@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <volk/volk_alloc.hh>
 #include <cstdint>
 #include <vector>

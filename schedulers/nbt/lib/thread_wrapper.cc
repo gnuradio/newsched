@@ -1,5 +1,5 @@
 #include "thread_wrapper.hh"
-#include <gnuradio/thread.hh>
+#include <gnuradio/thread.h>
 #include <fmt/core.h>
 #include <thread>
 

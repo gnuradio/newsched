@@ -1,4 +1,4 @@
-#include <gnuradio/nodeid_generator.hh>
+#include <gnuradio/nodeid_generator.h>
 
 namespace gr {
 

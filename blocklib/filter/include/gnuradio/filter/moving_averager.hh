@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <gnuradio/sync_block.hh>
 #include <deque>
 
 namespace gr {

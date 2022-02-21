@@ -14,7 +14,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/graph_utils.hh>
+#include <gnuradio/graph_utils.h>
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 

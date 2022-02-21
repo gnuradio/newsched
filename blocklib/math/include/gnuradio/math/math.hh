@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <cmath>
 
 /*

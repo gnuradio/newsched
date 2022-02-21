@@ -1,4 +1,4 @@
-#include <gnuradio/graph.hh>
+#include <gnuradio/graph.h>
 
 namespace gr {
 

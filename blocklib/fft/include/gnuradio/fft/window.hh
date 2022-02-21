@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/fft/api.h>
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <cmath>
 #include <vector>
 

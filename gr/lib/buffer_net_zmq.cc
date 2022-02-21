@@ -1,5 +1,5 @@
-#include <gnuradio/buffer_cpu_vmcirc.hh>
-#include <gnuradio/buffer_net_zmq.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
+#include <gnuradio/buffer_net_zmq.h>
 #include <thread>
 #include <chrono>
 #include <nlohmann/json.hpp>

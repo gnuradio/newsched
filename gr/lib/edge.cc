@@ -1,4 +1,4 @@
-#include <gnuradio/edge.hh>
+#include <gnuradio/edge.h>
 
 namespace gr {
 

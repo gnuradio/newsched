@@ -13,7 +13,7 @@
 #include <pybind11/stl.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <numpy/arrayobject.h>
 
 namespace py = pybind11;

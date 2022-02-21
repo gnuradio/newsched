@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <gnuradio/block.hh>
+#include <gnuradio/block.h>
 #include <gnuradio/soapy/api.h>
 #include <gnuradio/soapy/soapy_types.hh>
 #include <cstdint>

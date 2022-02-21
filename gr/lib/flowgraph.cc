@@ -1,7 +1,7 @@
-#include <gnuradio/flowgraph.hh>
-#include <gnuradio/graph_utils.hh>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/graph_utils.h>
 
-#include <gnuradio/runtime.hh>
+#include <gnuradio/runtime.h>
 
 namespace gr {
 

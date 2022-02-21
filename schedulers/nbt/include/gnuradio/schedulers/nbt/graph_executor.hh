@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gnuradio/block.hh>
-#include <gnuradio/buffer.hh>
-#include <gnuradio/buffer_management.hh>
-#include <gnuradio/executor.hh>
+#include <gnuradio/block.h>
+#include <gnuradio/buffer.h>
+#include <gnuradio/buffer_management.h>
+#include <gnuradio/executor.h>
 
 #include <map>
 

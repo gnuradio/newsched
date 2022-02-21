@@ -1,4 +1,4 @@
-#include <gnuradio/port.hh>
+#include <gnuradio/port.h>
 
 namespace gr {
 port_sptr port_base::make(const std::string& name,

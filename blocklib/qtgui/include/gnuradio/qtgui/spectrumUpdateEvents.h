@@ -11,9 +11,9 @@
 #ifndef SPECTRUM_UPDATE_EVENTS_H
 #define SPECTRUM_UPDATE_EVENTS_H
 
-#include <gnuradio/high_res_timer.hh>
+#include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/api.h>
-#include <gnuradio/tag.hh>
+#include <gnuradio/tag.h>
 #include <volk/volk_alloc.hh>
 #include <QEvent>
 #include <QString>

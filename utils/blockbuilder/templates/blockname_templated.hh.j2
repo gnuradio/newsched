@@ -6,8 +6,8 @@
 {% set list = blocktype_include.split('::') %}
 {% set blocktype_include = list[(list | length )-1] %}
 {% endif %}
-#include <gnuradio/{{blocktype_include}}.hh>
-#include <gnuradio/types.hh>
+#include <gnuradio/{{blocktype_include}}.h>
+#include <gnuradio/types.h>
 
 {{ macros.includes(includes) }}
 

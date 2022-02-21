@@ -12,7 +12,7 @@
 #include <config.h>
 #endif
 
-#include <gnuradio/constants.hh>
+#include <gnuradio/constants.h>
 #include <boost/dll/runtime_symbol_info.hpp>
 #include <cstdlib>
 #include <filesystem>

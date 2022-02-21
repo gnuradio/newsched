@@ -7,7 +7,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/buffer_cuda.hh>
+#include <gnuradio/buffer_cuda.h>
 
 
 namespace gr {

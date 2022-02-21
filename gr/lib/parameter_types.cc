@@ -1,4 +1,4 @@
-#include <gnuradio/parameter_types.hh>
+#include <gnuradio/parameter_types.h>
 
 namespace gr {
 

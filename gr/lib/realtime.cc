@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/logging.hh>
+#include <gnuradio/logging.h>
 
 #ifdef HAVE_SCHED_H
 #include <sched.h>
@@ -22,8 +22,8 @@
 
 #include <iostream>
 
-#include "realtime_impl.hh"
-#include <gnuradio/realtime.hh>
+#include "realtime_impl.h"
+#include <gnuradio/realtime.h>
 
 #if defined(HAVE_PTHREAD_SETSCHEDPARAM) || defined(HAVE_SCHED_SETSCHEDULER)
 #include <pthread.h>

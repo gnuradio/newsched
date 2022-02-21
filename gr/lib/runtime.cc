@@ -1,6 +1,6 @@
-#include <gnuradio/runtime.hh>
-#include <gnuradio/graph_utils.hh>
-#include <gnuradio/flat_graph.hh>
+#include <gnuradio/runtime.h>
+#include <gnuradio/graph_utils.h>
+#include <gnuradio/flat_graph.h>
 #include <dlfcn.h>
 
 namespace gr {

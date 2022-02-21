@@ -13,7 +13,7 @@
 #endif
 
 #include <gnuradio/filter/firdes.h>
-#include <gnuradio/math.hh>
+#include <gnuradio/math.h>
 #include <stdexcept>
 
 using std::vector;

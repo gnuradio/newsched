@@ -13,7 +13,7 @@
 #endif
 
 #include <gnuradio/digital/constellation.hh>
-#include <gnuradio/math.hh>
+#include <gnuradio/math.h>
 
 
 #include <cassert>
