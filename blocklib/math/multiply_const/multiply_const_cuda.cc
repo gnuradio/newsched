@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2021 Joshua Morman
+ * Copyright 2021 Josh Morman
  *
  * This file is part of GNU Radio
  *

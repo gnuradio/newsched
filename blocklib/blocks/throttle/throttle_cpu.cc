@@ -1,3 +1,14 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2005-2011 Free Software Foundation, Inc.
+ * Copyright 2021 Josh Morman
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "throttle_cpu.hh"
 #include "throttle_cpu_gen.hh"
 #include <thread>

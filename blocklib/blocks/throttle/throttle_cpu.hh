@@ -1,3 +1,14 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2005-2011,2013 Free Software Foundation, Inc.
+ * Copyright 2021 Josh Morman
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #pragma once
 
 #include <gnuradio/blocks/throttle.hh>

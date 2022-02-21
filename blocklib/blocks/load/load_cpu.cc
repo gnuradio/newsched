@@ -1,3 +1,13 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2021 Josh Morman
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "load_cpu.hh"
 #include "load_cpu_gen.hh"
 

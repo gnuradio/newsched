@@ -1,3 +1,11 @@
+/* -*- c++ -*- */
+/*
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "null_sink_cpu.hh"
 #include "null_sink_cpu_gen.hh"
 

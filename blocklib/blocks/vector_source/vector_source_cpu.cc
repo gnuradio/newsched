@@ -1,3 +1,13 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2004,2008,2010,2013,2018 Free Software Foundation, Inc.
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "vector_source_cpu.hh"
 #include "vector_source_cpu_gen.hh"
 #include <algorithm>

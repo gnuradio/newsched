@@ -1,3 +1,12 @@
+/* -*- c++ -*- */
+/*
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "copy_cpu.hh"
 #include "copy_cpu_gen.hh"
 namespace gr {
