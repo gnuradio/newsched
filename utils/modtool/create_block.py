@@ -12,6 +12,7 @@ parser.add_argument('create_block', metavar='block_name', type=str, help='name o
 parser.add_argument('--cpu', action='store_true', help='indicate whether cpu files will be generated')
 parser.add_argument('--cuda', action='store_true', help='indicate whether cuda files will be generated')
 parser.add_argument('--templated', action='store_true', help='indicate whether files will be templated')
+parser.add_argument('--intree', action='store_true', help='indicate whether block is in tree in which case, call the script from the top src level')
 
 args = parser.parse_args()
 block_name = args.create_block # name of new block to be created
@@ -39,7 +40,10 @@ path_of_this_file = os.path.dirname(os.path.abspath(__file__))
 
 # copy newblock template
 src = os.path.join(path_of_this_file, 'newblock')
-dest = os.path.join('blocklib',mod_name, block_name)
+if (args.intree):
+    dest = os.path.join(block_name)
+else:
+    dest = os.path.join('blocklib',mod_name, block_name)
 new_block_dir = shutil.copytree(src,dest)
 
 # if cpu is not specified, delete all cpu files
