@@ -1,3 +1,13 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2019 Bastian Bloessl <mail@bastibl.net>.
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #pragma once
 
 #include <pmtf/string.hpp>

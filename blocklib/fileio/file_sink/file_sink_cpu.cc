@@ -1,3 +1,13 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2004,2006,2007,2010,2013 Free Software Foundation, Inc.
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "file_sink_cpu.hh"
 #include "file_sink_cpu_gen.hh"
 

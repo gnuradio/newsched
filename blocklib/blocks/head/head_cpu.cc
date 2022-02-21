@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2009,2013 Free Software Foundation, Inc.
+ * Copyright 2021 Marcus Müller
  *
  * This file is part of GNU Radio
  *
