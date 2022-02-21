@@ -19,7 +19,7 @@ work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_
 {
     // Poll with a timeout (FIXME: scheduler can't wait for us)
     zmq::pollitem_t itemsout[] = { { static_cast<void*>(d_socket), 0, ZMQ_POLLOUT, 0 } };
-    zmq::poll(&itemsout[0], 1, d_timeout);
+    zmq::poll(&itemsout[0], 1, std::chrono::milliseconds{d_timeout});
 
     // If we can send something, do it
     if (itemsout[0].revents & ZMQ_POLLOUT) {

@@ -1,9 +1,9 @@
 module: zeromq
-block: pull_source
-label: PULL Source
+block: pub_sink
+label: PUB Sink
 blocktype: sync_block
-# inherits: base
 
+# Example Parameters
 parameters:
     - id: itemsize
       label: Item Size
@@ -28,15 +28,26 @@ parameters:
       dtype: int
       settable: false
       default: -1
+    - id: key
+      label: Key
+      dtype: std::string
+      settable: false
+      default: "\"\""
+
+callbacks:
+-   id: last_endpoint
+    return: std::string
+    const: true
+    # inherited: true
 
 ports:
     - domain: stream
-      id: out
-      direction: output
+      id: in
+      direction: input
       type: untyped
       size: parameters/itemsize
 
 implementations:
-    - id: cpu
+-   id: cpu
 
 file_format: 1
