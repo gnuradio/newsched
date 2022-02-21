@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_GR_CONSTANTS_H
-#define INCLUDED_GR_CONSTANTS_H
+#pragma once
 
 #include <gnuradio/api.h>
 #include <string>
@@ -77,5 +76,3 @@ GR_RUNTIME_API const std::string compiler_flags();
 GR_RUNTIME_API const std::string build_time_enabled_components();
 
 } /* namespace gr */
-
-#endif /* INCLUDED_GR_CONSTANTS_H */

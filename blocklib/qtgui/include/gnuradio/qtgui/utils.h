@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_QTGUI_UTILS_H
-#define INCLUDED_QTGUI_UTILS_H
+#pragma once
 
 #include <gnuradio/qtgui/api.h>
 #include <qevent.h>
@@ -55,5 +54,3 @@ public:
 };
 
 QTGUI_API void check_set_qss(QApplication* app);
-
-#endif /* INCLUDED_QTGUI_UTILS_H */

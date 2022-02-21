@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_QTGUI_TRIGGER_MODE_H
-#define INCLUDED_QTGUI_TRIGGER_MODE_H
+#pragma once
 
 namespace gr {
 namespace qtgui {
@@ -28,5 +27,3 @@ enum trigger_slope {
 
 } /* namespace qtgui */
 } /* namespace gr */
-
-#endif /* INCLUDED_QTGUI_TRIGGER_MODE_H */

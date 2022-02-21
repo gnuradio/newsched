@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef INCLUDED_GR_SOAPY_SETTING_STRING_CONVERSION_H
-#define INCLUDED_GR_SOAPY_SETTING_STRING_CONVERSION_H
+#pragma once
 
 #include <SoapySDR/Types.hpp>
 #include <SoapySDR/Version.h>
@@ -83,5 +82,3 @@ inline std::string setting_to_string<bool>(const bool& setting)
 
 } // namespace soapy
 } // namespace gr
-
-#endif /* INCLUDED_GR_SOAPY_SETTING_STRING_CONVERSION_H */

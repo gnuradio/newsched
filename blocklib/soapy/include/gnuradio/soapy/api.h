@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_SOAPY_API_H
-#define INCLUDED_SOAPY_API_H
+#pragma once
 
 #include <gnuradio/attributes.h>
 
@@ -18,5 +17,3 @@
 #else
 #define SOAPY_API __GR_ATTR_IMPORT
 #endif
-
-#endif /* INCLUDED_SOAPY_API_H */

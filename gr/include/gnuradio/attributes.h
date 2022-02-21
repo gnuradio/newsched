@@ -7,8 +7,7 @@
  *
  */
 
-#ifndef INCLUDED_GNURADIO_ATTRIBUTES_H
-#define INCLUDED_GNURADIO_ATTRIBUTES_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 // Cross-platform attribute macros
@@ -76,5 +75,3 @@
 #else
 #define __GR_VLA(TYPE, buf, size) TYPE buf[size]
 #endif
-
-#endif /* INCLUDED_GNURADIO_ATTRIBUTES_H */
