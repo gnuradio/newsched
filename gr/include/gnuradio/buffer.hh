@@ -27,17 +27,15 @@ struct GR_RUNTIME_API buffer_info_t {
 };
 
 class buffer_reader;
-typedef std::shared_ptr<buffer_reader> buffer_reader_sptr;
+using buffer_reader_sptr = std::shared_ptr<buffer_reader>;
 
 class buffer;
 class buffer_properties;
-typedef std::function<std::shared_ptr<buffer>(
-    size_t, size_t, std::shared_ptr<buffer_properties>)>
-    buffer_factory_function;
+using buffer_factory_function = std::function<std::shared_ptr<buffer>(
+    size_t, size_t, std::shared_ptr<buffer_properties>)>;
 
-typedef std::function<std::shared_ptr<buffer_reader>(
-    size_t, std::shared_ptr<buffer_properties>)>
-    buffer_reader_factory_function;
+using buffer_reader_factory_function = std::function<std::shared_ptr<buffer_reader>(
+    size_t, std::shared_ptr<buffer_properties>)>;
 
 /**
  * @brief Base class for passing custom buffer properties into factory method
@@ -264,7 +262,7 @@ public:
     }
 };
 
-typedef std::shared_ptr<buffer> buffer_sptr;
+using buffer_sptr = std::shared_ptr<buffer>;
 
 
 class GR_RUNTIME_API buffer_reader

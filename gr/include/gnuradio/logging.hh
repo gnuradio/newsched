@@ -13,9 +13,9 @@
  */
 namespace gr {
 
-typedef std::shared_ptr<spdlog::logger> logger_sptr;
+using logger_sptr = std::shared_ptr<spdlog::logger>;
 
-typedef spdlog::level::level_enum logging_level_t;
+using logging_level_t = spdlog::level::level_enum;
 
 enum class GR_RUNTIME_API logger_type_t { console, basic, rotating, daily, none };
 static std::unordered_map<std::string, logger_type_t> const logger_type_t_table = {

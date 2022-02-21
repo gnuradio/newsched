@@ -75,7 +75,7 @@ protected:
     std::shared_ptr<buffer_properties> _buffer_properties = nullptr;
 
 public:
-    typedef std::shared_ptr<edge> sptr;
+    using sptr = std::shared_ptr<edge>;
     static sptr make(const node_endpoint& src, const node_endpoint& dst)
     {
         return std::make_shared<edge>(src, dst);
@@ -116,7 +116,7 @@ inline bool operator==(const edge& e1, const edge& e2)
     return (e1.src() == e2.src() && e1.dst() == e2.dst());
 }
 
-typedef edge::sptr edge_sptr;
-typedef std::vector<edge_sptr> edge_vector_t;
+using edge_sptr = edge::sptr;
+using edge_vector_t = std::vector<edge_sptr>;
 
 } // namespace gr

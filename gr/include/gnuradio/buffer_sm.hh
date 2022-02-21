@@ -24,7 +24,7 @@ private:
     // logger_sptr _debug_logger;
 
 public:
-    typedef std::shared_ptr<buffer_sm> sptr;
+    using sptr = std::shared_ptr<buffer_sm>;
     buffer_sm(size_t num_items,
               size_t item_size,
               std::shared_ptr<buffer_properties> buf_properties);

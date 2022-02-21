@@ -30,11 +30,11 @@ namespace thread {
 /*! \brief a system-dependent typedef for the underlying thread type.
  */
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-typedef HANDLE gr_thread_t;
+using gr_thread_t = HANDLE;
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
-typedef pthread_t gr_thread_t;
+using gr_thread_t = pthread_t;
 #else
-typedef pthread_t gr_thread_t;
+using gr_thread_t = pthread_t;
 #endif
 
 /*! \brief Get the current thread's ID as a gr_thread_t

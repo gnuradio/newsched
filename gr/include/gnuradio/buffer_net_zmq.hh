@@ -25,7 +25,7 @@ private:
 
 
 public:
-    typedef std::shared_ptr<buffer_net_zmq> sptr;
+    using sptr = std::shared_ptr<buffer_net_zmq>;
     buffer_net_zmq(size_t num_items,
                    size_t item_size,
                    std::shared_ptr<buffer_properties> buffer_properties,
@@ -104,7 +104,7 @@ public:
 class buffer_net_zmq_properties : public buffer_properties
 {
 public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
+    // using std::shared_ptr<buffer_properties> = sptr;
     buffer_net_zmq_properties(const std::string& ipaddr, int port)
         : buffer_properties(), _ipaddr(ipaddr), _port(port)
     {

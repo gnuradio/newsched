@@ -69,7 +69,7 @@ public:
 
     bool finished() { return d_finished; }
 
-    typedef std::shared_ptr<block> sptr;
+    using sptr = std::shared_ptr<block>;
     sptr base() { return shared_from_this(); }
 
     tag_propagation_policy_t tag_propagation_policy();
@@ -139,8 +139,8 @@ public:
     gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 
-typedef block::sptr block_sptr;
-typedef std::vector<block_sptr> block_vector_t;
-typedef std::vector<block_sptr>::iterator block_viter_t;
+using block_sptr = block::sptr;
+using block_vector_t = std::vector<block_sptr>;
+using block_viter_t = std::vector<block_sptr>::iterator;
 
 } // namespace gr

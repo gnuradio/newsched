@@ -13,7 +13,7 @@ namespace gr {
  *
  */
 struct block_work_input {
-    typedef std::shared_ptr<block_work_input> sptr;
+    using sptr = std::shared_ptr<block_work_input>;
     int n_items;
     buffer_reader_sptr buffer;
     int n_consumed =
@@ -51,14 +51,14 @@ struct block_work_input {
     }
 };
 
-typedef block_work_input::sptr block_work_input_sptr;
+using block_work_input_sptr = block_work_input::sptr;
 
 /**
  * @brief Struct for passing all information needed for output data from block::work
  *
  */
 struct block_work_output {
-    typedef std::shared_ptr<block_work_output> sptr;
+    using sptr = std::shared_ptr<block_work_output>;
     int n_items;
     buffer_sptr buffer;
     int n_produced =
@@ -96,7 +96,7 @@ struct block_work_output {
         return ret;
     }
 };
-typedef block_work_output::sptr block_work_output_sptr;
+using block_work_output_sptr = block_work_output::sptr;
 
 /**
  * @brief Enum for return codes from calls to block::work

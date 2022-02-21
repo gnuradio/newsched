@@ -65,7 +65,7 @@ class dc_blocker : virtual public sync_block
 {
 public:
     // gr::filter::dc_blocker_ff::sptr
-    typedef std::shared_ptr<dc_blocker<T>> sptr;
+    using sptr = std::shared_ptr<dc_blocker<T>>;
 
     /*!
      * Make a DC blocker block.

@@ -27,12 +27,12 @@ namespace gr {
  *
  * The gateway provides access to all the gr::block routines.
  */
-typedef enum {
+enum py_block_t {
     PY_BLOCK_GENERAL = 0,
     PY_BLOCK_SYNC,
     PY_BLOCK_DECIM,
     PY_BLOCK_INTERP
-} py_block_t;
+};
 
 
 
@@ -42,7 +42,7 @@ private:
     py::handle d_py_handle;
 
 public:
-    typedef std::shared_ptr<python_block> sptr;
+    using sptr = std::shared_ptr<python_block>;
     python_block(const py::handle& p, const std::string& name);
     static sptr make(const py::object& py_handle, const std::string& name);
 
@@ -67,7 +67,7 @@ private:
 
 public:
     // gr::python_sync_block::sptr
-    typedef std::shared_ptr<python_sync_block> sptr;
+    using sptr = std::shared_ptr<python_sync_block>;
     python_sync_block(const py::handle& p, const std::string& name);
     static sptr make(const py::object& py_handle, const std::string& name);
 

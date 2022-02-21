@@ -229,6 +229,6 @@ void flat_graph::topological_dfs_visit(block_sptr block, block_vector_t& output)
     output.push_back(block);
 }
 
-typedef std::shared_ptr<flat_graph> flat_graph_sptr;
+using flat_graph_sptr = std::shared_ptr<flat_graph>;
 
 } /* namespace gr */

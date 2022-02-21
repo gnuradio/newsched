@@ -9,7 +9,7 @@ namespace gr {
 class runtime
 {
 public:
-    typedef std::shared_ptr<runtime> sptr; 
+    using sptr = std::shared_ptr<runtime>; 
     static sptr make() {return std::make_shared<runtime>();}
     runtime();
     void initialize(graph_sptr fg);
