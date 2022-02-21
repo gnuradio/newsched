@@ -1,3 +1,13 @@
+/* -*- c++ -*- */
+/*
+ * Copyright <COPYRIGHT_YEAR> <COPYRIGHT_AUTHOR>
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
 #include "newblock_cuda.cuh"
 #include <cuComplex.h>
 #include <complex>

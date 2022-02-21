@@ -5,13 +5,15 @@ import fnmatch
 import os
 import shutil
 import sys
+from datetime import datetime
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a new block within specified module using newblock template')
 parser.add_argument('create_block', metavar='block_name', type=str, help='name of new block')
-parser.add_argument('--cpu', action='store_true', help='indicate whether cpu files will be generated')
+parser.add_argument('--nocpu', action='store_true', help='indicate whether cpu files will NOT be generated')
 parser.add_argument('--cuda', action='store_true', help='indicate whether cuda files will be generated')
 parser.add_argument('--templated', action='store_true', help='indicate whether files will be templated')
+parser.add_argument('--author', default="Block Author", help="Author of the block")
 parser.add_argument('--intree', action='store_true', help='indicate whether block is in tree in which case, call the script from the top src level')
 
 args = parser.parse_args()
@@ -20,7 +22,7 @@ block_name = args.create_block # name of new block to be created
 # Infer the mod name from the current directory
 
 
-cpu_arg = args.cpu # boolean for cpu files
+nocpu_arg = args.nocpu # boolean for cpu files
 cuda_arg = args.cuda # boolean for cuda files
 templated_arg = args.templated # boolean for templated
 
@@ -47,7 +49,7 @@ else:
 new_block_dir = shutil.copytree(src,dest)
 
 # if cpu is not specified, delete all cpu files
-if not cpu_arg:
+if nocpu_arg:
     files = os.listdir(new_block_dir)
     for file in files:
         if 'cpu' in file:
@@ -100,6 +102,8 @@ for name in files:
     # replace all occurances of newmod with mod_name and newblock with block_name
     data = data.replace('newmod', mod_name)
     data = data.replace('newblock', block_name)
+    data = data.replace('<COPYRIGHT_YEAR>', str(datetime.now().year))
+    data = data.replace('<COPYRIGHT_AUTHOR>', args.author)
     fin.close()
     # overwrite original file
     fin = open(file_path, "wt")

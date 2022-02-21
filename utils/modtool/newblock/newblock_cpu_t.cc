@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009,2010,2012,2018 Free Software Foundation, Inc.
+ * Copyright <COPYRIGHT_YEAR> <COPYRIGHT_AUTHOR>
  *
  * This file is part of GNU Radio
  *
@@ -10,7 +10,6 @@
 
 #include "newblock_cpu.hh"
 #include "newblock_cpu_gen.hh"
-#include <volk/volk.h>
 
 namespace gr {
 namespace newmod {
