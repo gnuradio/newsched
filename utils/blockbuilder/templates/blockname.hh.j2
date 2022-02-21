@@ -15,7 +15,7 @@ namespace {{module}} {
 public:
 {{ macros.block_args(parameters) }}
     
-    typedef std::shared_ptr<{{ block }}> sptr;
+    using sptr = std::shared_ptr<{{ block }}>;
     {{ macros.cotr_statement(block) }};
 
     {{ macros.implementations(implementations) }}

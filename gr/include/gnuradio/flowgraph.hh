@@ -14,7 +14,7 @@ class flowgraph : public graph
 {
 public:
     
-    typedef std::shared_ptr<flowgraph> sptr;
+    using sptr = std::shared_ptr<flowgraph>;
     static sptr make(const std::string& name = "flowgraph") { return std::make_shared<flowgraph>(name); }
     flowgraph(const std::string& name = "flowgraph");
     virtual ~flowgraph() { };
@@ -31,5 +31,5 @@ private:
 
 };
 
-typedef flowgraph::sptr flowgraph_sptr;
+using flowgraph_sptr = flowgraph::sptr;
 } // namespace gr

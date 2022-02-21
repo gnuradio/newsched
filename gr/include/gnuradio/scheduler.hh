@@ -55,6 +55,6 @@ private:
     int _id;
 };
 
-typedef std::shared_ptr<scheduler> scheduler_sptr;
+using scheduler_sptr = std::shared_ptr<scheduler>;
 
 } // namespace gr

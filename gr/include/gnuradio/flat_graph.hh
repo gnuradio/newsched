@@ -41,7 +41,7 @@ class flat_graph : public graph
 public:
     void clear();
     flat_graph() {}
-    // typedef std::shared_ptr<flat_graph> sptr;
+    // using sptr = std::shared_ptr<flat_graph>;
     virtual ~flat_graph();
 
     block_vector_t calc_used_blocks()
@@ -124,6 +124,6 @@ private:
     block_vector_t topological_sort(block_vector_t& blocks);
 };
 
-typedef std::shared_ptr<flat_graph> flat_graph_sptr;
+using flat_graph_sptr = std::shared_ptr<flat_graph>;
 
 } // namespace gr

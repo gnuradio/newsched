@@ -16,7 +16,7 @@ private:
     std::vector<block_group_properties> _block_groups;
 
 public:
-    typedef std::shared_ptr<scheduler_nbt> sptr;
+    using sptr = std::shared_ptr<scheduler_nbt>;
     static sptr make(const std::string name = "multi_threaded",
                      const unsigned int fixed_buf_size = 32768)
     {

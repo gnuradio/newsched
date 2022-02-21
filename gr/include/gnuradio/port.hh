@@ -35,7 +35,7 @@ class GR_RUNTIME_API port_base : public port_interface, public std::enable_share
 {
 
 public:
-    typedef std::shared_ptr<port_base> sptr;
+    using sptr = std::shared_ptr<port_base>;
     static sptr make(const std::string& name,
                      const port_direction_t direction,
                      const param_type_t data_type = param_type_t::CFLOAT,
@@ -113,8 +113,8 @@ protected:
     block* _parent_block = nullptr;
 };
 
-typedef port_base::sptr port_sptr;
-typedef std::vector<port_sptr> port_vector_t;
+using port_sptr = port_base::sptr;
+using port_vector_t = std::vector<port_sptr>;
 
 
 /**
@@ -178,7 +178,7 @@ private: //
     message_port_callback_fcn _callback_fcn;
 
 public:
-    typedef std::shared_ptr<message_port> sptr;
+    using sptr = std::shared_ptr<message_port>;
     static sptr make(const std::string& name,
                      const port_direction_t direction,
                      const bool optional = true,
@@ -194,6 +194,6 @@ public:
     void post(pmtf::pmt msg);
     virtual void push_message(scheduler_message_sptr msg) override;
 };
-typedef message_port::sptr message_port_sptr;
+using message_port_sptr = message_port::sptr;
 
 } // namespace gr

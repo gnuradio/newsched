@@ -10,6 +10,6 @@ struct neighbor_interface
     virtual ~neighbor_interface() {}
     virtual void push_message(scheduler_message_sptr msg) = 0;
 };
-typedef std::shared_ptr<neighbor_interface> neighbor_interface_sptr;
+using neighbor_interface_sptr = std::shared_ptr<neighbor_interface>;
 
 } // namespace gr

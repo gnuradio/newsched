@@ -10,7 +10,7 @@
 
 namespace gr {
 
-typedef uint32_t nodeid_t;
+using nodeid_t = uint32_t;
 
 /**
  * @brief Base class for node
@@ -64,7 +64,7 @@ public:
         d_id = nodeid_generator::get_id();
     }
     virtual ~node() {}
-    typedef std::shared_ptr<node> sptr;
+    using sptr = std::shared_ptr<node>;
 
     std::vector<port_sptr>& all_ports() { return d_all_ports; }
     std::vector<port_sptr>& input_ports() { return d_input_ports; }
@@ -193,7 +193,7 @@ public:
     }
 };
 
-typedef node::sptr node_sptr;
-typedef std::vector<node_sptr> node_vector_t;
+using node_sptr = node::sptr;
+using node_vector_t = std::vector<node_sptr>;
 
 } // namespace gr

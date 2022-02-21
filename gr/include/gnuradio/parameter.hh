@@ -22,7 +22,7 @@ protected:
     uint64_t _at_sample;
 
 public:
-    typedef std::shared_ptr<param_action> sptr;
+    using sptr = std::shared_ptr<param_action>;
     static sptr
     make(uint32_t id, pmtf::pmt pmt_value = pmtf::pmt(), uint64_t at_sample = 0)
     {
@@ -41,9 +41,9 @@ public:
     void set_at_sample(uint64_t val) { _at_sample = val; }
 };
 
-typedef std::shared_ptr<param_action> param_action_sptr;
+using param_action_sptr = std::shared_ptr<param_action>;
 
-typedef std::function<void(param_action_sptr)> param_action_complete_fcn;
+using param_action_complete_fcn = std::function<void(param_action_sptr)>;
 class param_action_with_callback : public scheduler_message
 {
 public:
@@ -63,7 +63,7 @@ private:
     param_action_complete_fcn _cb_fcn;
 };
 
-typedef std::queue<param_action_with_callback> param_action_queue;
+using param_action_queue = std::queue<param_action_with_callback>;
 
 class param_query_action : public param_action_with_callback
 {

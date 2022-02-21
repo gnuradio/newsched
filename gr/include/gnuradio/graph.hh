@@ -29,7 +29,7 @@ protected:
     node_vector_t _orphan_nodes;
 
 public:
-    typedef std::shared_ptr<graph> sptr;
+    using sptr = std::shared_ptr<graph>;
     static sptr make() { return std::make_shared<graph>(); }
     graph() : node() {}
     ~graph() {}
@@ -66,7 +66,7 @@ public:
     edge_vector_t find_edge(port_sptr port);
 };
 
-typedef std::shared_ptr<graph> graph_sptr;
+using graph_sptr = std::shared_ptr<graph>;
 
 
 } // namespace gr

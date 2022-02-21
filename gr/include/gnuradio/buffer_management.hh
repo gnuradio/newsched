@@ -19,7 +19,7 @@ private:
     logger_sptr _debug_logger;
 
 public:
-    typedef std::shared_ptr<buffer_manager> sptr;
+    using sptr = std::shared_ptr<buffer_manager>;
     buffer_manager(const unsigned int default_buffer_size_in_bytes)
         : s_fixed_buf_size(default_buffer_size_in_bytes)
     {

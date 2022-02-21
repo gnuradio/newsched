@@ -33,7 +33,7 @@ private:
     int64_t _blkid = -1;
 };
 
-typedef std::shared_ptr<scheduler_message> scheduler_message_sptr;
+using scheduler_message_sptr = std::shared_ptr<scheduler_message>;
 
 class scheduler_action : public scheduler_message
 {
@@ -49,10 +49,10 @@ private:
     scheduler_action_t _action;
 };
 
-typedef std::shared_ptr<scheduler_action> scheduler_action_sptr;
+using scheduler_action_sptr = std::shared_ptr<scheduler_action>;
 
 
-typedef std::function<void(pmtf::pmt)> message_port_callback_fcn;
+using message_port_callback_fcn = std::function<void(pmtf::pmt)>;
 class msgport_message : public scheduler_message
 {
 public:
@@ -84,6 +84,6 @@ private:
     pmtf::pmt _msg; 
     message_port_callback_fcn _cb;
 };
-typedef std::shared_ptr<msgport_message> msgport_message_sptr;
+using msgport_message_sptr = std::shared_ptr<msgport_message>;
 
 } // namespace gr

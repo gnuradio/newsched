@@ -23,7 +23,7 @@ protected:
     uint8_t* _buffer;
 
 public:
-    typedef std::shared_ptr<buffer_cpu_vmcirc> sptr;
+    using sptr = std::shared_ptr<buffer_cpu_vmcirc>;
 
 
     static buffer_sptr make(size_t num_items,
@@ -62,7 +62,7 @@ public:
 class buffer_cpu_vmcirc_properties : public buffer_properties
 {
 public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
+    // using std::shared_ptr<buffer_properties> = sptr;
     buffer_cpu_vmcirc_properties(buffer_cpu_vmcirc_type buffer_type_ = buffer_cpu_vmcirc_type::AUTO)
         : buffer_properties(), _buffer_type(buffer_type_)
 

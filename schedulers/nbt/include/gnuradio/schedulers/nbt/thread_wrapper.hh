@@ -49,7 +49,7 @@ private:
     std::atomic<bool> kick_pending = false;
 
 public:
-    typedef std::shared_ptr<thread_wrapper> sptr;
+    using sptr = std::shared_ptr<thread_wrapper>;
 
     static sptr make(int id,
                      block_group_properties bgp,

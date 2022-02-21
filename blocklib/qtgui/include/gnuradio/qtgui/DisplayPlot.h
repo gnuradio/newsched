@@ -32,7 +32,7 @@
 #include <qwt_compat.h>
 #endif
 
-typedef QList<QColor> QColorList;
+using QColorList = QList<QColor>;
 Q_DECLARE_METATYPE(QColorList)
 
 #if QWT_VERSION < 0x060100
@@ -80,7 +80,7 @@ class DisplayPlot : public QwtPlot
     Q_PROPERTY(Qt::PenStyle line_style8 READ getLineStyle8 WRITE setLineStyle8)
     Q_PROPERTY(Qt::PenStyle line_style9 READ getLineStyle9 WRITE setLineStyle9)
 
-    typedef QwtSymbol::Style QwtSymbolStyle;
+    using QwtSymbolStyle = QwtSymbol::Style;
 
     Q_ENUMS(QwtSymbolStyle)
     Q_PROPERTY(QwtSymbolStyle line_marker1 READ getLineMarker1 WRITE setLineMarker1)

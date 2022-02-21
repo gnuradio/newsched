@@ -35,6 +35,6 @@ private:
 
 };
 
-typedef std::vector<domain_conf> domain_conf_vec;
+using domain_conf_vec = std::vector<domain_conf>;
 
 } // namespace gr

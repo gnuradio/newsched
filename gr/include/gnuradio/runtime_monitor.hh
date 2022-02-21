@@ -20,7 +20,7 @@ class scheduler;
 class rt_monitor_message
 {
 public:
-    typedef std::shared_ptr<rt_monitor_message> sptr;
+    using sptr = std::shared_ptr<rt_monitor_message>;
     static sptr make(rt_monitor_message_t type = rt_monitor_message_t::UNKNOWN,
                      int64_t schedid = -1,
                      int64_t blkid = -1)
@@ -50,7 +50,7 @@ private:
     int64_t _schedid;
 };
 
-typedef rt_monitor_message::sptr rt_monitor_message_sptr;
+using rt_monitor_message_sptr = rt_monitor_message::sptr;
 
 /**
  * @brief The runtime_monitor is responsible for tracking the start/stop status of
@@ -90,6 +90,6 @@ protected:
     virtual void empty_queue() { msgq.clear(); }
 };
 
-typedef std::shared_ptr<runtime_monitor> runtime_monitor_sptr;
+using runtime_monitor_sptr = std::shared_ptr<runtime_monitor>;
 
 } // namespace gr

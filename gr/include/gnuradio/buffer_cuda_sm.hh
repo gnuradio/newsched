@@ -21,7 +21,7 @@ private:
     cudaStream_t stream;
 
 public:
-    typedef std::shared_ptr<buffer_cuda_sm> sptr;
+    using sptr = std::shared_ptr<buffer_cuda_sm>;
     buffer_cuda_sm(size_t num_items,
                    size_t item_size,
                    buffer_cuda_sm_type type,
@@ -127,7 +127,7 @@ public:
 class buffer_cuda_sm_properties : public buffer_properties
 {
 public:
-    // typedef sptr std::shared_ptr<buffer_properties>;
+    // using std::shared_ptr<buffer_properties> = sptr;
     buffer_cuda_sm_properties(buffer_cuda_sm_type buffer_type_)
         : buffer_properties(), _buffer_type(buffer_type_)
     {

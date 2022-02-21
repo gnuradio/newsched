@@ -19,7 +19,7 @@ template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not 
 {
 public:
 {{ macros.block_args(parameters) }}
-    typedef std::shared_ptr<{{ block }}> sptr;
+    using sptr = std::shared_ptr<{{ block }}>;
     {{ macros.cotr_statement(block) }};
 
     {{ macros.implementations(implementations) }}
@@ -38,14 +38,14 @@ protected:
 {%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
-typedef {{block}}<{{ opt['value']}}> {{block}}_{{ opt['suffix'] }};
+using {{block}}_{{ opt['suffix'] }} = {{block}}<{{ opt['value']}}>;
 {% endfor -%}
 {% else -%}
 {%set key1 = typekeys|first %}
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
 {% for opt2 in key2['options'] -%}
-typedef {{block}}<{{ opt1['value']+ ", " + opt2['value']}}> {{block}}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }};
+using {{block}}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }} = {{block}}<{{ opt1['value']+ ", " + opt2['value']}}>;
 {% endfor -%}
 {% endfor -%}
 {% endif -%}

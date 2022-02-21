@@ -22,7 +22,7 @@ struct graph_partition_info {
     }
 };
 
-typedef std::vector<graph_partition_info> graph_partition_info_vec;
+using graph_partition_info_vec = std::vector<graph_partition_info>;
 
 struct graph_utils {
     /**

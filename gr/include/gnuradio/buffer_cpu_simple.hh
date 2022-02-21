@@ -17,7 +17,7 @@ private:
     std::vector<uint8_t> _buffer;
 
 public:
-    typedef std::shared_ptr<buffer_cpu_simple> sptr;
+    using sptr = std::shared_ptr<buffer_cpu_simple>;
     buffer_cpu_simple(size_t num_items,
                       size_t item_size,
                       std::shared_ptr<buffer_properties> buf_properties);

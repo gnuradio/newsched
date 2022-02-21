@@ -7,10 +7,10 @@
 namespace gr {
 
 class runtime_monitor;
-typedef std::shared_ptr<runtime_monitor> runtime_monitor_sptr;
+using runtime_monitor_sptr = std::shared_ptr<runtime_monitor>;
 
 class rt_monitor_message;
-typedef std::shared_ptr<rt_monitor_message> rt_monitor_message_sptr;
+using rt_monitor_message_sptr = std::shared_ptr<rt_monitor_message>;
 
 
 /**
@@ -37,7 +37,7 @@ private:
     bool _rcv_done = false;
 
 public:
-    typedef std::shared_ptr<runtime_proxy> sptr;
+    using sptr = std::shared_ptr<runtime_proxy>;
     static sptr make(int svr_port, bool upstream);
     runtime_proxy(int svr_port, bool upstream);
     virtual ~runtime_proxy()
@@ -68,7 +68,7 @@ public:
         // _context.close();
     }
 };
-typedef runtime_proxy::sptr runtime_proxy_sptr;
+using runtime_proxy_sptr = runtime_proxy::sptr;
 
 
 } // namespace gr
