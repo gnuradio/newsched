@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/moodycamel/blockingconcurrentqueue.h>
+#include <blockingconcurrentqueue.h>
 
 namespace gr {
 

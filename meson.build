@@ -68,6 +68,11 @@ cmake = import('cmake')
 libcppzmq = cmake.subproject('cppzmq')
 cppzmq_dep = libcppzmq.dependency('cppzmq')
 
+libmoodycamel = cmake.subproject('moodycamel')
+# message('CMaket targets:\n - ' + '\n - '.join(libmoodycamel.target_list()))
+moodycamel_dep = libmoodycamel.dependency('concurrentqueue')
+
+
 if (get_option('enable_testing'))
     TEST_ENV = environment()
     TEST_ENV.prepend('LD_LIBRARY_PATH', 
