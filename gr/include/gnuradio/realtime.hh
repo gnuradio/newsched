@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_GR_REALTIME_H
-#define INCLUDED_GR_REALTIME_H
+#pragma once
 
 namespace gr {
 
@@ -27,5 +26,3 @@ enum rt_sched_policy {
 rt_status_t enable_realtime_scheduling();
 
 } /* namespace gr */
-
-#endif /* INCLUDED_GR_REALTIME_H */

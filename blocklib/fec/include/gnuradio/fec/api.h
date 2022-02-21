@@ -7,8 +7,7 @@
  *
  */
 
-#ifndef INCLUDED_FEC_API_H
-#define INCLUDED_FEC_API_H
+#pragma once
 
 #include <gnuradio/attributes.h>
 
@@ -17,5 +16,3 @@
 #else
 #define FEC_API __GR_ATTR_IMPORT
 #endif
-
-#endif /* INCLUDED_FEC_API_H */

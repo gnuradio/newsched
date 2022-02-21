@@ -8,9 +8,7 @@
  *
  */
 
-
-#ifndef INCLUDED_FILTER_POLYPHASE_FILTERBANK_H
-#define INCLUDED_FILTER_POLYPHASE_FILTERBANK_H
+#pragma once
 
 #include <gnuradio/fft/fftw_fft.hh>
 #include <gnuradio/filter/api.h>
@@ -133,5 +131,3 @@ public:
 } /* namespace kernel */
 } /* namespace filter */
 } /* namespace gr */
-
-#endif /* INCLUDED_FILTER_POLYPHASE_FILTERBANK_H */

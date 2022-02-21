@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_FFT_WINDOW_H
-#define INCLUDED_FFT_WINDOW_H
+#pragma once
 
 #include <gnuradio/fft/api.h>
 #include <gnuradio/types.hh>
@@ -369,5 +368,3 @@ public:
 
 } /* namespace fft */
 } /* namespace gr */
-
-#endif /* INCLUDED_FFT_WINDOW_H */

@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef INCLUDED_DIGITAL_METRIC_TYPE_H
-#define INCLUDED_DIGITAL_METRIC_TYPE_H
+#pragma once
 
 namespace gr {
 namespace digital {
@@ -22,5 +21,3 @@ typedef enum {
 
 } /* namespace digital */
 } /* namespace gr */
-
-#endif /* INCLUDED_DIGITAL_METRIC_TYPE_H */
