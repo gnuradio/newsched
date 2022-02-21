@@ -17,7 +17,7 @@ namespace newmod {
 
 template <class T>
 newblock_cpu<T>::newblock_cpu(const typename newblock<T>::block_args& args)
-    : sync_block("newblock"), newblock<T>(args)
+    : INHERITED_CONSTRUCTORS(T)
 {
 }
 
