@@ -3,3 +3,4 @@ pmt/
 json/
 cpp-httplib/
 cppzmq/
+moodycamel/
