@@ -8,14 +8,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  */
-#include <gnuradio/python_block.hh>
+#include <gnuradio/python_block.h>
 #include <pybind11/embed.h>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 
-#include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
 
 namespace gr {
 

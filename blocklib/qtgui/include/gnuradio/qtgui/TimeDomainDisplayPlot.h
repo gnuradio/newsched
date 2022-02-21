@@ -12,7 +12,7 @@
 #define TIME_DOMAIN_DISPLAY_PLOT_H
 
 #include <gnuradio/qtgui/DisplayPlot.h>
-#include <gnuradio/tag.hh>
+#include <gnuradio/tag.h>
 #include <cstdint>
 #include <cstdio>
 #include <vector>

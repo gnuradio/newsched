@@ -1,4 +1,4 @@
-#include <gnuradio/buffer_cpu_simple.hh>
+#include <gnuradio/buffer_cpu_simple.h>
 
 namespace gr {
 

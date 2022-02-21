@@ -1,3 +1,3 @@
-#include <gnuradio/node.hh>
+#include <gnuradio/node.h>
 
 

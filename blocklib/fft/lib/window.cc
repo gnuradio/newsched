@@ -13,7 +13,7 @@
 #endif
 
 #include <gnuradio/fft/window.hh>
-#include <gnuradio/math.hh>
+#include <gnuradio/math.h>
 #include <algorithm>
 #include <numeric>
 #include <stdexcept>

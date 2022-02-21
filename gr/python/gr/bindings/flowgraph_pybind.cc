@@ -15,7 +15,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/flowgraph.hh>
+#include <gnuradio/flowgraph.h>
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 

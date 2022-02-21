@@ -12,10 +12,10 @@
 #include "config.h"
 #endif
 
-#include "pagesize.hh"
+#include "pagesize.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <gnuradio/logging.hh>
+#include <gnuradio/logging.h>
 
 namespace gr {
 

@@ -1,4 +1,4 @@
-#include "buffer_cpu_vmcirc_mmap_shm_open.hh"
+#include "buffer_cpu_vmcirc_mmap_shm_open.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -10,8 +10,8 @@
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
-#include "pagesize.hh"
-#include <gnuradio/sys_paths.hh>
+#include "pagesize.h"
+#include <gnuradio/sys_paths.h>
 #include <cerrno>
 #include <cstdio>
 #include <fmt/core.h>

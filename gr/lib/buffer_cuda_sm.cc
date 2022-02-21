@@ -7,7 +7,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/buffer_cuda_sm.hh>
+#include <gnuradio/buffer_cuda_sm.h>
 
 namespace gr {
 buffer_cuda_sm::buffer_cuda_sm(size_t num_items,

@@ -11,10 +11,10 @@
 #include <pybind11/pybind11.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <numpy/arrayobject.h>
 
-#include <gnuradio/block_work_io.hh>
+#include <gnuradio/block_work_io.h>
 #include <vector>
 
 namespace py = pybind11;

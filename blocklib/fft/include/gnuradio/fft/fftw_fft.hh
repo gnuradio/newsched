@@ -15,8 +15,8 @@
  */
 
 #include <gnuradio/fft/api.h>
-#include <gnuradio/types.hh>
-#include <gnuradio/logging.hh>
+#include <gnuradio/types.h>
+#include <gnuradio/logging.h>
 #include <volk/volk_alloc.hh>
 
 #include <mutex>

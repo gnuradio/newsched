@@ -1,6 +1,6 @@
-#include <gnuradio/buffer_sm.hh>
+#include <gnuradio/buffer_sm.h>
 
-#include <gnuradio/logging.hh>
+#include <gnuradio/logging.h>
 
 namespace gr {
 

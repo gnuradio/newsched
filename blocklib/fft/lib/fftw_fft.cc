@@ -37,7 +37,7 @@ static int my_fftw_read_char(void* f) { return fgetc((FILE*)f); }
 #include <filesystem>
 #include <stdexcept>
 
-#include <gnuradio/prefs.hh>
+#include <gnuradio/prefs.h>
 
 #include <boost/interprocess/sync/file_lock.hpp>
 namespace fs = std::filesystem;

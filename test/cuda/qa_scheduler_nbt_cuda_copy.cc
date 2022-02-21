@@ -11,9 +11,9 @@
 #include <gnuradio/buffer_cuda.hh>
 #include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
-#include <gnuradio/flowgraph.hh>
+#include <gnuradio/flowgraph.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/runtime.h>
 
 using namespace gr;
 

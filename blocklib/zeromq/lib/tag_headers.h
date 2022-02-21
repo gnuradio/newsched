@@ -12,7 +12,7 @@
 #define ZEROMQ_TAG_HEADERS_H
 
 #include "zmq_common_impl.h"
-#include <gnuradio/tag.hh>
+#include <gnuradio/tag.h>
 
 namespace gr {
 namespace zeromq {

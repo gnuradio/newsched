@@ -1,4 +1,4 @@
-#include "buffer_cpu_vmcirc_sysv_shm.hh"
+#include "buffer_cpu_vmcirc_sysv_shm.h"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -11,8 +11,8 @@
 #ifdef HAVE_SYS_SHM_H
 #include <sys/shm.h>
 #endif
-#include "pagesize.hh"
-#include <gnuradio/logging.hh>
+#include "pagesize.h"
+#include <gnuradio/logging.h>
 #include <errno.h>
 #include <stdio.h>
 

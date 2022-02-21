@@ -21,9 +21,9 @@
 {% macro blocktype(properties) -%}
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 {% if blocktype == 'sync' -%}
-#include <gnuradio/sync_block.hh>
+#include <gnuradio/sync_block.h>
 {% elif blocktype == 'general' -%}
-#include <gnuradio/block.hh>
+#include <gnuradio/block.h>
 {% endif -%}
 {% endmacro %}
 

@@ -1,4 +1,4 @@
-#include <gnuradio/buffer_management.hh>
+#include <gnuradio/buffer_management.h>
 
 namespace gr {
 

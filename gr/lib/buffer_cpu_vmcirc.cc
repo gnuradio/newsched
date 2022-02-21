@@ -1,7 +1,7 @@
-#include <gnuradio/buffer_cpu_vmcirc.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
 
-#include "buffer_cpu_vmcirc_mmap_shm_open.hh"
-#include "buffer_cpu_vmcirc_sysv_shm.hh"
+#include "buffer_cpu_vmcirc_mmap_shm_open.h"
+#include "buffer_cpu_vmcirc_sysv_shm.h"
 #include <cstring>
 #include <mutex>
 #include <numeric>

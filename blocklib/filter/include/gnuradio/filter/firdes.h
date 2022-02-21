@@ -13,7 +13,7 @@
 
 #include <gnuradio/fft/window.hh>
 #include <gnuradio/filter/api.h>
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <cmath>
 #include <vector>
 

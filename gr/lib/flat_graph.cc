@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <gnuradio/flat_graph.hh>
+#include <gnuradio/flat_graph.h>
 
 namespace gr {
 

@@ -11,7 +11,7 @@
 #ifndef QTGUI_TYPES_H
 #define QTGUI_TYPES_H
 
-#include <gnuradio/high_res_timer.hh>
+#include <gnuradio/high_res_timer.h>
 #include <qwt_color_map.h>
 #include <qwt_scale_draw.h>
 

@@ -1,6 +1,6 @@
-#include <gnuradio/logging.hh>
-#include <gnuradio/runtime_monitor.hh>
-#include <gnuradio/scheduler.hh>
+#include <gnuradio/logging.h>
+#include <gnuradio/runtime_monitor.h>
+#include <gnuradio/scheduler.h>
 #include <nlohmann/json.hpp>
 
 namespace gr {

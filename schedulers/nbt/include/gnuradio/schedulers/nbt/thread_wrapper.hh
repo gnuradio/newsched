@@ -1,11 +1,11 @@
 #pragma once
 
-#include <gnuradio/block.hh>
-#include <gnuradio/block_group_properties.hh>
-#include <gnuradio/concurrent_queue.hh>
-#include <gnuradio/runtime_monitor.hh>
-#include <gnuradio/neighbor_interface.hh>
-#include <gnuradio/scheduler_message.hh>
+#include <gnuradio/block.h>
+#include <gnuradio/block_group_properties.h>
+#include <gnuradio/concurrent_queue.h>
+#include <gnuradio/runtime_monitor.h>
+#include <gnuradio/neighbor_interface.h>
+#include <gnuradio/scheduler_message.h>
 #include <thread>
 #include <condition_variable>
 #include <mutex>

@@ -13,7 +13,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/buffer_net_zmq.hh>
+#include <gnuradio/buffer_net_zmq.h>
 // pydoc.h is automatically generated in the build directory
 // #include <edge_pydoc.h>
 

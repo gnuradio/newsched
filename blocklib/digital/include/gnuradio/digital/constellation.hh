@@ -12,7 +12,7 @@
 
 #include <gnuradio/digital/api.h>
 #include <gnuradio/digital/metric_type.hh>
-#include <gnuradio/types.hh>
+#include <gnuradio/types.h>
 #include <vector>
 #include <memory>
 

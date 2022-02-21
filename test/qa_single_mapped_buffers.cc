@@ -7,10 +7,10 @@
 #include <gnuradio/math/multiply_const.hh>
 #include <gnuradio/blocks/vector_sink.hh>
 #include <gnuradio/blocks/vector_source.hh>
-#include <gnuradio/buffer_sm.hh>
-#include <gnuradio/flowgraph.hh>
+#include <gnuradio/buffer_sm.h>
+#include <gnuradio/flowgraph.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/runtime.h>
 
 using namespace gr;
 

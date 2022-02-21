@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/thread.hh>
+#include <gnuradio/thread.h>
 #include <unistd.h>
 #include <fmt/core.h>
 

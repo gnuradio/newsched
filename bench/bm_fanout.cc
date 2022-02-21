@@ -6,12 +6,12 @@
 #include <gnuradio/blocks/head.hh>
 #include <gnuradio/blocks/null_sink.hh>
 #include <gnuradio/blocks/null_source.hh>
-#include <gnuradio/flowgraph.hh>
-#include <gnuradio/realtime.hh>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/realtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
-#include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/buffer_cpu_vmcirc.hh>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/buffer_cpu_simple.h>
+#include <gnuradio/buffer_cpu_vmcirc.h>
+#include <gnuradio/runtime.h>
 
 #include <iostream>
 

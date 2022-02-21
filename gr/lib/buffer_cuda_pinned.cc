@@ -8,7 +8,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include <gnuradio/buffer_cuda_pinned.hh>
+#include <gnuradio/buffer_cuda_pinned.h>
 
 namespace gr {
 buffer_cuda_pinned::buffer_cuda_pinned(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)

@@ -3,10 +3,10 @@
 #include <thread>
 
 #include <gnuradio/blocks/msg_forward.hh>
-#include <gnuradio/flowgraph.hh>
-#include <gnuradio/realtime.hh>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/realtime.h>
 #include <pmtf/base.hpp>
-#include <gnuradio/runtime.hh>
+#include <gnuradio/runtime.h>
 
 #include <iostream>
 
