@@ -29,9 +29,9 @@ void bind_buffer_net_zmq(py::module& m)
         //         return ::gr::buffer_net_zmq_properties::make(ipaddr, port);
         //     }), py::arg("ipaddr"), py::arg("port"))
         .def_static(
-            "make", &buffer_net_zmq_properties::make, py::arg("ipaddr"), py::arg("port") )
-        .def_static(
-            "make_from_params", &buffer_net_zmq_properties::make_from_params, py::arg("json_str") )
-        .def("to_json", &buffer_net_zmq_properties::to_json)
-            ;
+            "make", &buffer_net_zmq_properties::make, py::arg("ipaddr"), py::arg("port"))
+        .def_static("make_from_params",
+                    &buffer_net_zmq_properties::make_from_params,
+                    py::arg("json_str"))
+        .def("to_json", &buffer_net_zmq_properties::to_json);
 }

@@ -12,14 +12,15 @@ void scheduler_nbt::push_message(scheduler_message_sptr msg)
             auto thd = element.second;
             thd->push_message(msg);
         }
-    } else {
+    }
+    else {
         _block_thread_map[msg->blkid()]->push_message(msg);
     }
 }
 
 void scheduler_nbt::add_block_group(const std::vector<block_sptr>& blocks,
-                                   const std::string& name,
-                                   const std::vector<unsigned int>& affinity_mask)
+                                    const std::string& name,
+                                    const std::vector<unsigned int>& affinity_mask)
 {
     _block_groups.push_back(
         std::move(block_group_properties(blocks, name, affinity_mask)));

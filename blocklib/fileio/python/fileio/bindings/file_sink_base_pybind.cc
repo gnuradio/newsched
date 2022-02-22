@@ -22,9 +22,5 @@ void bind_file_sink_base(py::module& m)
     using file_sink_base = ::gr::fileio::file_sink_base;
 
     py::class_<file_sink_base, std::shared_ptr<file_sink_base>>(m, "file_sink_base")
-        .def("set_unbuffered",
-             &file_sink_base::set_unbuffered,
-             py::arg("unbuffered"))
-        ;
-
+        .def("set_unbuffered", &file_sink_base::set_unbuffered, py::arg("unbuffered"));
 }

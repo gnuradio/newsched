@@ -9,11 +9,11 @@
 // #include <gnuradio/cuda/copy.h>
 #include <gnuradio/blocks/copy.h>
 #include <gnuradio/buffer_cuda.hh>
-#include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
+#include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
 using namespace gr;
 
@@ -24,17 +24,17 @@ using namespace gr;
 TEST(SchedulerMTTest, CudaCopyBasic)
 {
     size_t veclen = 1024;
-    int num_samples = veclen*100;
+    int num_samples = veclen * 100;
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make_cpu({input_data, false, veclen});
-    auto snk1 = blocks::vector_sink_c::make_cpu({veclen});
-    auto copy1 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
-    auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
+    auto src = blocks::vector_source_c::make_cpu({ input_data, false, veclen });
+    auto snk1 = blocks::vector_sink_c::make_cpu({ veclen });
+    auto copy1 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
+    auto copy2 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
@@ -61,17 +61,17 @@ TEST(SchedulerMTTest, CudaCopyBasic)
 TEST(SchedulerMTTest, CudaCopyMultiThreaded)
 {
     size_t veclen = 1024;
-    int num_samples = veclen*1000;
+    int num_samples = veclen * 1000;
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make_cpu({input_data, false, veclen});
-    auto snk1 = blocks::vector_sink_c::make_cpu({veclen});
-    auto copy1 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
-    auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
+    auto src = blocks::vector_source_c::make_cpu({ input_data, false, veclen });
+    auto snk1 = blocks::vector_sink_c::make_cpu({ veclen });
+    auto copy1 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
+    auto copy2 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_ARGS_H2D);
@@ -97,24 +97,23 @@ TEST(SchedulerMTTest, CudaCopyMultiThreaded)
     //     if (outdata[i] != input_data[i])
     //     std::cout << outdata[i] << " " << input_data[i] << std::endl;
     // }
-    
 }
 
 
 TEST(SchedulerMTTest, CudaCopySingleMapped)
 {
     size_t veclen = 1024;
-    int num_samples = veclen*100;
+    int num_samples = veclen * 100;
     std::vector<gr_complex> input_data(num_samples);
 
     for (int i = 0; i < num_samples; i++) {
         input_data[i] = gr_complex(i, -i);
     }
 
-    auto src = blocks::vector_source_c::make_cpu({input_data, false, veclen});
-    auto snk1 = blocks::vector_sink_c::make_cpu({veclen});
-    auto copy1 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
-    auto copy2 = blocks::copy::make_cuda({veclen*sizeof(gr_complex)});
+    auto src = blocks::vector_source_c::make_cpu({ input_data, false, veclen });
+    auto snk1 = blocks::vector_sink_c::make_cpu({ veclen });
+    auto copy1 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
+    auto copy2 = blocks::copy::make_cuda({ veclen * sizeof(gr_complex) });
 
     auto fg = flowgraph::make();
     fg->connect(src, 0, copy1, 0)->set_custom_buffer(CUDA_BUFFER_SM_ARGS_H2D);

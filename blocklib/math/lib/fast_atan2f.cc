@@ -125,21 +125,24 @@ float fast_atan2f(float y, float x)
                 angle = base_angle; /* 0 -> 45, angle OK */
             else
                 angle = -base_angle; /* -45 -> 0, angle = -angle */
-        } else {                     /* 135 -> 180 or 180 -> -135 */
+        }
+        else { /* 135 -> 180 or 180 -> -135 */
             angle = 3.14159265358979323846;
             if (y >= 0.0)
                 angle -= base_angle; /* 135 -> 180, angle = 180 - angle */
             else
                 angle = base_angle - angle; /* 180 -> -135, angle = angle - 180 */
         }
-    } else {            /* 45 -> 135 or -135 -> -45 */
+    }
+    else {              /* 45 -> 135 or -135 -> -45 */
         if (y >= 0.0) { /* 45 -> 135 */
             angle = 1.57079632679489661923;
             if (x >= 0.0)
                 angle -= base_angle; /* 45 -> 90, angle = 90 - angle */
             else
                 angle += base_angle; /* 90 -> 135, angle = 90 + angle */
-        } else {                     /* -135 -> -45 */
+        }
+        else { /* -135 -> -45 */
             angle = -1.57079632679489661923;
             if (x >= 0.0)
                 angle += base_angle; /* -90 -> -45, angle = -90 + angle */

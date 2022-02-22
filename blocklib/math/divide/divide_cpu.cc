@@ -41,7 +41,7 @@ divide_cpu<gr_complex>::divide_cpu(const typename divide<gr_complex>::block_args
 template <>
 work_return_code_t
 divide_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output)
+                        std::vector<block_work_output_sptr>& work_output)
 {
     auto optr = work_output[0]->items<float>();
     auto noutput_items = work_output[0]->n_items;
@@ -60,15 +60,17 @@ divide_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
 template <>
 work_return_code_t
 divide_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                                     std::vector<block_work_output_sptr>& work_output)
+                             std::vector<block_work_output_sptr>& work_output)
 {
     auto optr = work_output[0]->items<gr_complex>();
     auto noutput_items = work_output[0]->n_items;
 
     auto numerator = work_input[0]->items<gr_complex>();
     for (size_t inp = 1; inp < d_num_inputs; ++inp) {
-        volk_32fc_x2_divide_32fc(
-            optr, numerator, work_input[inp]->items<gr_complex>(), noutput_items * d_vlen);
+        volk_32fc_x2_divide_32fc(optr,
+                                 numerator,
+                                 work_input[inp]->items<gr_complex>(),
+                                 noutput_items * d_vlen);
         numerator = optr;
     }
 
@@ -77,9 +79,8 @@ divide_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
 }
 
 template <class T>
-work_return_code_t
-divide_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t divide_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                       std::vector<block_work_output_sptr>& work_output)
 {
     auto optr = work_output[0]->items<T>();
     auto noutput_items = work_output[0]->n_items;

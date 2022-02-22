@@ -135,7 +135,8 @@ TimeUpdateEvent::TimeUpdateEvent(const std::vector<volk::vector<double>> timeDom
 {
     if (numTimeDomainDataPoints < 1) {
         _numTimeDomainDataPoints = 1;
-    } else {
+    }
+    else {
         _numTimeDomainDataPoints = numTimeDomainDataPoints;
     }
 
@@ -184,7 +185,8 @@ FreqUpdateEvent::FreqUpdateEvent(const std::vector<volk::vector<double>> dataPoi
 {
     if (numDataPoints < 1) {
         _numDataPoints = 1;
-    } else {
+    }
+    else {
         _numDataPoints = numDataPoints;
     }
 
@@ -234,7 +236,8 @@ ConstUpdateEvent::ConstUpdateEvent(const std::vector<volk::vector<double>> realD
 {
     if (numDataPoints < 1) {
         _numDataPoints = 1;
-    } else {
+    }
+    else {
         _numDataPoints = numDataPoints;
     }
 
@@ -286,7 +289,8 @@ WaterfallUpdateEvent::WaterfallUpdateEvent(
 {
     if (numDataPoints < 1) {
         _numDataPoints = 1;
-    } else {
+    }
+    else {
         _numDataPoints = numDataPoints;
     }
 
@@ -327,7 +331,8 @@ TimeRasterUpdateEvent::TimeRasterUpdateEvent(
 {
     if (numDataPoints < 1) {
         _numDataPoints = 1;
-    } else {
+    }
+    else {
         _numDataPoints = numDataPoints;
     }
 
@@ -375,7 +380,8 @@ HistogramUpdateEvent::HistogramUpdateEvent(const std::vector<volk::vector<double
 {
     if (npoints < 1) {
         _npoints = 1;
-    } else {
+    }
+    else {
         _npoints = npoints;
     }
 

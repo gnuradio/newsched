@@ -5,15 +5,15 @@
 #include <thread>
 
 #include <gnuradio/blocks/copy.h>
-#include <gnuradio/math/multiply_const.h>
+#include <gnuradio/blocks/head.h>
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
-#include <gnuradio/blocks/head.h>
-#include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
 #include <gnuradio/buffer_net_zmq.h>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/math/multiply_const.h>
 #include <gnuradio/runtime.h>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
 using namespace gr;
 
@@ -24,10 +24,10 @@ TEST(SchedulerMTTest, ZMQBuffers)
     for (size_t i = 0; i < nsamples; i++) {
         input_data[i] = i;
     }
-    auto src = blocks::vector_source_f::make({input_data, true});
+    auto src = blocks::vector_source_f::make({ input_data, true });
     // auto copy1 = blocks::copy::make({sizeof(float)});
-    auto copy2 = blocks::copy::make({sizeof(float)});
-    auto hd = blocks::head::make({nsamples, sizeof(float)});
+    auto copy2 = blocks::copy::make({ sizeof(float) });
+    auto hd = blocks::head::make({ nsamples, sizeof(float) });
     auto snk1 = blocks::vector_sink_f::make({});
 
     flowgraph_sptr fg(new flowgraph());
@@ -46,10 +46,8 @@ TEST(SchedulerMTTest, ZMQBuffers)
     EXPECT_EQ(snk1->data(), input_data);
 
     auto data = snk1->data();
-    for (size_t i=0; i<data.size(); i++)
-    {
-        if (input_data[i] != data[i])
-        {
+    for (size_t i = 0; i < data.size(); i++) {
+        if (input_data[i] != data[i]) {
             std::cout << i << ": " << input_data[i] << " " << data[i] << std::endl;
         }
     }

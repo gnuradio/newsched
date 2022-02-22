@@ -1,13 +1,13 @@
 #pragma once
 
 #include <gnuradio/api.h>
+#include <gnuradio/logging.h>
+#include <gnuradio/neighbor_interface.h>
 #include <gnuradio/tag.h>
 #include <functional>
 #include <memory>
 #include <mutex>
 #include <vector>
-#include <gnuradio/logging.h>
-#include <gnuradio/neighbor_interface.h>
 
 namespace gr {
 
@@ -42,7 +42,8 @@ using buffer_reader_factory_function = std::function<std::shared_ptr<buffer_read
  *
  * Buffer Properties will vary according to the particular buffer
  */
-class GR_RUNTIME_API buffer_properties : public std::enable_shared_from_this<buffer_properties>
+class GR_RUNTIME_API buffer_properties
+    : public std::enable_shared_from_this<buffer_properties>
 {
 public:
     buffer_properties() {}
@@ -95,7 +96,7 @@ public:
     buffer_reader_factory_function reader_factory() { return _brff; }
 
     auto independent_reader() { return _independent_reader; }
-    
+
     virtual std::string to_json() { return "{ }"; }
 
 protected:
@@ -162,10 +163,22 @@ public:
     std::mutex* mutex() { return &_buf_mutex; }
 
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_size() { return _buf_properties ? _buf_properties->max_buffer_size() : 0; }
-    size_t min_buffer_size() { return _buf_properties ? _buf_properties->min_buffer_size() : 0; }
-    size_t max_buffer_fill() { return _buf_properties ? _buf_properties->max_buffer_fill() : 0; }
-    size_t min_buffer_fill() { return _buf_properties ? _buf_properties->min_buffer_fill() : 0; }
+    size_t max_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_size() : 0;
+    }
+    size_t min_buffer_size()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_size() : 0;
+    }
+    size_t max_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_fill() : 0;
+    }
+    size_t min_buffer_fill()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_fill() : 0;
+    }
 
     std::vector<buffer_reader*>& readers() { return _readers; }
 
@@ -207,10 +220,8 @@ public:
     const std::vector<tag_t>& tags() const { return _tags; }
 
     void add_tag(tag_t tag);
-    void add_tag(uint64_t offset,
-                 pmtf::pmt key,
-                 pmtf::pmt value,
-                 pmtf::pmt srcid = nullptr);
+    void
+    add_tag(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid = nullptr);
 
     void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 
@@ -246,8 +257,8 @@ public:
 
     /**
      * @brief Create a reader object and reference to this buffer
-     * 
-     * @param buf_props 
+     *
+     * @param buf_props
      * @param itemsize itemsize in bytes on the destination side
      * @return std::shared_ptr<buffer_reader>
      */
@@ -281,7 +292,10 @@ public:
                   std::shared_ptr<buffer_properties> buf_props,
                   size_t itemsize,
                   size_t read_index = 0)
-        : _buffer(buffer), _buf_properties(buf_props), _itemsize(itemsize), _read_index(read_index)
+        : _buffer(buffer),
+          _buf_properties(buf_props),
+          _itemsize(itemsize),
+          _read_index(read_index)
     {
     }
     virtual ~buffer_reader() {}
@@ -291,8 +305,14 @@ public:
     virtual void post_read(int num_items) = 0;
     uint64_t total_read() const { return _total_read; }
     // std::shared_ptr<buffer_properties>& buf_properties() { return _buf_properties; }
-    size_t max_buffer_read() { return _buf_properties ? _buf_properties->max_buffer_read() : 0; }
-    size_t min_buffer_read() { return _buf_properties ? _buf_properties->min_buffer_read() : 0; }
+    size_t max_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->max_buffer_read() : 0;
+    }
+    size_t min_buffer_read()
+    {
+        return _buf_properties ? _buf_properties->min_buffer_read() : 0;
+    }
     size_t item_size() { return _itemsize; }
     size_t buffer_item_size() { return _buffer->item_size(); }
 

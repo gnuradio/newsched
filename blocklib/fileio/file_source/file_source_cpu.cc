@@ -11,11 +11,11 @@
 #include "file_source_cpu.h"
 #include "file_source_cpu_gen.h"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdio>
 #include <stdexcept>
-#include <fcntl.h>
 
 #include <pmtf/scalar.hpp>
 #include <pmtf/string.hpp>
@@ -38,8 +38,8 @@
 namespace gr {
 namespace fileio {
 
-file_source_cpu::file_source_cpu(const file_source::block_args& args) : 
-      INHERITED_CONSTRUCTORS, 
+file_source_cpu::file_source_cpu(const file_source::block_args& args)
+    : INHERITED_CONSTRUCTORS,
       d_itemsize(args.itemsize),
       d_start_offset_items(args.offset),
       d_length_items(args.len),
@@ -93,7 +93,8 @@ bool file_source_cpu::seek(int64_t seek_point, int whence)
             return 0;
         }
         return GR_FSEEK((FILE*)d_fp, seek_point * d_itemsize, SEEK_SET) == 0;
-    } else {
+    }
+    else {
         GR_LOG_WARN(_logger, "file not seekable");
         return 0;
     }
@@ -101,9 +102,9 @@ bool file_source_cpu::seek(int64_t seek_point, int whence)
 
 
 void file_source_cpu::open(const std::string& filename,
-                       bool repeat,
-                       uint64_t start_offset_items,
-                       uint64_t length_items)
+                           bool repeat,
+                           uint64_t start_offset_items,
+                           uint64_t length_items)
 {
     // obtain exclusive access for duration of this function
     std::scoped_lock lock(fp_mutex);
@@ -126,7 +127,8 @@ void file_source_cpu::open(const std::string& filename,
     }
     if (S_ISREG(st.st_mode)) {
         d_seekable = true;
-    } else {
+    }
+    else {
         d_seekable = false;
     }
 
@@ -143,13 +145,15 @@ void file_source_cpu::open(const std::string& filename,
         if ((file_size / d_itemsize) < (start_offset_items + 1)) {
             if (start_offset_items) {
                 GR_LOG_WARN(_logger, "file is too small for start offset");
-            } else {
+            }
+            else {
                 GR_LOG_WARN(_logger, "file is too small");
             }
             fclose(d_new_fp);
             throw std::runtime_error("file is too small");
         }
-    } else {
+    }
+    else {
         file_size = INT64_MAX;
     }
 
@@ -241,7 +245,7 @@ void file_source_cpu::do_update()
 void file_source_cpu::set_begin_tag(pmtf::pmt val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                  std::vector<block_work_output_sptr>& work_output)
+                                         std::vector<block_work_output_sptr>& work_output)
 {
     auto out = work_output[0]->items<uint8_t>();
     auto noutput_items = work_output[0]->n_items;
@@ -264,10 +268,10 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
         // Add stream tag whenever the file starts again
         if (d_file_begin && !d_add_begin_tag.empty()) {
             work_output[0]->buffer->add_tag(work_output[0]->buffer->total_written() +
-                                               noutput_items - size,
-                                           d_add_begin_tag,
-                                           pmtf::scalar<int64_t>(d_repeat_cnt),
-                                           _id);
+                                                noutput_items - size,
+                                            d_add_begin_tag,
+                                            pmtf::scalar<int64_t>(d_repeat_cnt),
+                                            _id);
 
             d_file_begin = false;
         }

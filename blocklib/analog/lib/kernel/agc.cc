@@ -28,8 +28,6 @@ gr_complex agc<gr_complex>::scale(gr_complex input)
 }
 
 
-
-
 template class agc<float>;
 template class agc<gr_complex>;
 

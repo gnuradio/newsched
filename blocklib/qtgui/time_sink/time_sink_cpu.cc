@@ -29,7 +29,8 @@ time_sink_cpu<T>::time_sink_cpu(const typename time_sink<T>::block_args& args)
     }
     // // setup PDU handling input port
     // message_port_register_in(pmtf::string("in"));
-    // set_msg_handler(pmtf::string("in"), [this](pmtf::pmt msg) { this->handle_pdus(msg); });
+    // set_msg_handler(pmtf::string("in"), [this](pmtf::pmt msg) { this->handle_pdus(msg);
+    // });
 
     // +1 for the PDU buffer
     for (unsigned int n = 0; n < d_nconnections + 1; n++) {
@@ -59,7 +60,8 @@ void time_sink_cpu<float>::initialize()
 {
     if (qApp != NULL) {
         d_qApplication = qApp;
-    } else {
+    }
+    else {
         d_qApplication = new QApplication(d_argc, &d_argv);
     }
 
@@ -83,7 +85,8 @@ void time_sink_cpu<T>::initialize()
 {
     if (qApp != NULL) {
         d_qApplication = qApp;
-    } else {
+    }
+    else {
         d_qApplication = new QApplication(d_argc, &d_argv);
     }
 
@@ -145,7 +148,8 @@ void time_sink_cpu<T>::_reset()
     if (d_trigger_mode == TRIG_MODE_FREE) {
         d_index = 0;
         d_triggered = true;
-    } else {
+    }
+    else {
         d_index = d_trigger_delay;
         d_triggered = false;
     }
@@ -184,10 +188,10 @@ void time_sink_cpu<T>::_gui_update_trigger()
         // We restrict the delay to be within the window of time being
         // plotted.
         if ((delay < 0) || (delay >= d_size)) {
-            GR_LOG_WARN(
-                 this->_logger,
-                 "Trigger delay ({}) outside of display range (0:{}).", 
-                     (delay / d_samp_rate), ((d_size - 1) / d_samp_rate));
+            GR_LOG_WARN(this->_logger,
+                        "Trigger delay ({}) outside of display range (0:{}).",
+                        (delay / d_samp_rate),
+                        ((d_size - 1) / d_samp_rate));
             delay = std::max(0, std::min(d_size - 1, delay));
             delayf = delay / d_samp_rate;
         }
@@ -230,7 +234,8 @@ bool time_sink_cpu<gr_complex>::_test_trigger_slope(const gr_complex* in) const
     if (d_trigger_channel % 2 == 0) {
         x0 = in[0].real();
         x1 = in[1].real();
-    } else {
+    }
+    else {
         x0 = in[0].imag();
         x1 = in[1].imag();
     }
@@ -315,8 +320,9 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
 
 
 template <>
-work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
-                                              std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
+                           std::vector<block_work_output_sptr>& work_output)
 {
     auto noutput_items = work_input[0]->n_items; // need to check across all inputs
 
@@ -391,8 +397,9 @@ work_return_code_t time_sink_cpu<float>::work(std::vector<block_work_input_sptr>
 
 
 template <class T>
-work_return_code_t time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                          std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                       std::vector<block_work_output_sptr>& work_output)
 {
     auto noutput_items = work_input[0]->n_items; // need to check across all inputs
 
@@ -598,9 +605,9 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
         if (d_trigger_delay >= d_size) {
             GR_LOG_WARN(this->_logger,
                         "Trigger delay ({}) outside of display range "
-                                      "(0:{}). Moving to 50%% point.",
-                            (d_trigger_delay / d_samp_rate),
-                            ((d_size - 1) / d_samp_rate));
+                        "(0:{}). Moving to 50%% point.",
+                        (d_trigger_delay / d_samp_rate),
+                        ((d_size - 1) / d_samp_rate));
             d_trigger_delay = d_size - 1;
             d_main_gui->setTriggerDelay(d_trigger_delay / d_samp_rate);
         }

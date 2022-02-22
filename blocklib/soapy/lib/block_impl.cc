@@ -12,10 +12,10 @@
 #include <SoapySDR/Formats.h>
 #include <SoapySDR/Version.hpp>
 #include <fmt/core.h>
+#include <pmtf/scalar.hpp>
+#include <pmtf/string.hpp>
 #include <cmath>
 #include <numeric>
-#include <pmtf/string.hpp>
-#include <pmtf/scalar.hpp>
 
 namespace gr {
 namespace soapy {
@@ -94,12 +94,14 @@ static void check_abi(void)
     const std::string runtime_abi = SoapySDR::getABIVersion();
 
     if (buildtime_abi != runtime_abi) {
-        throw std::runtime_error(
-            fmt::format("\nGR-Soapy detected ABI compatibility mismatch with SoapySDR library.\n"
-                "GR-Soapy was built against ABI: {},\n"
-                "but the SoapySDR library reports ABI: {}\n"
-                "Suggestion: install an ABI compatible version of SoapySDR,\n"
-                "or rebuild GR-Soapy component against this ABI version.\n", buildtime_abi, runtime_abi));
+        throw std::runtime_error(fmt::format(
+            "\nGR-Soapy detected ABI compatibility mismatch with SoapySDR library.\n"
+            "GR-Soapy was built against ABI: {},\n"
+            "but the SoapySDR library reports ABI: {}\n"
+            "Suggestion: install an ABI compatible version of SoapySDR,\n"
+            "or rebuild GR-Soapy component against this ABI version.\n",
+            buildtime_abi,
+            runtime_abi));
     }
 }
 
@@ -177,11 +179,14 @@ block_impl::block_impl(int direction,
     // Convert type to Soapy type.
     if (type == "fc32" || type == SOAPY_SDR_CF32) {
         d_soapy_type = SOAPY_SDR_CF32;
-    } else if (type == "sc16" || type == SOAPY_SDR_CS16) {
+    }
+    else if (type == "sc16" || type == SOAPY_SDR_CS16) {
         d_soapy_type = SOAPY_SDR_CS16;
-    } else if (type == "sc8" || type == SOAPY_SDR_CS8) {
+    }
+    else if (type == "sc8" || type == SOAPY_SDR_CS8) {
         d_soapy_type = SOAPY_SDR_CS8;
-    } else {
+    }
+    else {
         throw std::invalid_argument(name() + ": Invalid IO type");
     }
 
@@ -470,7 +475,8 @@ void block_impl::set_frequency(size_t channel, const std::string& name, double f
     // element if frequency is zero.
     if (vector_contains(freqs, name)) {
         d_device->setFrequency(d_direction, channel, name, frequency);
-    } else if (std::fpclassify(std::abs(frequency)) != FP_ZERO) {
+    }
+    else if (std::fpclassify(std::abs(frequency)) != FP_ZERO) {
         throw std::invalid_argument(
             this->name() + ": Channel " + std::to_string(channel) +
             " does not support frequency " + name +
@@ -627,8 +633,10 @@ void block_impl::set_gain(size_t channel, const std::string& name, double gain)
     range_t rGain = d_device->getGainRange(d_direction, channel, name);
     if (!value_in_range(rGain, gain)) {
         GR_LOG_ERROR(_debug_logger,
-                     "Gain {} out of range: {} <= gain <= {}" , name ,
-                         rGain.minimum() , rGain.maximum());
+                     "Gain {} out of range: {} <= gain <= {}",
+                     name,
+                     rGain.minimum(),
+                     rGain.maximum());
     }
 
     d_device->setGain(d_direction, channel, name, gain);
@@ -672,7 +680,8 @@ void block_impl::set_frequency_correction(size_t channel, double freq_correction
     // is zero.
     if (has_frequency_correction(channel)) {
         d_device->setFrequencyCorrection(d_direction, channel, freq_correction);
-    } else if (std::fpclassify(std::abs(freq_correction)) != FP_ZERO) {
+    }
+    else if (std::fpclassify(std::abs(freq_correction)) != FP_ZERO) {
         throw std::invalid_argument(this->name() + ": Channel " +
                                     std::to_string(channel) +
                                     " does not support frequency correction setting");
@@ -985,7 +994,8 @@ arginfo_t block_impl::get_sensor_info(const std::string& key) const
 
     if (vector_contains(sensors, key)) {
         return d_device->getSensorInfo(key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid sensor: " + key);
     }
 }
@@ -996,7 +1006,8 @@ std::string block_impl::read_sensor(const std::string& key) const
 
     if (vector_contains(sensors, key)) {
         return d_device->readSensor(key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid sensor: " + key);
     }
 }
@@ -1014,7 +1025,8 @@ arginfo_t block_impl::get_sensor_info(size_t channel, const std::string& key) co
 
     if (vector_contains(sensors, key)) {
         return d_device->getSensorInfo(d_direction, channel, key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid sensor: " + key);
     }
 }
@@ -1026,7 +1038,8 @@ std::string block_impl::read_sensor(size_t channel, const std::string& key) cons
 
     if (vector_contains(sensors, key)) {
         return d_device->readSensor(d_direction, channel, key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid sensor: " + key);
     }
 }
@@ -1087,7 +1100,8 @@ void block_impl::write_setting(const std::string& key, const std::string& value)
 
     if (arg_info_has_key(setting_info, key)) {
         d_device->writeSetting(key, value);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid setting: " + key);
     }
 }
@@ -1098,7 +1112,8 @@ std::string block_impl::read_setting(const std::string& key) const
 
     if (arg_info_has_key(setting_info, key)) {
         return d_device->readSetting(key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid setting: " + key);
     }
 }
@@ -1118,7 +1133,8 @@ void block_impl::write_setting(size_t channel,
 
     if (arg_info_has_key(setting_info, key)) {
         d_device->writeSetting(d_direction, channel, key, value);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid setting: " + key);
     }
 }
@@ -1130,7 +1146,8 @@ std::string block_impl::read_setting(size_t channel, const std::string& key) con
 
     if (arg_info_has_key(setting_info, key)) {
         return d_device->readSetting(d_direction, channel, key);
-    } else {
+    }
+    else {
         throw std::invalid_argument("Invalid setting: " + key);
     }
 }
@@ -1271,7 +1288,8 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         // Accept no name, falls back to default argument ""
 //         const auto name =
 //             pmt::symbol_to_string(pmt::dict_ref(val, CMD_NAME_KEY, PMT_EMPTYSTR));
-//         const auto gain = pmtf::scalar<double>(pmt::dict_ref(val, CMD_GAIN_KEY, PMT_ZERO));
+//         const auto gain = pmtf::scalar<double>(pmt::dict_ref(val, CMD_GAIN_KEY,
+//         PMT_ZERO));
 
 //         set_gain(channel, name, gain);
 //     } else {
@@ -1424,11 +1442,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY)
+//     ||
 //         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
 //         GR_LOG_ERROR(
 //             _debug_logger,
-//             "soapy: register write dict must contain keys \"name\", \"addr\", \"value\"");
+//             "soapy: register write dict must contain keys \"name\", \"addr\",
+//             \"value\"");
 //         return;
 //     }
 
@@ -1443,11 +1463,12 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_registers(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a dict");
-//         return;
+//         GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a
+//         dict"); return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY) ||
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY)
+//     ||
 //         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
 //         GR_LOG_ERROR(_debug_logger,
 //                      "soapy: multi-register write dict must contain keys \"name\", "
@@ -1472,19 +1493,22 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_KEY_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"key\", \"value\"");
-//         return;
+//     if (!pmt::dict_has_key(val, CMD_KEY_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY))
+//     {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"key\",
+//         \"value\""); return;
 //     }
 
-//     const auto key = pmt::symbol_to_string(pmt::dict_ref(val, CMD_KEY_KEY, PMT_EMPTYSTR));
-//     const auto value_pmt = pmt::dict_ref(val, CMD_VALUE_KEY, PMT_EMPTYSTR);
+//     const auto key = pmt::symbol_to_string(pmt::dict_ref(val, CMD_KEY_KEY,
+//     PMT_EMPTYSTR)); const auto value_pmt = pmt::dict_ref(val, CMD_VALUE_KEY,
+//     PMT_EMPTYSTR);
 
 //     std::string value;
 //     if (pmt::is_bool(val)) {
 //         write_setting(channel, key, setting_to_string(pmt::to_bool(value_pmt)));
 //     } else if (pmt::is_number(val)) {
-//         write_setting(channel, key, setting_to_string(pmtf::scalar<double>(value_pmt)));
+//         write_setting(channel, key,
+//         setting_to_string(pmtf::scalar<double>(value_pmt)));
 //     } else {
 //         write_setting(channel, key, pmt::symbol_to_string(value_pmt));
 //     }
@@ -1497,9 +1521,10 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"bank\", \"value\"");
-//         return;
+//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val,
+//     CMD_VALUE_KEY)) {
+//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"bank\",
+//         \"value\""); return;
 //     }
 
 //     const auto bank =
@@ -1524,7 +1549,8 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_DIR_KEY)) {
+//     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_DIR_KEY))
+//     {
 //         GR_LOG_ERROR(_debug_logger,
 //                      "soapy: GPIO dir must contain keys \"bank\", \"dir\"");
 //         return;
@@ -1550,7 +1576,8 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
+//     if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY))
+//     {
 //         GR_LOG_ERROR(_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
 //         return;
 //     }
@@ -1569,9 +1596,10 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         return;
 //     }
 
-//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY)) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: UART must contain keys \"name\", \"data\"");
-//         return;
+//     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY))
+//     {
+//         GR_LOG_ERROR(_debug_logger, "soapy: UART must contain keys \"name\",
+//         \"data\""); return;
 //     }
 
 //     const auto name =

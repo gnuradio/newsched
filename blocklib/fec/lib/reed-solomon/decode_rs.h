@@ -52,7 +52,8 @@ int DECODE_RS(
         for (i = 0; (unsigned int)i < NROOTS; i++) {
             if (s[i] == 0) {
                 s[i] = data[j];
-            } else {
+            }
+            else {
                 s[i] = data[j] ^ ALPHA_TO[MODNN(INDEX_OF[s[i]] + (FCR + i) * PRIM)];
             }
         }
@@ -145,7 +146,8 @@ int DECODE_RS(
             /* 2 lines below: B(x) <-- x*B(x) */
             memmove(&b[1], b, NROOTS * sizeof(b[0]));
             b[0] = A0;
-        } else {
+        }
+        else {
             /* 7 lines below: T(x) <-- lambda(x) - discr_r*x*b(x) */
             t[0] = lambda[0];
             for (i = 0; (unsigned int)i < NROOTS; i++) {
@@ -163,7 +165,8 @@ int DECODE_RS(
                 for (i = 0; (unsigned int)i <= NROOTS; i++)
                     b[i] =
                         (lambda[i] == 0) ? A0 : MODNN(INDEX_OF[lambda[i]] - discr_r + NN);
-            } else {
+            }
+            else {
                 /* 2 lines below: B(x) <-- x*B(x) */
                 memmove(&b[1], b, NROOTS * sizeof(b[0]));
                 b[0] = A0;

@@ -17,9 +17,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <cstdio>
 #include <stdexcept>
-#include <unistd.h>
 
 // win32 (mingw/msvc) specific
 #ifdef HAVE_IO_H
@@ -70,7 +70,8 @@ bool file_sink_base::open(const char* filename)
 
     if (d_append) {
         flags = O_WRONLY | O_CREAT | O_APPEND | OUR_O_LARGEFILE | OUR_O_BINARY;
-    } else {
+    }
+    else {
         flags = O_WRONLY | O_CREAT | O_TRUNC | OUR_O_LARGEFILE | OUR_O_BINARY;
     }
     if ((fd = ::open(filename, flags, 0664)) < 0) {
@@ -116,5 +117,5 @@ void file_sink_base::do_update()
 
 void file_sink_base::set_unbuffered(bool unbuffered) { d_unbuffered = unbuffered; }
 
-} /* namespace blocks */
+} // namespace fileio
 } /* namespace gr */

@@ -2,21 +2,17 @@
 
 #include <gnuradio/logging.h>
 #include <gnuradio/port_interface.h>
+#include <gnuradio/scheduler_message.h>
 #include <zmq.hpp>
 #include <thread>
-#include <gnuradio/scheduler_message.h>
 
 namespace gr {
 class message_port_proxy_upstream : public port_interface
 {
 public:
     using sptr = std::shared_ptr<message_port_proxy_upstream>;
-    static sptr make()
-    {
-        return std::make_shared<message_port_proxy_upstream>();
-    }
-    message_port_proxy_upstream()
-        : _context(1), _socket(_context, zmq::socket_type::push)
+    static sptr make() { return std::make_shared<message_port_proxy_upstream>(); }
+    message_port_proxy_upstream() : _context(1), _socket(_context, zmq::socket_type::push)
     {
         _socket.set(zmq::sockopt::sndhwm, 1);
         _socket.set(zmq::sockopt::rcvhwm, 1);
@@ -42,6 +38,7 @@ public:
         _port = port;
         _connected = true;
     }
+
 private:
     zmq::context_t _context;
     zmq::socket_t _socket;
@@ -65,10 +62,11 @@ public:
         : _context(1), _socket(_context, zmq::socket_type::pull), _port(port)
     {
         _logger = logging::get_logger("message_proxy_downstream", "default");
-        // _debug_logger = logging::get_logger("message_proxy_downstream"+ "_dbg", "debug");
+        // _debug_logger = logging::get_logger("message_proxy_downstream"+ "_dbg",
+        // "debug");
         _socket.set(zmq::sockopt::sndhwm, 1);
         _socket.set(zmq::sockopt::rcvhwm, 1);
-        
+
         std::string svrendpoint = "tcp://*:" + std::to_string(_port);
         std::cout << "binding " << svrendpoint << std::endl;
         _socket.bind(svrendpoint);
@@ -88,7 +86,8 @@ public:
         _context.close();
     }
     int port() { return _port; }
-    void start_rx() {
+    void start_rx()
+    {
         std::thread t([this]() {
             _logger->info("Client is connected, starting recv loop");
             while (!this->_rcv_done) {
@@ -103,8 +102,8 @@ public:
                         msgport_message m;
                         auto msg = m.from_json(str);
                         _grport->push_message(msg);
-
-                    } else {
+                    }
+                    else {
                         std::this_thread::sleep_for(std::chrono::milliseconds(250));
                     }
                 } catch (zmq::error_t const& err) {
@@ -118,8 +117,10 @@ public:
     void set_gr_port(port_interface_sptr p) { _grport = p; };
     void push_message(scheduler_message_sptr msg) override
     {
-        throw std::runtime_error("push_message should not be called from downstream proxy");
+        throw std::runtime_error(
+            "push_message should not be called from downstream proxy");
     }
+
 private:
     port_interface_sptr _grport = nullptr;
 

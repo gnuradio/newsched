@@ -22,9 +22,10 @@ class moving_average_cpu : public moving_average<T>
 {
 public:
     moving_average_cpu(const typename moving_average<T>::block_args& args);
-    
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+
+    virtual work_return_code_t
+    work(std::vector<block_work_input_sptr>& work_input,
+         std::vector<block_work_output_sptr>& work_output) override;
 
     int group_delay();
 
@@ -35,7 +36,7 @@ protected:
     size_t d_vlen;
     T d_scalar_sum;
     std::vector<T> d_sum;
-    
+
     std::vector<T> d_history;
 
     size_t d_new_length;

@@ -16,4 +16,3 @@
 #else
 #define DIGITAL_API __GR_ATTR_IMPORT
 #endif
-

@@ -3,12 +3,12 @@
 #include <gnuradio/block.h>
 #include <gnuradio/block_group_properties.h>
 #include <gnuradio/concurrent_queue.h>
-#include <gnuradio/runtime_monitor.h>
 #include <gnuradio/neighbor_interface.h>
+#include <gnuradio/runtime_monitor.h>
 #include <gnuradio/scheduler_message.h>
-#include <thread>
 #include <condition_variable>
 #include <mutex>
+#include <thread>
 
 #include "graph_executor.h"
 
@@ -93,7 +93,8 @@ public:
     {
         d_flushing = true;
         d_flush_cnt = 0;
-        push_message(std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
+        push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, 0));
     }
 
     std::mutex _start_mutex;

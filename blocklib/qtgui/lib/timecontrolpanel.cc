@@ -200,7 +200,8 @@ void TimeControlPanel::updateStopLabel(bool on)
     if (on) {
         d_stop_button->setText("Start");
         d_stop_button->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-    } else {
+    }
+    else {
         d_stop_button->setText("Stop");
         d_stop_button->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
     }

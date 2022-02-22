@@ -60,8 +60,7 @@ public:
      *
      * @param name The non-unique name of this block representing the block type
      */
-    block(const std::string& name,
-          const std::string& module = "");
+    block(const std::string& name, const std::string& module = "");
     virtual ~block(){};
     virtual bool start();
     virtual bool stop();
@@ -105,12 +104,22 @@ public:
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
     parameter_config d_parameters;
-    void add_param(const std::string& name, int id, pmt_sptr p) { d_parameters.add(name, id, p); }
+    void add_param(const std::string& name, int id, pmt_sptr p)
+    {
+        d_parameters.add(name, id, p);
+    }
     pmtf::pmt request_parameter_query(int param_id);
-    pmtf::pmt request_parameter_query(const std::string& param_str) { return request_parameter_query(get_param_id(param_str)); }
+    pmtf::pmt request_parameter_query(const std::string& param_str)
+    {
+        return request_parameter_query(get_param_id(param_str));
+    }
     void request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
-    void request_parameter_change(const std::string& param_str, pmtf::pmt new_value, bool block = true) 
-        { return request_parameter_change(get_param_id(param_str), new_value, block); };
+    void request_parameter_change(const std::string& param_str,
+                                  pmtf::pmt new_value,
+                                  bool block = true)
+    {
+        return request_parameter_change(get_param_id(param_str), new_value, block);
+    };
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
     static void consume_each(int num, std::vector<block_work_input_sptr>& work_input);
@@ -131,7 +140,7 @@ public:
      * Every Block should have a param update message handler
      */
     virtual void handle_msg_param_update(pmtf::pmt msg);
-    
+
     virtual void handle_msg_system(pmtf::pmt msg);
 
     static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);

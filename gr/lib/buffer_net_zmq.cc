@@ -1,8 +1,8 @@
 #include <gnuradio/buffer_cpu_vmcirc.h>
 #include <gnuradio/buffer_net_zmq.h>
-#include <thread>
-#include <chrono>
 #include <nlohmann/json.hpp>
+#include <chrono>
+#include <thread>
 namespace gr {
 
 
@@ -22,7 +22,8 @@ buffer_sptr buffer_net_zmq::make(size_t num_items,
     if (zbp != nullptr) {
         return buffer_sptr(
             new buffer_net_zmq(num_items, item_size, buffer_properties, zbp->port()));
-    } else {
+    }
+    else {
         throw std::runtime_error(
             "Failed to cast buffer properties to buffer_net_zmq_properties");
     }
@@ -59,7 +60,8 @@ buffer_net_zmq_reader::make(size_t itemsize, std::shared_ptr<buffer_properties> 
     if (zbp != nullptr) {
         return buffer_reader_sptr(
             new buffer_net_zmq_reader(buf_props, itemsize, zbp->ipaddr(), zbp->port()));
-    } else {
+    }
+    else {
         throw std::runtime_error(
             "Failed to cast buffer properties to buffer_net_zmq_properties");
     }
@@ -82,7 +84,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
     _circbuf_rdr = _circbuf->add_reader(bufprops, itemsize);
 
     // auto b = (float *)_circbuf->write_ptr();
-    
+
     // for (int i=0; i<8192; i++)
     // {
     //     b[i] = i;
@@ -90,13 +92,13 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
     // _circbuf->post_write(8192);
 
     // buffer_info_t info;
-    // _circbuf_rdr->read_info(info); 
+    // _circbuf_rdr->read_info(info);
     // auto br = (float *)_circbuf_rdr->read_ptr();
-    
+
 
     // _circbuf_rdr->post_read(4096);
     // br = (float *) _circbuf_rdr->read_ptr();
-    
+
 
     std::string endpoint = "tcp://" + ipaddr + ":" + std::to_string(port);
     GR_LOG_DEBUG(_debug_logger, "rcv_endpoint: {}", endpoint);
@@ -124,23 +126,24 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
                 continue;
             }
 
-            if (bytes_to_write > 0)
-            {
-                memcpy(wi.ptr, (uint8_t *)_msg.data() + _msg_idx, bytes_to_write);
-                GR_LOG_DEBUG(_debug_logger, "copied {} items", bytes_to_write / wi.item_size);
+            if (bytes_to_write > 0) {
+                memcpy(wi.ptr, (uint8_t*)_msg.data() + _msg_idx, bytes_to_write);
+                GR_LOG_DEBUG(
+                    _debug_logger, "copied {} items", bytes_to_write / wi.item_size);
                 _msg_idx += bytes_to_write;
                 n_bytes_left_in_msg = _msg.size() - _msg_idx;
                 _circbuf->post_write(items_to_write);
                 notify_scheduler();
             }
 
-            if (n_bytes_left_in_msg == 0)
-            {
+            if (n_bytes_left_in_msg == 0) {
                 _msg.rebuild();
                 GR_LOG_DEBUG(_debug_logger, "going into recv");
                 auto r = _socket.recv(_msg, zmq::recv_flags::none);
                 if (r) {
-                    GR_LOG_DEBUG(_debug_logger, "received msg with size {} items", _msg.size() / wi.item_size);
+                    GR_LOG_DEBUG(_debug_logger,
+                                 "received msg with size {} items",
+                                 _msg.size() / wi.item_size);
                     _msg_idx = 0;
                 }
             }
@@ -166,8 +169,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 std::string buffer_net_zmq_properties::to_json()
 {
     nlohmann::json j = { { "id", "buffer_net_zmq_properties" },
-                            { "parameters",
-                            { { "ipaddr", _ipaddr }, { "port", _port } } } };
+                         { "parameters", { { "ipaddr", _ipaddr }, { "port", _port } } } };
 
     return j.dump();
 }

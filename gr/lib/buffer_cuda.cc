@@ -1,11 +1,11 @@
+#include <cuda.h>
+#include <cuda_runtime.h>
 #include <string.h>
 #include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <vector>
-#include <cuda.h>
-#include <cuda_runtime.h>
 
 #include <gnuradio/buffer_cuda.h>
 
@@ -44,7 +44,8 @@ buffer_sptr buffer_cuda::make(size_t num_items,
     if (cbp != nullptr) {
         return buffer_sptr(
             new buffer_cuda(num_items, item_size, cbp->buffer_type(), buffer_properties));
-    } else {
+    }
+    else {
         throw std::runtime_error(
             "Failed to cast buffer properties to buffer_cuda_properties");
     }
@@ -54,7 +55,8 @@ void* buffer_cuda::read_ptr(size_t index)
 {
     if (_type == buffer_cuda_type::D2H) {
         return (void*)&_host_buffer[index];
-    } else {
+    }
+    else {
         return (void*)&_device_buffer[index];
     }
 }
@@ -62,7 +64,8 @@ void* buffer_cuda::write_ptr()
 {
     if (_type == buffer_cuda_type::H2D) {
         return (void*)&_host_buffer[_write_index];
-    } else {
+    }
+    else {
         return (void*)&_device_buffer[_write_index];
     }
 }
@@ -111,7 +114,8 @@ void buffer_cuda::post_write(int num_items)
                             cudaMemcpyDeviceToDevice,
                             stream);
         }
-    } else if (_type == buffer_cuda_type::D2H) {
+    }
+    else if (_type == buffer_cuda_type::D2H) {
         cudaMemcpyAsync(&_host_buffer[wi1],
                         &_device_buffer[wi1],
                         bytes_written,
@@ -123,7 +127,8 @@ void buffer_cuda::post_write(int num_items)
         if (num_bytes_2) {
             memcpy(&_host_buffer[0], &_host_buffer[_buf_size], num_bytes_2);
         }
-    } else // D2D
+    }
+    else // D2D
     {
         cudaMemcpyAsync(&_device_buffer[wi2],
                         &_device_buffer[wi1],

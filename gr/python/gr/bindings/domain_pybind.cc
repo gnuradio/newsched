@@ -21,9 +21,7 @@ void bind_domain(py::module& m)
 {
     using domain_conf = ::gr::domain_conf;
 
-    py::class_<domain_conf, std::shared_ptr<domain_conf>>(
-        m, "domain_conf")
-        .def(py::init<std::shared_ptr<::gr::scheduler> ,
-                std::vector<std::shared_ptr<::gr::node>> >())
-        ;
+    py::class_<domain_conf, std::shared_ptr<domain_conf>>(m, "domain_conf")
+        .def(py::init<std::shared_ptr<::gr::scheduler>,
+                      std::vector<std::shared_ptr<::gr::node>>>());
 }

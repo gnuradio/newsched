@@ -23,8 +23,7 @@ void bind_buffer_cuda_pinned(py::module& m)
 
     py::class_<buffer_cuda_pinned_properties,
                gr::buffer_properties,
-               std::shared_ptr<buffer_cuda_pinned_properties>>(m, "buffer_cuda_pinned_properties")
-        .def_static(
-            "make", &buffer_cuda_pinned_properties::make)
-            ;
+               std::shared_ptr<buffer_cuda_pinned_properties>>(
+        m, "buffer_cuda_pinned_properties")
+        .def_static("make", &buffer_cuda_pinned_properties::make);
 }

@@ -6,8 +6,13 @@ namespace zeromq {
 
 pub_sink_cpu::pub_sink_cpu(block_args args)
     : INHERITED_CONSTRUCTORS,
-      base_sink(
-          ZMQ_PUB, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm, args.key)
+      base_sink(ZMQ_PUB,
+                args.itemsize,
+                args.address,
+                args.timeout,
+                args.pass_tags,
+                args.hwm,
+                args.key)
 {
 }
 

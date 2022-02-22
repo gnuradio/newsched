@@ -53,7 +53,7 @@ private:
 
 protected:
     size_t d_mtu = 0;
-    
+
     block_impl(int direction,
                const std::string& device,
                const std::string& type,

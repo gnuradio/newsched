@@ -39,24 +39,29 @@ std::string edge::identifier() const
     return _src.identifier() + "->" + _dst.identifier();
 }
 
-size_t edge::itemsize() const { 
+size_t edge::itemsize() const
+{
     if (_src.port())
-        return _src.port()->itemsize(); 
+        return _src.port()->itemsize();
     else
         return _dst.port()->itemsize();
-    }
+}
 
 bool edge::has_custom_buffer()
 {
     if (_buffer_properties) {
         return _buffer_properties->factory() != nullptr;
-    } else {
+    }
+    else {
         return false;
     }
 }
 
 buffer_factory_function edge::buffer_factory() { return _buffer_properties->factory(); }
-buffer_reader_factory_function edge::buffer_reader_factory() { return _buffer_properties->reader_factory(); }
+buffer_reader_factory_function edge::buffer_reader_factory()
+{
+    return _buffer_properties->reader_factory();
+}
 std::shared_ptr<buffer_properties> edge::buf_properties() { return _buffer_properties; }
 
 } // namespace gr

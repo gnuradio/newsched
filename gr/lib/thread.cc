@@ -9,8 +9,8 @@
  */
 
 #include <gnuradio/thread.h>
-#include <unistd.h>
 #include <fmt/core.h>
+#include <unistd.h>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
@@ -302,9 +302,9 @@ void set_thread_name(gr_thread_t thread, const std::string& name)
 
     const int max_len = 16; // Maximum accepted by PR_SET_NAME
 
-    if ((int)thread_name.size() > max_len) // Shorten the name if necessary by taking as many
-                                    // characters from the front
-    {                               // so that the unique_id can still fit on the end
+    if ((int)thread_name.size() > max_len) // Shorten the name if necessary by taking as
+                                           // many characters from the front
+    { // so that the unique_id can still fit on the end
         int i = thread_name.size() - 1;
         for (; i >= 0; --i) {
             std::string s = thread_name.substr(i, 1);
@@ -313,8 +313,9 @@ void set_thread_name(gr_thread_t thread, const std::string& name)
                 break;
         }
 
-        thread_name = thread_name.substr(0, std::max(0, max_len - ((int)thread_name.size() - (i + 1)))) +
-               thread_name.substr(i + 1);
+        thread_name = thread_name.substr(
+                          0, std::max(0, max_len - ((int)thread_name.size() - (i + 1)))) +
+                      thread_name.substr(i + 1);
     }
 
     prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);

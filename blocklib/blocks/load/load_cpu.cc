@@ -24,7 +24,7 @@ work_return_code_t load_cpu::work(std::vector<block_work_input_sptr>& work_input
     int size = work_output[0]->n_items * work_output[0]->buffer->item_size();
 
     // std::load(iptr, iptr + size, optr);
-    for (size_t i=0; i < d_load; i++)
+    for (size_t i = 0; i < d_load; i++)
         memcpy(optr, iptr, size);
 
     work_output[0]->n_produced = work_output[0]->n_items;

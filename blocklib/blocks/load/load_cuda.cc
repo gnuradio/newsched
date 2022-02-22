@@ -39,8 +39,7 @@ work_return_code_t load_cuda::work(std::vector<block_work_input_sptr>& work_inpu
     auto noutput_items = work_output[0]->n_items;
     auto itemsize = work_output[0]->buffer->item_size();
     int gridSize = (noutput_items * itemsize + d_block_size - 1) / d_block_size;
-    load_cu::exec_kernel(
-        in, out, gridSize, d_block_size, d_load, d_stream);
+    load_cu::exec_kernel(in, out, gridSize, d_block_size, d_load, d_stream);
     checkCudaErrors(cudaPeekAtLastError());
 
 

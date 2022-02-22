@@ -13,8 +13,8 @@
 #include <gnuradio/digital/api.h>
 #include <gnuradio/digital/metric_type.h>
 #include <gnuradio/types.h>
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace gr {
 namespace digital {

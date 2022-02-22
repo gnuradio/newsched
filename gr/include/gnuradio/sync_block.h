@@ -1,8 +1,8 @@
 #pragma once
 
+#include <gnuradio/block.h>
 #include <algorithm>
 #include <limits>
-#include <gnuradio/block.h>
 
 
 namespace gr {
@@ -20,8 +20,10 @@ inline static unsigned int round_down(unsigned int n, unsigned int multiple)
 class GR_RUNTIME_API sync_block : public block
 {
 public:
-    sync_block(const std::string& name,
-          const std::string& module="") : block(name, module) {}
+    sync_block(const std::string& name, const std::string& module = "")
+        : block(name, module)
+    {
+    }
 
     /**
      * @brief Performs checks on inputs and outputs before and after the call
@@ -53,8 +55,7 @@ public:
             min_num_items = std::min(min_num_items, w->n_items);
         }
 
-        if (output_multiple_set())
-        {
+        if (output_multiple_set()) {
             min_num_items = round_down(min_num_items, output_multiple());
         }
 
@@ -67,8 +68,7 @@ public:
         }
 
         for (auto& w : work_output) {
-            if (w->n_items < output_multiple())
-            {
+            if (w->n_items < output_multiple()) {
                 return work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS;
             }
         }

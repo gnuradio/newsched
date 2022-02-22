@@ -18,9 +18,9 @@ using nodeid_t = uint32_t;
  * The node class represents all things that can be connected together in graphs.  Nodes
  * should not be instantiated directly but through the derived classes (e.g. block or
  * graph)
- * 
+ *
  * Nodes hold ports, have a name, alias, and universal ID, but that's about it
- * 
+ *
  * Ports are added after construction of the node to simplify the constructor
  *
  */
@@ -46,7 +46,8 @@ protected:
             // TODO: do message ports have an index??
 
             d_input_ports.push_back(p);
-        } else if (p->direction() == port_direction_t::OUTPUT) {
+        }
+        else if (p->direction() == port_direction_t::OUTPUT) {
             if (p->type() == port_type_t::STREAM)
                 p->set_index(output_stream_ports().size());
 
@@ -144,7 +145,8 @@ public:
 
         if (it != std::end(d_all_ports)) {
             return *it;
-        } else {
+        }
+        else {
             // port was not found
             return nullptr;
         }
@@ -169,7 +171,8 @@ public:
 
         if (it != std::end(d_all_ports)) {
             return std::dynamic_pointer_cast<message_port>(*it);
-        } else {
+        }
+        else {
             // port was not found
             return nullptr;
         }
@@ -186,7 +189,8 @@ public:
 
         if (it != std::end(d_all_ports)) {
             return *it;
-        } else {
+        }
+        else {
             // port was not found
             return nullptr;
         }

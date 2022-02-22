@@ -4,8 +4,8 @@
 #include <gnuradio/buffer.h>
 #include <gnuradio/neighbor_interface.h>
 #include <gnuradio/parameter_types.h>
-#include <gnuradio/scheduler_message.h>
 #include <gnuradio/port_interface.h>
+#include <gnuradio/scheduler_message.h>
 #include <algorithm>
 #include <string>
 #include <typeindex>
@@ -31,7 +31,8 @@ class block;
  * Holds the necessary information to describe the port to the runtime
  *
  */
-class GR_RUNTIME_API port_base : public port_interface, public std::enable_shared_from_this<port_base>
+class GR_RUNTIME_API port_base : public port_interface,
+                                 public std::enable_shared_from_this<port_base>
 {
 
 public:

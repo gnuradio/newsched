@@ -322,7 +322,8 @@ std::vector<float> window::riemann(int ntaps)
         if (i == midn(ntaps)) {
             taps[i] = 1.0;
             taps[ntaps - i - 1] = 1.0;
-        } else {
+        }
+        else {
             cx = sr1 * (i - mid);
             taps[i] = sin(cx) / cx;
             taps[ntaps - i - 1] = sin(cx) / cx;
@@ -346,7 +347,8 @@ std::vector<float> window::tukey(int ntaps, float alpha)
         if (abs(i) < p1) {
             taps[i] = 0.5 * (1.0 - cos((2 * GR_M_PI * i) / (aN)));
             taps[ntaps - 1 - i] = taps[i];
-        } else {
+        }
+        else {
             taps[i] = 1.0;
             taps[ntaps - i - 1] = 1.0;
         }

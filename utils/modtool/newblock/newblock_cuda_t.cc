@@ -16,12 +16,12 @@ namespace gr {
 namespace newmod {
 
 template <class T>
-newblock_cuda<T>::newblock_cuda(
-    const typename newblock<T>::block_args& args)
+newblock_cuda<T>::newblock_cuda(const typename newblock<T>::block_args& args)
     : newblock<T>(args), d_k(args.k), d_vlen(args.vlen)
 {
     newblock_cu::get_block_and_grid<T>(&d_min_grid_size, &d_block_size);
-    GR_LOG_INFO(gr::node::_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
+    GR_LOG_INFO(
+        gr::node::_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 
@@ -39,7 +39,7 @@ newblock_cuda<gr_complex>::newblock_cuda(
 template <class T>
 work_return_code_t
 newblock_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
-                             std::vector<block_work_output_sptr>& work_output)
+                       std::vector<block_work_output_sptr>& work_output)
 {
     // Do block specific code here
     return work_return_code_t::WORK_OK;
@@ -48,7 +48,7 @@ newblock_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
 template <>
 work_return_code_t
 newblock_cuda<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                             std::vector<block_work_output_sptr>& work_output)
+                                std::vector<block_work_output_sptr>& work_output)
 {
     auto in = work_input[0].items<cuFloatComplex>());
     auto out = work_output[0].items<cuFloatComplex>());

@@ -4,13 +4,13 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/math/multiply_const.h>
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/buffer_sm.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <gnuradio/math/multiply_const.h>
 #include <gnuradio/runtime.h>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
 using namespace gr;
 
@@ -28,12 +28,12 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
 
     int nblocks = 2;
     size_t veclen = 1;
-    auto src = blocks::vector_source_c::make({input_data});
+    auto src = blocks::vector_source_c::make({ input_data });
     auto snk = blocks::vector_sink_c::make({});
     std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
+        mult_blks[i] = math::multiply_const_cc::make_cpu({ k, veclen });
     }
 
     auto fg = flowgraph::make();
@@ -62,8 +62,7 @@ TEST(SchedulerMTSingleBuffers, SingleMappedSimple)
 
     for (size_t i = 0; i < expected_data.size(); i++) {
         if (d[i] != expected_data[i]) {
-            std::cout << i << ": " << d[i] << " " << expected_data[i]
-                      << std::endl;
+            std::cout << i << ": " << d[i] << " " << expected_data[i] << std::endl;
         }
     }
 }
@@ -87,12 +86,12 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
 
 
     size_t veclen = 1;
-    auto src = blocks::vector_source_c::make({input_data});
+    auto src = blocks::vector_source_c::make({ input_data });
     std::vector<blocks::vector_sink_c::sptr> sink_blks(nblocks);
     std::vector<math::multiply_const_cc::sptr> mult_blks(nblocks);
 
     for (int i = 0; i < nblocks; i++) {
-        mult_blks[i] = math::multiply_const_cc::make_cpu({k, veclen});
+        mult_blks[i] = math::multiply_const_cc::make_cpu({ k, veclen });
         sink_blks[i] = blocks::vector_sink_c::make({});
     }
     flowgraph_sptr fg(new flowgraph());
@@ -111,36 +110,30 @@ TEST(SchedulerMTSingleBuffers, SingleMappedFanout)
 
         auto d = sink_blks[n]->data();
         EXPECT_EQ(d.size(), expected_data.size());
-        if (d.size() == expected_data.size())
-        {
+        if (d.size() == expected_data.size()) {
             EXPECT_EQ(d, expected_data);
 
-                for (size_t i = 0; i< expected_data.size(); i++)
-                {
-                    if (d[i] != expected_data[i])
-                    {
-                        std::cout << n << " " << i << ": " << d[i] << " " << expected_data[i] << std::endl;
-                    }
+            for (size_t i = 0; i < expected_data.size(); i++) {
+                if (d[i] != expected_data[i]) {
+                    std::cout << n << " " << i << ": " << d[i] << " " << expected_data[i]
+                              << std::endl;
                 }
-            
+            }
         }
-        else
-        {
-            if (d.size() < expected_data.size())
-            {
-                auto e = std::vector<gr_complex>(expected_data.begin(), expected_data.begin()+d.size());
+        else {
+            if (d.size() < expected_data.size()) {
+                auto e = std::vector<gr_complex>(expected_data.begin(),
+                                                 expected_data.begin() + d.size());
                 EXPECT_EQ(d, e);
 
-                for (size_t i = 0; i< e.size(); i++)
-                {
-                    if (d[i] != e[i])
-                    {
-                        std::cout << n << " " << i << ": " << d[i] << " " << e[i] << std::endl;
+                for (size_t i = 0; i < e.size(); i++) {
+                    if (d[i] != e[i]) {
+                        std::cout << n << " " << i << ": " << d[i] << " " << e[i]
+                                  << std::endl;
                     }
                 }
             }
         }
-        
     }
 }
 #endif

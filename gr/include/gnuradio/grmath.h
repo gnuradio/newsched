@@ -67,7 +67,7 @@ static inline bool is_power_of_2(long x) { return x != 0 && (x & (x - 1)) == 0; 
  * close to zero. This routine calculates the arc tangent with an
  * average error of +/- 0.045 degrees.
  */
-//GR_RUNTIME_API float fast_atan2f(float y, float x);
+// GR_RUNTIME_API float fast_atan2f(float y, float x);
 float fast_atan2f(float y, float x);
 
 static inline float fast_atan2f(gr_complex z) { return fast_atan2f(z.imag(), z.real()); }
@@ -119,7 +119,8 @@ static inline unsigned int quad_0deg_slicer(float r, float i)
             ret = 0;
         else
             ret = 2;
-    } else {
+    }
+    else {
         if (i > 0)
             ret = 1;
         else

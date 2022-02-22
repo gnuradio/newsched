@@ -7,16 +7,17 @@
 
 #include <gnuradio/buffer.h>
 #include <gnuradio/flat_graph.h>
-#include <gnuradio/runtime_monitor.h>
 #include <gnuradio/logging.h>
+#include <gnuradio/runtime_monitor.h>
 #include <gnuradio/scheduler_message.h>
 namespace gr {
 
 /**
  * @brief Base class for GNU Radio Scheduler
- * 
+ *
  */
-class scheduler : public std::enable_shared_from_this<scheduler>, public neighbor_interface
+class scheduler : public std::enable_shared_from_this<scheduler>,
+                  public neighbor_interface
 {
 public:
     scheduler(const std::string& name)
@@ -38,8 +39,7 @@ public:
     void set_id(int id) { _id = id; }
 
     virtual void
-    set_default_buffer_factory(
-                               std::shared_ptr<buffer_properties> bp = nullptr)
+    set_default_buffer_factory(std::shared_ptr<buffer_properties> bp = nullptr)
     {
         _default_buf_properties = bp;
     }

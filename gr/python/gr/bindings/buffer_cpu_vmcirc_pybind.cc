@@ -31,8 +31,9 @@ void bind_vmcircbuf(py::module& m)
 
     py::class_<buffer_cpu_vmcirc_properties,
                gr::buffer_properties,
-               std::shared_ptr<buffer_cpu_vmcirc_properties>>(m, "buffer_cpu_vmcirc_properties")
-        .def_static(
-            "make", &buffer_cpu_vmcirc_properties::make, py::arg("buffer_type") = gr::buffer_cpu_vmcirc_type::AUTO)
-            ;
+               std::shared_ptr<buffer_cpu_vmcirc_properties>>(
+        m, "buffer_cpu_vmcirc_properties")
+        .def_static("make",
+                    &buffer_cpu_vmcirc_properties::make,
+                    py::arg("buffer_type") = gr::buffer_cpu_vmcirc_type::AUTO);
 }

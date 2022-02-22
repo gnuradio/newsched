@@ -18,7 +18,7 @@ file_sink_cpu::file_sink_cpu(const block_args& args)
     : INHERITED_CONSTRUCTORS,
       file_sink_base(args.filename, true, args.append),
       d_itemsize(args.itemsize)
-      
+
 {
 }
 
@@ -47,7 +47,8 @@ work_return_code_t file_sink_cpu::work(std::vector<block_work_input_sptr>& work_
                 std::stringstream s;
                 s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
                 throw std::runtime_error(s.str());
-            } else { // is EOF
+            }
+            else { // is EOF
                 break;
             }
         }

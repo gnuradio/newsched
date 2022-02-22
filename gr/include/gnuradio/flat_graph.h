@@ -87,9 +87,9 @@ public:
                     g->nodes().end() &&
                 std::find(g->nodes().begin(), g->nodes().end(), e->dst().node()) !=
                     g->nodes().end()) {
-                fg->connect(e->src(), e->dst())
-                    ->set_custom_buffer(e->buf_properties());
-            } else { // edge is a pathway into another domain
+                fg->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
+            }
+            else { // edge is a pathway into another domain
                 fg->add_edge(e);
             }
         }

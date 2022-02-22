@@ -5,8 +5,8 @@
 
 namespace gr {
 runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_ptrs,
-                                     std::vector<std::shared_ptr<runtime_proxy>>& proxy_ptrs,
-                                     const std::string& fgname)
+                                 std::vector<std::shared_ptr<runtime_proxy>>& proxy_ptrs,
+                                 const std::string& fgname)
     : d_schedulers(sched_ptrs), d_runtime_proxies(proxy_ptrs)
 {
     empty_queue();
@@ -29,17 +29,16 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                             rt_monitor_message::make(rt_monitor_message_t::KILL));
                     }
                     break;
-                } 
-                else if (msg->type() == rt_monitor_message_t::START)
-                {
+                }
+                else if (msg->type() == rt_monitor_message_t::START) {
                     GR_LOG_DEBUG(_debug_logger, "START");
                     for (auto s : d_schedulers) {
                         s->start();
                     }
                     for (auto& s : d_runtime_proxies) {
                         if (s->upstream()) {
-                        s->push_message(
-                            rt_monitor_message::make(rt_monitor_message_t::START));
+                            s->push_message(
+                                rt_monitor_message::make(rt_monitor_message_t::START));
                         }
                     }
                 }
@@ -89,7 +88,8 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                         }
                     }
                     break;
-                } else if (msg->type() == rt_monitor_message_t::FLUSHED) {
+                }
+                else if (msg->type() == rt_monitor_message_t::FLUSHED) {
                     sched_done[msg->schedid()] = true;
                     GR_LOG_DEBUG(_debug_logger, "FLUSHED from {}", msg->schedid());
 
@@ -145,7 +145,6 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
 } // TODO: bound the queue size
 
 
-
 std::string rt_monitor_message::to_string()
 {
     nlohmann::json ret = {
@@ -160,20 +159,18 @@ rt_monitor_message::sptr rt_monitor_message::from_string(const std::string& str)
 {
     auto json_obj = nlohmann::json::parse(str);
 
-    if (json_obj.count("schedid") && json_obj.count("blkid"))
-    {
-        return make(rev_string_map[json_obj["type"]], json_obj["schedid"], json_obj["blkid"]);
+    if (json_obj.count("schedid") && json_obj.count("blkid")) {
+        return make(
+            rev_string_map[json_obj["type"]], json_obj["schedid"], json_obj["blkid"]);
     }
-    else if (json_obj.count("schedid"))
-    {
+    else if (json_obj.count("schedid")) {
         return make(rev_string_map[json_obj["type"]], json_obj["schedid"]);
     }
-    else
-    {
+    else {
         return make(rev_string_map[json_obj["type"]]);
     }
 }
-    
+
 
 std::map<rt_monitor_message_t, std::string> rt_monitor_message::string_map = {
     { rt_monitor_message_t::UNKNOWN, "UNKNOWN" },

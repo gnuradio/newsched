@@ -6,9 +6,9 @@
 namespace gr {
 
 
-graph_partition_info_vec
-graph_utils::partition(graph_sptr input_graph,
-                       std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs)
+graph_partition_info_vec graph_utils::partition(
+    graph_sptr input_graph,
+    std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs)
 {
     graph_partition_info_vec ret;
     std::map<scheduler_sptr, size_t> sched_index_map;
@@ -28,7 +28,7 @@ graph_utils::partition(graph_sptr input_graph,
         graph_partition_info part_info;
         auto sched = std::get<0>(conf);
         auto blocks = std::get<1>(conf);
-        for (auto b : blocks)        // for each of the blocks in the tuple
+        for (auto b : blocks) // for each of the blocks in the tuple
         {
             // Store the block to scheduler mapping for later use
             block_to_scheduler_map[b->id()] = sched;
@@ -44,8 +44,10 @@ graph_utils::partition(graph_sptr input_graph,
                     // Is the other block in our current partition
                     if (std::find(blocks.begin(), blocks.end(), other_block) !=
                         blocks.end()) {
-                        g->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
-                    } else {
+                        g->connect(e->src(), e->dst())
+                            ->set_custom_buffer(e->buf_properties());
+                    }
+                    else {
                         // add this edge to the list of domain crossings
                         // domain_crossings.push_back(std::make_tuple(g,e));
                         domain_crossings.push_back(e);
@@ -89,7 +91,7 @@ graph_utils::partition(graph_sptr input_graph,
     }
 
     // For the crossing, make sure the edge that crosses the domain is included
-    
+
     int crossing_index = 0;
     for (auto c : domain_crossings) {
 
@@ -98,7 +100,8 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c->src().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->src().node()) !=
+                blocks.end()) {
                 src_block_graph = g;
                 break;
             }
@@ -109,7 +112,8 @@ graph_utils::partition(graph_sptr input_graph,
         for (auto info : ret) {
             auto g = info.subgraph;
             auto blocks = g->calc_used_nodes();
-            if (std::find(blocks.begin(), blocks.end(), c->dst().node()) != blocks.end()) {
+            if (std::find(blocks.begin(), blocks.end(), c->dst().node()) !=
+                blocks.end()) {
                 dst_block_graph = g;
                 break;
             }

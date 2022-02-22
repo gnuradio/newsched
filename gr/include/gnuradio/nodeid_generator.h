@@ -1,10 +1,10 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
 #include <cstdint>
-#include <string>
 #include <ctime>
+#include <string>
+#include <vector>
 
 namespace gr {
 
@@ -35,9 +35,7 @@ public:
      * @return uint32_t the global id
      */
     static uint32_t get_id() { return get_instance().get_id_(); }
-    static std::string get_unique_string() {
-        return get_instance().get_unique_string_();
-    }
+    static std::string get_unique_string() { return get_instance().get_unique_string_(); }
 
 private:
     std::vector<uint32_t> _used_ids;

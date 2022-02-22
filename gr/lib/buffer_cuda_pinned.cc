@@ -11,7 +11,9 @@
 #include <gnuradio/buffer_cuda_pinned.h>
 
 namespace gr {
-buffer_cuda_pinned::buffer_cuda_pinned(size_t num_items, size_t item_size, std::shared_ptr<buffer_properties> buf_properties)
+buffer_cuda_pinned::buffer_cuda_pinned(size_t num_items,
+                                       size_t item_size,
+                                       std::shared_ptr<buffer_properties> buf_properties)
     : buffer(num_items, item_size, buf_properties)
 {
     if (!cudaHostAlloc((void**)&_pinned_buffer, _buf_size * 2, 0) == cudaSuccess) {
@@ -65,10 +67,12 @@ void buffer_cuda_pinned::post_write(int num_items)
     }
 }
 
-std::shared_ptr<buffer_reader> buffer_cuda_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+std::shared_ptr<buffer_reader>
+buffer_cuda_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props,
+                               size_t itemsize)
 {
-    std::shared_ptr<buffer_cuda_pinned_reader> r(
-        new buffer_cuda_pinned_reader(shared_from_this(), buf_props, itemsize, _write_index));
+    std::shared_ptr<buffer_cuda_pinned_reader> r(new buffer_cuda_pinned_reader(
+        shared_from_this(), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }

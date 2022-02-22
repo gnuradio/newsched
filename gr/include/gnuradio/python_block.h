@@ -27,13 +27,7 @@ namespace gr {
  *
  * The gateway provides access to all the gr::block routines.
  */
-enum py_block_t {
-    PY_BLOCK_GENERAL = 0,
-    PY_BLOCK_SYNC,
-    PY_BLOCK_DECIM,
-    PY_BLOCK_INTERP
-};
-
+enum py_block_t { PY_BLOCK_GENERAL = 0, PY_BLOCK_SYNC, PY_BLOCK_DECIM, PY_BLOCK_INTERP };
 
 
 class GR_RUNTIME_API python_block : virtual public gr::block
@@ -55,9 +49,7 @@ public:
     bool start(void) override;
     bool stop(void) override;
 
-    void add_port(port_sptr p) {
-         node::add_port(p); 
-         }
+    void add_port(port_sptr p) { node::add_port(p); }
 };
 
 class GR_RUNTIME_API python_sync_block : virtual public gr::sync_block
@@ -80,9 +72,7 @@ public:
     bool start(void) override;
     bool stop(void) override;
 
-    void add_port(port_sptr p) { 
-        node::add_port(p); 
-        }
+    void add_port(port_sptr p) { node::add_port(p); }
 };
 
 } /* namespace gr */

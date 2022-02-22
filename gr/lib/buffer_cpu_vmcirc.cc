@@ -12,31 +12,33 @@ namespace gr {
 std::mutex s_vm_mutex;
 
 buffer_sptr buffer_cpu_vmcirc::make(size_t num_items,
-                                size_t item_size,
-                                std::shared_ptr<buffer_properties> buffer_properties)
+                                    size_t item_size,
+                                    std::shared_ptr<buffer_properties> buffer_properties)
 {
     auto bp = std::static_pointer_cast<buffer_cpu_vmcirc_properties>(buffer_properties);
     if (bp != nullptr) {
         switch (bp->buffer_type()) {
         case buffer_cpu_vmcirc_type::AUTO:
         case buffer_cpu_vmcirc_type::SYSV_SHM:
-            return buffer_sptr(new buffer_cpu_vmcirc_sysv_shm(num_items, item_size, buffer_properties));
+            return buffer_sptr(
+                new buffer_cpu_vmcirc_sysv_shm(num_items, item_size, buffer_properties));
         case buffer_cpu_vmcirc_type::MMAP_SHM:
-            return buffer_sptr(new buffer_cpu_vmcirc_mmap_shm_open(num_items, item_size, buffer_properties));
+            return buffer_sptr(new buffer_cpu_vmcirc_mmap_shm_open(
+                num_items, item_size, buffer_properties));
         default:
             throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
-
-    } else {
+    }
+    else {
         throw std::runtime_error(
             "Failed to cast buffer properties to buffer_cpu_vmcirc_properties");
     }
 }
 
 buffer_cpu_vmcirc::buffer_cpu_vmcirc(size_t num_items,
-                             size_t item_size,
-                             size_t granularity,
-                             std::shared_ptr<buffer_properties> buf_properties)
+                                     size_t item_size,
+                                     size_t granularity,
+                                     std::shared_ptr<buffer_properties> buf_properties)
     : buffer(num_items, item_size, buf_properties)
 {
     // This is the code from gnuradio that forces buffers to align with items
@@ -91,10 +93,12 @@ void buffer_cpu_vmcirc::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader> buffer_cpu_vmcirc::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+std::shared_ptr<buffer_reader>
+buffer_cpu_vmcirc::add_reader(std::shared_ptr<buffer_properties> buf_props,
+                              size_t itemsize)
 {
-    std::shared_ptr<buffer_cpu_vmcirc_reader> r(
-        new buffer_cpu_vmcirc_reader(shared_from_this(), buf_props, itemsize, _write_index));
+    std::shared_ptr<buffer_cpu_vmcirc_reader> r(new buffer_cpu_vmcirc_reader(
+        shared_from_this(), buf_props, itemsize, _write_index));
     _readers.push_back(r.get());
     return r;
 }

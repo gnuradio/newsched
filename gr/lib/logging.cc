@@ -18,7 +18,8 @@ logger_config::logger_config(YAML::Node config)
         auto it = logger_type_t_table.find(str);
         if (it != logger_type_t_table.end()) {
             type = it->second;
-        } else {
+        }
+        else {
             type = logger_type_t::none;
         }
     }
@@ -28,7 +29,8 @@ logger_config::logger_config(YAML::Node config)
         auto it = logging_level_t_table.find(str);
         if (it != logging_level_t_table.end()) {
             level = it->second;
-        } else {
+        }
+        else {
             level = logging_level_t::off;
         }
     }
@@ -58,7 +60,8 @@ logger_sptr logger_console_config::make(const std::string& name,
 
     if (cfg.console_type == logger_console_type::stdout) {
         return spdlog::stdout_color_mt(name);
-    } else {
+    }
+    else {
         return spdlog::stderr_color_mt(name);
     }
 }
@@ -122,11 +125,12 @@ logger_sptr logging::get_logger(const std::string& logger_name,
             requested_logger->set_level((*it)->level);
             requested_logger->set_pattern((*it)->pattern);
         }
-
-    } else {
+    }
+    else {
         // std::cout << "Logger: " << config_name << " not found in configuration"
         //           << std::endl;
-        // If a logger is not found, all the loggers will have nullptr.  This printout is annoying in CI tests
+        // If a logger is not found, all the loggers will have nullptr.  This printout is
+        // annoying in CI tests
         // TODO: have a default logger in the build directory
     }
 

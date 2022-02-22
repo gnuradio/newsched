@@ -60,7 +60,8 @@ std::string port_base::format_descriptor()
 {
     if (_format_descriptor != "") {
         return _format_descriptor;
-    } else {
+    }
+    else {
         return parameter_functions::get_format_descriptor(_data_type);
     }
 }
@@ -79,7 +80,8 @@ void port_base::push_message(scheduler_message_sptr msg)
     // push it to the queue of the owning thread
     if (_parent_intf) {
         _parent_intf->push_message(msg);
-    } else {
+    }
+    else {
         // In the case of distributed flowgraphs, the local version
         // of the remote node will get called here
         // in which case, it really needs to signal to the remote
@@ -109,10 +111,10 @@ void port_base::disconnect(port_interface_sptr other_port)
 
 template <typename T>
 std::shared_ptr<port<T>> port<T>::make(const std::string& name,
-                                              const port_direction_t direction,
-                                              const std::vector<size_t>& dims,
-                                              const bool optional,
-                                              const int multiplicity)
+                                       const port_direction_t direction,
+                                       const std::vector<size_t>& dims,
+                                       const bool optional,
+                                       const int multiplicity)
 {
     return std::shared_ptr<port<T>>(
         new port<T>(name, direction, dims, optional, multiplicity));
@@ -138,10 +140,10 @@ port<T>::port(const std::string& name,
 
 
 std::shared_ptr<untyped_port> untyped_port::make(const std::string& name,
-                                                        const port_direction_t direction,
-                                                        const size_t itemsize,
-                                                        const bool optional,
-                                                        const int multiplicity)
+                                                 const port_direction_t direction,
+                                                 const size_t itemsize,
+                                                 const bool optional,
+                                                 const int multiplicity)
 {
     return std::shared_ptr<untyped_port>(
         new untyped_port(name, direction, itemsize, optional, multiplicity));
@@ -156,9 +158,9 @@ untyped_port::untyped_port(const std::string& name,
 }
 
 std::shared_ptr<message_port> message_port::make(const std::string& name,
-                               const port_direction_t direction,
-                               const bool optional,
-                               const int multiplicity)
+                                                 const port_direction_t direction,
+                                                 const bool optional,
+                                                 const int multiplicity)
 {
     return std::make_shared<message_port>(name, direction, optional, multiplicity);
 }

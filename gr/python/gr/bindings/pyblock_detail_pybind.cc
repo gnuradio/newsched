@@ -20,7 +20,5 @@ void bind_pyblock_detail(py::module& m)
     using pyblock_detail = ::gr::pyblock_detail;
 
     py::class_<pyblock_detail, std::shared_ptr<pyblock_detail>>(m, "pyblock_detail")
-        .def(py::init<py::handle>())
-        ;
-
+        .def(py::init<py::handle>());
 }

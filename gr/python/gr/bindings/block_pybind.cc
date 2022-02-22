@@ -13,8 +13,8 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/pyblock_detail.h>
 #include <gnuradio/block.h>
+#include <gnuradio/pyblock_detail.h>
 
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
@@ -28,25 +28,19 @@ void bind_block(py::module& m)
              &block::work,
              py::arg("work_input_items"),
              py::arg("work_output_items"))
-        .def("base",
-            &block::base)
-        .def_static("cast",
-            &block::cast)
-        .def("set_pyblock_detail",
-            &block::set_pyblock_detail)
-        .def("produce_each",
-            &block::produce_each)
-        .def("consume_each",
-            &block::consume_each)
+        .def("base", &block::base)
+        .def_static("cast", &block::cast)
+        .def("set_pyblock_detail", &block::set_pyblock_detail)
+        .def("produce_each", &block::produce_each)
+        .def("consume_each", &block::consume_each)
         .def("request_parameter_query",
-            py::overload_cast<int>(&block::request_parameter_query))
+             py::overload_cast<int>(&block::request_parameter_query))
         .def("request_parameter_query",
-            py::overload_cast<const std::string&>(&block::request_parameter_query))
+             py::overload_cast<const std::string&>(&block::request_parameter_query))
         .def("request_parameter_change",
-            py::overload_cast<int, pmtf::pmt, bool>(&block::request_parameter_change))
+             py::overload_cast<int, pmtf::pmt, bool>(&block::request_parameter_change))
         .def("request_parameter_change",
-            py::overload_cast<const std::string&, pmtf::pmt, bool>(&block::request_parameter_change))
-        .def_static("deserialize_param_to_pmt", &block::deserialize_param_to_pmt)
-        ;
-
+             py::overload_cast<const std::string&, pmtf::pmt, bool>(
+                 &block::request_parameter_change))
+        .def_static("deserialize_param_to_pmt", &block::deserialize_param_to_pmt);
 }

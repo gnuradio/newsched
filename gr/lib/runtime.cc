@@ -1,6 +1,6 @@
-#include <gnuradio/runtime.h>
-#include <gnuradio/graph_utils.h>
 #include <gnuradio/flat_graph.h>
+#include <gnuradio/graph_utils.h>
+#include <gnuradio/runtime.h>
 #include <dlfcn.h>
 
 namespace gr {
@@ -74,52 +74,53 @@ void runtime::initialize(graph_sptr fg)
     auto _logger =
         logging::get_logger(fmt::format("runtime_init_{}", fg->name()), "default");
     GR_LOG_INFO(_logger, "initialize {}", d_schedulers.size());
-    
-    if (d_schedulers.size() == 1)
-    {
+
+    if (d_schedulers.size() == 1) {
         d_rtmon = std::make_shared<runtime_monitor>(
             d_schedulers, d_runtime_proxies, fg->alias());
         for (auto& p : d_runtime_proxies) {
             GR_LOG_DEBUG(_logger, ".");
             p->set_runtime_monitor(d_rtmon);
         }
-        d_schedulers[0]->initialize(flat_graph::make_flat(fg),
-                                   d_rtmon);
+        d_schedulers[0]->initialize(flat_graph::make_flat(fg), d_rtmon);
     }
-    else
-    {
+    else {
         auto graph_part_info = graph_utils::partition(fg, d_scheduler_confs);
         d_rtmon = std::make_shared<runtime_monitor>(
             d_schedulers, d_runtime_proxies, fg->alias());
         for (auto& info : graph_part_info) {
 
-            info.scheduler->initialize(flat_graph::make_flat(info.subgraph),
-                                    d_rtmon);
+            info.scheduler->initialize(flat_graph::make_flat(info.subgraph), d_rtmon);
         }
     }
 
     d_initialized = true;
 }
 
-void runtime::start() {
+void runtime::start()
+{
     if (!d_initialized) {
-        throw new std::runtime_error("Runtime must be initialized prior to runtime start()");
+        throw new std::runtime_error(
+            "Runtime must be initialized prior to runtime start()");
     }
     d_rtmon->start();
 }
-void runtime::stop() {
+void runtime::stop()
+{
     for (auto s : d_schedulers) {
         s->stop();
     }
     d_rtmon->stop();
 }
-void runtime::wait() {
+void runtime::wait()
+{
     for (auto s : d_schedulers) {
         s->wait();
     }
 }
 
-void runtime::run() {
+void runtime::run()
+{
     start();
     wait();
 }

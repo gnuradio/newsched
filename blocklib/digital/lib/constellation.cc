@@ -347,7 +347,8 @@ std::vector<float> constellation::soft_decision_maker(gr_complex sample)
         }
 
         return d_soft_dec_lut[index];
-    } else {
+    }
+    else {
         return calc_soft_dec(sample);
     }
 }
@@ -752,7 +753,8 @@ unsigned int constellation_dqpsk::decision_maker(const gr_complex* sample)
             return 0x0;
         else
             return 0x3;
-    } else {
+    }
+    else {
         if (b)
             return 0x1;
         else

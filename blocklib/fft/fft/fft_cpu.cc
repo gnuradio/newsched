@@ -16,18 +16,18 @@ namespace gr {
 namespace fft {
 
 template <class T, bool forward>
-fft_cpu<T, forward>::fft_cpu(const typename fft<T, forward>::block_args& args) 
-    : INHERITED_CONSTRUCTORS(T,forward),
+fft_cpu<T, forward>::fft_cpu(const typename fft<T, forward>::block_args& args)
+    : INHERITED_CONSTRUCTORS(T, forward),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
       d_fft(args.fft_size)
 {
     if (args.window.empty() || args.window.size() == d_fft_size) {
         d_window = args.window;
-    } else {
+    }
+    else {
         throw std::runtime_error("fft: window not the same length as fft_size");
     }
-
 }
 
 template <class T, bool forward>
@@ -48,7 +48,8 @@ void fft_cpu<gr_complex, true>::fft_and_shift(const gr_complex* in, gr_complex* 
     if (!d_window.empty()) {
         gr_complex* dst = d_fft.get_inbuf();
         volk_32fc_32f_multiply_32fc(&dst[0], in, &d_window[0], d_fft_size);
-    } else {
+    }
+    else {
         memcpy(d_fft.get_inbuf(), in, sizeof(gr_complex) * d_fft_size);
     }
     d_fft.execute();
@@ -57,7 +58,8 @@ void fft_cpu<gr_complex, true>::fft_and_shift(const gr_complex* in, gr_complex* 
         memcpy(
             &out[0], &d_fft.get_outbuf()[len], sizeof(gr_complex) * (d_fft_size - len));
         memcpy(&out[d_fft_size - len], &d_fft.get_outbuf()[0], sizeof(gr_complex) * len);
-    } else {
+    }
+    else {
 
         memcpy(out, d_fft.get_outbuf(), sizeof(gr_complex) * d_fft_size);
     }
@@ -74,17 +76,20 @@ void fft_cpu<gr_complex, false>::fft_and_shift(const gr_complex* in, gr_complex*
             volk_32fc_32f_multiply_32fc(&dst[fft_m_offset], &in[0], &d_window[0], offset);
             volk_32fc_32f_multiply_32fc(
                 &dst[0], &in[offset], &d_window[offset], d_fft_size - offset);
-        } else {
+        }
+        else {
             volk_32fc_32f_multiply_32fc(&dst[0], in, &d_window[0], d_fft_size);
         }
-    } else {
+    }
+    else {
         if (d_shift) { // apply an ifft shift on the data
             gr_complex* dst = d_fft.get_inbuf();
             unsigned int len =
                 (unsigned int)(floor(d_fft_size / 2.0)); // half length of complex array
             memcpy(&dst[0], &in[len], sizeof(gr_complex) * (d_fft_size - len));
             memcpy(&dst[d_fft_size - len], &in[0], sizeof(gr_complex) * len);
-        } else {
+        }
+        else {
             memcpy(d_fft.get_inbuf(), in, sizeof(gr_complex) * d_fft_size);
         }
     }
@@ -100,7 +105,8 @@ void fft_cpu<float, true>::fft_and_shift(const float* in, gr_complex* out)
         gr_complex* dst = d_fft.get_inbuf();
         for (unsigned int i = 0; i < d_fft_size; i++) // apply window
             dst[i] = in[i] * d_window[i];
-    } else {
+    }
+    else {
         gr_complex* dst = d_fft.get_inbuf();
         for (unsigned int i = 0; i < d_fft_size; i++) // float to complex conversion
             dst[i] = in[i];
@@ -112,7 +118,8 @@ void fft_cpu<float, true>::fft_and_shift(const float* in, gr_complex* out)
         memcpy(
             &out[0], &d_fft.get_outbuf()[len], sizeof(gr_complex) * (d_fft_size - len));
         memcpy(&out[d_fft_size - len], &d_fft.get_outbuf()[0], sizeof(gr_complex) * len);
-    } else {
+    }
+    else {
 
         memcpy(out, d_fft.get_outbuf(), sizeof(gr_complex) * d_fft_size);
     }
@@ -133,12 +140,13 @@ void fft_cpu<float, false>::fft_and_shift(const float* in, gr_complex* out)
             for (unsigned int i = len; i < d_fft_size; i++) {
                 dst[i] = in[i - len] * d_window[i - len];
             }
-        } else {
+        }
+        else {
             for (unsigned int i = 0; i < d_fft_size; i++) // apply window
                 dst[i] = in[i] * d_window[i];
         }
-
-    } else {
+    }
+    else {
         gr_complex* dst = d_fft.get_inbuf();
         if (d_shift) {
             unsigned int len =
@@ -149,7 +157,8 @@ void fft_cpu<float, false>::fft_and_shift(const float* in, gr_complex* out)
             for (unsigned int i = len; i < d_fft_size; i++) {
                 dst[i] = in[i - len];
             }
-        } else {
+        }
+        else {
             for (unsigned int i = 0; i < d_fft_size; i++) // float to complex conversion
                 dst[i] = in[i];
         }
@@ -163,8 +172,9 @@ void fft_cpu<float, false>::fft_and_shift(const float* in, gr_complex* out)
 }
 
 template <class T, bool forward>
-work_return_code_t fft_cpu<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
-                                             std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+fft_cpu<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
+                          std::vector<block_work_output_sptr>& work_output)
 {
     auto in = work_input[0]->items<T>();
     auto out = work_output[0]->items<gr_complex>();

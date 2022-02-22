@@ -31,9 +31,9 @@ public:
                             std::shared_ptr<buffer_properties> buffer_properties);
 
     buffer_cpu_vmcirc(size_t num_items,
-                  size_t item_size,
-                  size_t granularity,
-                  std::shared_ptr<buffer_properties> buf_properties);
+                      size_t item_size,
+                      size_t granularity,
+                      std::shared_ptr<buffer_properties> buf_properties);
 
     // These methods are common to all the vmcircbufs
 
@@ -45,13 +45,17 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::shared_ptr<buffer_reader> add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
+    virtual std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 };
 
 class buffer_cpu_vmcirc_reader : public buffer_reader
 {
 public:
-    buffer_cpu_vmcirc_reader(buffer_sptr buffer, std::shared_ptr<buffer_properties> buf_props, size_t itemsize, size_t read_index = 0)
+    buffer_cpu_vmcirc_reader(buffer_sptr buffer,
+                             std::shared_ptr<buffer_properties> buf_props,
+                             size_t itemsize,
+                             size_t read_index = 0)
         : buffer_reader(buffer, buf_props, itemsize, read_index)
     {
     }
@@ -63,7 +67,8 @@ class buffer_cpu_vmcirc_properties : public buffer_properties
 {
 public:
     // using std::shared_ptr<buffer_properties> = sptr;
-    buffer_cpu_vmcirc_properties(buffer_cpu_vmcirc_type buffer_type_ = buffer_cpu_vmcirc_type::AUTO)
+    buffer_cpu_vmcirc_properties(
+        buffer_cpu_vmcirc_type buffer_type_ = buffer_cpu_vmcirc_type::AUTO)
         : buffer_properties(), _buffer_type(buffer_type_)
 
     {
@@ -82,7 +87,8 @@ private:
 
 } // namespace gr
 
-#define BUFFER_CPU_VMCIRC_ARGS buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
+#define BUFFER_CPU_VMCIRC_ARGS \
+    buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO)
 #define BUFFER_CPU_VMCIRC_SYSV_SHM_ARGS \
     buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::SYSV_SHM)
 #define BUFFER_CPU_VMCIRC_MMAP_SHM_ARGS \

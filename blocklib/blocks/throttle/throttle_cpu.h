@@ -12,8 +12,8 @@
 #pragma once
 
 #include <gnuradio/blocks/throttle.h>
-#include <chrono>
 #include <atomic>
+#include <chrono>
 
 namespace gr {
 namespace blocks {
@@ -25,8 +25,9 @@ public:
     void set_sample_rate(double rate);
 
     bool start();
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    virtual work_return_code_t
+    work(std::vector<block_work_input_sptr>& work_input,
+         std::vector<block_work_output_sptr>& work_output) override;
 
 protected:
     double d_samps_per_sec;

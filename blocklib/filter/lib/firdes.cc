@@ -338,7 +338,8 @@ firdes::complex_band_pass_2(double gain,
     float phase = 0;
     if (lptaps.size() & 01) {
         phase = -freq * (lptaps.size() >> 1);
-    } else
+    }
+    else
         phase = -freq / 2.0 * ((1 + 2 * lptaps.size()) >> 1);
 
     for (unsigned int i = 0; i < lptaps.size(); i++) {
@@ -382,7 +383,8 @@ firdes::complex_band_pass(double gain,
     float phase = 0;
     if (lptaps.size() & 01) {
         phase = -freq * (lptaps.size() >> 1);
-    } else
+    }
+    else
         phase = -freq / 2.0 * ((1 + 2 * lptaps.size()) >> 1);
 
     for (unsigned int i = 0; i < lptaps.size(); i++) {
@@ -431,7 +433,8 @@ firdes::complex_band_reject_2(double gain,
     float phase = 0;
     if (hptaps.size() & 01) {
         phase = -freq * (hptaps.size() >> 1);
-    } else
+    }
+    else
         phase = -freq / 2.0 * ((1 + 2 * hptaps.size()) >> 1);
 
     for (unsigned int i = 0; i < hptaps.size(); i++) {
@@ -474,7 +477,8 @@ firdes::complex_band_reject(double gain,
     float phase = 0;
     if (hptaps.size() & 01) {
         phase = -freq * (hptaps.size() >> 1);
-    } else
+    }
+    else
         phase = -freq / 2.0 * ((1 + 2 * hptaps.size()) >> 1);
 
     for (unsigned int i = 0; i < hptaps.size(); i++) {
@@ -599,7 +603,8 @@ firdes::hilbert(unsigned int ntaps, fft::window::win_type windowtype, double par
             taps[h + i] = x * w[h + i];
             taps[h - i] = -x * w[h - i];
             gain = taps[h + i] - gain;
-        } else
+        }
+        else
             taps[h + i] = taps[h - i] = 0;
     }
 
@@ -660,7 +665,8 @@ vector<float> firdes::root_raised_cosine(
             else
                 num = cos((1 + alpha) * x1) + (1 - alpha) * GR_M_PI / (4 * alpha);
             den = x3 * GR_M_PI;
-        } else {
+        }
+        else {
             if (alpha == 1) {
                 taps[i] = -1;
                 scale += taps[i];
@@ -727,7 +733,8 @@ double firdes::bessi0(double x)
                        y * (3.0899424 +
                             y * (1.2067492 +
                                  y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
-    } else {
+    }
+    else {
         y = 3.75 / ax;
         ans = (exp(ax) / sqrt(ax)) *
               (0.39894228 +

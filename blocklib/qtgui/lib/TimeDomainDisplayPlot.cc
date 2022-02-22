@@ -54,7 +54,8 @@ protected:
                           .arg(d_unitType.c_str())
                           .arg(dp.y(), 0, 'f', 4)
                           .arg(d_yUnitType.c_str()));
-        } else {
+        }
+        else {
             t.setText(QString("%1 %2, %3 %4")
                           .arg(dp.x(), 0, 'f', getTimePrecision())
                           .arg(d_unitType.c_str())
@@ -199,7 +200,8 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                 if (d_semilogy) {
                     for (int n = 0; n < numDataPoints; n++)
                         d_ydata[i][n] = fabs(dataPoints[i][n]);
-                } else {
+                }
+                else {
                     memcpy(
                         d_ydata[i].data(), dataPoints[i], numDataPoints * sizeof(double));
                 }
@@ -253,7 +255,8 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                                 if (fabs(d_ydata[i][offset]) <
                                     fabs(d_ydata[i + 1][offset]))
                                     which = i + 1;
-                            } else {
+                            }
+                            else {
                                 // If show0, we keep which = i; otherwise, use i+1.
                                 if (show1)
                                     which = i + 1;
@@ -293,7 +296,8 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                             if (yval >= 0) {
                                 sym->setStyle(QwtSymbol::DTriangle);
                                 m->setLabelAlignment(Qt::AlignTop);
-                            } else {
+                            }
+                            else {
                                 sym->setStyle(QwtSymbol::UTriangle);
                                 m->setLabelAlignment(Qt::AlignBottom);
                             }
@@ -314,7 +318,8 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                             }
 
                             d_tag_markers[which].push_back(m);
-                        } else {
+                        }
+                        else {
                             // Prepend the new tag to the existing marker
                             // And set it at the max value
                             if (fabs(yval) < fabs((*mitr)->yValue()))
@@ -405,7 +410,8 @@ void TimeDomainDisplayPlot::_resetXAxisPoints()
     if (d_semilogx) {
         setAxisScale(QwtPlot::xBottom, 1e-1, d_numPoints * delt);
         zbase.setLeft(1e-1);
-    } else {
+    }
+    else {
         setAxisScale(QwtPlot::xBottom, 0, d_numPoints * delt);
         zbase.setLeft(0);
     }
@@ -424,10 +430,12 @@ void TimeDomainDisplayPlot::_autoScale(double bottom, double top)
     if (d_semilogy) {
         if (bottom > 0) {
             setYaxis(_bot - 10, _top + 10);
-        } else {
+        }
+        else {
             setYaxis(1e-3, _top + 10);
         }
-    } else {
+    }
+    else {
         setYaxis(_bot, _top);
     }
 }
@@ -470,7 +478,8 @@ void TimeDomainDisplayPlot::stemPlot(bool en)
             d_plot_curve[i]->setStyle(QwtPlotCurve::Sticks);
             setLineMarker(i, QwtSymbol::Ellipse);
         }
-    } else {
+    }
+    else {
         for (unsigned int i = 0; i < d_nplots; ++i) {
             d_plot_curve[i]->setStyle(QwtPlotCurve::Lines);
             setLineMarker(i, QwtSymbol::NoSymbol);
@@ -483,7 +492,8 @@ void TimeDomainDisplayPlot::setSemilogx(bool en)
     d_semilogx = en;
     if (!d_semilogx) {
         setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
-    } else {
+    }
+    else {
 #if QWT_VERSION < 0x060100
         setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
 #else  /* QWT_VERSION < 0x060100 */
@@ -507,7 +517,8 @@ void TimeDomainDisplayPlot::setSemilogy(bool en)
         if (!d_semilogy) {
             setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
             setYaxis(-pow(10.0, max / 10.0), pow(10.0, max / 10.0));
-        } else {
+        }
+        else {
 #if QWT_VERSION < 0x060100
             setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
 #else  /* QWT_VERSION < 0x060100 */
@@ -566,7 +577,8 @@ void TimeDomainDisplayPlot::attachTriggerLines(bool en)
     if (en) {
         d_trigger_lines[0]->attach(this);
         d_trigger_lines[1]->attach(this);
-    } else {
+    }
+    else {
         d_trigger_lines[0]->detach();
         d_trigger_lines[1]->detach();
     }

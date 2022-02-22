@@ -24,9 +24,10 @@ class moving_average_cuda : public moving_average<T>
 {
 public:
     moving_average_cuda(const typename moving_average<T>::block_args& args);
-    
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+
+    virtual work_return_code_t
+    work(std::vector<block_work_input_sptr>& work_input,
+         std::vector<block_work_output_sptr>& work_output) override;
 
     int group_delay();
 
@@ -40,9 +41,8 @@ protected:
     T d_new_scale;
     bool d_updated = false;
 
-    std::shared_ptr<cusp::convolve<T,T>> p_kernel_full;
-    std::shared_ptr<cusp::convolve<T,T>> p_kernel_valid;
-
+    std::shared_ptr<cusp::convolve<T, T>> p_kernel_full;
+    std::shared_ptr<cusp::convolve<T, T>> p_kernel_valid;
 };
 
 

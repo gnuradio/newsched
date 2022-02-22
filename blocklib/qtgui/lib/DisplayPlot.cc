@@ -293,7 +293,8 @@ int DisplayPlot::getLineWidth(unsigned int which) const
 {
     if (which < d_nplots) {
         return d_plot_curve[which]->pen().width();
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -311,7 +312,8 @@ const Qt::PenStyle DisplayPlot::getLineStyle(unsigned int which) const
 {
     if (which < d_nplots) {
         return d_plot_curve[which]->pen().style();
-    } else {
+    }
+    else {
         return Qt::SolidLine;
     }
 }
@@ -347,7 +349,8 @@ const QwtSymbol::Style DisplayPlot::getLineMarker(unsigned int which) const
         QwtSymbol* sym = (QwtSymbol*)d_plot_curve[which]->symbol();
         return sym->style();
 #endif
-    } else {
+    }
+    else {
         return QwtSymbol::NoSymbol;
     }
 }
@@ -383,7 +386,8 @@ int DisplayPlot::getMarkerAlpha(unsigned int which) const
 {
     if (which < d_nplots) {
         return d_plot_curve[which]->pen().color().alpha();
-    } else {
+    }
+    else {
         return 0;
     }
 }

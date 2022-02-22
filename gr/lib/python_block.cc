@@ -9,8 +9,8 @@
  *
  */
 #include <gnuradio/python_block.h>
-#include <pybind11/embed.h>
 #include <pybind11/complex.h>
+#include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -22,26 +22,22 @@ namespace gr {
 /**************************************************************************
  *   Python Block
  **************************************************************************/
-python_block::sptr python_block::make(const py::object& p,
-                                        const std::string& name)
+python_block::sptr python_block::make(const py::object& p, const std::string& name)
 {
     return std::make_shared<python_block>(p, name);
 }
 
-python_block::python_block(const py::handle& p,
-                                       const std::string& name)
-    : block(name)
+python_block::python_block(const py::handle& p, const std::string& name) : block(name)
 {
     d_py_handle = p;
 }
 
 work_return_code_t python_block::work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
+                                      std::vector<block_work_output_sptr>& work_output)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("handle_work")(
-        work_input, work_output);
+    py::object ret = d_py_handle.attr("handle_work")(work_input, work_output);
 
     return ret.cast<work_return_code_t>();
 }
@@ -66,26 +62,25 @@ bool python_block::stop(void)
  *   Python Sync Block
  **************************************************************************/
 python_sync_block::sptr python_sync_block::make(const py::object& p,
-                                        const std::string& name)
+                                                const std::string& name)
 {
     return std::make_shared<python_sync_block>(p, name);
 }
 
-python_sync_block::python_sync_block(const py::handle& p,
-                                       const std::string& name)
+python_sync_block::python_sync_block(const py::handle& p, const std::string& name)
     : sync_block(name)
-{   
+{
     d_py_handle = p;
 }
 
 
-work_return_code_t python_sync_block::work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+python_sync_block::work(std::vector<block_work_input_sptr>& work_input,
+                        std::vector<block_work_output_sptr>& work_output)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("work")(work_input, work_output
-        );
+    py::object ret = d_py_handle.attr("work")(work_input, work_output);
 
     return ret.cast<work_return_code_t>();
 }
