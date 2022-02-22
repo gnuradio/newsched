@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
 // We need this hack because import_array() returns NULL
 // for newer Python versions.

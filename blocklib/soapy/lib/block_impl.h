@@ -10,7 +10,7 @@
 
 #include <mutex>
 
-#include <gnuradio/soapy/block.hh>
+#include <gnuradio/soapy/block.h>
 
 #include <SoapySDR/Device.hpp>
 #include <SoapySDR/Modules.hpp>

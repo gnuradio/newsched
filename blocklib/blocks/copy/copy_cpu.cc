@@ -7,8 +7,8 @@
  *
  */
 
-#include "copy_cpu.hh"
-#include "copy_cpu_gen.hh"
+#include "copy_cpu.h"
+#include "copy_cpu_gen.h"
 namespace gr {
 namespace blocks {
 

@@ -6,8 +6,8 @@
  *
  */
 
-#include "null_sink_cpu.hh"
-#include "null_sink_cpu_gen.hh"
+#include "null_sink_cpu.h"
+#include "null_sink_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <gnuradio/fft/fftw_fft.hh>
+#include <gnuradio/fft/fftw_fft.h>
 #include <gnuradio/filter/api.h>
 // #include <gnuradio/filter/fft_filter.h>
-#include <gnuradio/filter/fir_filter.hh>
+#include <gnuradio/filter/fir_filter.h>
 
 namespace gr {
 namespace filter {

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/newmod/newblock.hh>
+#include <gnuradio/newmod/newblock.h>
 
 namespace gr {
 namespace newmod {

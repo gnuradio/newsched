@@ -1,7 +1,6 @@
 headers = [
-    'math.hh',
-    'nco.hh',
-    'sincos.hh'
+    'nco.h',
+    'sincos.h'
 ]
 
 install_headers(headers, subdir : 'gnuradio/math')

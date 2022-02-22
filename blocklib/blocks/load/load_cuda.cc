@@ -8,8 +8,8 @@
  *
  */
 
-#include "load_cuda.hh"
-#include "load_cuda_gen.hh"
+#include "load_cuda.h"
+#include "load_cuda_gen.h"
 
 #include <gnuradio/helper_cuda.h>
 

@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/filter/fir_filter.hh>
+#include <gnuradio/filter/fir_filter.h>
 #include <volk/volk.h>
 #include <algorithm>
 #include <cstdio>

@@ -6,8 +6,8 @@
  *
  */
 
-#include "add_cuda.hh"
-#include "add_cuda_gen.hh"
+#include "add_cuda.h"
+#include "add_cuda_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

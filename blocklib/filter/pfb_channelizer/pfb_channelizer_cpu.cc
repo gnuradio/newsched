@@ -8,8 +8,8 @@
  *
  */
 
-#include "pfb_channelizer_cpu.hh"
-#include "pfb_channelizer_cpu_gen.hh"
+#include "pfb_channelizer_cpu.h"
+#include "pfb_channelizer_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

@@ -18,7 +18,7 @@
 /* BINDTOOL_HEADER_FILE_HASH(6326cce2f22e30ab332ef966343f4a50)                     */
 /***********************************************************************************/
 
-#include "soapy_common.hh"
+#include "soapy_common.h"
 
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
@@ -26,7 +26,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/soapy/block.hh>
+#include <gnuradio/soapy/block.h>
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 

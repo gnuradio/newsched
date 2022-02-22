@@ -6,8 +6,8 @@
  *
  */
 
-#include "null_source_cpu.hh"
-#include "null_source_cpu_gen.hh"
+#include "null_source_cpu.h"
+#include "null_source_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

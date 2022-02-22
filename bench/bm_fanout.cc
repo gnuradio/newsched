@@ -2,13 +2,13 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/copy.hh>
-#include <gnuradio/blocks/head.hh>
-#include <gnuradio/blocks/null_sink.hh>
-#include <gnuradio/blocks/null_source.hh>
+#include <gnuradio/blocks/copy.h>
+#include <gnuradio/blocks/head.h>
+#include <gnuradio/blocks/null_sink.h>
+#include <gnuradio/blocks/null_source.h>
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/realtime.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/buffer_cpu_simple.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
 #include <gnuradio/runtime.h>

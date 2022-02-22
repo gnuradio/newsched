@@ -12,8 +12,8 @@
 #include <config.h>
 #endif
 
-#include <gnuradio/fft/window.hh>
-#include <gnuradio/math.h>
+#include <gnuradio/fft/window.h>
+#include <gnuradio/grmath.h>
 #include <algorithm>
 #include <numeric>
 #include <stdexcept>

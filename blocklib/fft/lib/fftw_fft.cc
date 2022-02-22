@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/fft/fftw_fft.hh>
+#include <gnuradio/fft/fftw_fft.h>
 // #include <gnuradio/sys_paths.h>
 #include <fftw3.h>
 #include <volk/volk.h>

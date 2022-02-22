@@ -4,14 +4,14 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/annotator.hh>
-#include <gnuradio/blocks/head.hh>
-#include <gnuradio/blocks/null_sink.hh>
-#include <gnuradio/blocks/null_source.hh>
-#include <gnuradio/blocks/vector_sink.hh>
-#include <gnuradio/blocks/vector_source.hh>
+#include <gnuradio/blocks/annotator.h>
+#include <gnuradio/blocks/head.h>
+#include <gnuradio/blocks/null_sink.h>
+#include <gnuradio/blocks/null_source.h>
+#include <gnuradio/blocks/vector_sink.h>
+#include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
 #include <gnuradio/runtime.h>
 

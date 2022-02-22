@@ -8,8 +8,8 @@
  *
  */
 
-#include "multiply_const_cpu.hh"
-#include "multiply_const_cpu_gen.hh"
+#include "multiply_const_cpu.h"
+#include "multiply_const_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

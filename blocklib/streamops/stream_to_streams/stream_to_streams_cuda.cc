@@ -8,8 +8,8 @@
  *
  */
 
-#include "stream_to_streams_cuda.hh"
-#include "stream_to_streams_cuda_gen.hh"
+#include "stream_to_streams_cuda.h"
+#include "stream_to_streams_cuda_gen.h"
 #include <gnuradio/helper_cuda.h>
 #include <volk/volk.h>
 

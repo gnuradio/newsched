@@ -78,8 +78,8 @@ ports:
     type: typekeys/T
 
 includes: 
-  - value: gnuradio/fft/fftw_fft.hh
-  - value: gnuradio/fft/window.hh
+  - value: gnuradio/fft/fftw_fft.h
+  - value: gnuradio/fft/window.h
   - value: gnuradio/qtgui/utils.h
   - value: gnuradio/qtgui/trigger_mode.h
   - value: qapplication.h

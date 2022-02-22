@@ -11,7 +11,7 @@
 #ifndef _FILTER_FIRDES_H_
 #define _FILTER_FIRDES_H_
 
-#include <gnuradio/fft/window.hh>
+#include <gnuradio/fft/window.h>
 #include <gnuradio/filter/api.h>
 #include <gnuradio/types.h>
 #include <cmath>

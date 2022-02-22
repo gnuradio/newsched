@@ -8,8 +8,8 @@
  *
  */
 
-#include "dc_blocker_cpu.hh"
-#include "dc_blocker_cpu_gen.hh"
+#include "dc_blocker_cpu.h"
+#include "dc_blocker_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

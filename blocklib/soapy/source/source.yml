@@ -163,7 +163,7 @@ typekeys:
     #     suffix: ff 
 
 includes:
-  - value: gnuradio/soapy/block.hh
+  - value: gnuradio/soapy/block.h
 
 parameters:
 -   id: device

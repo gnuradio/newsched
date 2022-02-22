@@ -8,8 +8,8 @@
  *
  */
 
-#include "pfb_channelizer_cuda.hh"
-#include "pfb_channelizer_cuda_gen.hh"
+#include "pfb_channelizer_cuda.h"
+#include "pfb_channelizer_cuda_gen.h"
 
 #include <gnuradio/helper_cuda.h>
 

@@ -8,8 +8,8 @@
  *
  */
 
-#include "source_cpu.hh"
-#include "source_cpu_gen.hh"
+#include "source_cpu.h"
+#include "source_cpu_gen.h"
 #include <SoapySDR/Formats.h>
 #include <SoapySDR/Errors.hpp>
 #include <volk/volk.h>

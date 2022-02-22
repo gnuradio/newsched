@@ -8,8 +8,8 @@
  *
  */
 
-#include "divide_cpu.hh"
-#include "divide_cpu_gen.hh"
+#include "divide_cpu.h"
+#include "divide_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

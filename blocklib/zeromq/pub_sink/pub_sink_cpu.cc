@@ -1,5 +1,5 @@
-#include "pub_sink_cpu.hh"
-#include "pub_sink_cpu_gen.hh"
+#include "pub_sink_cpu.h"
+#include "pub_sink_cpu_gen.h"
 
 namespace gr {
 namespace zeromq {

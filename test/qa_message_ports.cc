@@ -5,9 +5,9 @@
 #include <thread>
 
 #include <pmtf/string.hpp>
-#include <gnuradio/blocks/msg_forward.hh>
+#include <gnuradio/blocks/msg_forward.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
 
 using namespace gr;

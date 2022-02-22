@@ -1,7 +1,7 @@
 headers = [
     'api.h',
-    'constellation.hh',
-    'metric_type.hh'
+    'constellation.h',
+    'metric_type.h'
 ]
 
 install_headers(headers, subdir : 'gnuradio/digital')

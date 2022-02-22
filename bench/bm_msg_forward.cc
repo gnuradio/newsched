@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/msg_forward.hh>
+#include <gnuradio/blocks/msg_forward.h>
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/realtime.h>
 #include <pmtf/base.hpp>

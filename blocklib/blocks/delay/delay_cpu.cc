@@ -8,8 +8,8 @@
  *
  */
 
-#include "delay_cpu.hh"
-#include "delay_cpu_gen.hh"
+#include "delay_cpu.h"
+#include "delay_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

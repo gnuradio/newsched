@@ -12,8 +12,8 @@
 #include "config.h"
 #endif
 
-#include <gnuradio/digital/constellation.hh>
-#include <gnuradio/math.h>
+#include <gnuradio/digital/constellation.h>
+#include <gnuradio/grmath.h>
 
 
 #include <cassert>

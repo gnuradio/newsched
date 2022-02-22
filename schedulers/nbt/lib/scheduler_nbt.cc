@@ -1,4 +1,4 @@
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <yaml-cpp/yaml.h>
 
 namespace gr {

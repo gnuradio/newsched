@@ -8,8 +8,8 @@
  *
  */
 
-#include "time_sink_cpu.hh"
-#include "time_sink_cpu_gen.hh"
+#include "time_sink_cpu.h"
+#include "time_sink_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

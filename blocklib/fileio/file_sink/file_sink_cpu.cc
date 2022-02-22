@@ -8,8 +8,8 @@
  *
  */
 
-#include "file_sink_cpu.hh"
-#include "file_sink_cpu_gen.hh"
+#include "file_sink_cpu.h"
+#include "file_sink_cpu_gen.h"
 
 namespace gr {
 namespace fileio {

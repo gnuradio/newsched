@@ -8,8 +8,8 @@
  *
  */
 
-#include "conjugate_cpu.hh"
-#include "conjugate_cpu_gen.hh"
+#include "conjugate_cpu.h"
+#include "conjugate_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

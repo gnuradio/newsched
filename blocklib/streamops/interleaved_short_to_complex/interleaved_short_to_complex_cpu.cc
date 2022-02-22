@@ -8,8 +8,8 @@
  *
  */
 
-#include "interleaved_short_to_complex_cpu.hh"
-#include "interleaved_short_to_complex_cpu_gen.hh"
+#include "interleaved_short_to_complex_cpu.h"
+#include "interleaved_short_to_complex_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

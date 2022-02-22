@@ -4,12 +4,12 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/math/multiply_const.hh>
-#include <gnuradio/blocks/vector_sink.hh>
-#include <gnuradio/blocks/vector_source.hh>
+#include <gnuradio/math/multiply_const.h>
+#include <gnuradio/blocks/vector_sink.h>
+#include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/buffer_sm.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
 
 using namespace gr;

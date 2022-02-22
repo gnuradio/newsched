@@ -11,7 +11,7 @@
 #ifndef FREQ_DISPLAY_FORM_H
 #define FREQ_DISPLAY_FORM_H
 
-#include <gnuradio/fft/window.hh>
+#include <gnuradio/fft/window.h>
 #include <gnuradio/qtgui/FrequencyDisplayPlot.h>
 #include <gnuradio/qtgui/spectrumUpdateEvents.h>
 #include <QtGui/QtGui>

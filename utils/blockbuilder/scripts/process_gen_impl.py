@@ -38,8 +38,8 @@ def main():
         d = yaml.load(file, Loader=yaml.FullLoader)
 
         for impl in d['implementations']:
-            blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + "_" + impl['id'] + "_gen.hh")
-            template = env.get_template('blockname_impl_gen.hh.j2')
+            blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, blockname + "_" + impl['id'] + "_gen.h")
+            template = env.get_template('blockname_impl_gen.h.j2')
 
             rendered = template.render(d, impl=impl['id'])
             with open(blockname_h, 'w') as file:
