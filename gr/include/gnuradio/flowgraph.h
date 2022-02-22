@@ -19,7 +19,7 @@ public:
         return std::make_shared<flowgraph>(name);
     }
     flowgraph(const std::string& name = "flowgraph");
-    virtual ~flowgraph(){};
+    ~flowgraph() override{};
     static void check_connections(const graph_sptr& g);
     flat_graph_sptr make_flat();
 

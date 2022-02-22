@@ -59,7 +59,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
 
         for (auto p : input_ports) {
             edge_vector_t ed = fg->find_edge(p);
-            if (ed.size() == 0) {
+            if (ed.empty()) {
                 throw std::runtime_error("Edge associated with input port not found");
             }
 

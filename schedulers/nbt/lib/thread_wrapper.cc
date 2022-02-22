@@ -100,7 +100,7 @@ bool thread_wrapper::handle_work_notification()
         else if (elem.second != executor_iteration_status::BLKD_IN &&
                  elem.second != executor_iteration_status::BLKD_OUT) {
             // Ignore source blocks
-            if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size()) {
+            if (d_block_id_to_block_map[elem.first]->input_stream_ports().empty()) {
                 all_blkd = false;
             }
         }

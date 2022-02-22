@@ -11,7 +11,7 @@ flowgraph::flowgraph(const std::string& name) { set_alias(name); }
 size_t get_port_itemsize(port_sptr port)
 {
     size_t size = 0;
-    if (port->connected_ports().size() > 0) {
+    if (!port->connected_ports().empty()) {
         auto cp = port->connected_ports()[0];
         auto p = std::dynamic_pointer_cast<port_base>(cp);
         // use data_size since this includes vector sizing
@@ -24,7 +24,7 @@ size_t get_port_itemsize(port_sptr port)
 std::string get_port_format_descriptor(port_sptr port)
 {
     std::string fd = "";
-    if (port->connected_ports().size() > 0) {
+    if (!port->connected_ports().empty()) {
         auto cp = port->connected_ports()[0];
         auto p = std::dynamic_pointer_cast<port_base>(cp);
         if (p)
@@ -39,7 +39,7 @@ void flowgraph::check_connections(const graph_sptr& g)
     // Are all non-optional ports connected to something
     for (auto& node : g->calc_used_nodes()) {
         for (auto& port : node->output_ports()) {
-            if (!port->optional() && port->connected_ports().size() == 0) {
+            if (!port->optional() && port->connected_ports().empty()) {
                 throw std::runtime_error("Nothing connected to " + node->name() + ": " +
                                          port->name());
             }
@@ -49,7 +49,7 @@ void flowgraph::check_connections(const graph_sptr& g)
 
                 if (port->type() == port_type_t::STREAM) {
 
-                    if (port->connected_ports().size() < 1) {
+                    if (port->connected_ports().empty()) {
                         throw std::runtime_error("Nothing connected to " + node->name() +
                                                  ": " + port->name());
                     }
@@ -59,7 +59,7 @@ void flowgraph::check_connections(const graph_sptr& g)
                     }
                 }
                 else if (port->type() == port_type_t::MESSAGE) {
-                    if (port->connected_ports().size() < 1) {
+                    if (port->connected_ports().empty()) {
                         throw std::runtime_error("Nothing connected to " + node->name() +
                                                  ": " + port->name());
                     }

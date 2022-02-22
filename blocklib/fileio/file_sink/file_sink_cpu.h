@@ -24,11 +24,11 @@ public:
 
     bool stop() override;
 
-    virtual work_return_code_t
+    work_return_code_t
     work(std::vector<block_work_input_sptr>& work_input,
          std::vector<block_work_output_sptr>& work_output) override;
 
-    virtual void set_unbuffered(bool unbuffered)
+    void set_unbuffered(bool unbuffered) override
     {
         file_sink_base::set_unbuffered(unbuffered);
     }

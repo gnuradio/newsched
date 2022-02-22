@@ -14,8 +14,8 @@
 
 #include "pagesize.h"
 #include <gnuradio/logging.h>
-#include <stdio.h>
 #include <unistd.h>
+#include <cstdio>
 
 namespace gr {
 

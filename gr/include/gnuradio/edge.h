@@ -43,7 +43,7 @@ public:
     node_endpoint(node_sptr node, port_sptr port);
     node_endpoint(const node_endpoint& n);
 
-    ~node_endpoint(){};
+    ~node_endpoint() override{};
     node_sptr node() const;
     port_sptr port() const;
     std::string identifier() const;

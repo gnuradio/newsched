@@ -61,7 +61,7 @@ public:
      * @param name The non-unique name of this block representing the block type
      */
     block(const std::string& name, const std::string& module = "");
-    virtual ~block(){};
+    ~block() override{};
     virtual bool start();
     virtual bool stop();
     virtual bool done();

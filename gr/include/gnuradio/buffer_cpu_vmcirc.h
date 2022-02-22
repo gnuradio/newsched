@@ -37,16 +37,16 @@ public:
 
     // These methods are common to all the vmcircbufs
 
-    void* read_ptr(size_t index) { return (void*)&_buffer[index]; }
-    void* write_ptr();
+    void* read_ptr(size_t index) override { return (void*)&_buffer[index]; }
+    void* write_ptr() override;
 
     // virtual void post_read(int num_items);
-    virtual void post_write(int num_items);
+    void post_write(int num_items) override;
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    virtual std::shared_ptr<buffer_reader>
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
+    std::shared_ptr<buffer_reader>
+    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
 };
 
 class buffer_cpu_vmcirc_reader : public buffer_reader
@@ -60,7 +60,7 @@ public:
     {
     }
 
-    virtual void post_read(int num_items);
+    void post_read(int num_items) override;
 };
 
 class buffer_cpu_vmcirc_properties : public buffer_properties

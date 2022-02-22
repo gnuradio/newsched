@@ -19,8 +19,8 @@ class file_source_cpu : public file_source
 {
 public:
     file_source_cpu(const block_args& args);
-    ~file_source_cpu();
-    virtual work_return_code_t
+    ~file_source_cpu() override;
+    work_return_code_t
     work(std::vector<block_work_input_sptr>& work_input,
          std::vector<block_work_output_sptr>& work_output) override;
 
@@ -30,7 +30,7 @@ public:
      * \param seek_point      sample offset in file
      * \param whence  one of SEEK_SET, SEEK_CUR, SEEK_END (man fseek)
      */
-    bool seek(int64_t seek_point, int whence);
+    bool seek(int64_t seek_point, int whence) override;
 
     /*!
      * \brief Opens a new file.

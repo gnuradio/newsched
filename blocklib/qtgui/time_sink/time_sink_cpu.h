@@ -16,12 +16,12 @@ class time_sink_cpu : public time_sink<T>
 public:
     time_sink_cpu(const typename time_sink<T>::block_args& args);
 
-    virtual work_return_code_t
+    work_return_code_t
     work(std::vector<block_work_input_sptr>& work_input,
          std::vector<block_work_output_sptr>& work_output) override;
 
-    virtual void exec_() { d_qApplication->exec(); };
-    virtual QWidget* qwidget() { return d_main_gui; };
+    void exec_() override { d_qApplication->exec(); };
+    QWidget* qwidget() override { return d_main_gui; };
     void set_y_axis(double min, double max) override;
     void set_y_label(const std::string& label, const std::string& unit = "") override;
     void set_update_time(double t) override;

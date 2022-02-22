@@ -1,5 +1,5 @@
-#include <assert.h>
 #include <algorithm>
+#include <cassert>
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
@@ -104,7 +104,7 @@ std::vector<block_vector_t> flat_graph::partition()
 
     while (!blocks.empty()) {
         graph = calc_reachable_blocks(blocks[0], blocks);
-        assert(graph.size());
+        assert(!graph.empty());
         result.push_back(topological_sort(graph));
 
         for (block_viter_t p = graph.begin(); p != graph.end(); p++)

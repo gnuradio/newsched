@@ -58,7 +58,7 @@ port_base::port_base(const std::string& name,
 
 std::string port_base::format_descriptor()
 {
-    if (_format_descriptor != "") {
+    if (!_format_descriptor.empty()) {
         return _format_descriptor;
     }
     else {

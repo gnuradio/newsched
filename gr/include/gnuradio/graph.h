@@ -32,7 +32,7 @@ public:
     using sptr = std::shared_ptr<graph>;
     static sptr make() { return std::make_shared<graph>(); }
     graph() : node() {}
-    ~graph() {}
+    ~graph() override {}
     std::shared_ptr<graph> base() { return shared_from_this(); }
     edge_vector_t& edges() { return _edges; }
     edge_vector_t& stream_edges() { return _stream_edges; }
