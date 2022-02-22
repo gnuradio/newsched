@@ -8,8 +8,8 @@
  *
  */
 
-#include "file_source_cpu.hh"
-#include "file_source_cpu_gen.hh"
+#include "file_source_cpu.h"
+#include "file_source_cpu_gen.h"
 
 #include <sys/stat.h>
 #include <sys/types.h>

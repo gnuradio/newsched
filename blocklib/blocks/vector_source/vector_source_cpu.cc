@@ -8,8 +8,8 @@
  *
  */
 
-#include "vector_source_cpu.hh"
-#include "vector_source_cpu_gen.hh"
+#include "vector_source_cpu.h"
+#include "vector_source_cpu_gen.h"
 #include <algorithm>
 #include <cstring> // for memcpy
 #include <stdexcept>

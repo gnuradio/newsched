@@ -1,5 +1,5 @@
-#include "sub_source_cpu.hh"
-#include "sub_source_cpu_gen.hh"
+#include "sub_source_cpu.h"
+#include "sub_source_cpu_gen.h"
 
 #include <chrono>
 #include <thread>

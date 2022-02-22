@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/filter/moving_averager.hh>
+#include <gnuradio/filter/moving_averager.h>
 #include <gnuradio/types.h>
 
 #include <cstdio>

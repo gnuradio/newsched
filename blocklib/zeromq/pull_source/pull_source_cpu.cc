@@ -1,5 +1,5 @@
-#include "pull_source_cpu.hh"
-#include "pull_source_cpu_gen.hh"
+#include "pull_source_cpu.h"
+#include "pull_source_cpu_gen.h"
 
 #include <thread>
 #include <chrono>

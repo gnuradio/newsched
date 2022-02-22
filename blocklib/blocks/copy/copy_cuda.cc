@@ -8,8 +8,8 @@
  *
  */
 
-#include "copy_cuda.hh"
-#include "copy_cuda_gen.hh"
+#include "copy_cuda.h"
+#include "copy_cuda_gen.h"
 
 #include <gnuradio/helper_cuda.h>
 

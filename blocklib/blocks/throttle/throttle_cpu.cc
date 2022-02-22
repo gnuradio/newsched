@@ -9,8 +9,8 @@
  *
  */
 
-#include "throttle_cpu.hh"
-#include "throttle_cpu_gen.hh"
+#include "throttle_cpu.h"
+#include "throttle_cpu_gen.h"
 #include <thread>
 
 namespace gr {

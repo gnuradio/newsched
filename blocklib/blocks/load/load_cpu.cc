@@ -8,8 +8,8 @@
  *
  */
 
-#include "load_cpu.hh"
-#include "load_cpu_gen.hh"
+#include "load_cpu.h"
+#include "load_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

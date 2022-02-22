@@ -4,15 +4,15 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/vector_sink.hh>
-#include <gnuradio/blocks/vector_source.hh>
-// #include <gnuradio/cuda/copy.hh>
-#include <gnuradio/blocks/copy.hh>
+#include <gnuradio/blocks/vector_sink.h>
+#include <gnuradio/blocks/vector_source.h>
+// #include <gnuradio/cuda/copy.h>
+#include <gnuradio/blocks/copy.h>
 #include <gnuradio/buffer_cuda.hh>
 #include <gnuradio/buffer_cuda_sm.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.hh>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
 
 using namespace gr;

@@ -7,7 +7,7 @@
  *
  */
 
-#include "soapy_common.hh"
+#include "soapy_common.h"
 
 #include <pybind11/complex.h>
 #include <pybind11/operators.h>
@@ -16,7 +16,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/soapy/soapy_types.hh>
+#include <gnuradio/soapy/soapy_types.h>
 
 void bind_soapy_types(py::module& m)
 {

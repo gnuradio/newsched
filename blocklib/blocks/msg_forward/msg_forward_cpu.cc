@@ -8,8 +8,8 @@
  *
  */
 
-#include "msg_forward_cpu.hh"
-#include "msg_forward_cpu_gen.hh"
+#include "msg_forward_cpu.h"
+#include "msg_forward_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

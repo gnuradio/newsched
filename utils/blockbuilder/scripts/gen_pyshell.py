@@ -45,9 +45,9 @@ def main():
         if (args.output_hh ):
             blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_hh))
             if templated >= 1:
-                template = env.get_template('blockname_pyshell_templated.hh.j2')
+                template = env.get_template('blockname_pyshell_templated.h.j2')
             else:
-                template = env.get_template('blockname_pyshell.hh.j2')
+                template = env.get_template('blockname_pyshell.h.j2')
 
             rendered = template.render(d)
             with open(blockname_h, 'w') as file:

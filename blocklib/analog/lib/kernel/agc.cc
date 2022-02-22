@@ -1,4 +1,4 @@
-#include <gnuradio/analog/kernel/agc.hh>
+#include <gnuradio/analog/kernel/agc.h>
 
 namespace gr {
 namespace analog {

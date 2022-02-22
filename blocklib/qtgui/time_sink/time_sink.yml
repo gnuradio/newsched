@@ -57,7 +57,7 @@ parameters:
     hide: part
     cotr: false
     serializable: false
-# Includes go in the blockname.hh
+# Includes go in the blockname.h
 includes: 
   - value: qapplication.h
   - value: qwt_legend.h

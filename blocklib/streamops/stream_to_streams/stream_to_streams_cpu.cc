@@ -8,8 +8,8 @@
  *
  */
 
-#include "stream_to_streams_cpu.hh"
-#include "stream_to_streams_cpu_gen.hh"
+#include "stream_to_streams_cpu.h"
+#include "stream_to_streams_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

@@ -13,7 +13,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/fileio/file_sink_base.hh>
+#include <gnuradio/fileio/file_sink_base.h>
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 

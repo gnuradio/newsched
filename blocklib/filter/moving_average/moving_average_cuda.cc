@@ -8,8 +8,8 @@
  *
  */
 
-#include "moving_average_cuda.hh"
-#include "moving_average_cuda_gen.hh"
+#include "moving_average_cuda.h"
+#include "moving_average_cuda_gen.h"
 
 namespace gr {
 namespace filter {

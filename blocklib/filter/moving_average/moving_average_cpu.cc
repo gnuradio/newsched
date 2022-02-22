@@ -8,8 +8,8 @@
  *
  */
 
-#include "moving_average_cpu.hh"
-#include "moving_average_cpu_gen.hh"
+#include "moving_average_cpu.h"
+#include "moving_average_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

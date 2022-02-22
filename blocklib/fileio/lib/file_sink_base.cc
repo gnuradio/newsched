@@ -12,7 +12,7 @@
 #include "config.h"
 #endif
 
-#include <gnuradio/fileio/file_sink_base.hh>
+#include <gnuradio/fileio/file_sink_base.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>

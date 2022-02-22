@@ -9,8 +9,8 @@
  *
  */
 
-#include "annotator_cpu.hh"
-#include "annotator_cpu_gen.hh"
+#include "annotator_cpu.h"
+#include "annotator_cpu_gen.h"
 #include <pmtf/string.hpp>
 #include <pmtf/scalar.hpp>
 #include <string.h>

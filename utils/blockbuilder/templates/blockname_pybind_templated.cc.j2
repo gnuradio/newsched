@@ -7,7 +7,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/{{ module }}/{{ block }}.hh>
+#include <gnuradio/{{ module }}/{{ block }}.h>
 
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 void bind_{{ block }}_template(py::module& m, const char* classname)

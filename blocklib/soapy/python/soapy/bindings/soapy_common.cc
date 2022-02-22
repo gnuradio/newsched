@@ -8,7 +8,7 @@
  */
 
 #include "setting_string_conversion.h"
-#include "soapy_common.hh"
+#include "soapy_common.h"
 
 #include <SoapySDR/Types.hpp>
 #include <SoapySDR/Version.h>

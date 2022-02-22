@@ -1,4 +1,4 @@
-#include "thread_wrapper.hh"
+#include "thread_wrapper.h"
 #include <gnuradio/thread.h>
 #include <fmt/core.h>
 #include <thread>

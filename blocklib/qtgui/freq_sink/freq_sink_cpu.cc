@@ -8,8 +8,8 @@
  *
  */
 
-#include "freq_sink_cpu.hh"
-#include "freq_sink_cpu_gen.hh"
+#include "freq_sink_cpu.h"
+#include "freq_sink_cpu_gen.h"
 #include <volk/volk.h>
 #include <pmtf/string.hpp>
 

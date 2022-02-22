@@ -1,5 +1,5 @@
-#include "agc_cpu.hh"
-#include "agc_cpu_gen.hh"
+#include "agc_cpu.h"
+#include "agc_cpu_gen.h"
 
 namespace gr {
 namespace analog {

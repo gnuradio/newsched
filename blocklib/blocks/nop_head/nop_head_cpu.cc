@@ -6,8 +6,8 @@
  *
  */
 
-#include "nop_head_cpu.hh"
-#include "nop_head_cpu_gen.hh"
+#include "nop_head_cpu.h"
+#include "nop_head_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

@@ -9,8 +9,8 @@
  *
  */
 
-#include "fft_cpu.hh"
-#include "fft_cpu_gen.hh"
+#include "fft_cpu.h"
+#include "fft_cpu_gen.h"
 
 namespace gr {
 namespace fft {

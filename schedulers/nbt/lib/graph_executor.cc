@@ -1,4 +1,4 @@
-#include "graph_executor.hh"
+#include "graph_executor.h"
 
 namespace gr {
 namespace schedulers {

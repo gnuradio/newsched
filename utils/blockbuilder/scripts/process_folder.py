@@ -49,9 +49,9 @@ def main():
             blockname_h = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_hh))
             blockname_h_includedir = os.path.join(args.build_dir, 'blocklib', d['module'], 'include', 'gnuradio', d['module'], os.path.basename(args.output_hh))
             if templated >= 1:
-                template = env.get_template('blockname_templated.hh.j2')
+                template = env.get_template('blockname_templated.h.j2')
             else:
-                template = env.get_template('blockname.hh.j2')
+                template = env.get_template('blockname.h.j2')
 
             rendered = template.render(d)
             with open(blockname_h, 'w') as file:

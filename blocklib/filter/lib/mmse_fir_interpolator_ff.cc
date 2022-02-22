@@ -8,8 +8,8 @@
  *
  */
 
-#include <gnuradio/filter/interpolator_taps.hh>
-#include <gnuradio/filter/mmse_fir_interpolator_ff.hh>
+#include <gnuradio/filter/interpolator_taps.h>
+#include <gnuradio/filter/mmse_fir_interpolator_ff.h>
 #include <stdexcept>
 
 namespace gr {

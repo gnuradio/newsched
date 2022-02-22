@@ -8,8 +8,8 @@
  *
  */
 
-#include "complex_to_mag_squared_cpu.hh"
-#include "complex_to_mag_squared_cpu_gen.hh"
+#include "complex_to_mag_squared_cpu.h"
+#include "complex_to_mag_squared_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {

@@ -9,8 +9,8 @@
  *
  */
 
-#include "head_cpu.hh"
-#include "head_cpu_gen.hh"
+#include "head_cpu.h"
+#include "head_cpu_gen.h"
 
 namespace gr {
 namespace blocks {

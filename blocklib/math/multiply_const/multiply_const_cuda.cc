@@ -8,8 +8,8 @@
  *
  */
 
-#include "multiply_const_cuda.hh"
-#include "multiply_const_cuda_gen.hh"
+#include "multiply_const_cuda.h"
+#include "multiply_const_cuda_gen.h"
 #include <volk/volk.h>
 #include <thrust/complex.h>
 

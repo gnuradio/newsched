@@ -8,8 +8,8 @@
  *
  */
 
-#include "fft_cuda.hh"
-#include "fft_cuda_gen.hh"
+#include "fft_cuda.h"
+#include "fft_cuda_gen.h"
 
 
 extern void exec_fft_shift(const cuFloatComplex* in,

@@ -10,7 +10,7 @@ endif
 
 gen_srcs = custom_target('gen_source_srcs',
                         input : ['source.yml'],
-                        output : ['source.cc', 'source.hh', 'source_pybind.cc', 'soapy_rtlsdr_source.block.yml', 'soapy_hackrf_source.block.yml'],
+                        output : ['source.cc', 'source.h', 'source_pybind.cc', 'soapy_rtlsdr_source.block.yml', 'soapy_hackrf_source.block.yml'],
                         command : ['python3', join_paths(SCRIPTS_DIR,'process_folder.py'),
                             '--yaml_file', '@INPUT@', 
                             '--output-cc', '@OUTPUT0@', 
@@ -24,7 +24,7 @@ gen_srcs = custom_target('gen_source_srcs',
 
 gen_impls = custom_target('gen_source_impl',
                         input : ['source.yml'],
-                        output : ['source_impl_gen.hh'],
+                        output : ['source_impl_gen.h'],
                         command : ['python3', join_paths(SCRIPTS_DIR,'process_gen_impl.py'),
                             '--yaml_file', '@INPUT@', 
                             '--output', '@OUTPUT@', 

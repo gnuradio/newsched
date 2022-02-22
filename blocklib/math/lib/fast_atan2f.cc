@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/math/math.hh> // declaration is in here
+#include <gnuradio/grmath.h> // declaration is in here
 #include <cmath>
 
 namespace gr {

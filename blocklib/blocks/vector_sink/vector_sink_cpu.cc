@@ -8,8 +8,8 @@
  *
  */
 
-#include "vector_sink_cpu.hh"
-#include "vector_sink_cpu_gen.hh"
+#include "vector_sink_cpu.h"
+#include "vector_sink_cpu_gen.h"
 #include <volk/volk.h>
 
 namespace gr {
