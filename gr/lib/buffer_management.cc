@@ -23,7 +23,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     if (e->has_custom_buffer()) {
                         buf = e->buffer_factory()(
                             num_items, e->itemsize(), e->buf_properties());
-                    } else {
+                    }
+                    else {
                         buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
                     }
                     e->src().port()->set_buffer(buf);
@@ -36,7 +37,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                                 buf->num_items(),
                                 buf->item_size());
                 }
-            } else {
+            }
+            else {
                 auto buf = e->src().port()->buffer();
                 GR_LOG_INFO(_logger,
                             "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
@@ -74,7 +76,8 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     p->set_buffer_reader(ed[0]->buf_properties()->reader_factory()(
                         ed[0]->dst().port()->itemsize(), ed[0]->buf_properties()));
                     p->buffer_reader()->set_parent_intf(sched_intf);
-                } else {
+                }
+                else {
                     GR_LOG_INFO(
                         _logger,
                         "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
@@ -103,7 +106,8 @@ int buffer_manager::get_buffer_num_items(edge_sptr e, flat_graph_sptr fg)
 
         if (req_buf_size > 0) {
             buf_size = req_buf_size;
-        } else {
+        }
+        else {
             auto max_buf_size = e->buf_properties()->max_buffer_size();
             auto min_buf_size = e->buf_properties()->min_buffer_size();
             if (max_buf_size > 0) {

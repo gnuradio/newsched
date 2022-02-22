@@ -44,10 +44,7 @@ typename dc_blocker<T>::sptr dc_blocker<T>::make(int D, bool long_form)
 
 template <class T>
 dc_blocker<T>::dc_blocker(int D, bool long_form)
-    : d_length(D),
-      d_long_form(long_form),
-      d_ma_0(D),
-      d_ma_1(D)
+    : d_length(D), d_long_form(long_form), d_ma_0(D), d_ma_1(D)
 {
     add_port(port<T>::make("in", port_direction_t::INPUT, { 1 }));
     add_port(port<T>::make("out", port_direction_t::OUTPUT, { 1 }));
@@ -70,7 +67,7 @@ int dc_blocker<T>::group_delay()
 
 template <class T>
 work_return_code_t dc_blocker<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
+                                       std::vector<block_work_output_sptr>& work_output)
 {
     auto in = work_input[0]->items<T>());
     auto out = work_output[0]->items<T>());
@@ -90,7 +87,8 @@ work_return_code_t dc_blocker<T>::work(std::vector<block_work_input_sptr>& work_
 
             out[i] = d - y4;
         }
-    } else {
+    }
+    else {
         T y1, y2;
         for (int i = 0; i < noutput_items; i++) {
             y1 = d_ma_0.filter(in[i]);
@@ -108,4 +106,3 @@ template class dc_blocker<gr_complex>;
 
 } /* namespace filter */
 } /* namespace gr */
-

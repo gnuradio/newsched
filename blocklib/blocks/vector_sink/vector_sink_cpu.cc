@@ -23,8 +23,9 @@ vector_sink_cpu<T>::vector_sink_cpu(const typename vector_sink<T>::block_args& a
 }
 
 template <class T>
-work_return_code_t vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                        std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                         std::vector<block_work_output_sptr>& work_output)
 {
     auto iptr = work_input[0]->items<T>();
     int noutput_items = work_input[0]->n_items;

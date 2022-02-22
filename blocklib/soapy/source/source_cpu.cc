@@ -10,8 +10,8 @@
 
 #include "source_cpu.h"
 #include "source_cpu_gen.h"
-#include <SoapySDR/Formats.h>
 #include <SoapySDR/Errors.hpp>
+#include <SoapySDR/Formats.h>
 #include <volk/volk.h>
 
 namespace gr {
@@ -40,7 +40,8 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
     /* This limits each work invocation to MTU transfers */
     if (d_mtu > 0) {
         noutput_items = std::min(noutput_items, (int)d_mtu);
-    } else {
+    }
+    else {
         noutput_items = std::min(noutput_items, 1024);
     }
 
@@ -56,14 +57,8 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
         int result;
         {
             std::lock_guard<std::mutex> l(d_device_mutex);
-            result =
-                d_device->readStream(d_stream,
-                                     output_items.data(),
-                                     noutput_items,
-                                     flags,
-                                     time_ns,
-                                     timeout_us);
-            
+            result = d_device->readStream(
+                d_stream, output_items.data(), noutput_items, flags, time_ns, timeout_us);
         }
 
         if (result >= 0) {

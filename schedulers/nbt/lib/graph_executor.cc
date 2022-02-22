@@ -28,15 +28,15 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         // to indicate that the rest of the flowgraph should clean up
         if (b->finished()) {
             per_block_status[b->id()] = executor_iteration_status::DONE;
-            GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+            GR_LOG_DEBUG(
+                _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
             continue;
         }
 
         auto input_stream_ports = b->input_stream_ports();
         auto output_stream_ports = b->output_stream_ports();
 
-        if (input_stream_ports.size() == 0 && output_stream_ports.size() == 0)
-        {
+        if (input_stream_ports.size() == 0 && output_stream_ports.size() == 0) {
             // There is no streaming work to do for this block
             per_block_status[b->id()] = executor_iteration_status::MSG_ONLY;
             continue;
@@ -51,8 +51,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
-            GR_LOG_DEBUG(
-                _debug_logger, "read_info {} - {} - {}", b->alias(), read_info.n_items, read_info.item_size);
+            GR_LOG_DEBUG(_debug_logger,
+                         "read_info {} - {} - {}",
+                         b->alias(),
+                         read_info.n_items,
+                         read_info.item_size);
 
             if (!ready)
                 break;
@@ -72,7 +75,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
 
             auto tags = p_buf->get_tags(read_info.n_items);
-            work_input.push_back(std::make_shared<block_work_input>(read_info.n_items, p_buf));
+            work_input.push_back(
+                std::make_shared<block_work_input>(read_info.n_items, p_buf));
         }
 
         if (!ready) {
@@ -131,7 +135,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             std::vector<tag_t> tags; // needs to be associated with edge buffers
 
-            work_output.push_back(std::make_shared<block_work_output>(max_output_buffer, p_buf));
+            work_output.push_back(
+                std::make_shared<block_work_output>(max_output_buffer, p_buf));
         }
 
         if (!ready) {
@@ -148,7 +153,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                  "do_work for {}, {}",
                                  b->alias(),
                                  work_output[0]->n_items);
-                } else {
+                }
+                else {
                     GR_LOG_DEBUG(_debug_logger, "do_work for {}", b->alias());
                 }
 
@@ -159,11 +165,14 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 if (ret == work_return_code_t::WORK_DONE) {
                     per_block_status[b->id()] = executor_iteration_status::DONE;
-                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    GR_LOG_DEBUG(
+                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     break;
-                } else if (ret == work_return_code_t::WORK_OK) {
+                }
+                else if (ret == work_return_code_t::WORK_OK) {
                     per_block_status[b->id()] = executor_iteration_status::READY;
-                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    GR_LOG_DEBUG(
+                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
                     if (!work_input.size() && work_output.size()) {
@@ -174,33 +183,41 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         if (max_output <= 0) {
                             per_block_status[b->id()] =
                                 executor_iteration_status::BLKD_IN;
-                                GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                            GR_LOG_DEBUG(_debug_logger,
+                                         "pbs[{}]: {}",
+                                         b->id(),
+                                         per_block_status[b->id()]);
                         }
                     }
 
 
                     break;
-                } else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
+                }
+                else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
                     if (b->output_multiple_set()) {
                         work_output[0]->n_items -= b->output_multiple();
-                    } else {
+                    }
+                    else {
                         work_output[0]->n_items >>= 1;
                     }
                     if (work_output[0]->n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
-                        GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                        GR_LOG_DEBUG(_debug_logger,
+                                     "pbs[{}]: {}",
+                                     b->id(),
+                                     per_block_status[b->id()]);
                         // call the input blocked callback
                         break;
                     }
-                } else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
+                }
+                else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
                     per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
-                    GR_LOG_DEBUG(_debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    GR_LOG_DEBUG(
+                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     // call the output blocked callback
                     break;
                 }
-
-                
             }
             // TODO - handle READY_NO_OUTPUT
 
@@ -224,8 +241,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                                 output_port_index++;
                             }
-                        } else if (b->tag_propagation_policy() ==
-                                   tag_propagation_policy_t::TPP_ONE_TO_ONE) {
+                        }
+                        else if (b->tag_propagation_policy() ==
+                                 tag_propagation_policy_t::TPP_ONE_TO_ONE) {
                             int output_port_index = 0;
                             for (auto op : b->output_stream_ports()) {
                                 if (output_port_index == input_port_index) {
@@ -271,7 +289,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         }
     }
 
-    
+
     return per_block_status;
 }
 

@@ -61,7 +61,8 @@ std::string __userconf_path()
     std::filesystem::path p;
     if (path) {
         p = path;
-    } else {
+    }
+    else {
         p = appdata_path();
         p = p / ".gnuradio";
     }

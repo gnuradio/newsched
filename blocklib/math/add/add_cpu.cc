@@ -46,11 +46,9 @@ add_cpu<T>::add_cpu(const typename add<T>::block_args& args)
 }
 
 
-
 template <class T>
-work_return_code_t
-add_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t add_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output)
 {
     auto out = work_output[0]->items<T>();
     auto noutput_items = work_output[0]->n_items;
@@ -64,7 +62,6 @@ add_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     this->produce_each(noutput_items, work_output);
     this->consume_each(noutput_items, work_input);
     return work_return_code_t::WORK_OK;
-
 }
 
 } /* namespace math */

@@ -113,7 +113,8 @@ public:
     }
     virtual ~buffer_net_zmq_properties(){};
 
-    static std::shared_ptr<buffer_properties> make(const std::string& ipaddr, int port = 0)
+    static std::shared_ptr<buffer_properties> make(const std::string& ipaddr,
+                                                   int port = 0)
     {
         return std::dynamic_pointer_cast<buffer_properties>(
             std::make_shared<buffer_net_zmq_properties>(ipaddr, port));

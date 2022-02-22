@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gnuradio/api.h>
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
+#include <gnuradio/api.h>
 #include <gnuradio/prefs.h>
 #include <map>
 
@@ -100,7 +100,7 @@ inline void set_level(logger_sptr logger, logging_level_t log_level)
 
 
 template <typename... Args>
-inline void GR_RUNTIME_API  gr_log_debug(logger_sptr logger, const Args&... args)
+inline void GR_RUNTIME_API gr_log_debug(logger_sptr logger, const Args&... args)
 {
     if (logger) {
         logger->debug(args...);

@@ -1,28 +1,24 @@
+#include <cuda.h>
+#include <cuda_runtime.h>
 #include <string.h>
 #include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <vector>
-#include <cuda.h>
-#include <cuda_runtime.h>
 
 #include <gnuradio/buffer_cuda_sm.h>
 
 namespace gr {
 buffer_cuda_sm::buffer_cuda_sm(size_t num_items,
-                         size_t item_size,
-                         buffer_cuda_sm_type type,
-                         std::shared_ptr<buffer_properties> buf_properties)
+                               size_t item_size,
+                               buffer_cuda_sm_type type,
+                               std::shared_ptr<buffer_properties> buf_properties)
     : gr::buffer_sm(num_items, item_size, buf_properties), _type(type)
 {
     // _host_buffer.resize(_buf_size * 2); // double circular buffer
-    cudaMallocHost(
-        &_host_buffer,
-        _buf_size);
-    cudaMalloc(
-        &_device_buffer,
-        _buf_size);
+    cudaMallocHost(&_host_buffer, _buf_size);
+    cudaMalloc(&_device_buffer, _buf_size);
     set_type("buffer_cuda_sm_" + std::to_string((int)_type));
 
     cudaStreamCreate(&stream);
@@ -34,14 +30,15 @@ buffer_cuda_sm::~buffer_cuda_sm()
 }
 
 buffer_sptr buffer_cuda_sm::make(size_t num_items,
-                              size_t item_size,
-                              std::shared_ptr<buffer_properties> buffer_properties)
+                                 size_t item_size,
+                                 std::shared_ptr<buffer_properties> buffer_properties)
 {
     auto cbp = std::static_pointer_cast<buffer_cuda_sm_properties>(buffer_properties);
     if (cbp != nullptr) {
-        return buffer_sptr(
-            new buffer_cuda_sm(num_items, item_size, cbp->buffer_type(), buffer_properties));
-    } else {
+        return buffer_sptr(new buffer_cuda_sm(
+            num_items, item_size, cbp->buffer_type(), buffer_properties));
+    }
+    else {
         throw std::runtime_error(
             "Failed to cast buffer properties to buffer_cuda_sm_properties");
     }
@@ -51,7 +48,8 @@ void* buffer_cuda_sm::read_ptr(size_t index)
 {
     if (_type == buffer_cuda_sm_type::D2H) {
         return (void*)&_host_buffer[index];
-    } else {
+    }
+    else {
         return (void*)&_device_buffer[index];
     }
 }
@@ -59,7 +57,8 @@ void* buffer_cuda_sm::write_ptr()
 {
     if (_type == buffer_cuda_sm_type::H2D) {
         return (void*)&_host_buffer[_write_index];
-    } else {
+    }
+    else {
         return (void*)&_device_buffer[_write_index];
     }
 }
@@ -82,14 +81,14 @@ void buffer_cuda_sm::post_write(int num_items)
                         bytes_written,
                         cudaMemcpyHostToDevice,
                         stream);
-
-    } else if (_type == buffer_cuda_sm_type::D2H) {
+    }
+    else if (_type == buffer_cuda_sm_type::D2H) {
         cudaMemcpyAsync(&_host_buffer[wi1],
                         &_device_buffer[wi1],
                         bytes_written,
                         cudaMemcpyDeviceToHost,
                         stream);
-    } 
+    }
 
     // advance the write pointer
     _write_index += bytes_written;
@@ -106,8 +105,11 @@ void buffer_cuda_sm::post_write(int num_items)
 std::shared_ptr<buffer_reader>
 buffer_cuda_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
-    std::shared_ptr<buffer_cuda_sm_reader> r(
-        new buffer_cuda_sm_reader(std::dynamic_pointer_cast<buffer_cuda_sm>(shared_from_this()), buf_props, itemsize, _write_index));
+    std::shared_ptr<buffer_cuda_sm_reader> r(new buffer_cuda_sm_reader(
+        std::dynamic_pointer_cast<buffer_cuda_sm>(shared_from_this()),
+        buf_props,
+        itemsize,
+        _write_index));
     _readers.push_back(r.get());
     return r;
 }

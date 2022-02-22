@@ -30,7 +30,8 @@ multiply_cpu<float>::multiply_cpu(const typename multiply<float>::block_args& ar
 }
 
 template <>
-multiply_cpu<gr_complex>::multiply_cpu(const typename multiply<gr_complex>::block_args& args)
+multiply_cpu<gr_complex>::multiply_cpu(
+    const typename multiply<gr_complex>::block_args& args)
     : INHERITED_CONSTRUCTORS(gr_complex), d_num_inputs(args.num_inputs), d_vlen(args.vlen)
 {
     // const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
@@ -40,7 +41,7 @@ multiply_cpu<gr_complex>::multiply_cpu(const typename multiply<gr_complex>::bloc
 template <>
 work_return_code_t
 multiply_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output)
+                          std::vector<block_work_output_sptr>& work_output)
 {
     auto out = work_output[0]->items<float>();
     auto noutput_items = work_output[0]->n_items;
@@ -58,7 +59,7 @@ multiply_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
 template <>
 work_return_code_t
 multiply_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                                     std::vector<block_work_output_sptr>& work_output)
+                               std::vector<block_work_output_sptr>& work_output)
 {
     auto out = work_output[0]->items<gr_complex>();
     auto noutput_items = work_output[0]->n_items;
@@ -74,9 +75,8 @@ multiply_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
 }
 
 template <class T>
-work_return_code_t
-multiply_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t multiply_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                                         std::vector<block_work_output_sptr>& work_output)
 {
     auto optr = work_output[0]->items<T>();
     auto noutput_items = work_output[0]->n_items;

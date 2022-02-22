@@ -1,9 +1,9 @@
 #pragma once
 
-#include <pmtf/wrap.hpp>
 #include <pmtf/scalar.hpp>
-#include <pmtf/vector.hpp>
 #include <pmtf/string.hpp>
+#include <pmtf/vector.hpp>
+#include <pmtf/wrap.hpp>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -33,9 +33,7 @@ public:
     {
     }
     uint32_t id() const { return _id; }
-    pmtf::pmt pmt_value() {
-         return _pmt_value; 
-    }
+    pmtf::pmt pmt_value() { return _pmt_value; }
     void set_pmt_value(pmtf::pmt val) { _pmt_value = val; }
     uint64_t at_sample() { return _at_sample; }
     void set_at_sample(uint64_t val) { _at_sample = val; }
@@ -89,23 +87,17 @@ public:
     }
 };
 
-struct parameter_config
-{
+struct parameter_config {
     std::map<std::string, pmt_sptr> param_map;
     std::map<int, pmt_sptr> param_map_int;
     size_t num() { return param_map.size(); }
-    void add(const std::string& name, int id, pmt_sptr b) { 
-        param_map[name] = b; 
+    void add(const std::string& name, int id, pmt_sptr b)
+    {
+        param_map[name] = b;
         param_map_int[id] = b;
-        }
-    pmt_sptr get(const std::string& name)
-    {
-        return param_map[name];
     }
-    pmt_sptr get(int id)
-    {
-        return param_map_int[id];
-    }
+    pmt_sptr get(const std::string& name) { return param_map[name]; }
+    pmt_sptr get(int id) { return param_map_int[id]; }
     void clear() { param_map.clear(); }
 };
 

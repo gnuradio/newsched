@@ -20,8 +20,9 @@ class file_source_cpu : public file_source
 public:
     file_source_cpu(const block_args& args);
     ~file_source_cpu();
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    virtual work_return_code_t
+    work(std::vector<block_work_input_sptr>& work_input,
+         std::vector<block_work_output_sptr>& work_output) override;
 
     /*!
      * \brief seek file to \p seek_point relative to \p whence
@@ -39,7 +40,8 @@ public:
      * \param offset  begin this many items into file
      * \param len     produce only items [offset, offset+len)
      */
-    void open(const std::string& filename, bool repeat, uint64_t offset = 0, uint64_t len = 0);
+    void
+    open(const std::string& filename, bool repeat, uint64_t offset = 0, uint64_t len = 0);
 
     /*!
      * \brief Close the file handle.
@@ -69,7 +71,6 @@ private:
     pmtf::pmt _id;
 
     void do_update();
-
 };
 
 } // namespace fileio

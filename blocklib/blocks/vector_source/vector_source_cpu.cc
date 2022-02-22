@@ -34,8 +34,9 @@ vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_a
 
 
 template <class T>
-work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                          std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                           std::vector<block_work_output_sptr>& work_output)
 {
 
     // size_t noutput_ports = work_output.size(); // is 1 for this block
@@ -59,8 +60,8 @@ work_return_code_t vector_source_cpu<T>::work(std::vector<block_work_input_sptr>
 
         work_output[0]->n_produced = noutput_items;
         return work_return_code_t::WORK_OK;
-
-    } else {
+    }
+    else {
         if (d_offset >= d_data.size()) {
             work_output[0]->n_produced = 0;
             return work_return_code_t::WORK_DONE; // Done!

@@ -91,8 +91,7 @@ void bind_window(py::module& m)
                     py::arg("c4"))
 
 
-        .def_static(
-            "rectangular", &window::rectangular, py::arg("ntaps"))
+        .def_static("rectangular", &window::rectangular, py::arg("ntaps"))
 
 
         .def_static("hamming", &window::hamming, py::arg("ntaps"))
@@ -107,16 +106,13 @@ void bind_window(py::module& m)
         .def_static("blackman", &window::blackman, py::arg("ntaps"))
 
 
-        .def_static(
-            "blackman2", &window::blackman2, py::arg("ntaps"))
+        .def_static("blackman2", &window::blackman2, py::arg("ntaps"))
 
 
-        .def_static(
-            "blackman3", &window::blackman3, py::arg("ntaps"))
+        .def_static("blackman3", &window::blackman3, py::arg("ntaps"))
 
 
-        .def_static(
-            "blackman4", &window::blackman4, py::arg("ntaps"))
+        .def_static("blackman4", &window::blackman4, py::arg("ntaps"))
 
 
         .def_static("blackman_harris",
@@ -134,22 +130,16 @@ void bind_window(py::module& m)
         .def_static("nuttall", &window::nuttall, py::arg("ntaps"))
 
 
-        .def_static("blackman_nuttall",
-                    &window::blackman_nuttall,
-                    py::arg("ntaps"))
+        .def_static("blackman_nuttall", &window::blackman_nuttall, py::arg("ntaps"))
 
 
-        .def_static(
-            "nuttall_cfd", &window::nuttall_cfd, py::arg("ntaps"))
+        .def_static("nuttall_cfd", &window::nuttall_cfd, py::arg("ntaps"))
 
 
         .def_static("flattop", &window::flattop, py::arg("ntaps"))
 
 
-        .def_static("kaiser",
-                    &window::kaiser,
-                    py::arg("ntaps"),
-                    py::arg("beta"))
+        .def_static("kaiser", &window::kaiser, py::arg("ntaps"), py::arg("beta"))
 
 
         .def_static("bartlett", &window::bartlett, py::arg("ntaps"))
@@ -161,23 +151,16 @@ void bind_window(py::module& m)
         .def_static("parzen", &window::parzen, py::arg("ntaps"))
 
 
-        .def_static("exponential",
-                    &window::exponential,
-                    py::arg("ntaps"),
-                    py::arg("d"))
+        .def_static("exponential", &window::exponential, py::arg("ntaps"), py::arg("d"))
 
 
         .def_static("riemann", &window::riemann, py::arg("ntaps"))
 
 
-        .def_static(
-            "tukey", &window::tukey, py::arg("ntaps"), py::arg("alpha"))
+        .def_static("tukey", &window::tukey, py::arg("ntaps"), py::arg("alpha"))
 
 
-        .def_static("gaussian",
-                    &window::gaussian,
-                    py::arg("ntaps"),
-                    py::arg("sigma"))
+        .def_static("gaussian", &window::gaussian, py::arg("ntaps"), py::arg("sigma"))
 
 
         .def_static("build",

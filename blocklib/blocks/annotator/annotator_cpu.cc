@@ -11,8 +11,8 @@
 
 #include "annotator_cpu.h"
 #include "annotator_cpu_gen.h"
-#include <pmtf/string.hpp>
 #include <pmtf/scalar.hpp>
+#include <pmtf/string.hpp>
 #include <string.h>
 #include <iomanip>
 #include <iostream>
@@ -35,7 +35,7 @@ annotator_cpu::annotator_cpu(const block_args& args)
 }
 
 work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                   std::vector<block_work_output_sptr>& work_output)
+                                       std::vector<block_work_output_sptr>& work_output)
 {
     auto noutput_items = work_output[0]->n_items;
 
@@ -44,9 +44,8 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
     for (unsigned i = 0; i < d_num_inputs; i++) {
         abs_N = work_input[i]->nitems_read();
 
-        auto tags = work_input[i]->buffer->tags_in_window(0,noutput_items);
-        d_stored_tags.insert(
-            d_stored_tags.end(), tags.begin(), tags.end());
+        auto tags = work_input[i]->buffer->tags_in_window(0, noutput_items);
+        d_stored_tags.insert(d_stored_tags.end(), tags.begin(), tags.end());
     }
 
     // Storing the current noutput_items as the value to the "noutput_items" key
@@ -61,7 +60,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
         // the min() is a hack to make sure this doesn't segfault if
         // there are a different number of ins and outs. This is
         // specifically designed to test the 1-to-1 propagation policy.
-        //for (unsigned i = 0; i < std::min(d_num_outputs, d_num_inputs); i++) {
+        // for (unsigned i = 0; i < std::min(d_num_outputs, d_num_inputs); i++) {
         for (unsigned i = 0; i < d_num_outputs; i++) {
             if (abs_N % d_when == 0) {
                 auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
@@ -69,7 +68,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
             }
 
             // We don't really care about the data here
-            
+
             // in = (const float*)work_input[i].items();
             // out = (float*)work_output[i].items();
             // out[j] = in[j];

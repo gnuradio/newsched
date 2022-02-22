@@ -10,8 +10,8 @@
 
 #include "freq_sink_cpu.h"
 #include "freq_sink_cpu_gen.h"
-#include <volk/volk.h>
 #include <pmtf/string.hpp>
+#include <volk/volk.h>
 
 namespace gr {
 namespace qtgui {
@@ -57,8 +57,9 @@ freq_sink_cpu<T>::~freq_sink_cpu<T>()
 }
 
 template <class T>
-work_return_code_t freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                          std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+                       std::vector<block_work_output_sptr>& work_output)
 {
     auto in = work_input[0]->items<T>();
     auto noutput_items = work_input[0]->n_items;
@@ -131,7 +132,8 @@ void freq_sink_cpu<T>::initialize()
 {
     if (qApp != NULL) {
         d_qApplication = qApp;
-    } else {
+    }
+    else {
 #if QT_VERSION >= 0x040500 && QT_VERSION < 0x050000
         std::string style = prefs::singleton()->get_string("qtgui", "style", "raster");
         QApplication::setGraphicsSystem(QString(style.c_str()));
@@ -437,7 +439,8 @@ void freq_sink_cpu<T>::_reset()
     // Reset the trigger.
     if (d_trigger_mode == TRIG_MODE_FREE) {
         d_triggered = true;
-    } else {
+    }
+    else {
         d_triggered = false;
     }
 }
@@ -447,7 +450,8 @@ void freq_sink_cpu<gr_complex>::fft(float* data_out, const gr_complex* data_in, 
 {
     if (!d_window.empty()) {
         volk_32fc_32f_multiply_32fc(d_fft->get_inbuf(), data_in, &d_window.front(), size);
-    } else {
+    }
+    else {
         memcpy(d_fft->get_inbuf(), data_in, sizeof(gr_complex) * size);
     }
 
@@ -684,8 +688,8 @@ void freq_sink_cpu<T>::_test_trigger_norm(int nitems,
 
 //         int winoverlap = 4;
 //         int fftoverlap = d_fftsize / winoverlap;
-//         float num = static_cast<float>(winoverlap * len) / static_cast<float>(d_fftsize);
-//         int nffts = static_cast<int>(ceilf(num));
+//         float num = static_cast<float>(winoverlap * len) /
+//         static_cast<float>(d_fftsize); int nffts = static_cast<int>(ceilf(num));
 
 //         // Clear this as we will be accumulating in the for loop over nffts
 //         memset(d_pdu_magbuf, 0, sizeof(double) * d_fftsize);
@@ -722,7 +726,8 @@ void freq_sink_cpu<T>::_test_trigger_norm(int nitems,
 //         }
 
 //         // update gui per-pdu
-//         d_qApplication->postEvent(d_main_gui, new FreqUpdateEvent(d_magbufs, d_fftsize));
+//         d_qApplication->postEvent(d_main_gui, new FreqUpdateEvent(d_magbufs,
+//         d_fftsize));
 //     }
 // }
 

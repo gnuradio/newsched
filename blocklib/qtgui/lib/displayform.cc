@@ -257,7 +257,8 @@ void DisplayForm::setStop(bool on)
         // will auto-detach if already attached.
         d_display_plot->setStop(false);
         d_stop_state = false;
-    } else {
+    }
+    else {
         d_display_plot->setStop(true);
         d_stop_state = true;
     }
@@ -278,7 +279,8 @@ void DisplayForm::setGrid(bool on)
         // will auto-detach if already attached.
         d_grid->attach(d_display_plot);
         d_grid_state = true;
-    } else {
+    }
+    else {
         d_grid->detach();
         d_grid_state = false;
     }
@@ -306,19 +308,24 @@ void DisplayForm::saveFigure()
     if (filebox->exec()) {
         filename = filebox->selectedFiles()[0];
         filetype = filebox->selectedNameFilter();
-    } else {
+    }
+    else {
         return;
     }
 
     if (filetype.contains(".jpg")) {
         qpix.save(filename, "JPEG");
-    } else if (filetype.contains(".png")) {
+    }
+    else if (filetype.contains(".png")) {
         qpix.save(filename, "PNG");
-    } else if (filetype.contains(".bmp")) {
+    }
+    else if (filetype.contains(".bmp")) {
         qpix.save(filename, "BMP");
-    } else if (filetype.contains(".tiff")) {
+    }
+    else if (filetype.contains(".tiff")) {
         qpix.save(filename, "TIFF");
-    } else {
+    }
+    else {
         qpix.save(filename, "JPEG");
     }
 

@@ -146,7 +146,8 @@ size_t buffer_sm::space_available()
         if (min_items_read != total_written()) {
             space = 0;
         }
-    } else if (min_read_idx > _write_index) {
+    }
+    else if (min_read_idx > _write_index) {
         space = (min_read_idx - _write_index) / _item_size;
     }
 
@@ -233,7 +234,7 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
 
 
 buffer_sm_reader::buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
-                                    size_t itemsize,
+                                   size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props,
                                    size_t read_index)
     : buffer_reader(buffer, buf_props, itemsize, read_index), _buffer_sm(buffer)
@@ -311,9 +312,11 @@ size_t buffer_sm_reader::bytes_available()
 
     if (w < r) {
         ret = (_buffer->buf_size() - r);
-    } else if (w == r && total_read() < _buffer->total_written()) {
-        ret = (_buffer->buf_size() - r); 
-    } else {
+    }
+    else if (w == r && total_read() < _buffer->total_written()) {
+        ret = (_buffer->buf_size() - r);
+    }
+    else {
         ret = (w - r);
     }
 

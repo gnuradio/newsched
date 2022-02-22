@@ -47,6 +47,6 @@ float mmse_fir_interpolator_ff::interpolate(const float input[], float mu) const
     return r;
 }
 
-}
+} // namespace kernel
 } /* namespace filter */
 } /* namespace gr */

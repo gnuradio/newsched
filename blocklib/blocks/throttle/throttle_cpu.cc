@@ -17,8 +17,7 @@ namespace gr {
 namespace blocks {
 
 throttle_cpu::throttle_cpu(block_args args)
-    : INHERITED_CONSTRUCTORS,
-        d_ignore_tags(args.ignore_tags)
+    : INHERITED_CONSTRUCTORS, d_ignore_tags(args.ignore_tags)
 {
     set_sample_rate(args.samples_per_sec);
 }
@@ -42,8 +41,7 @@ bool throttle_cpu::start()
 work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                       std::vector<block_work_output_sptr>& work_output)
 {
-    if (d_sleeping)
-    {
+    if (d_sleeping) {
         produce_each(0, work_output);
         consume_each(0, work_input);
         return work_return_code_t::WORK_OK;

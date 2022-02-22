@@ -22,11 +22,7 @@ constexpr int LINGER_DEFAULT = 1000; // 1 second.
 namespace gr {
 namespace zeromq {
 
-base::base(int type,
-                     size_t itemsize,
-                     int timeout,
-                     bool pass_tags,
-                     const std::string& key)
+base::base(int type, size_t itemsize, int timeout, bool pass_tags, const std::string& key)
     : d_context(1),
       d_socket(d_context, type),
       d_vsize(itemsize),
@@ -50,12 +46,12 @@ std::string base::last_endpoint() const
 
 
 base_sink::base_sink(int type,
-                               size_t itemsize,
-                               const std::string& address,
-                               int timeout,
-                               bool pass_tags,
-                               int hwm,
-                               const std::string& key)
+                     size_t itemsize,
+                     const std::string& address,
+                     int timeout,
+                     bool pass_tags,
+                     int hwm,
+                     const std::string& key)
     : base(type, itemsize, timeout, pass_tags, key)
 {
     d_logger = logging::get_logger("zmq_base_source", "default");
@@ -72,8 +68,8 @@ base_sink::base_sink(int type,
 }
 
 int base_sink::send_message(const void* in_buf,
-                                 const int in_nitems,
-                                 const uint64_t in_offset)
+                            const int in_nitems,
+                            const uint64_t in_offset)
 {
     /* Send key if it exists */
     if (!d_key.empty()) {
@@ -97,7 +93,8 @@ int base_sink::send_message(const void* in_buf,
     if (d_pass_tags) {
         memcpy(msg.data(), header.c_str(), header.length());
         memcpy((uint8_t*)msg.data() + header.length(), in_buf, payload_len);
-    } else {
+    }
+    else {
         memcpy(msg.data(), in_buf, payload_len);
     }
 
@@ -109,12 +106,12 @@ int base_sink::send_message(const void* in_buf,
 }
 
 base_source::base_source(int type,
-                                   size_t itemsize,
-                                   const std::string& address,
-                                   int timeout,
-                                   bool pass_tags,
-                                   int hwm,
-                                   const std::string& key)
+                         size_t itemsize,
+                         const std::string& address,
+                         int timeout,
+                         bool pass_tags,
+                         int hwm,
+                         const std::string& key)
     : base(type, itemsize, timeout, pass_tags, key),
       d_consumed_bytes(0),
       d_consumed_items(0)
@@ -134,8 +131,8 @@ base_source::base_source(int type,
 bool base_source::has_pending() { return d_msg.size() > d_consumed_bytes; }
 
 int base_source::flush_pending(void* out_buf,
-                                    const int out_nitems,
-                                    const uint64_t out_offset)
+                               const int out_nitems,
+                               const uint64_t out_offset)
 {
     /* How much to copy in this call */
     int to_copy_items =
@@ -166,7 +163,7 @@ bool base_source::load_message(bool wait)
 {
     /* Poll for input */
     zmq::pollitem_t items[] = { { static_cast<void*>(d_socket), 0, ZMQ_POLLIN, 0 } };
-    zmq::poll(&items[0], 1, std::chrono::milliseconds{wait ? d_timeout : 0});
+    zmq::poll(&items[0], 1, std::chrono::milliseconds{ wait ? d_timeout : 0 });
 
     if (!(items[0].revents & ZMQ_POLLIN))
         return false;
@@ -202,7 +199,8 @@ bool base_source::load_message(bool wait)
             if (!multi_ok) {
                 GR_LOG_ERROR(d_logger, "Failure to receive multi-part message.");
             }
-        } else {
+        }
+        else {
             return false;
         }
     }

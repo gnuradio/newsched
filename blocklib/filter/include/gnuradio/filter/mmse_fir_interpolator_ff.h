@@ -58,6 +58,6 @@ protected:
     std::vector<kernel::fir_filter_fff> filters;
 };
 
-}
+} // namespace kernel
 } /* namespace filter */
 } /* namespace gr */

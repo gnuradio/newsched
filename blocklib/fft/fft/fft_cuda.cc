@@ -24,19 +24,19 @@ namespace fft {
 
 template <class T, bool forward>
 fft_cuda<T, forward>::fft_cuda(const typename fft<T, forward>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T,forward),
+    : INHERITED_CONSTRUCTORS(T, forward),
       d_fft_size(args.fft_size),
       d_shift(args.shift),
       d_fft(args.fft_size)
 {
     if (args.window.empty() || args.window.size() == d_fft_size) {
         d_window = args.window;
-    } else {
+    }
+    else {
         throw std::runtime_error("fft: window not the same length as fft_size");
     }
 
     cudaStreamCreate(&d_stream);
-
 }
 
 
@@ -85,8 +85,9 @@ void fft_cuda<float, false>::fft_and_shift(const float* in, gr_complex* out, int
 }
 
 template <class T, bool forward>
-work_return_code_t fft_cuda<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
-                                              std::vector<block_work_output_sptr>& work_output)
+work_return_code_t
+fft_cuda<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
+                           std::vector<block_work_output_sptr>& work_output)
 {
 
     auto in = work_input[0]->items<T>();

@@ -59,7 +59,8 @@ moving_average_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
 
     if (tr == 0) {
         p_kernel_full->launch_default_occupancy({ in }, { out }, num_iter);
-    } else {
+    }
+    else {
         p_kernel_valid->launch_default_occupancy({ in }, { out }, num_iter);
     }
 

@@ -42,6 +42,6 @@ T moving_averager<T>::filter(T x)
 template class moving_averager<float>;
 template class moving_averager<gr_complex>;
 
-}} /* namespace filter */
+} // namespace kernel
+} /* namespace filter */
 } /* namespace gr */
-

@@ -10,8 +10,8 @@
 
 #include "multiply_const_cuda.h"
 #include "multiply_const_cuda_gen.h"
-#include <volk/volk.h>
 #include <thrust/complex.h>
+#include <volk/volk.h>
 
 namespace gr {
 namespace math {
@@ -32,7 +32,8 @@ multiply_const_cuda<gr_complex>::multiply_const_cuda(
     const typename multiply_const<gr_complex>::block_args& args)
     : INHERITED_CONSTRUCTORS(gr_complex), d_k(args.k), d_vlen(args.vlen)
 {
-    p_kernel = std::make_shared<cusp::multiply_const<gr_complex>>((thrust::complex<float>)args.k);
+    p_kernel = std::make_shared<cusp::multiply_const<gr_complex>>(
+        (thrust::complex<float>)args.k);
 
     cudaStreamCreate(&d_stream);
     p_kernel->set_stream(d_stream);
@@ -46,7 +47,8 @@ multiply_const_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto out = work_output[0]->items<T>();
     auto noutput_items = work_output[0]->n_items;
 
-    p_kernel->launch_default_occupancy({work_input[0]->items<T>()}, { out }, noutput_items);
+    p_kernel->launch_default_occupancy(
+        { work_input[0]->items<T>() }, { out }, noutput_items);
     cudaStreamSynchronize(d_stream);
 
     work_output[0]->n_produced = work_output[0]->n_items;

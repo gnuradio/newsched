@@ -24,8 +24,7 @@ void bind_edge(py::module& m)
 
     py::class_<node_endpoint, std::shared_ptr<node_endpoint>>(m, "endpoint")
         .def("node", &node_endpoint::node)
-        .def("port", &node_endpoint::port)
-        ;
+        .def("port", &node_endpoint::port);
 
     py::class_<edge, std::shared_ptr<edge>>(m, "edge")
         .def(py::init(
@@ -35,6 +34,5 @@ void bind_edge(py::module& m)
         .def("set_custom_buffer", &edge::set_custom_buffer)
         .def("identifier", &edge::identifier)
         .def("src", &edge::src)
-        .def("dst", &edge::dst)
-        ;
+        .def("dst", &edge::dst);
 }

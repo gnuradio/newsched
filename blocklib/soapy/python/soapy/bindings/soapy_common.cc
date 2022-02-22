@@ -46,13 +46,16 @@ setting_info cast_pyobject_to_arginfo_string(py::object obj)
     if (py::isinstance<py::bool_>(obj)) {
         info.value = gr::soapy::setting_to_string(bool(py::cast<py::bool_>(obj)));
         info.type = SoapySDR::ArgInfo::BOOL;
-    } else if (py::isinstance<py::int_>(obj)) {
+    }
+    else if (py::isinstance<py::int_>(obj)) {
         info.value = gr::soapy::setting_to_string(int(py::cast<py::int_>(obj)));
         info.type = SoapySDR::ArgInfo::INT;
-    } else if (py::isinstance<py::float_>(obj)) {
+    }
+    else if (py::isinstance<py::float_>(obj)) {
         info.value = gr::soapy::setting_to_string(double(py::cast<py::float_>(obj)));
         info.type = SoapySDR::ArgInfo::FLOAT;
-    } else {
+    }
+    else {
         info.value = py::str(obj);
         info.type = SoapySDR::ArgInfo::STRING;
     }

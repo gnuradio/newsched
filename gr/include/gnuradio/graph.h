@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <gnuradio/edge.h>
 
@@ -39,22 +39,22 @@ public:
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
     node_vector_t& nodes() { return _nodes; }
     node_vector_t all_nodes();
-    edge_sptr connect(const node_endpoint& src,
-                 const node_endpoint& dst);
+    edge_sptr connect(const node_endpoint& src, const node_endpoint& dst);
     edge_sptr connect(node_sptr src_node,
-                 unsigned int src_port_index,
-                 node_sptr dst_node,
-                 unsigned int dst_port_index);
-    edge_sptr connect(node_sptr src_node,
-                 node_sptr dst_node);
-    edge_sptr connect(std::pair<node_sptr, unsigned int>, std::pair<node_sptr, unsigned int>);
-    edge_sptr connect(std::pair<node_sptr, const std::string&>, std::pair<node_sptr, const std::string&>);
+                      unsigned int src_port_index,
+                      node_sptr dst_node,
+                      unsigned int dst_port_index);
+    edge_sptr connect(node_sptr src_node, node_sptr dst_node);
+    edge_sptr connect(std::pair<node_sptr, unsigned int>,
+                      std::pair<node_sptr, unsigned int>);
+    edge_sptr connect(std::pair<node_sptr, const std::string&>,
+                      std::pair<node_sptr, const std::string&>);
     edge_vector_t connect(const std::vector<std::pair<node_sptr, unsigned int>>&);
     edge_vector_t connect(const std::vector<node_sptr>&);
     edge_sptr connect(node_sptr src_node,
-                 const std::string& src_port_name,
-                 node_sptr dst_node,
-                 const std::string& dst_port_name);
+                      const std::string& src_port_name,
+                      node_sptr dst_node,
+                      const std::string& dst_port_name);
     void disconnect(const node_endpoint& src, const node_endpoint& dst){};
     virtual void validate(){};
     virtual void clear(){};

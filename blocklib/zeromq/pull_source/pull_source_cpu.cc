@@ -1,20 +1,16 @@
 #include "pull_source_cpu.h"
 #include "pull_source_cpu_gen.h"
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 namespace gr {
 namespace zeromq {
 
 pull_source_cpu::pull_source_cpu(block_args args)
     : INHERITED_CONSTRUCTORS,
-      base_source(ZMQ_PULL,
-                  args.itemsize,
-                  args.address,
-                  args.timeout,
-                  args.pass_tags,
-                  args.hwm)
+      base_source(
+          ZMQ_PULL, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
 }
 work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
@@ -40,16 +36,13 @@ work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& wor
         }
         else {
             /* Try to get the next message */
-            if (!load_message(first))
-            {
+            if (!load_message(first)) {
                 // Launch a thread to come back and try again some time later
                 std::thread t([this]() {
-                    GR_LOG_DEBUG(
-                        this->debug_logger(),
-                        "ZMQ base_source sleeping");
+                    GR_LOG_DEBUG(this->debug_logger(), "ZMQ base_source sleeping");
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                    this->p_scheduler->push_message(
-                        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
+                    this->p_scheduler->push_message(std::make_shared<scheduler_action>(
+                        scheduler_action_t::NOTIFY_INPUT));
                 });
                 t.detach();
                 break; /* No message, we're done for now */

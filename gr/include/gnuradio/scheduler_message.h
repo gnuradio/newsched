@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pmtf/wrap.hpp>
 #include <nlohmann/json.hpp>
+#include <pmtf/wrap.hpp>
 
 namespace gr {
 
@@ -23,9 +23,11 @@ public:
     scheduler_message_t type() { return _type; }
     void set_blkid(int64_t blkid_) { _blkid = blkid_; }
     int64_t blkid() { return _blkid; }
-    virtual std::string to_json() { return "{ }";}
-    virtual std::shared_ptr<scheduler_message> from_json(const std::string& str) {
-        throw std::runtime_error("from_json not implemented in scheduler_message base class");
+    virtual std::string to_json() { return "{ }"; }
+    virtual std::shared_ptr<scheduler_message> from_json(const std::string& str)
+    {
+        throw std::runtime_error(
+            "from_json not implemented in scheduler_message base class");
     }
 
 private:
@@ -61,10 +63,11 @@ public:
         : scheduler_message(scheduler_message_t::MSGPORT_MESSAGE), _msg(msg), _cb(cb)
     {
     }
-    void set_callback(message_port_callback_fcn cb) { _cb = cb;}
-    message_port_callback_fcn callback() { return _cb;}
-    pmtf::pmt message() { return _msg;}
-    std::string to_json() override {
+    void set_callback(message_port_callback_fcn cb) { _cb = cb; }
+    message_port_callback_fcn callback() { return _cb; }
+    pmtf::pmt message() { return _msg; }
+    std::string to_json() override
+    {
         nlohmann::json ret;
         ret["type"] = "msgport_message";
         ret["msg"] = _msg.to_base64();
@@ -73,15 +76,15 @@ public:
     scheduler_message_sptr from_json(const std::string& str)
     {
         auto json_obj = nlohmann::json::parse(str);
-        if (json_obj["type"] != "msgport_message")
-        {
+        if (json_obj["type"] != "msgport_message") {
             throw std::runtime_error("Invalid message type for msgport_message");
         }
         auto msg = pmtf::pmt::from_base64(str);
         return std::make_shared<msgport_message>(msg, nullptr);
     }
+
 private:
-    pmtf::pmt _msg; 
+    pmtf::pmt _msg;
     message_port_callback_fcn _cb;
 };
 using msgport_message_sptr = std::shared_ptr<msgport_message>;

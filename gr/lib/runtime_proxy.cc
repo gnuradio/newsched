@@ -1,9 +1,9 @@
-#include <gnuradio/runtime_proxy.h>
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/runtime_monitor.h>
+#include <gnuradio/runtime_proxy.h>
+#include <charconv>
 #include <chrono>
 #include <thread>
-#include <charconv>
 
 namespace gr {
 runtime_proxy::sptr runtime_proxy::make(int svr_port, bool upstream)
@@ -17,7 +17,8 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
       _client_socket(_context, zmq::socket_type::push)
 
 {
-    _logger = logging::get_logger(fmt::format("runtime_proxy_{}", upstream ? "upstream" : "downstream"), "debug");
+    _logger = logging::get_logger(
+        fmt::format("runtime_proxy_{}", upstream ? "upstream" : "downstream"), "debug");
     _server_socket.set(zmq::sockopt::sndhwm, 1);
     _server_socket.set(zmq::sockopt::rcvhwm, 1);
     _client_socket.set(zmq::sockopt::sndhwm, 1);
@@ -28,7 +29,8 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
 
     const std::string endpoint_str = _server_socket.get(zmq::sockopt::last_endpoint);
     auto colon_index = endpoint_str.find_last_of(':');
-    std::string port_str = std::string(endpoint_str.begin()+colon_index+1, endpoint_str.end());
+    std::string port_str =
+        std::string(endpoint_str.begin() + colon_index + 1, endpoint_str.end());
     _svr_port = std::stoi(port_str);
 
     std::thread t([this]() {
@@ -39,7 +41,7 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
                         _server_socket.recv(_rcv_msg)) //, zmq::recv_flags::dontwait))
                 {
                     _logger->debug("Got msg: {} ", _rcv_msg.to_string());
-                    _logger->debug("_rtm: {}", (void *)_rtm.get());
+                    _logger->debug("_rtm: {}", (void*)_rtm.get());
                     auto rtm_msg = rt_monitor_message::from_string(_rcv_msg.to_string());
                     if (_upstream) {
                         rtm_msg->set_schedid(_id);
@@ -49,7 +51,8 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
                         _logger->debug("Pushing message");
                         _rtm->push_message(rtm_msg);
                     }
-                } else {
+                }
+                else {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
             } catch (zmq::error_t const& err) {
@@ -62,8 +65,7 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
 
 void runtime_proxy::client_connect(const std::string& ipaddr, int cli_port)
 {
-    std::string cliendpoint =
-        "tcp://" + ipaddr + ":" + std::to_string(cli_port);
+    std::string cliendpoint = "tcp://" + ipaddr + ":" + std::to_string(cli_port);
     _client_socket.connect(cliendpoint);
 
     _cli_port = cli_port;
@@ -72,11 +74,10 @@ void runtime_proxy::client_connect(const std::string& ipaddr, int cli_port)
 void runtime_proxy::push_message(rt_monitor_message_sptr msg)
 {
     if (_connected) {
-    _logger->debug("Sending msg: {} ", msg->to_string());
-    _client_socket.send(zmq::buffer(msg->to_string()), zmq::send_flags::none);
+        _logger->debug("Sending msg: {} ", msg->to_string());
+        _client_socket.send(zmq::buffer(msg->to_string()), zmq::send_flags::none);
     }
-    else
-    {
+    else {
         _logger->debug("Client not yet connected");
     }
 }

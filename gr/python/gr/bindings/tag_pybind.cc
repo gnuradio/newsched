@@ -25,5 +25,4 @@ void bind_tag(py::module& m)
         .value("TPP_ONE_TO_ONE", gr::tag_propagation_policy_t::TPP_ONE_TO_ONE) // 2
         .value("TPP_CUSTOM", gr::tag_propagation_policy_t::TPP_CUSTOM)         // 3
         .export_values();
-
 }

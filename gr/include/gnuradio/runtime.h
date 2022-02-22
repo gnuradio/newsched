@@ -1,16 +1,16 @@
 #pragma once
 
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/scheduler.h>
 #include <gnuradio/runtime_monitor.h>
 #include <gnuradio/runtime_proxy.h>
+#include <gnuradio/scheduler.h>
 
 namespace gr {
 class runtime
 {
 public:
-    using sptr = std::shared_ptr<runtime>; 
-    static sptr make() {return std::make_shared<runtime>();}
+    using sptr = std::shared_ptr<runtime>;
+    static sptr make() { return std::make_shared<runtime>(); }
     runtime();
     void initialize(graph_sptr fg);
     void start();
@@ -19,16 +19,16 @@ public:
     void run();
     /**
      * @brief Add a scheduler via a pair of scheduler and vector of blocks
-     * 
-     * @param conf 
+     *
+     * @param conf
      */
     void add_scheduler(std::pair<scheduler_sptr, std::vector<node_sptr>> conf);
     /**
      * @brief Add a scheduler with no associated blocks
-     * 
+     *
      * This Scheduler will be assigned all the blocks in the flowgraph
-     * 
-     * @param sched 
+     *
+     * @param sched
      */
     void add_scheduler(scheduler_sptr sched);
 

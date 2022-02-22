@@ -44,8 +44,7 @@ namespace py = pybind11;
 #define __DOC4(n1, n2, n3, n4) ""
 #define __DOC5(n1, n2, n3, n4, n5) ""
 #define __DOC6(n1, n2, n3, n4, n5, n6) ""
-#define __DOC7(n1, n2, n3, n4, n5, n6, n7) \
-    ""
+#define __DOC7(n1, n2, n3, n4, n5, n6, n7) ""
 #define DOC(...) __EXPAND(__EXPAND(__CAT2(__DOC, __VA_SIZE(__VA_ARGS__)))(__VA_ARGS__))
 #define D(...) DOC(gr, soapy, __VA_ARGS__)
 
@@ -70,8 +69,7 @@ void bind_block(py::module& m)
     using block = ::gr::soapy::block;
 
 
-    py::class_<block, gr::block, gr::node, std::shared_ptr<block>>(
-        m, "block", D(block))
+    py::class_<block, gr::block, gr::node, std::shared_ptr<block>>(m, "block", D(block))
 
 
         .def("set_frontend_mapping",

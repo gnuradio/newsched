@@ -165,7 +165,8 @@ void TimeDisplayForm::setupControlPanel(bool en)
 {
     if (en) {
         setupControlPanel();
-    } else {
+    }
+    else {
         teardownControlPanel();
     }
 }
@@ -260,7 +261,8 @@ void TimeDisplayForm::setSampleRate(const double samprate)
         d_current_units = units;
 
         getPlot()->setSampleRate(samprate, units, strtime[iunit]);
-    } else {
+    }
+    else {
         throw std::runtime_error("TimeDisplayForm: samprate must be > 0.");
     }
 }
@@ -343,7 +345,8 @@ void TimeDisplayForm::setTriggerMode(gr::qtgui::trigger_mode mode)
     if ((d_trig_mode == gr::qtgui::TRIG_MODE_AUTO) ||
         (d_trig_mode == gr::qtgui::TRIG_MODE_NORM)) {
         getPlot()->attachTriggerLines(true);
-    } else {
+    }
+    else {
         getPlot()->attachTriggerLines(false);
     }
 
@@ -358,7 +361,8 @@ void TimeDisplayForm::updateTrigger(gr::qtgui::trigger_mode mode)
         (d_trig_mode == gr::qtgui::TRIG_MODE_NORM)) {
         d_tr_level_act->activate(QAction::Trigger);
         getPlot()->attachTriggerLines(true);
-    } else {
+    }
+    else {
         getPlot()->attachTriggerLines(false);
     }
 
@@ -555,11 +559,14 @@ void TimeDisplayForm::notifyTriggerMode(const QString& mode)
 {
     if (mode == "Free") {
         setTriggerMode(gr::qtgui::TRIG_MODE_FREE);
-    } else if (mode == "Auto") {
+    }
+    else if (mode == "Auto") {
         setTriggerMode(gr::qtgui::TRIG_MODE_AUTO);
-    } else if (mode == "Normal") {
+    }
+    else if (mode == "Normal") {
         setTriggerMode(gr::qtgui::TRIG_MODE_NORM);
-    } else if (mode == "Tag") {
+    }
+    else if (mode == "Tag") {
         setTriggerMode(gr::qtgui::TRIG_MODE_TAG);
         updateTrigger(gr::qtgui::TRIG_MODE_TAG);
     }
@@ -569,7 +576,8 @@ void TimeDisplayForm::notifyTriggerSlope(const QString& slope)
 {
     if (slope == "Positive") {
         setTriggerSlope(gr::qtgui::TRIG_SLOPE_POS);
-    } else if (slope == "Negative") {
+    }
+    else if (slope == "Negative") {
         setTriggerSlope(gr::qtgui::TRIG_SLOPE_NEG);
     }
 }

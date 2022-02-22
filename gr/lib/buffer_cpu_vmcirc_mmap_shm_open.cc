@@ -12,9 +12,9 @@
 #endif
 #include "pagesize.h"
 #include <gnuradio/sys_paths.h>
+#include <fmt/core.h>
 #include <cerrno>
 #include <cstdio>
-#include <fmt/core.h>
 
 namespace gr {
 buffer_cpu_vmcirc_mmap_shm_open::buffer_cpu_vmcirc_mmap_shm_open(
@@ -51,13 +51,15 @@ buffer_cpu_vmcirc_mmap_shm_open::buffer_cpu_vmcirc_mmap_shm_open(
 
             // This is the POSIX recommended "portable format".
             // Of course the "portable format" doesn't work on some systems...
-            seg_name = fmt::format("/gnuradio-{}-{}",getpid(), s_seg_counter);
-        } else {
+            seg_name = fmt::format("/gnuradio-{}-{}", getpid(), s_seg_counter);
+        }
+        else {
 
             // Where the "portable format" doesn't work, we try building
             // a full filesystem pathname pointing into a suitable temporary directory.
 
-            seg_name = fmt::format("{}/gnuradio-{}-{}", gr::tmp_path(), getpid(), s_seg_counter);
+            seg_name =
+                fmt::format("{}/gnuradio-{}-{}", gr::tmp_path(), getpid(), s_seg_counter);
         }
 
         shm_fd = shm_open(seg_name.c_str(), O_RDWR | O_CREAT | O_EXCL, 0600);
@@ -73,8 +75,7 @@ buffer_cpu_vmcirc_mmap_shm_open::buffer_cpu_vmcirc_mmap_shm_open(
                 EEXIST) // Named segment already exists (shouldn't happen).  Try again
                 continue;
 
-            static std::string msg =
-                fmt::format("shm_open [{}] failed", seg_name);
+            static std::string msg = fmt::format("shm_open [{}] failed", seg_name);
             // GR_LOG_ERROR(d_logger, msg.c_str());
             throw std::runtime_error("gr::buffer_cpu_vmcirc_mmap_shm_open");
         }

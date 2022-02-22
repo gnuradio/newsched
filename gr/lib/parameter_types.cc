@@ -22,22 +22,14 @@ std::map<param_type_t, std::type_index> parameter_functions::param_type_index_ma
 };
 
 std::map<param_type_t, std::string> parameter_functions::param_type_format_map = {
-    { param_type_t::FLOAT, "f" },
-    { param_type_t::DOUBLE, "d" },
-    { param_type_t::CFLOAT, "Zf" },
-    { param_type_t::CDOUBLE, "Zd" },
-    { param_type_t::INT8, "b" },
-    { param_type_t::INT16, "h" },
-    { param_type_t::INT32, "i" },
-    { param_type_t::INT64, "q" },
-    { param_type_t::UINT8, "B" },
-    { param_type_t::UINT16, "H" },
-    { param_type_t::UINT32, "I" },
-    { param_type_t::UINT64, "Q" },
-    { param_type_t::BOOL, "?" },
-    { param_type_t::ENUM, "Q" }, //??
-    { param_type_t::STRING, "s" },
-    { param_type_t::VOID, "p" }
+    { param_type_t::FLOAT, "f" },   { param_type_t::DOUBLE, "d" },
+    { param_type_t::CFLOAT, "Zf" }, { param_type_t::CDOUBLE, "Zd" },
+    { param_type_t::INT8, "b" },    { param_type_t::INT16, "h" },
+    { param_type_t::INT32, "i" },   { param_type_t::INT64, "q" },
+    { param_type_t::UINT8, "B" },   { param_type_t::UINT16, "H" },
+    { param_type_t::UINT32, "I" },  { param_type_t::UINT64, "Q" },
+    { param_type_t::BOOL, "?" },    { param_type_t::ENUM, "Q" }, //??
+    { param_type_t::STRING, "s" },  { param_type_t::VOID, "p" }
 };
 
 

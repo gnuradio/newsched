@@ -16,4 +16,3 @@
 #else
 #define BLOCKS_API __GR_ATTR_IMPORT
 #endif
-

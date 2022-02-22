@@ -83,12 +83,12 @@ bool thread_wrapper::handle_work_notification()
         if (elem.second == executor_iteration_status::READY ||
             elem.second == executor_iteration_status::BLKD_OUT) {
             notify_self_ = true;
-        } else if (elem.second == executor_iteration_status::BLKD_IN) {
+        }
+        else if (elem.second == executor_iteration_status::BLKD_IN) {
             // kick = true;
         }
 
-        if (elem.second == executor_iteration_status::MSG_ONLY)
-        {
+        if (elem.second == executor_iteration_status::MSG_ONLY) {
             //     gr_log_debug(_debug_logger,
             //                  "size_approx {}",
             //                  msgq.size_approx());
@@ -98,7 +98,7 @@ bool thread_wrapper::handle_work_notification()
             // }
         }
         else if (elem.second != executor_iteration_status::BLKD_IN &&
-            elem.second != executor_iteration_status::BLKD_OUT) {
+                 elem.second != executor_iteration_status::BLKD_OUT) {
             // Ignore source blocks
             if (!d_block_id_to_block_map[elem.first]->input_stream_ports().size()) {
                 all_blkd = false;
@@ -115,12 +115,14 @@ bool thread_wrapper::handle_work_notification()
                 d_rtmon->push_message(
                     rt_monitor_message::make(rt_monitor_message_t::FLUSHED, id()));
                 return false;
-            } else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(10)); 
+            }
+            else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 push_message(std::make_shared<scheduler_action>(
                     scheduler_action_t::NOTIFY_ALL, 0));
             }
-        } else {
+        }
+        else {
             d_flush_cnt = 0;
             gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
         }
@@ -206,7 +208,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
     // Wait here until the block starts
     std::unique_lock<std::mutex> lk(top->_start_mutex);
-    top->_start_cv.wait(lk, [top]{return top->_ready_to_start;});
+    top->_start_cv.wait(lk, [top] { return top->_ready_to_start; });
 
     bool blocking_queue = true;
     while (!top->d_thread_stopped) {
@@ -219,7 +221,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
             if (blocking_queue) {
                 gr_log_debug(top->_debug_logger, "Going into blocking queue");
                 valid = top->pop_message(msg);
-            } else {
+            }
+            else {
                 gr_log_debug(top->_debug_logger, "Going into nonblocking queue");
 
                 valid = top->pop_message_nonblocking(msg);

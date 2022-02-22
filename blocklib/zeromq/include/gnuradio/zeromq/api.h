@@ -16,4 +16,3 @@
 #else
 #define ZEROMQ_API __GR_ATTR_IMPORT
 #endif
-

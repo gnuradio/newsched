@@ -42,7 +42,8 @@ edge_vector_t flat_graph::calc_connections(block_sptr block, bool check_inputs)
         if (check_inputs) {
             if (static_cast<block_endpoint>(p->dst()).block() == block)
                 result.push_back(p);
-        } else {
+        }
+        else {
             if (static_cast<block_endpoint>(p->src()).block() == block)
                 result.push_back(p);
         }
@@ -170,7 +171,7 @@ block_vector_t flat_graph::topological_sort(block_vector_t& blocks)
 
     // Start 'em all white
     for (block_viter_t p = tmp.begin(); p != tmp.end(); p++)
-        (*p)->attributes.set_int_value(BLOCK_COLOR_KEY,WHITE);
+        (*p)->attributes.set_int_value(BLOCK_COLOR_KEY, WHITE);
 
     for (block_viter_t p = tmp.begin(); p != tmp.end(); p++) {
         if ((*p)->attributes.get_int_value(BLOCK_COLOR_KEY) == WHITE)
@@ -205,7 +206,7 @@ bool flat_graph::source_p(block_sptr block) { return calc_upstream_edges(block).
 
 void flat_graph::topological_dfs_visit(block_sptr block, block_vector_t& output)
 {
-    block->attributes.set_int_value(BLOCK_COLOR_KEY,GREY);
+    block->attributes.set_int_value(BLOCK_COLOR_KEY, GREY);
     block_vector_t blocks(calc_downstream_blocks(block));
 
     for (block_viter_t p = blocks.begin(); p != blocks.end(); p++) {

@@ -20,10 +20,7 @@ public:
     }
 
     // Non-blocking
-    bool try_pop(T& msg)
-    {
-        return q.try_dequeue(msg);
-    }
+    bool try_pop(T& msg) { return q.try_dequeue(msg); }
     bool pop(T& msg)
     {
         q.wait_dequeue(msg);
@@ -33,13 +30,10 @@ public:
     {
         T msg;
         bool done = false;
-        while(!done)
-           done = !q.try_dequeue(msg);
+        while (!done)
+            done = !q.try_dequeue(msg);
     }
-    size_t size_approx()
-    {
-        return q.size_approx();
-    }
+    size_t size_approx() { return q.size_approx(); }
 
 private:
     moodycamel::BlockingConcurrentQueue<T> q;

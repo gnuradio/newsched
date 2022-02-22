@@ -11,19 +11,19 @@
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/logging.h>
 #include <gnuradio/realtime.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
+#include <gnuradio/buffer_cpu_simple.hh>
+#include <gnuradio/buffer_cpu_vmcirc.h>
 #include <gnuradio/buffer_cuda.hh>
 #include <gnuradio/buffer_cuda_pinned.hh>
 #include <gnuradio/buffer_cuda_sm.hh>
-#include <gnuradio/buffer_cpu_simple.hh>
-#include <gnuradio/buffer_cpu_vmcirc.h>
 #include <iostream>
 
 #include "CLI/App.hpp"
-#include "CLI/Formatter.hpp"
 #include "CLI/Config.hpp"
+#include "CLI/Formatter.hpp"
 
 using namespace gr;
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     bool rt_prio = false;
     bool single_mapped = false;
 
-    CLI::App app{"App description"};
+    CLI::App app{ "App description" };
 
     // app.add_option("-h,--help", "display help");
     app.add_option("-N,--samples", samples, "Number of Samples");
@@ -65,8 +65,7 @@ int main(int argc, char* argv[])
 
     auto src = blocks::null_source::make({ sizeof(gr_complex) });
     auto snk = blocks::null_sink::make({ sizeof(gr_complex) });
-    auto head =
-        blocks::head::make_cpu({ sizeof(gr_complex), samples });
+    auto head = blocks::head::make_cpu({ sizeof(gr_complex), samples });
 
     auto fg = flowgraph::make();
 
@@ -76,7 +75,7 @@ int main(int argc, char* argv[])
         sizeof(gr_complex) * buffer_size *
             2); // This sizing should be handled in buffer_managment but it is not yet
     sched->set_default_buffer_factory(BUFFER_CPU_VMCIRC_ARGS);
-    
+
     if (mem_model == 0) {
         if (single_mapped)
             fg->connect(head, 0, copy_blks[0], 0)
@@ -89,7 +88,8 @@ int main(int argc, char* argv[])
             if (single_mapped) {
                 fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)
                     ->set_custom_buffer(CUDA_BUFFER_SM_ARGS_D2D);
-            } else {
+            }
+            else {
                 fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)
                     ->set_custom_buffer(CUDA_BUFFER_ARGS_D2D);
             }
@@ -97,12 +97,13 @@ int main(int argc, char* argv[])
         if (single_mapped) {
             fg->connect(copy_blks[nblocks - 1], 0, snk, 0)
                 ->set_custom_buffer(CUDA_BUFFER_SM_ARGS_D2H);
-        } else {
+        }
+        else {
             fg->connect(copy_blks[nblocks - 1], 0, snk, 0)
                 ->set_custom_buffer(CUDA_BUFFER_ARGS_D2H);
         }
-
-    } else {
+    }
+    else {
         fg->connect(head, 0, copy_blks[0], 0)->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS);
         for (int i = 0; i < nblocks - 1; i++) {
             fg->connect(copy_blks[i], 0, copy_blks[i + 1], 0)

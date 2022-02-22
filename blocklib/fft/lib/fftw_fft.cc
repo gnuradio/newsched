@@ -131,7 +131,7 @@ static void config_threading(int nthreads)
 {
 #ifdef FFTW3F_THREADS
     static int fftw_threads_inited = 0;
-    
+
     if (fftw_threads_inited == 0) {
         fftw_threads_inited = 1;
         fftwf_init_threads();
@@ -148,7 +148,8 @@ static void export_wisdom()
     if (fp != 0) {
         fftwf_export_wisdom_to_file(fp);
         fclose(fp);
-    } else {
+    }
+    else {
         gr::logger_sptr logger, debug_logger;
         logger = logging::get_logger("fft::export_wisdom", "default");
         GR_LOG_ERROR(logger, "{}}: {}}", filename.c_str(), strerror(errno));

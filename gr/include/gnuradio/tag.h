@@ -25,10 +25,7 @@ public:
     pmtf::pmt srcid = nullptr;
     bool modified = false;
     tag_t() {}
-    tag_t(uint64_t offset,
-          pmtf::pmt key,
-          pmtf::pmt value,
-          pmtf::pmt srcid = nullptr)
+    tag_t(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid = nullptr)
         : offset(offset), key(key), value(value), srcid(srcid)
     {
     }
@@ -53,4 +50,3 @@ public:
 };
 
 } // namespace gr
-

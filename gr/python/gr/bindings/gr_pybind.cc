@@ -86,12 +86,12 @@ PYBIND11_MODULE(gr_python, m)
     bind_runtime_proxy(m);
     bind_graph_utils(m);
     bind_message_port_proxy(m);
-    #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
     bind_buffer_cuda(m);
     bind_buffer_cuda_pinned(m);
     bind_buffer_cuda_sm(m);
-    #endif
-    
+#endif
+
     // TODO: Move into gr_types.hpp
     // %constant int sizeof_char 	= sizeof(char);
     m.attr("sizeof_char") = sizeof(char);
@@ -106,4 +106,3 @@ PYBIND11_MODULE(gr_python, m)
     // %constant int sizeof_gr_complex	= sizeof(gr_complex);
     m.attr("sizeof_gr_complex") = sizeof(gr_complex);
 }
-

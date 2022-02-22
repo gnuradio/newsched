@@ -6,7 +6,8 @@ namespace analog {
 
 template <class T>
 agc_cpu<T>::agc_cpu(const typename agc<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T), kernel::agc<T>(args.rate, args.reference, args.gain, 65536)
+    : INHERITED_CONSTRUCTORS(T),
+      kernel::agc<T>(args.rate, args.reference, args.gain, 65536)
 {
 }
 
@@ -25,4 +26,3 @@ work_return_code_t agc_cpu<T>::work(std::vector<block_work_input_sptr>& work_inp
 
 } // namespace analog
 } // namespace gr
-

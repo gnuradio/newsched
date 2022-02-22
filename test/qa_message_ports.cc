@@ -4,11 +4,11 @@
 #include <iostream>
 #include <thread>
 
-#include <pmtf/string.hpp>
 #include <gnuradio/blocks/msg_forward.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 #include <gnuradio/runtime.h>
+#include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <pmtf/string.hpp>
 
 using namespace gr;
 
@@ -26,10 +26,9 @@ TEST(SchedulerMTMessagePassing, Forward)
 
     auto rt = runtime::make();
     rt->initialize(fg);
-    
+
     auto src_port = blk1->get_message_port("in");
-    for (int i=0; i<10; i++)
-    {
+    for (int i = 0; i < 10; i++) {
         src_port->post(pmtf::string("message"));
     }
 
@@ -37,27 +36,23 @@ TEST(SchedulerMTMessagePassing, Forward)
     rt->start();
 
     // auto start = std::chrono::steady_clock::now();
-  
+
 
     size_t cnt = 0;
     int num_iters = 0;
-    while(true)
-    {
+    while (true) {
         cnt = blk3->message_count();
         // auto end = std::chrono::steady_clock::now();
-        if (cnt >= 10)
-        {
+        if (cnt >= 10) {
             break;
         }
-        std::this_thread::sleep_for (std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         num_iters++;
-        if (num_iters >= 5)
-        {
+        if (num_iters >= 5) {
             break;
         }
     }
 
     EXPECT_EQ(cnt, 10);
     rt->stop();
-
 }

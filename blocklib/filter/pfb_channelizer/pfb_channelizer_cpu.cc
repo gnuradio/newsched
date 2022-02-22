@@ -98,8 +98,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto noutput_items = work_output[0]->n_items;
     auto ninput_items = work_input[0]->n_items;
 
-    if ((size_t)ninput_items < (noutput_items * d_nchans + d_history) )
-    {
+    if ((size_t)ninput_items < (noutput_items * d_nchans + d_history)) {
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
@@ -138,7 +137,8 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     // Systems. Upper Saddle River, NJ: Prentice Hall, 2004.
 
     int n = 1, i = -1, j = 0, oo = 0, last;
-    int toconsume = (int)rintf((noutput_items * d_nchans) / d_oversample_rate) - (d_history - 1);
+    int toconsume =
+        (int)rintf((noutput_items * d_nchans) / d_oversample_rate) - (d_history - 1);
     while (n <= toconsume) {
         j = 0;
         i = (i + d_rate_ratio) % d_nfilts;

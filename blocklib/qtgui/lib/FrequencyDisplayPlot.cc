@@ -661,7 +661,8 @@ void FrequencyDisplayPlot::attachTriggerLine(bool en)
 {
     if (en) {
         d_trigger_line->attach(this);
-    } else {
+    }
+    else {
         d_trigger_line->detach();
     }
 }

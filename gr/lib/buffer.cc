@@ -41,8 +41,8 @@ void buffer::add_tags(size_t num_items, std::vector<tag_t>& tags)
 
     for (auto tag : tags) {
         if (tag.offset < _total_written - num_items || tag.offset >= _total_written) {
-
-        } else {
+        }
+        else {
             _tags.push_back(tag);
         }
     }
@@ -54,10 +54,7 @@ void buffer::add_tag(tag_t tag)
     std::scoped_lock guard(_buf_mutex);
     _tags.push_back(tag);
 }
-void buffer::add_tag(uint64_t offset,
-                     pmtf::pmt key,
-                     pmtf::pmt value,
-                     pmtf::pmt srcid)
+void buffer::add_tag(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid)
 {
     std::scoped_lock guard(_buf_mutex);
     _tags.emplace_back(offset, key, value, srcid);
@@ -65,7 +62,8 @@ void buffer::add_tag(uint64_t offset,
 
 void buffer::propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed)
 {
-    double relative_rate = (double)p_in_buf->item_size() / (double)p_in_buf->buffer_item_size();
+    double relative_rate =
+        (double)p_in_buf->item_size() / (double)p_in_buf->buffer_item_size();
     std::scoped_lock guard(_buf_mutex);
     for (auto& t : p_in_buf->tags()) {
         uint64_t new_offset = t.offset;
@@ -103,7 +101,8 @@ void buffer::prune_tags()
         if (t->offset < n_read) {
             t = _tags.erase(t);
             // std::cout << "removing tag" << std::endl;
-        } else {
+        }
+        else {
             ++t;
         }
     }

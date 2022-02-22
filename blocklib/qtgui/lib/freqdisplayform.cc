@@ -155,7 +155,8 @@ void FreqDisplayForm::setupControlPanel(bool en)
 {
     if (en) {
         setupControlPanel();
-    } else {
+    }
+    else {
         teardownControlPanel();
     }
 }
@@ -249,7 +250,8 @@ void FreqDisplayForm::customEvent(QEvent* e)
 {
     if (e->type() == FreqUpdateEvent::Type()) {
         newData(e);
-    } else if (e->type() == SpectrumFrequencyRangeEventType) {
+    }
+    else if (e->type() == SpectrumFrequencyRangeEventType) {
         SetFreqEvent* fevent = (SetFreqEvent*)e;
         setFrequencyRange(fevent->getCenterFrequency(), fevent->getBandwidth());
     }
@@ -335,7 +337,8 @@ void FreqDisplayForm::autoScale(bool en)
 {
     if (en) {
         d_autoscale_state = true;
-    } else {
+    }
+    else {
         d_autoscale_state = false;
     }
 
@@ -371,7 +374,8 @@ bool FreqDisplayForm::checkClicked()
     if (d_clicked) {
         d_clicked = false;
         return true;
-    } else {
+    }
+    else {
         return false;
     }
 }
@@ -391,7 +395,8 @@ void FreqDisplayForm::setTriggerMode(gr::qtgui::trigger_mode mode)
     if ((d_trig_mode == gr::qtgui::TRIG_MODE_AUTO) ||
         (d_trig_mode == gr::qtgui::TRIG_MODE_NORM)) {
         getPlot()->attachTriggerLine(true);
-    } else {
+    }
+    else {
         getPlot()->attachTriggerLine(false);
     }
 
@@ -406,7 +411,8 @@ void FreqDisplayForm::updateTrigger(gr::qtgui::trigger_mode mode)
         (d_trig_mode == gr::qtgui::TRIG_MODE_NORM)) {
         d_tr_level_act->activate(QAction::Trigger);
         getPlot()->attachTriggerLine(true);
-    } else {
+    }
+    else {
         getPlot()->attachTriggerLine(false);
     }
 
@@ -548,19 +554,26 @@ void FreqDisplayForm::notifyFFTWindow(const QString& s)
 {
     if (s == "None") {
         d_fftwintype = gr::fft::window::WIN_NONE;
-    } else if (s == "Hamming") {
+    }
+    else if (s == "Hamming") {
         d_fftwintype = gr::fft::window::WIN_HAMMING;
-    } else if (s == "Hann") {
+    }
+    else if (s == "Hann") {
         d_fftwintype = gr::fft::window::WIN_HANN;
-    } else if (s == "Blackman") {
+    }
+    else if (s == "Blackman") {
         d_fftwintype = gr::fft::window::WIN_BLACKMAN;
-    } else if (s == "Blackman-harris") {
+    }
+    else if (s == "Blackman-harris") {
         d_fftwintype = gr::fft::window::WIN_BLACKMAN_hARRIS;
-    } else if (s == "Rectangular") {
+    }
+    else if (s == "Rectangular") {
         d_fftwintype = gr::fft::window::WIN_RECTANGULAR;
-    } else if (s == "Kaiser") {
+    }
+    else if (s == "Kaiser") {
         d_fftwintype = gr::fft::window::WIN_KAISER;
-    } else if (s == "Flat-top") {
+    }
+    else if (s == "Flat-top") {
         d_fftwintype = gr::fft::window::WIN_FLATTOP;
     }
 
@@ -588,11 +601,14 @@ void FreqDisplayForm::notifyTriggerMode(const QString& mode)
 {
     if (mode == "Free") {
         setTriggerMode(gr::qtgui::TRIG_MODE_FREE);
-    } else if (mode == "Auto") {
+    }
+    else if (mode == "Auto") {
         setTriggerMode(gr::qtgui::TRIG_MODE_AUTO);
-    } else if (mode == "Normal") {
+    }
+    else if (mode == "Normal") {
         setTriggerMode(gr::qtgui::TRIG_MODE_NORM);
-    } else if (mode == "Tag") {
+    }
+    else if (mode == "Tag") {
         setTriggerMode(gr::qtgui::TRIG_MODE_TAG);
         updateTrigger(gr::qtgui::TRIG_MODE_TAG);
     }

@@ -35,8 +35,7 @@ work_return_code_t
 moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
                             std::vector<block_work_output_sptr>& work_output)
 {
-    if (work_input[0]->n_items < (int) d_length)
-    {
+    if (work_input[0]->n_items < (int)d_length) {
         work_output[0]->n_produced = 0;
         work_input[0]->n_consumed = 0;
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
@@ -54,7 +53,8 @@ moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto in = work_input[0]->items<T>();
     auto out = work_output[0]->items<T>();
 
-    size_t noutput_items = std::min( (int) ( work_input[0]->n_items - d_length ), work_output[0]->n_items);
+    size_t noutput_items =
+        std::min((int)(work_input[0]->n_items - d_length), work_output[0]->n_items);
 
     auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
     auto tr = work_input[0]->buffer->total_read();
@@ -64,16 +64,17 @@ moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
             for (size_t elem = 0; elem < d_vlen; elem++) {
                 d_sum[elem] += in[i * d_vlen + elem];
                 out[i * d_vlen + elem] = d_sum[elem] * d_scale;
-                if (i >= (d_length-1)) {
+                if (i >= (d_length - 1)) {
                     d_sum[elem] -= in[(i - (d_length - 1)) * d_vlen + elem];
                 }
             }
         }
-    } else {
+    }
+    else {
         for (size_t i = 0; i < num_iter; i++) {
             for (size_t elem = 0; elem < d_vlen; elem++) {
 
-                d_sum[elem] += in[(i+d_length-1) * d_vlen + elem];
+                d_sum[elem] += in[(i + d_length - 1) * d_vlen + elem];
                 out[i * d_vlen + elem] = d_sum[elem] * d_scale;
                 d_sum[elem] -= in[i * d_vlen + elem];
             }

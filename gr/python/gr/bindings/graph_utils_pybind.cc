@@ -20,10 +20,10 @@ namespace py = pybind11;
 
 void bind_graph_utils(py::module& m)
 {
-    py::class_<gr::graph_partition_info, std::shared_ptr<gr::graph_partition_info>>(m, "graph_partition_info")
+    py::class_<gr::graph_partition_info, std::shared_ptr<gr::graph_partition_info>>(
+        m, "graph_partition_info")
         .def_readwrite("scheduler", &gr::graph_partition_info::scheduler)
-        .def_readwrite("subgraph", &gr::graph_partition_info::subgraph)
-        ;
+        .def_readwrite("subgraph", &gr::graph_partition_info::subgraph);
 
     py::class_<gr::graph_utils, std::shared_ptr<gr::graph_utils>>(m, "graph_utils")
         .def_static("partition", &gr::graph_utils::partition)

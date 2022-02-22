@@ -46,15 +46,14 @@ public:
 
     virtual bool output_blocked_callback(bool force = false) override
     {
-        switch(_type)
-        {
-            case buffer_cuda_sm_type::H2D:
-                return output_blocked_callback_logic(force, std::memmove);
-            case buffer_cuda_sm_type::D2D:
-            case buffer_cuda_sm_type::D2H:
-                return output_blocked_callback_logic(force, cuda_memmove);
-            default:
-                return false;
+        switch (_type) {
+        case buffer_cuda_sm_type::H2D:
+            return output_blocked_callback_logic(force, std::memmove);
+        case buffer_cuda_sm_type::D2D:
+        case buffer_cuda_sm_type::D2H:
+            return output_blocked_callback_logic(force, cuda_memmove);
+        default:
+            return false;
         }
     }
 };

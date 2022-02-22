@@ -9,11 +9,11 @@
  *
  */
 
-#pragma once 
+#pragma once
 
 #include "zmq_common_impl.h"
-#include <gnuradio/tag.h>
 #include <gnuradio/logging.h>
+#include <gnuradio/tag.h>
 
 namespace gr {
 namespace zeromq {
@@ -22,10 +22,10 @@ class base
 {
 public:
     base(int type,
-              size_t itemsize,
-              int timeout,
-              bool pass_tags,
-              const std::string& key = "");
+         size_t itemsize,
+         int timeout,
+         bool pass_tags,
+         const std::string& key = "");
 
 protected:
     std::string last_endpoint() const;
@@ -43,12 +43,12 @@ class base_sink : public base
 {
 public:
     base_sink(int type,
-                   size_t itemsize,
-                   const std::string& address,
-                   int timeout,
-                   bool pass_tags,
-                   int hwm,
-                   const std::string& key = "");
+              size_t itemsize,
+              const std::string& address,
+              int timeout,
+              bool pass_tags,
+              int hwm,
+              const std::string& key = "");
 
 protected:
     int send_message(const void* in_buf, const int in_nitems, const uint64_t in_offset);
@@ -58,12 +58,12 @@ class base_source : public base
 {
 public:
     base_source(int type,
-                     size_t itemsize,
-                     const std::string& address,
-                     int timeout,
-                     bool pass_tags,
-                     int hwm,
-                     const std::string& key = "");
+                size_t itemsize,
+                const std::string& address,
+                int timeout,
+                bool pass_tags,
+                int hwm,
+                const std::string& key = "");
 
 protected:
     zmq::message_t d_msg;

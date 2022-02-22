@@ -9,8 +9,13 @@ namespace zeromq {
 
 sub_source_cpu::sub_source_cpu(block_args args)
     : INHERITED_CONSTRUCTORS,
-      base_source(
-          ZMQ_SUB, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm, args.key)
+      base_source(ZMQ_SUB,
+                  args.itemsize,
+                  args.address,
+                  args.timeout,
+                  args.pass_tags,
+                  args.hwm,
+                  args.key)
 {
 
     /* Subscribe */
@@ -39,15 +44,13 @@ work_return_code_t sub_source_cpu::work(std::vector<block_work_input_sptr>& work
         }
         else {
             /* Try to get the next message */
-            if (!load_message(first)){
+            if (!load_message(first)) {
                 // Launch a thread to come back and try again some time later
                 std::thread t([this]() {
-                    GR_LOG_DEBUG(
-                        this->debug_logger(),
-                        "ZMQ base_source sleeping");
+                    GR_LOG_DEBUG(this->debug_logger(), "ZMQ base_source sleeping");
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                    this->p_scheduler->push_message(
-                        std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
+                    this->p_scheduler->push_message(std::make_shared<scheduler_action>(
+                        scheduler_action_t::NOTIFY_INPUT));
                 });
                 t.detach();
                 break; /* No message, we're done for now */
