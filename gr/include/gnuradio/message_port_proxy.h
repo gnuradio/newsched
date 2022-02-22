@@ -17,7 +17,7 @@ public:
         _socket.set(zmq::sockopt::sndhwm, 1);
         _socket.set(zmq::sockopt::rcvhwm, 1);
     }
-    virtual ~message_port_proxy_upstream()
+    ~message_port_proxy_upstream() override
     {
         _context.shutdown();
         _socket.close();
@@ -79,7 +79,7 @@ public:
             _port = std::stoi(port_str);
         }
     }
-    virtual ~message_port_proxy_downstream()
+    ~message_port_proxy_downstream() override
     {
         _context.shutdown();
         _socket.close();

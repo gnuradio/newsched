@@ -66,7 +66,7 @@ public:
     int id() { return _id; }
     const std::string& name() { return d_block_group.name(); }
 
-    void push_message(scheduler_message_sptr msg) { msgq.push(msg); }
+    void push_message(scheduler_message_sptr msg) override { msgq.push(msg); }
     bool pop_message(scheduler_message_sptr& msg) { return msgq.pop(msg); }
     bool pop_message_nonblocking(scheduler_message_sptr& msg)
     {

@@ -29,9 +29,9 @@ public:
         _default_buf_properties =
             buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO);
     }
-    ~scheduler_nbt(){};
+    ~scheduler_nbt() override{};
 
-    void push_message(scheduler_message_sptr msg);
+    void push_message(scheduler_message_sptr msg) override;
     void add_block_group(const std::vector<block_sptr>& blocks,
                          const std::string& name = "",
                          const std::vector<unsigned int>& affinity_mask = {});
@@ -47,10 +47,10 @@ public:
      * @param block_sched_map for each block in this flowgraph, a map of neighboring
      * schedulers
      */
-    void initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon);
-    void start();
-    void stop();
-    void wait();
+    void initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon) override;
+    void start() override;
+    void stop() override;
+    void wait() override;
     void run();
 };
 } // namespace schedulers

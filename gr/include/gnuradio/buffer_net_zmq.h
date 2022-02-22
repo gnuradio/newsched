@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string.h>
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <vector>
 
@@ -30,16 +30,16 @@ public:
                    size_t item_size,
                    std::shared_ptr<buffer_properties> buffer_properties,
                    int port);
-    virtual ~buffer_net_zmq(){};
+    ~buffer_net_zmq() override{};
     static buffer_sptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
-    void* read_ptr(size_t index) { return nullptr; }
-    virtual size_t space_available() override { return _num_items; }
-    virtual void* write_ptr() override { return _buffer.data(); }
+    void* read_ptr(size_t index) override { return nullptr; }
+    size_t space_available() override { return _num_items; }
+    void* write_ptr() override { return _buffer.data(); }
 
-    virtual void post_write(int num_items) override
+    void post_write(int num_items) override
     {
         // send the data from buffer over the socket
         GR_LOG_DEBUG(_debug_logger, "sending {} items", num_items);
@@ -48,7 +48,7 @@ public:
         GR_LOG_DEBUG(_debug_logger, "send returned code {}", *res);
     }
 
-    virtual std::shared_ptr<buffer_reader>
+    std::shared_ptr<buffer_reader>
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override
     {
         // do nothing because readers will be added on zmq connect
@@ -81,19 +81,19 @@ public:
                           const std::string& ipaddr,
                           int port);
 
-    virtual ~buffer_net_zmq_reader(){};
+    ~buffer_net_zmq_reader() override{};
 
-    virtual bool read_info(buffer_info_t& info)
+    bool read_info(buffer_info_t& info) override
     {
         auto ret = _circbuf_rdr->read_info(info);
         return ret;
     }
-    void* read_ptr() { return _circbuf_rdr->read_ptr(); }
+    void* read_ptr() override { return _circbuf_rdr->read_ptr(); }
 
     // Tags not supported yet
     const std::vector<tag_t>& tags() const override { return _circbuf->tags(); }
-    std::vector<tag_t> get_tags(size_t num_items) { return {}; }
-    virtual void post_read(int num_items)
+    std::vector<tag_t> get_tags(size_t num_items) override { return {}; }
+    void post_read(int num_items) override
     {
         GR_LOG_DEBUG(_debug_logger, "post_read: {}", num_items);
         _circbuf_rdr->post_read(num_items);
@@ -111,7 +111,7 @@ public:
         _bff = buffer_net_zmq::make;
         _brff = buffer_net_zmq_reader::make;
     }
-    virtual ~buffer_net_zmq_properties(){};
+    ~buffer_net_zmq_properties() override{};
 
     static std::shared_ptr<buffer_properties> make(const std::string& ipaddr,
                                                    int port = 0)

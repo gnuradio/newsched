@@ -59,7 +59,7 @@ public:
               const bool optional = false,
               const int multiplicity = 1);
 
-    virtual ~port_base() = default;
+    ~port_base() override = default;
 
     std::string name() { return _name; }
     std::string alias() { return _alias; }
@@ -87,7 +87,7 @@ public:
 
     void notify_connected_ports(scheduler_message_sptr msg);
     // Inbound messages
-    virtual void push_message(scheduler_message_sptr msg);
+    void push_message(scheduler_message_sptr msg) override;
     void connect(port_interface_sptr other_port);
     void disconnect(port_interface_sptr other_port);
 
@@ -193,7 +193,7 @@ public:
     message_port_callback_fcn callback() { return _callback_fcn; }
     void register_callback(message_port_callback_fcn fcn) { _callback_fcn = fcn; }
     void post(pmtf::pmt msg);
-    virtual void push_message(scheduler_message_sptr msg) override;
+    void push_message(scheduler_message_sptr msg) override;
 };
 using message_port_sptr = message_port::sptr;
 

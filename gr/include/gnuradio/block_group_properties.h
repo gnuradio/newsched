@@ -13,7 +13,7 @@ public:
                            const std::vector<unsigned int>& affinity_mask = {})
         : _blocks(blocks), _name(name), _affinity_mask(affinity_mask)
     {
-        if (_name == "") {
+        if (_name.empty()) {
             _name = blocks[0]->alias();
         }
 

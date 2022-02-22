@@ -39,10 +39,10 @@ class flat_graph : public graph
     enum io { INPUT, OUTPUT };
 
 public:
-    void clear();
+    void clear() override;
     flat_graph() {}
     // using sptr = std::shared_ptr<flat_graph>;
-    virtual ~flat_graph();
+    ~flat_graph() override;
 
     block_vector_t calc_used_blocks()
     {

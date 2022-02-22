@@ -41,7 +41,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon)
     for (auto& bg : _block_groups) {
         std::vector<block_sptr> blocks_for_this_thread;
 
-        if (bg.blocks().size()) {
+        if (!bg.blocks().empty()) {
             auto t = thread_wrapper::make(id(), bg, bufman, fgmon);
             _threads.push_back(t);
 

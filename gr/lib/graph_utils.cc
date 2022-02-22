@@ -37,7 +37,7 @@ graph_partition_info_vec graph_utils::partition(
                 auto edges = input_graph->find_edge(input_port);
                 // There should only be one edge connected to an input port
                 // Crossings associated with the downstream port
-                if (edges.size()) {
+                if (!edges.empty()) {
                     auto e = edges[0];
                     auto other_block = e->src().node();
 

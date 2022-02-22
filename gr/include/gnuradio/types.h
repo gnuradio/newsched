@@ -1,9 +1,9 @@
 #pragma once
 
 #include <pmtf/base.hpp>
-#include <stddef.h> // size_t
-#include <stdint.h>
 #include <complex>
+#include <cstddef> // size_t
+#include <cstdint>
 #include <typeindex>
 #include <vector>
 

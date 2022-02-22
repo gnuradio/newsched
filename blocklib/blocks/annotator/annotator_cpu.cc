@@ -13,7 +13,7 @@
 #include "annotator_cpu_gen.h"
 #include <pmtf/scalar.hpp>
 #include <pmtf/string.hpp>
-#include <string.h>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 

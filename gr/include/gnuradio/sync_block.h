@@ -44,7 +44,7 @@ public:
      * @return work_return_code_t
      */
     work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
-                               std::vector<block_work_output_sptr>& work_output)
+                               std::vector<block_work_output_sptr>& work_output) override
     {
         // Check all inputs and outputs have the same number of items
         int min_num_items = std::numeric_limits<int>::max();

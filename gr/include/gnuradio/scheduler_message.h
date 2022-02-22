@@ -73,7 +73,7 @@ public:
         ret["msg"] = _msg.to_base64();
         return ret.dump();
     }
-    scheduler_message_sptr from_json(const std::string& str)
+    scheduler_message_sptr from_json(const std::string& str) override
     {
         auto json_obj = nlohmann::json::parse(str);
         if (json_obj["type"] != "msgport_message") {

@@ -20,13 +20,13 @@ class interleaved_short_to_complex_cpu : public interleaved_short_to_complex
 public:
     interleaved_short_to_complex_cpu(const block_args& args);
 
-    virtual work_return_code_t
+    work_return_code_t
     work(std::vector<block_work_input_sptr>& work_input,
          std::vector<block_work_output_sptr>& work_output) override;
 
 
     void set_swap(bool swap);
-    void set_scale_factor(float new_value);
+    void set_scale_factor(float new_value) override;
 
 private:
     float d_scalar;

@@ -36,7 +36,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         auto input_stream_ports = b->input_stream_ports();
         auto output_stream_ports = b->output_stream_ports();
 
-        if (input_stream_ports.size() == 0 && output_stream_ports.size() == 0) {
+        if (input_stream_ports.empty() && output_stream_ports.empty()) {
             // There is no streaming work to do for this block
             per_block_status[b->id()] = executor_iteration_status::MSG_ONLY;
             continue;
@@ -148,7 +148,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             work_return_code_t ret;
             while (true) {
 
-                if (work_output.size() > 0) {
+                if (!work_output.empty()) {
                     GR_LOG_DEBUG(_debug_logger,
                                  "do_work for {}, {}",
                                  b->alias(),
@@ -175,7 +175,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
-                    if (!work_input.size() && work_output.size()) {
+                    if (work_input.empty() && !work_output.empty()) {
                         auto max_output = 0;
                         for (auto& w : work_output) {
                             max_output = std::max(w->n_produced, max_output);

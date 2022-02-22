@@ -26,10 +26,10 @@ public:
         _logger = logging::get_logger(name, "default");
         _debug_logger = logging::get_logger(name + "_dbg", "debug");
     };
-    virtual ~scheduler() {}
+    ~scheduler() override {}
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
     virtual void initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon) = 0;
-    virtual void push_message(scheduler_message_sptr msg) = 0;
+    void push_message(scheduler_message_sptr msg) override = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void wait() = 0;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string.h>
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <vector>
 
@@ -34,20 +34,20 @@ public:
          size_t item_size,
          std::shared_ptr<buffer_properties> buffer_properties = nullptr);
 
-    void* read_ptr(size_t index);
-    void* write_ptr();
+    void* read_ptr(size_t index) override;
+    void* write_ptr() override;
 
-    virtual void post_write(int num_items) override;
+    void post_write(int num_items) override;
 
     virtual bool
     output_blocked_callback_logic(bool force = false,
                                   memmove_func_t memmove_func = std::memmove);
 
-    virtual bool output_blocked_callback(bool force = false);
-    virtual size_t space_available() override;
+    bool output_blocked_callback(bool force = false) override;
+    size_t space_available() override;
 
-    virtual bool write_info(buffer_info_t& info) override;
-    virtual std::shared_ptr<buffer_reader>
+    bool write_info(buffer_info_t& info) override;
+    std::shared_ptr<buffer_reader>
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
 
     bool adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t memmove_func);
@@ -68,10 +68,10 @@ public:
                      std::shared_ptr<buffer_properties> buf_props = nullptr,
                      size_t read_index = 0);
 
-    virtual void post_read(int num_items) override;
+    void post_read(int num_items) override;
 
-    virtual bool input_blocked_callback(size_t items_required);
-    virtual size_t bytes_available() override;
+    bool input_blocked_callback(size_t items_required) override;
+    size_t bytes_available() override;
 };
 
 

@@ -16,9 +16,9 @@ class freq_sink_cpu : public freq_sink<T>
 {
 public:
     freq_sink_cpu(const typename freq_sink<T>::block_args& args);
-    ~freq_sink_cpu();
+    ~freq_sink_cpu() override;
 
-    virtual work_return_code_t
+    work_return_code_t
     work(std::vector<block_work_input_sptr>& work_input,
          std::vector<block_work_output_sptr>& work_output) override;
     void exec_() override;
