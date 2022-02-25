@@ -53,6 +53,7 @@ runtime_sources = [
   # mmap requires librt - FIXME - handle this a conditional dependency
   'buffer_cpu_vmcirc_mmap_shm_open.cc',
   'buffer_net_zmq.cc',
+  'rpc_client_interface.cc'
 ]
 
 if USE_CUDA

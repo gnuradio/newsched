@@ -14,7 +14,7 @@ namespace gr {
  * subgraph - the portion of the flowgraph controlled by this scheduler
  */
 struct graph_partition_info {
-    scheduler_sptr scheduler;
+    scheduler_sptr scheduler = nullptr;
     graph_sptr subgraph;
     bool operator==(const graph_partition_info& other)
     {
@@ -38,5 +38,9 @@ struct graph_utils {
     static graph_partition_info_vec
     partition(graph_sptr input_graph,
               std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs);
+
+    static graph_partition_info_vec
+    partition(graph_sptr input_graph,
+              std::vector<std::vector<node_sptr>> nodes);
 };
 } // namespace gr

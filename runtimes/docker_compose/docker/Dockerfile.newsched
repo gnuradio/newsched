@@ -1,0 +1,9 @@
+FROM newsched_rest_prereqs
+
+# RUN git clone https://github.com/mormj/newsched --branch rpc2 && \
+# cd newsched && meson setup build --buildtype=debugoptimized --prefix=$PREFIX --libdir=lib && \
+# cd build && ninja && ninja install
+
+COPY . newsched 
+RUN cd newsched && meson setup build --buildtype=debugoptimized --prefix=$PREFIX --libdir=lib && \
+cd build && ninja && ninja install
