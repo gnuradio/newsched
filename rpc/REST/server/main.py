@@ -57,14 +57,14 @@ class Session:
     def flowgraph_connect(self, **kwargs):
         src = (self.blocks[kwargs['src'][0]],
                kwargs['src'][1]) if 'src' in kwargs and kwargs['src'] else None
-        dest = (self.blocks[kwargs['dest'][0]],
-                kwargs['dest'][1]) if 'dest' in kwargs and  kwargs['dest'] else None
+        dst = (self.blocks[kwargs['dst'][0]],
+                kwargs['dst'][1]) if 'dst' in kwargs and  kwargs['dst'] else None
         print(src)
-        print(dest)
-        if (src and dest):
-            edge = self.fgs[kwargs['fg_name']].connect(src, dest)
-        elif (dest):
-            edge = self.fgs[kwargs['fg_name']].connect((None,""), dest)
+        print(dst)
+        if (src and dst):
+            edge = self.fgs[kwargs['fg_name']].connect(src, dst)
+        elif (dst):
+            edge = self.fgs[kwargs['fg_name']].connect((None,""), dst)
         else:
             edge = self.fgs[kwargs['fg_name']].connect(src, (None,""))
 

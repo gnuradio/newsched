@@ -70,6 +70,11 @@ void runtime::add_proxy(runtime_proxy_sptr proxy)
 
 void runtime::initialize(graph_sptr fg)
 {
+    for (auto e : fg->edges())
+    {
+        std::cout << e << std::endl;
+    }
+
     flowgraph::check_connections(fg);
     auto _logger =
         logging::get_logger(fmt::format("runtime_init_{}", fg->name()), "default");

@@ -12,6 +12,8 @@ pull_source_cpu::pull_source_cpu(block_args args)
       base_source(
           ZMQ_PULL, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
+    std::cout << "pull_source: {}, {}" << args.itemsize << " " << args.address << std::endl;
+    GR_LOG_INFO(_logger, "pull_source: {}, {}", args.itemsize, args.address);
 }
 work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                          std::vector<block_work_output_sptr>& work_output)

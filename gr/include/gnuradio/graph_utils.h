@@ -39,8 +39,8 @@ struct graph_utils {
     partition(graph_sptr input_graph,
               std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs);
 
-    static graph_partition_info_vec
-    partition(graph_sptr input_graph,
-              std::vector<std::vector<node_sptr>> nodes);
+    static std::pair<std::vector<graph_sptr>,
+                     std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>
+    partition(graph_sptr input_graph, std::vector<std::vector<node_sptr>> nodes);
 };
 } // namespace gr

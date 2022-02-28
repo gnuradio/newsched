@@ -9,6 +9,8 @@ push_sink_cpu::push_sink_cpu(block_args args)
       base_sink(
           ZMQ_PUSH, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
+    std::cout << "push_sink: {}, {}" << args.itemsize << " " << args.address << std::endl;
+    GR_LOG_INFO(_logger, "push_sink: {}, {}", args.itemsize, args.address);
 }
 work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                        std::vector<block_work_output_sptr>& work_output)

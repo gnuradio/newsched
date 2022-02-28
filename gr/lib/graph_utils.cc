@@ -133,13 +133,14 @@ graph_partition_info_vec graph_utils::partition(
 }
 
 
-
-graph_partition_info_vec graph_utils::partition(
-    graph_sptr input_graph,
-    std::vector<std::vector<node_sptr>> nodes_vec)
+std::pair<std::vector<graph_sptr>,
+          std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>
+graph_utils::partition(graph_sptr input_graph,
+                       std::vector<std::vector<node_sptr>> nodes_vec)
 {
-    graph_partition_info_vec ret;
+    std::vector<graph_sptr> ret;
     edge_vector_t domain_crossings;
+    std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>> crossings_with_graph;
 
     for (auto& nodes : nodes_vec) {
 
@@ -176,14 +177,13 @@ graph_partition_info_vec graph_utils::partition(
             }
         }
 
-        part_info.subgraph = g;
         // neighbor_map is populated below
-        ret.push_back(part_info);
+        ret.push_back(g);
     }
 
     int idx = 0;
     for (auto& nodes : nodes_vec) {
-        auto g = ret[idx].subgraph;
+        auto g = ret[idx];
 
         // see that all the blocks in conf->blocks() are in g, and if not, add them as
         // orphan nodes
@@ -213,8 +213,7 @@ graph_partition_info_vec graph_utils::partition(
 
         // Find the subgraph that holds src block
         graph_sptr src_block_graph = nullptr;
-        for (auto info : ret) {
-            auto g = info.subgraph;
+        for (auto g : ret) {
             auto blocks = g->calc_used_nodes();
             if (std::find(blocks.begin(), blocks.end(), c->src().node()) !=
                 blocks.end()) {
@@ -225,8 +224,7 @@ graph_partition_info_vec graph_utils::partition(
 
         // Find the subgraph that holds dst block
         graph_sptr dst_block_graph = nullptr;
-        for (auto info : ret) {
-            auto g = info.subgraph;
+        for (auto g : ret) {
             auto blocks = g->calc_used_nodes();
             if (std::find(blocks.begin(), blocks.end(), c->dst().node()) !=
                 blocks.end()) {
@@ -239,13 +237,15 @@ graph_partition_info_vec graph_utils::partition(
             throw std::runtime_error("Cannot find both sides of domain crossing");
         }
 
-        src_block_graph->add_edge(c);
-        dst_block_graph->add_edge(c);
+        // src_block_graph->add_edge(c);
+        // dst_block_graph->add_edge(c);
 
+        // std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>> crossings_with_graph
+        crossings_with_graph.push_back(std::make_tuple(c, src_block_graph, dst_block_graph));
         crossing_index++;
     }
 
-    return ret;
+    return std::make_pair(ret, crossings_with_graph);
 }
 
 

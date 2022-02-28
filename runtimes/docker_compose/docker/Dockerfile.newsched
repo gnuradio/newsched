@@ -5,5 +5,5 @@ FROM newsched_rest_prereqs
 # cd build && ninja && ninja install
 
 COPY . newsched 
-RUN cd newsched && meson setup build --buildtype=debugoptimized --prefix=$PREFIX --libdir=lib && \
+RUN cd newsched && rm -rf build && meson setup build --buildtype=debugoptimized --prefix=$PREFIX --libdir=lib && \
 cd build && ninja && ninja install
