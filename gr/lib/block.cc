@@ -121,7 +121,7 @@ void block::handle_msg_system(pmtf::pmt msg)
 
 void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool block)
 {
-    if (is_rpc()) {
+    if (rpc_client() && !rpc_name().empty()) {
         rpc_client()->block_parameter_change(rpc_name(), get_param_str(param_id), new_value.to_base64() );
     }
     else if (p_scheduler && d_running) {

@@ -83,7 +83,7 @@ class client(gr.rpc_client_interface):
 
     def block_parameter_change(self, block_name, parameter_name, encoded_value):
         payload = {}
-        payload['command'] = 'block_parameter_query'
+        payload['command'] = 'block_parameter_change'
         payload['block_name'] = block_name
         payload['parameter'] = parameter_name
         payload['encoded_value'] = encoded_value
