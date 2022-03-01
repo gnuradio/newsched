@@ -1,7 +1,8 @@
+from base64 import encode
 import requests
 import json
 from gnuradio import gr
-
+import pmtf
 
 class client(gr.rpc_client_interface):
     def __init__(self, ipaddr, port, https = False) -> None:
@@ -68,6 +69,26 @@ class client(gr.rpc_client_interface):
 
         r = requests.post(self.url + '/execute', json=payload)
         return json.loads(r.text)['result']
+        print(r)
+
+    def block_parameter_query(self, block_name, parameter_name):
+        payload = {}
+        payload['command'] = 'block_parameter_query'
+        payload['block_name'] = block_name
+        payload['parameter'] = parameter_name
+
+        r = requests.post(self.url + '/execute', json=payload)
+        pmt_b64 = json.loads(r.text)['result']
+        return pmt_b64
+
+    def block_parameter_change(self, block_name, parameter_name, encoded_value):
+        payload = {}
+        payload['command'] = 'block_parameter_query'
+        payload['block_name'] = block_name
+        payload['parameter'] = parameter_name
+        payload['encoded_value'] = encoded_value
+
+        r = requests.post(self.url + '/execute', json=payload)
         print(r)
 
     def flowgraph_connect(self, fg_name, src_block, src_port, dst_block, dst_port, edge_name):

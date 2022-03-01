@@ -10,7 +10,7 @@ import numpy as np
 
 import string
 import random
-
+import pmtf
 from base64 import b64encode, b64decode
 
 class FlowgraphProperties(BaseModel):
@@ -159,23 +159,23 @@ class Session:
         return ret
         # return json.dumps(ret, default=default_serializer)
 
-    def block_parameter_query(self, block_name, parameter):
+    def block_parameter_query(self, **kwargs): #block_name, parameter):
 
         ret = {}
-        pmt_res = self.blocks[block_name].request_parameter_query(parameter)
-        b64str = b64encode(bytes(pmt_res.serialize()))
+        pmt_res = self.blocks[kwargs['block_name']].request_parameter_query(kwargs['parameter'])
+        b64str = pmt_res.to_base64()
 
         ret['result'] = b64str
         return ret
 
-    def block_parameter_change(self, block_name, parameter, payload):
+    def block_parameter_change(self, **kwargs): #block_name, parameter, payload):
 
-        newvalue = gr.block.deserialize_param_to_pmt(payload['value'])
+        newvalue = pmtf.pmt.from_base64(kwargs['encoded_value'])
 
         # print(newvalue())
 
         # request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
-        self.blocks[block_name].request_parameter_change(parameter, newvalue, False)
+        self.blocks[kwargs['block_name']].request_parameter_change(kwargs['parameter'], newvalue, False)
         return {}
 
     def block_create_message_port_proxy(self, block_name, port_name, payload):

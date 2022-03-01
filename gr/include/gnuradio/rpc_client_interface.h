@@ -25,12 +25,12 @@ public:
                               const std::string& method,
                               const std::string& payload);
 
-    virtual pmtf::pmt block_parameter_query(const std::string& block_name,
+    virtual std::string block_parameter_query(const std::string& block_name,
                                             const std::string& parameter);
 
     virtual void block_parameter_change(const std::string& block_name,
                                         const std::string& parameter,
-                                        const std::string& payload);
+                                        const std::string& encoded_value);
 
     void set_pyblock_detail(std::shared_ptr<pyblock_detail> p);
     std::shared_ptr<pyblock_detail> pb_detail();

@@ -31,7 +31,7 @@ void rpc_client_interface::block_method(const std::string& block_name,
     }
 }
 
-pmtf::pmt rpc_client_interface::block_parameter_query(const std::string& block_name,
+std::string rpc_client_interface::block_parameter_query(const std::string& block_name,
                                                       const std::string& parameter)
 {
     if (pb_detail()) {
@@ -40,7 +40,7 @@ pmtf::pmt rpc_client_interface::block_parameter_query(const std::string& block_n
         py::object ret = this->pb_detail()->handle().attr("block_parameter_query")(
             block_name, parameter);
 
-        return ret.cast<pmtf::pmt>();
+        return ret.cast<std::string>();
     }
 }
 
