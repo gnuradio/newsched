@@ -1,7 +1,7 @@
 module: zeromq
 block: push_sink
 label: PUSH Sink
-blocktype: sync_block
+blocktype: block
 # inherits: gr::zeromq::base
 # includes: 
 #   - value: gnuradio/zeromq/base.h

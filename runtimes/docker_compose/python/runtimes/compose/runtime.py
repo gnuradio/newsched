@@ -4,6 +4,7 @@ import uuid
 from jinja2 import FileSystemLoader, Environment
 import os
 from gnuradio import zeromq
+import time
 
 class runtime:
     def __enter__(self):
@@ -64,23 +65,6 @@ class runtime:
                 b.set_rpc(newblockname, client)
                 client.block_create(newblockname, b)
 
-        # Create ZMQ connections between the ports involved in domain crossings
-        for c, src_graph, dst_graph in crossings:
-            src_zmq_block = zeromq.push_sink( c.src().port().itemsize(), "tcp://127.0.0.1:0")
-            dst_zmq_block = zeromq.pull_source( c.dst().port().itemsize(), src_zmq_block.last_endpoint())
-            src_graph.connect( (c.src().node(), c.src().port().index() ), (src_zmq_block, 0))
-            dst_graph.connect( (dst_zmq_block, 0), (c.dst().node(), c.dst().port().index() ))
-
-            src_client = list(self.service_client_map.items())[graphs.index(src_graph)][1]
-            dst_client = list(self.service_client_map.items())[graphs.index(dst_graph)][1]
-            randstr = uuid.uuid4().hex[:6]
-            newblockname = src_zmq_block.name() + "_" + randstr
-            src_zmq_block.set_rpc(newblockname, src_client)
-            src_client.block_create(newblockname, src_zmq_block)
-            randstr = uuid.uuid4().hex[:6]
-            newblockname = src_zmq_block.name() + "_" + randstr
-            dst_zmq_block.set_rpc(newblockname, dst_client)
-            dst_client.block_create(newblockname, dst_zmq_block)
 
         for cnt, g in enumerate(graphs):
             fgname = uuid.uuid4().hex[:6]
@@ -109,6 +93,53 @@ class runtime:
                     print("There should be no domain crossings yet")
 
 
+        # Create ZMQ connections between the ports involved in domain crossings
+        for c, src_graph, dst_graph in crossings:
+
+            # src_zmq_block = zeromq.push_sink( c.src().port().itemsize(), "tcp://127.0.0.1:0")
+
+            src_client = list(self.service_client_map.items())[graphs.index(src_graph)][1]
+            randstr = uuid.uuid4().hex[:6]
+            src_blockname = 'zmq_push_sink' + "_" + randstr
+            src_client.block_create_params(src_blockname, {'module': 'zeromq', 'id': 'push_sink', 
+                'parameters': {'itemsize': c.src().port().itemsize(), 'address':"tcp://127.0.0.1:0"  }})
+    
+            lastendpoint = src_client.block_method(src_blockname, 'last_endpoint', {})
+            dst_client = list(self.service_client_map.items())[graphs.index(dst_graph)][1]
+            randstr = uuid.uuid4().hex[:6]
+            dst_blockname = 'zmq_pull_source' + "_" + randstr
+            dst_client.block_create_params(dst_blockname, {'module': 'zeromq', 'id': 'pull_source', 
+                'parameters': {'itemsize': c.dst().port().itemsize(), 'address': lastendpoint  }})
+
+            fgname = self.client_fgname_map[src_client]
+            src_client.flowgraph_connect(fgname,
+                                        c.src().node().rpc_name(),
+                                        c.src().port().name(),
+                                        src_blockname,
+                                        "in",
+                                        None)
+            fgname = self.client_fgname_map[dst_client]
+            dst_client.flowgraph_connect(fgname,
+                                        dst_blockname, 
+                                        "out",
+                                        c.dst().node().rpc_name(),
+                                        c.dst().port().name(),
+                                        None)
+            # dst_zmq_block = zeromq.pull_source( c.dst().port().itemsize(), src_zmq_block.last_endpoint(), 0)
+            # src_graph.connect( (c.src().node(), c.src().port().index() ), (src_zmq_block, 0))
+            # dst_graph.connect( (dst_zmq_block, 0), (c.dst().node(), c.dst().port().index() ))
+
+            
+            # dst_client = list(self.service_client_map.items())[graphs.index(dst_graph)][1]
+            # randstr = uuid.uuid4().hex[:6]
+            # newblockname = src_zmq_block.name() + "_" + randstr
+            # src_zmq_block.set_rpc(newblockname, src_client)
+            # src_client.block_create(newblockname, src_zmq_block)
+            # randstr = uuid.uuid4().hex[:6]
+            # newblockname = dst_zmq_block.name() + "_" + randstr
+            # dst_zmq_block.set_rpc(newblockname, dst_client)
+            # dst_client.block_create(newblockname, dst_zmq_block)
+
         for cnt, g in enumerate(graphs):
             # Create a runtime for each container
             client = list(self.service_client_map.items())[cnt][1]
@@ -120,11 +151,18 @@ class runtime:
 
     def start(self):
         # Call start on each container
-        for client, fgname in self.client_fgname_map.items():
+        for client, fgname in list(self.client_fgname_map.items())[::-1]:
             client.runtime_start(fgname)
+            time.sleep(0.25)
 
     def wait(self):
         # Launch a thread and call wait
         # When one breaks out of wait() tell the others to stop
         #TODO
         pass
+
+    def stop(self):
+        # Call start on each container
+        for client, fgname in self.client_fgname_map.items():
+            client.runtime_stop(fgname)
+            # time.sleep(0.25)

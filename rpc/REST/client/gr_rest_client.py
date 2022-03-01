@@ -48,6 +48,28 @@ class client(gr.rpc_client_interface):
 
         print(r)
 
+    def block_create_params(self, block_name, params):
+
+        payload = params
+        payload['command'] = 'block_create'
+        payload['block_name'] = block_name
+
+        r = requests.post(self.url + '/execute', json=payload)
+
+        print(r)
+
+    def block_method(self, block_name, method, params):
+        
+        payload = {}
+        payload['command'] = 'block_method'
+        payload['block_name'] = block_name
+        payload['method'] = method
+        payload['params'] = params
+
+        r = requests.post(self.url + '/execute', json=payload)
+        return json.loads(r.text)['result']
+        print(r)
+
     def flowgraph_connect(self, fg_name, src_block, src_port, dst_block, dst_port, edge_name):
 
         payload = {"command": "flowgraph_connect", "fg_name": fg_name}

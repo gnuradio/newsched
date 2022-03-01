@@ -138,13 +138,13 @@ class Session:
             self.blocks[kwargs['block_name']] = importlib.import_module(
                 'gnuradio.' + kwargs['module']).__getattribute__(kwargs['id'])(**kwargs['parameters'])
 
-        return "{status: 0}"
+        return {'status': 0}
 
-    def block_method(self, block_name, method, payload):
+    def block_method(self, **kwargs): #block_name, method, payload):
 
         ret = {}
-        ret['result'] = self.blocks[block_name].__getattribute__(
-            method)(**payload)
+        ret['result'] = self.blocks[kwargs['block_name']].__getattribute__(
+            kwargs['method'])(**kwargs['params'])
 
         def default_serializer(z):
             # if isinstance(z, list) and isinstance(z[0], complex):
@@ -156,8 +156,8 @@ class Session:
             raise TypeError(
                 f"Object of type '{type_name}' is not JSON serializable")
 
-        # return ret
-        return json.dumps(ret, default=default_serializer)
+        return ret
+        # return json.dumps(ret, default=default_serializer)
 
     def block_parameter_query(self, block_name, parameter):
 

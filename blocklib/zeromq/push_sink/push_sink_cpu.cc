@@ -15,16 +15,23 @@ push_sink_cpu::push_sink_cpu(block_args args)
 work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                        std::vector<block_work_output_sptr>& work_output)
 {
+    std::cout << "polling ... " << last_endpoint() << std::endl;
     // Poll with a timeout (FIXME: scheduler can't wait for us)
     zmq::pollitem_t itemsout[] = { { static_cast<void*>(d_socket), 0, ZMQ_POLLOUT, 0 } };
     zmq::poll(&itemsout[0], 1, std::chrono::milliseconds{ d_timeout });
 
     // If we can send something, do it
     if (itemsout[0].revents & ZMQ_POLLOUT) {
+        std::cout << "DEBUG: work() Sending Message .... " << std::endl;
         work_input[0]->n_consumed = send_message(work_input[0]->raw_items(),
                                                  work_input[0]->n_items,
                                                  work_input[0]->nitems_read());
     }
+    else{
+         work_input[0]->n_consumed = 0;
+    }
+
+    std::cout << "done ... " << work_input[0]->n_consumed << std::endl;
 
     return work_return_code_t::WORK_OK;
 }

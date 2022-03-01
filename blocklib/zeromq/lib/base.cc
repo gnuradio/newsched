@@ -99,6 +99,7 @@ int base_sink::send_message(const void* in_buf,
     }
 
     /* Send */
+    std::cout << "DEBUG: Sending Message .... " << std::endl;
     d_socket.send(msg, zmq::send_flags::none);
 
     /* Report back */
@@ -222,6 +223,8 @@ bool base_source::load_message(bool wait)
         throw std::runtime_error("Incompatible vector sizes: need a multiple of " +
                                  std::to_string(d_vsize) + " bytes per message");
     }
+
+    std::cout << "DEBUG: RECEIVED Message .... " << std::endl;
 
     /* We got one ! */
     return true;

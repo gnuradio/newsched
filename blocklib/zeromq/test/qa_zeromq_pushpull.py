@@ -34,7 +34,7 @@ class qa_zeromq_pushpull (gr_unittest.TestCase):
         self.send_tb.connect(src, zeromq_push_sink)
         self.recv_tb.connect(zeromq_pull_source, sink)
         self.recv_tb.start()
-        time.sleep(0.5)
+        # time.sleep(0.5)
         self.send_tb.start()
         time.sleep(0.5)
         self.recv_tb.stop()
