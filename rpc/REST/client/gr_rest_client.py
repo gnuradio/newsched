@@ -1,8 +1,7 @@
-from base64 import encode
 import requests
 import json
 from gnuradio import gr
-import pmtf
+import random
 
 class client(gr.rpc_client_interface):
     def __init__(self, ipaddr, port, https = False) -> None:
@@ -154,4 +153,29 @@ class client(gr.rpc_client_interface):
         payload = {"command": "runtime_stop", "rt_name": rt_name}
         r = requests.post(self.url + '/execute', json=payload)
 
+        print(r)
+
+    def runtime_create_proxy(self, rt_name, svr_port, upstream): #rt_name, payload):
+        payload = {
+            "command": "runtime_create_proxy",
+            "rt_name": rt_name,
+            "svr_port": svr_port,
+            "upstream": upstream
+            }
+
+        r = requests.post(self.url + '/execute', json=payload)
+        print(r)
+        name = json.loads(r.text)['name']
+        port = json.loads(r.text)['port']
+        return (name, port)
+
+    def runtime_connect_proxy(self, proxy_name, ipaddr, port): #proxy_name, payload):
+        payload = {
+            "command": "runtime_connect_proxy",
+            "proxy_name": proxy_name,
+            "ipaddr": ipaddr,
+            "port": port
+            }
+        
+        r = requests.post(self.url + '/execute', json=payload)
         print(r)

@@ -35,11 +35,11 @@ with docker_compose.runtime(os.path.join(os.path.dirname(__file__), 'docker-comp
 
     rt1.start()
     rt1.wait()
-    rt1.stop()
+    # rt1.stop()
 
-    import time
-    time.sleep(1)
+    # import time
+    # time.sleep(1)
     # Will need to get the data serialized from the remote host
     rx_data = snk.data()
 
-    print(rx_data)
+    print(f'Received {len(rx_data)} samples')

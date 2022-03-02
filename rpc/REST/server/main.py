@@ -205,23 +205,23 @@ class Session:
 
         return {"status": 0, "edge": edge_name}
 
-    def runtime_create_runtime_proxy(self, rt_name, payload):
-        svr_port = payload['svr_port']
-        upstream = payload['upstream']
+    def runtime_create_proxy(self, **kwargs): #rt_name, payload):
+        svr_port = kwargs['svr_port']
+        upstream = kwargs['upstream']
 
         proxy2 = gr.runtime_proxy(svr_port, upstream)
         proxy_port = proxy2.svr_port()
         proxy_name = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))
-        self.rts[rt_name].add_proxy(proxy2)
+        self.rts[kwargs['rt_name']].add_proxy(proxy2)
 
         self.proxies[proxy_name] = proxy2
         return {"status": 0, "name": proxy_name, "port": proxy_port}
 
-    def runtime_connect_proxy(self, proxy_name, payload):
-        ipaddr = payload['ipaddr']
-        port = payload['port']
+    def runtime_connect_proxy(self, **kwargs): #proxy_name, payload):
+        ipaddr = kwargs['ipaddr']
+        port = kwargs['port']
         
-        proxy2 = self.proxies[proxy_name]
+        proxy2 = self.proxies[kwargs['proxy_name']]
         proxy2.client_connect(ipaddr, port)
 
         return {"status": 0}

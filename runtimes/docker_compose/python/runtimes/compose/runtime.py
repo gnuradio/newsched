@@ -94,6 +94,9 @@ class runtime:
 
 
         # Create ZMQ connections between the ports involved in domain crossings
+        # These must be created directly on the remote host because
+        # if they are created locally, the ports are assigned locally and cannot
+        # be transferred
         for c, src_graph, dst_graph in crossings:
 
             # src_zmq_block = zeromq.push_sink( c.src().port().itemsize(), "tcp://127.0.0.1:0")
@@ -125,44 +128,53 @@ class runtime:
                                         c.dst().node().rpc_name(),
                                         c.dst().port().name(),
                                         None)
-            # dst_zmq_block = zeromq.pull_source( c.dst().port().itemsize(), src_zmq_block.last_endpoint(), 0)
-            # src_graph.connect( (c.src().node(), c.src().port().index() ), (src_zmq_block, 0))
-            # dst_graph.connect( (dst_zmq_block, 0), (c.dst().node(), c.dst().port().index() ))
 
-            
-            # dst_client = list(self.service_client_map.items())[graphs.index(dst_graph)][1]
-            # randstr = uuid.uuid4().hex[:6]
-            # newblockname = src_zmq_block.name() + "_" + randstr
-            # src_zmq_block.set_rpc(newblockname, src_client)
-            # src_client.block_create(newblockname, src_zmq_block)
-            # randstr = uuid.uuid4().hex[:6]
-            # newblockname = dst_zmq_block.name() + "_" + randstr
-            # dst_zmq_block.set_rpc(newblockname, dst_client)
-            # dst_client.block_create(newblockname, dst_zmq_block)
+        #TODO - figure out ipaddrs from the config
+        ipaddr_a = "127.0.0.1"
+        ipaddr_b = "127.0.0.1"
 
+        # Create the remote runtimes and proxies back to the first
+        client_a = list(self.service_client_map.items())[0][1]
+        fgname_a = self.client_fgname_map[client_a]
+        client_a.runtime_create(fgname_a)
+        for cnt, g in enumerate(graphs):
+            # Create a runtime for each container
+            if (cnt > 0):
+                client_b = list(self.service_client_map.items())[cnt][1]
+                fgname_b = self.client_fgname_map[client_b]
+                client_b.runtime_create(fgname_b)
+                proxy_name_a, port_a = client_a.runtime_create_proxy(fgname_a, 0, True)
+                proxy_name_b, port_b = client_b.runtime_create_proxy(fgname_b, 0, False)
+                client_a.runtime_connect_proxy(proxy_name_a, ipaddr_b, port_b)
+                client_b.runtime_connect_proxy(proxy_name_b, ipaddr_a, port_a)
+
+        # Initialize the remote runtimes
         for cnt, g in enumerate(graphs):
             # Create a runtime for each container
             client = list(self.service_client_map.items())[cnt][1]
             fgname = self.client_fgname_map[client]
-
-            client.runtime_create(fgname)
             client.runtime_initialize(fgname, fgname)
 
 
     def start(self):
-        # Call start on each container
-        for client, fgname in list(self.client_fgname_map.items())[::-1]:
-            client.runtime_start(fgname)
-            time.sleep(0.25)
+        # # Call start on each container
+        # for client, fgname in list(self.client_fgname_map.items())[::-1]:
+        #     client.runtime_start(fgname)
+        #     time.sleep(0.25)
+        client, fgname = list(self.client_fgname_map.items())[0]
+        client.runtime_start(fgname)
 
     def wait(self):
         # Launch a thread and call wait
         # When one breaks out of wait() tell the others to stop
         #TODO
-        pass
+        client, fgname = list(self.client_fgname_map.items())[0]
+        client.runtime_wait(fgname)
 
     def stop(self):
         # Call start on each container
-        for client, fgname in self.client_fgname_map.items():
-            client.runtime_stop(fgname)
-            # time.sleep(0.25)
+        # for client, fgname in self.client_fgname_map.items():
+        #     client.runtime_stop(fgname)
+        #     # time.sleep(0.25)
+        client, fgname = list(self.client_fgname_map.items())[0]
+        client.runtime_stop(fgname)
