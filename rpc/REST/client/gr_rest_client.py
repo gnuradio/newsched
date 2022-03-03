@@ -2,6 +2,7 @@ import requests
 import json
 from gnuradio import gr
 import random
+import inspect
 
 class client(gr.rpc_client_interface):
     def __init__(self, ipaddr, port, https = False) -> None:
@@ -16,166 +17,98 @@ class client(gr.rpc_client_interface):
 
         self.conn = None
 
-    # def connect(self):
-    #     url = 'http://' if not self.https else 'https://'
-    #     url += self.ipaddr + ':' + self.port
-    #     self.conn = http.client.HTTPConnection(url)
+    def rpc_return(func):
+        def inner(*args, **kwargs):
+            r = func(*args, **kwargs)
+            # print(r)
+            # print(r.text)
+            return json.loads(r.text)['result']
+        return inner
 
-    # def check_connection(self):
-    #     if not self.conn:
-    #         raise Exception("Client has not yet been connected to server")
+    def rpc_execute(timeout=0.1):
+        def wrapper(func):
+            def inner(*args, **kwargs):
+                json_payload = func(*args)
+                if not json_payload:
+                    argspec = inspect.getargspec(func) # get the args
+                    obj = inspect.unwrap(func) # get the command
+                    json_payload = {'command': obj.__name__}
+                    for i, a in enumerate(args):
+                        if i > 0:
+                            json_payload[argspec.args[i]] = args[i]
+                # print(json_payload) # TODO: make a verbose flag 
+                return requests.post(args[0].url + '/execute', json=json_payload, timeout=timeout)
 
-    # TODO: do this with decorator
-    # def rpc_execute(func):
-    #     payload = {'command': 'flowgraph_create', 'fg_name': fg_name}
+            return inner
+        return wrapper
 
+    @rpc_execute()
     def flowgraph_create(self, fg_name):
+        pass
 
-        payload = {'command': 'flowgraph_create', 'fg_name': fg_name}
-        r = requests.post(self.url + '/execute', json=payload, timeout=0.1)
-
-        print(r)
-
-
+    @rpc_execute()
     def block_create(self, block_name, block):
 
         json_str = block.to_json()
         payload = json.loads(json_str)
         payload['command'] = 'block_create'
         payload['block_name'] = block_name
+        return payload
 
-        r = requests.post(self.url + '/execute', json=payload)
 
-        print(r)
-
+    @rpc_execute()
     def block_create_params(self, block_name, params):
 
         payload = params
         payload['command'] = 'block_create'
         payload['block_name'] = block_name
+        return payload
 
-        r = requests.post(self.url + '/execute', json=payload)
-
-        print(r)
-
+    @rpc_return
+    @rpc_execute()
     def block_method(self, block_name, method, params):
-        
-        payload = {}
-        payload['command'] = 'block_method'
-        payload['block_name'] = block_name
-        payload['method'] = method
-        payload['params'] = params
+        pass
 
-        r = requests.post(self.url + '/execute', json=payload)
-        return json.loads(r.text)['result']
-        print(r)
-
+    @rpc_return
+    @rpc_execute()
     def block_parameter_query(self, block_name, parameter_name):
-        payload = {}
-        payload['command'] = 'block_parameter_query'
-        payload['block_name'] = block_name
-        payload['parameter'] = parameter_name
+        pass
 
-        r = requests.post(self.url + '/execute', json=payload)
-        pmt_b64 = json.loads(r.text)['result']
-        return pmt_b64
-
+    @rpc_execute()
     def block_parameter_change(self, block_name, parameter_name, encoded_value):
-        payload = {}
-        payload['command'] = 'block_parameter_change'
-        payload['block_name'] = block_name
-        payload['parameter'] = parameter_name
-        payload['encoded_value'] = encoded_value
+        pass
 
-        r = requests.post(self.url + '/execute', json=payload)
-        print(r)
+    @rpc_return
+    @rpc_execute()
+    def flowgraph_connect(self, fg_name, src, dst, edge_name):
+        pass
 
-    def flowgraph_connect(self, fg_name, src_block, src_port, dst_block, dst_port, edge_name):
-
-        payload = {"command": "flowgraph_connect", "fg_name": fg_name}
-        if src_block and src_port:
-            payload["src"] = (src_block, src_port)
-
-        if dst_block and dst_port:
-            payload["dst"] = (dst_block, dst_port)
-
-        if edge_name:
-            payload["edge_name"] = edge_name
-
-        r = requests.post(self.url + '/execute', json=payload)
-
-        print(r)
-
-
-    def runtime_initialize(self, fg_name, src_block, src_port, dst_block, dst_port, edge_name):
-
-        payload = {"command": "flowgraph_connect", "fg_name": fg_name}
-        if src_block and src_port:
-            payload["src"] = (src_block, src_port)
-
-        if dst_block and dst_port:
-            payload["dst"] = (dst_block, dst_port)
-
-        if edge_name:
-            payload["edge_name"] = edge_name
-
-        r = requests.post(self.url + '/execute', json=payload)
-
-        print(r)
-
-
-
+    @rpc_execute()
     def runtime_create(self, rt_name):
-        payload = {"command": "runtime_create", "rt_name": rt_name}
-        r = requests.post(self.url + '/execute', json=payload)
+        pass
 
-        print(r)
-
+    @rpc_execute()
     def runtime_initialize(self, rt_name, fg_name):
-        payload = {"command": "runtime_initialize", "rt_name": rt_name, "fg_name": fg_name}
-        r = requests.post(self.url + '/execute', json=payload)
+        pass
 
-        print(r)
-
+    @rpc_execute()
     def runtime_start(self, rt_name):
-        payload = {"command": "runtime_start", "rt_name": rt_name}
-        r = requests.post(self.url + '/execute', json=payload)
+        pass
 
-        print(r)
-
+    @rpc_execute(timeout=None)
     def runtime_wait(self, rt_name):
-        payload = {"command": "runtime_wait", "rt_name": rt_name}
-        r = requests.post(self.url + '/execute', json=payload)
+        pass
 
-        print(r)
-
+    @rpc_execute()
     def runtime_stop(self, rt_name):
-        payload = {"command": "runtime_stop", "rt_name": rt_name}
-        r = requests.post(self.url + '/execute', json=payload)
+        pass
 
-        print(r)
-
+    @rpc_return
+    @rpc_execute()
     def runtime_create_proxy(self, rt_name, svr_port, upstream): #rt_name, payload):
-        payload = {
-            "command": "runtime_create_proxy",
-            "rt_name": rt_name,
-            "svr_port": svr_port,
-            "upstream": upstream
-            }
+        pass
 
-        r = requests.post(self.url + '/execute', json=payload)
-        print(r)
-        name = json.loads(r.text)['name']
-        port = json.loads(r.text)['port']
-        return (name, port)
-
+    
+    @rpc_execute()
     def runtime_connect_proxy(self, proxy_name, ipaddr, port): #proxy_name, payload):
-        payload = {
-            "command": "runtime_connect_proxy",
-            "proxy_name": proxy_name,
-            "ipaddr": ipaddr,
-            "port": port
-            }
-        
-        r = requests.post(self.url + '/execute', json=payload)
-        print(r)
+       pass

@@ -55,10 +55,13 @@ class Session:
         return {'status': 0}
 
     def flowgraph_connect(self, **kwargs):
-        src = (self.blocks[kwargs['src'][0]],
-               kwargs['src'][1]) if 'src' in kwargs and kwargs['src'] else None
-        dst = (self.blocks[kwargs['dst'][0]],
-                kwargs['dst'][1]) if 'dst' in kwargs and  kwargs['dst'] else None
+        src = kwargs['src']
+        dst = kwargs['dst']
+        if (src):
+            src = (self.blocks[src[0]], src[1])
+        if (dst):
+            dst = (self.blocks[dst[0]], dst[1])
+
         print(src)
         print(dst)
         if (src and dst):
@@ -76,7 +79,7 @@ class Session:
 
         self.edges[edge_name] = edge
 
-        return {"status": 0, "edge": edge_name}
+        return {"status": 0, "result": edge_name}
 
     def flowgraph_create_edge(self, fg_name, payload):
 
@@ -162,7 +165,7 @@ class Session:
     def block_parameter_query(self, **kwargs): #block_name, parameter):
 
         ret = {}
-        pmt_res = self.blocks[kwargs['block_name']].request_parameter_query(kwargs['parameter'])
+        pmt_res = self.blocks[kwargs['block_name']].request_parameter_query(kwargs['parameter_name'])
         b64str = pmt_res.to_base64()
 
         ret['result'] = b64str
@@ -175,7 +178,7 @@ class Session:
         # print(newvalue())
 
         # request_parameter_change(int param_id, pmtf::pmt new_value, bool block = true);
-        self.blocks[kwargs['block_name']].request_parameter_change(kwargs['parameter'], newvalue, False)
+        self.blocks[kwargs['block_name']].request_parameter_change(kwargs['parameter_name'], newvalue, False)
         return {}
 
     def block_create_message_port_proxy(self, block_name, port_name, payload):
@@ -215,7 +218,7 @@ class Session:
         self.rts[kwargs['rt_name']].add_proxy(proxy2)
 
         self.proxies[proxy_name] = proxy2
-        return {"status": 0, "name": proxy_name, "port": proxy_port}
+        return {"status": 0, "result": (proxy_name, proxy_port)}
 
     def runtime_connect_proxy(self, **kwargs): #proxy_name, payload):
         ipaddr = kwargs['ipaddr']

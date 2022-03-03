@@ -92,10 +92,10 @@ class runtime:
                 if src_client == dst_client:
                     print(f"same remote client {e.identifier()}")
                     src_client.flowgraph_connect(fgname,
-                                               e.src().node().rpc_name(),
-                                               e.src().port().name(),
-                                               e.dst().node().rpc_name(),
-                                               e.dst().port().name(),
+                                               (e.src().node().rpc_name(),
+                                               e.src().port().name()),
+                                               (e.dst().node().rpc_name(),
+                                               e.dst().port().name()),
                                                edge_name)
  
                 else:
@@ -129,17 +129,17 @@ class runtime:
 
                 fgname = self.client_fgname_map[src_client]
                 src_client.flowgraph_connect(fgname,
-                                            c.src().node().rpc_name(),
-                                            c.src().port().name(),
-                                            src_blockname,
-                                            "in",
+                                            (c.src().node().rpc_name(),
+                                            c.src().port().name()),
+                                            (src_blockname,
+                                            "in"),
                                             None)
                 fgname = self.client_fgname_map[dst_client]
                 dst_client.flowgraph_connect(fgname,
-                                            dst_blockname, 
-                                            "out",
-                                            c.dst().node().rpc_name(),
-                                            c.dst().port().name(),
+                                            (dst_blockname, 
+                                            "out"),
+                                            (c.dst().node().rpc_name(),
+                                            c.dst().port().name()),
                                             None)
 
 
