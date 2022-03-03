@@ -1,1 +1,0 @@
-subdir('python/runtimes/compose')

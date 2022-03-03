@@ -30,7 +30,9 @@ void bind_port(py::module& m)
         .def("index", &gr::port_base::index)
         .def("name", &gr::port_base::name)
         .def("connect", &gr::port_base::connect)
-        .def("itemsize", &gr::port_base::itemsize);
+        .def("itemsize", &gr::port_base::itemsize)
+        .def("type", &gr::port_base::type)
+        ;
 
     py::class_<port_f, port_base, std::shared_ptr<port_f>>(m, "port_f")
         .def(py::init(&port_f::make),

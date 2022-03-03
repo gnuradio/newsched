@@ -1,1 +1,1 @@
-subdir('docker_compose')
+subdir('distributed')

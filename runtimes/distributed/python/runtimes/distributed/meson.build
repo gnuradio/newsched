@@ -10,4 +10,4 @@ configure_file(copy: true,
 )
 endforeach
 
-py3_inst.install_sources(files(srcs), subdir : join_paths('gnuradio','runtimes','docker_compose'))
+py3_inst.install_sources(files(srcs), subdir : join_paths('gnuradio','runtimes','distributed'))

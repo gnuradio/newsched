@@ -5,33 +5,42 @@ from jinja2 import FileSystemLoader, Environment
 import os
 from gnuradio import zeromq
 import time
+import yaml
+from gnuradio.rpc import rest
 
 class runtime:
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        if self.docker_compose_filename:
-            os.system(f'docker compose -f {self.docker_compose_filename} down')
-        # pass
+        # if self.docker_compose_filename:
+        #     os.system(f'docker compose -f {self.docker_compose_filename} down')
+        pass
 
-    def __init__(self, docker_compose_filename):
-        self.service_blocks_map = {}
-        self.service_client_map = {}
-        self.service_sched_map = {}
+    def __init__(self, config_filename):
+        self.host_blocks_map = {}
+        self.host_client_map = {}
         self.block_client_map = {}
         self.client_fgname_map = {}
-        self.docker_compose_filename = docker_compose_filename
+        self.load_config(config_filename)
 
+    def load_config(self, config_filename):
+        with open(config_filename,'r') as f:
+            self.config = yaml.load(f, Loader=yaml.FullLoader)
 
-    def assign_rpc_client(self, service, client):
-        self.service_client_map[service] = client
+            for host in self.config['hosts']:
+                if (host['rpc_type'].lower() == 'rest'):
+                    client = rest.client(host['hostname'], host['port'])
+                    self.host_client_map[host['id']] = client
 
-    def assign_blocks(self, service, blocks):
-        self.service_blocks_map[service] = blocks
+    def assign_rpc_client(self, host, client):
+        self.host_client_map[host] = client
 
-    def assign_scheduler(self, service, blocks):
-        self.service_blocks_map[service] = blocks
+    def assign_blocks(self, host, blocks):
+        self.host_blocks_map[host] = blocks
+
+    def assign_scheduler(self, host, blocks):
+        self.host_blocks_map[host] = blocks
 
     def initialize(self, fg):
         gr.flowgraph.check_connections(fg)
@@ -40,7 +49,7 @@ class runtime:
         #  Create those objects now if 
 
         # Partition the flowgraph+
-        partition_config =  [val for _, val in self.service_blocks_map.items()]
+        partition_config =  [val for _, val in self.host_blocks_map.items()]
         graphs, crossings = gr.graph_utils.partition(fg, partition_config)
 
 
@@ -51,9 +60,9 @@ class runtime:
 
         # For each host configuration
         
-        for service, blocks in self.service_blocks_map.items():
+        for host, blocks in self.host_blocks_map.items():
             # Create the blocks in this client
-            client = self.service_client_map[service]
+            client = self.host_client_map[host]
 
             for b in blocks:
                 randstr = uuid.uuid4().hex[:6]
@@ -68,7 +77,7 @@ class runtime:
 
         for cnt, g in enumerate(graphs):
             fgname = uuid.uuid4().hex[:6]
-            client = list(self.service_client_map.items())[cnt][1]
+            client = list(self.host_client_map.items())[cnt][1]
             client.flowgraph_create(fgname)
             self.client_fgname_map[client] = fgname
 
@@ -93,65 +102,68 @@ class runtime:
                     print("There should be no domain crossings yet")
 
 
-        # Create ZMQ connections between the ports involved in domain crossings
-        # These must be created directly on the remote host because
-        # if they are created locally, the ports are assigned locally and cannot
-        # be transferred
+
         for c, src_graph, dst_graph in crossings:
 
-            # src_zmq_block = zeromq.push_sink( c.src().port().itemsize(), "tcp://127.0.0.1:0")
+            if c.src().port().type() == gr.port_type_t.MESSAGE:
+                #TODO: Rather than message proxy objects, use ZMQ message blocks
+                print("Message port connections not yet supported in this runtime")
+            else: #STREAM
+                # Create ZMQ connections between the ports involved in domain crossings
+                # These must be created directly on the remote host because
+                # if they are created locally, the ports are assigned locally and cannot
+                # be transferred
 
-            src_client = list(self.service_client_map.items())[graphs.index(src_graph)][1]
-            randstr = uuid.uuid4().hex[:6]
-            src_blockname = 'zmq_push_sink' + "_" + randstr
-            src_client.block_create_params(src_blockname, {'module': 'zeromq', 'id': 'push_sink', 
-                'parameters': {'itemsize': c.src().port().itemsize(), 'address':"tcp://127.0.0.1:0"  }})
-    
-            lastendpoint = src_client.block_method(src_blockname, 'last_endpoint', {})
-            dst_client = list(self.service_client_map.items())[graphs.index(dst_graph)][1]
-            randstr = uuid.uuid4().hex[:6]
-            dst_blockname = 'zmq_pull_source' + "_" + randstr
-            dst_client.block_create_params(dst_blockname, {'module': 'zeromq', 'id': 'pull_source', 
-                'parameters': {'itemsize': c.dst().port().itemsize(), 'address': lastendpoint  }})
+                src_client = list(self.host_client_map.items())[graphs.index(src_graph)][1]
+                randstr = uuid.uuid4().hex[:6]
+                src_blockname = 'zmq_push_sink' + "_" + randstr
+                src_client.block_create_params(src_blockname, {'module': 'zeromq', 'id': 'push_sink', 
+                    'parameters': {'itemsize': c.src().port().itemsize(), 'address':"tcp://127.0.0.1:0"  }})
+        
+                lastendpoint = src_client.block_method(src_blockname, 'last_endpoint', {})
+                dst_client = list(self.host_client_map.items())[graphs.index(dst_graph)][1]
+                randstr = uuid.uuid4().hex[:6]
+                dst_blockname = 'zmq_pull_source' + "_" + randstr
+                dst_client.block_create_params(dst_blockname, {'module': 'zeromq', 'id': 'pull_source', 
+                    'parameters': {'itemsize': c.dst().port().itemsize(), 'address': lastendpoint  }})
 
-            fgname = self.client_fgname_map[src_client]
-            src_client.flowgraph_connect(fgname,
-                                        c.src().node().rpc_name(),
-                                        c.src().port().name(),
-                                        src_blockname,
-                                        "in",
-                                        None)
-            fgname = self.client_fgname_map[dst_client]
-            dst_client.flowgraph_connect(fgname,
-                                        dst_blockname, 
-                                        "out",
-                                        c.dst().node().rpc_name(),
-                                        c.dst().port().name(),
-                                        None)
+                fgname = self.client_fgname_map[src_client]
+                src_client.flowgraph_connect(fgname,
+                                            c.src().node().rpc_name(),
+                                            c.src().port().name(),
+                                            src_blockname,
+                                            "in",
+                                            None)
+                fgname = self.client_fgname_map[dst_client]
+                dst_client.flowgraph_connect(fgname,
+                                            dst_blockname, 
+                                            "out",
+                                            c.dst().node().rpc_name(),
+                                            c.dst().port().name(),
+                                            None)
 
-        #TODO - figure out ipaddrs from the config
-        ipaddr_a = "127.0.0.1"
-        ipaddr_b = "127.0.0.1"
 
         # Create the remote runtimes and proxies back to the first
-        client_a = list(self.service_client_map.items())[0][1]
+        hostid, client_a = list(self.host_client_map.items())[0]
+        hostname_a = next((h['hostname'] for h in self.config['hosts'] if h['id'] == hostid), None)
         fgname_a = self.client_fgname_map[client_a]
         client_a.runtime_create(fgname_a)
         for cnt, g in enumerate(graphs):
             # Create a runtime for each container
             if (cnt > 0):
-                client_b = list(self.service_client_map.items())[cnt][1]
+                hostid, client_b = list(self.host_client_map.items())[cnt]
+                hostname_b = next((h['hostname'] for h in self.config['hosts'] if h['id'] == hostid), None)
                 fgname_b = self.client_fgname_map[client_b]
                 client_b.runtime_create(fgname_b)
                 proxy_name_a, port_a = client_a.runtime_create_proxy(fgname_a, 0, True)
                 proxy_name_b, port_b = client_b.runtime_create_proxy(fgname_b, 0, False)
-                client_a.runtime_connect_proxy(proxy_name_a, ipaddr_b, port_b)
-                client_b.runtime_connect_proxy(proxy_name_b, ipaddr_a, port_a)
+                client_a.runtime_connect_proxy(proxy_name_a, hostname_a, port_b)
+                client_b.runtime_connect_proxy(proxy_name_b, hostname_b, port_a)
 
         # Initialize the remote runtimes
         for cnt, g in enumerate(graphs):
             # Create a runtime for each container
-            client = list(self.service_client_map.items())[cnt][1]
+            client = list(self.host_client_map.items())[cnt][1]
             fgname = self.client_fgname_map[client]
             client.runtime_initialize(fgname, fgname)
 

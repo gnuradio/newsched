@@ -1,7 +1,7 @@
-from gnuradio.runtimes import docker_compose 
+from gnuradio.runtimes import distributed 
 from gnuradio import blocks, math, gr
 from gnuradio.schedulers import nbt
-from gnuradio.rpc import rest
+
 
 import os
 
@@ -19,12 +19,7 @@ fg1 = gr.flowgraph("FG On Local Host")
 fg1.connect([src, cp1, mc, cp2, snk])
 # fg1.connect([src, cp1, cp2, snk])
 
-client1 = rest.client("127.0.0.1", 8000)
-client2 = rest.client("127.0.0.1", 8001)
-
-with docker_compose.runtime(os.path.join(os.path.dirname(__file__), 'docker-compose.yml')) as rt1:
-    rt1.assign_rpc_client("newsched1", client1)
-    rt1.assign_rpc_client("newsched2", client2)
+with distributed.runtime(os.path.join(os.path.dirname(__file__), 'test_config.yml')) as rt1:
     rt1.assign_blocks("newsched1", [src, cp1, mc])
     # rt1.assign_blocks("newsched1", [src, cp1])
     rt1.assign_blocks("newsched2", [cp2, snk])
