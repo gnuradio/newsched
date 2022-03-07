@@ -8,8 +8,8 @@
  *
  */
 
-#include "newblock_cuda.hh"
-#include "newblock_cuda_gen.hh"
+#include "newblock_cuda.h"
+#include "newblock_cuda_gen.h"
 
 #include <gnuradio/helper_cuda.h>
 
