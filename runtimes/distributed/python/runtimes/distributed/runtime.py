@@ -51,15 +51,7 @@ class runtime:
         # Partition the flowgraph+
         partition_config =  [val for _, val in self.host_blocks_map.items()]
         graphs, crossings = gr.graph_utils.partition(fg, partition_config)
-
-
-        # # The python_on_whales up command doesn't support -f afaik
-        # # docker.compose.up(["-d", "-f", compose_file.name])
-        # os.system(f'docker compose -f {self.docker_compose_filename} up -d')
-        # time.sleep(2)
-
-        # For each host configuration
-        
+       
         for host, blocks in self.host_blocks_map.items():
             # Create the blocks in this client
             client = self.host_client_map[host]
@@ -105,9 +97,21 @@ class runtime:
 
         for c, src_graph, dst_graph in crossings:
 
+            src_client = list(self.host_client_map.items())[graphs.index(src_graph)][1]
+            dst_client = list(self.host_client_map.items())[graphs.index(dst_graph)][1]
             if c.src().port().type() == gr.port_type_t.MESSAGE:
-                #TODO: Rather than message proxy objects, use ZMQ message blocks
-                print("Message port connections not yet supported in this runtime")
+                
+                randstr = uuid.uuid4().hex[:6]
+                src_blockname = 'zmq_push_msg_sink' + "_" + randstr
+                src_client.block_create_params(src_blockname, {'module': 'zeromq', 'id': 'push_sink', 
+                    'parameters': {'address':"tcp://127.0.0.1:0"  }})
+        
+                lastendpoint = src_client.block_method(src_blockname, 'last_endpoint', {})
+                randstr = uuid.uuid4().hex[:6]
+                dst_blockname = 'zmq_pull_msg_source' + "_" + randstr
+                dst_client.block_create_params(dst_blockname, {'module': 'zeromq', 'id': 'pull_source', 
+                    'parameters': {'address': lastendpoint  }})
+
             else: #STREAM
                 # Create ZMQ connections between the ports involved in domain crossings
                 # These must be created directly on the remote host because
@@ -127,20 +131,20 @@ class runtime:
                 dst_client.block_create_params(dst_blockname, {'module': 'zeromq', 'id': 'pull_source', 
                     'parameters': {'itemsize': c.dst().port().itemsize(), 'address': lastendpoint  }})
 
-                fgname = self.client_fgname_map[src_client]
-                src_client.flowgraph_connect(fgname,
-                                            (c.src().node().rpc_name(),
-                                            c.src().port().name()),
-                                            (src_blockname,
-                                            "in"),
-                                            None)
-                fgname = self.client_fgname_map[dst_client]
-                dst_client.flowgraph_connect(fgname,
-                                            (dst_blockname, 
-                                            "out"),
-                                            (c.dst().node().rpc_name(),
-                                            c.dst().port().name()),
-                                            None)
+            fgname = self.client_fgname_map[src_client]
+            src_client.flowgraph_connect(fgname,
+                                        (c.src().node().rpc_name(),
+                                        c.src().port().name()),
+                                        (src_blockname,
+                                        "in"),
+                                        None)
+            fgname = self.client_fgname_map[dst_client]
+            dst_client.flowgraph_connect(fgname,
+                                        (dst_blockname, 
+                                        "out"),
+                                        (c.dst().node().rpc_name(),
+                                        c.dst().port().name()),
+                                        None)
 
 
         # Create the remote runtimes and proxies back to the first
