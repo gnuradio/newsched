@@ -17,6 +17,7 @@ message(prefix_relative_to_lib)
 cdata = configuration_data()
 cdata.set('VERSION', meson.project_version())
 cdata.set('prefix_relative_to_lib', prefix_relative_to_lib)
+cdata.set('GR_PREFSDIR_relative_to_prefix', 'etc/gnuradio/conf.d')
 constants_file = configure_file(input: 'constants.cc.in',
                           output: 'constants.cc',
                           configuration: cdata,
