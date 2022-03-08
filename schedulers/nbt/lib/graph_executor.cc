@@ -150,9 +150,16 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 if (!work_output.empty()) {
                     GR_LOG_DEBUG(_debug_logger,
-                                 "do_work for {}, {}",
+                                 "do_work (output) for {}, {}",
                                  b->alias(),
                                  work_output[0]->n_items);
+                }
+                else if (!work_input.empty())
+                {
+                    GR_LOG_DEBUG(_debug_logger,
+                                 "do_work (input) for {}, {}",
+                                 b->alias(),
+                                 work_input[0]->n_items);
                 }
                 else {
                     GR_LOG_DEBUG(_debug_logger, "do_work for {}", b->alias());
