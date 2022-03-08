@@ -90,8 +90,7 @@ edge_vector_t flat_graph::calc_upstream_edges(block_sptr block)
 
 bool flat_graph::has_block_p(block_sptr block)
 {
-    block_viter_t result;
-    result = std::find(d_blocks.begin(), d_blocks.end(), block);
+    auto result = std::find(d_blocks.begin(), d_blocks.end(), block);
     return (result != d_blocks.end());
 }
 
@@ -107,7 +106,7 @@ std::vector<block_vector_t> flat_graph::partition()
         assert(!graph.empty());
         result.push_back(topological_sort(graph));
 
-        for (block_viter_t p = graph.begin(); p != graph.end(); p++)
+        for (auto p = graph.begin(); p != graph.end(); p++)
             blocks.erase(find(blocks.begin(), blocks.end(), *p));
     }
 
@@ -186,17 +185,17 @@ block_vector_t flat_graph::sort_sources_first(block_vector_t& blocks)
 {
     block_vector_t sources, nonsources, result;
 
-    for (block_viter_t p = blocks.begin(); p != blocks.end(); p++) {
+    for (auto p = blocks.begin(); p != blocks.end(); p++) {
         if (source_p(*p))
             sources.push_back(*p);
         else
             nonsources.push_back(*p);
     }
 
-    for (block_viter_t p = sources.begin(); p != sources.end(); p++)
+    for (auto p = sources.begin(); p != sources.end(); p++)
         result.push_back(*p);
 
-    for (block_viter_t p = nonsources.begin(); p != nonsources.end(); p++)
+    for (auto p = nonsources.begin(); p != nonsources.end(); p++)
         result.push_back(*p);
 
     return result;

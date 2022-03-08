@@ -148,6 +148,5 @@ public:
 
 using block_sptr = block::sptr;
 using block_vector_t = std::vector<block_sptr>;
-using block_viter_t = std::vector<block_sptr>::iterator;
 
 } // namespace gr
