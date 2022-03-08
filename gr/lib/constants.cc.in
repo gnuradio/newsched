@@ -35,7 +35,6 @@ const std::string prefix()
     return prefix_path.lexically_normal().string();
 }
 
-/*
 const std::string sysconfdir()
 {
     path sysconfdir_rel_prefix = "@SYSCONFDIR_relative_to_prefix@";
@@ -55,7 +54,6 @@ const std::string prefsdir()
 }
 
 const std::string build_date() { return "@BUILD_DATE@"; }
-*/
 
 const std::string version() { return "@VERSION@"; }
 
