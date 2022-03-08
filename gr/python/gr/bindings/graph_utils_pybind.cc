@@ -26,7 +26,8 @@ void bind_graph_utils(py::module& m)
         .def_readwrite("subgraph", &gr::graph_partition_info::subgraph);
 
     py::class_<gr::graph_utils, std::shared_ptr<gr::graph_utils>>(m, "graph_utils")
-        .def_static("partition", &gr::graph_utils::partition)
+        .def_static("partition",  py::overload_cast<gr::graph_sptr, std::vector<std::pair<gr::scheduler_sptr, std::vector<gr::node_sptr>>>>(&gr::graph_utils::partition))
+        .def_static("partition",  py::overload_cast<gr::graph_sptr, std::vector<std::vector<gr::node_sptr>>>(&gr::graph_utils::partition))
 
         ;
 }
