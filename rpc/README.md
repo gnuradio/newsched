@@ -1,0 +1,1 @@
+RPC applications that wrap GNU Radio runtime into some accessible remote API

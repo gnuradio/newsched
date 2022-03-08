@@ -1,0 +1,20 @@
+logging:
+-   id: default
+    type: console
+    console_type: stdout
+    pattern: "%+"
+    level: info
+    filename: /share/tmp/gr_log.txt  
+    
+-   id: debug
+    type: console
+    console_type: stdout
+    pattern: "%+"
+    level: debug
+    filename: /share/tmp/gr_debug_log.txt
+    
+-   id: trace
+    type: none
+    pattern: "%+"
+    level: trace
+    filename: /share/tmp/gr_trace_log.txt

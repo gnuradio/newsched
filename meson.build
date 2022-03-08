@@ -111,3 +111,5 @@ endif
 if (get_option('enable_bench'))
     subdir('bench')
 endif
+subdir('runtimes')
+subdir('rpc')
