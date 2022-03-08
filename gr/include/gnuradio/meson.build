@@ -14,7 +14,6 @@ runtime_headers = [
     'flat_graph.h',
     'flowgraph.h',
     'runtime_monitor.h',
-    'gpdict.h',
     'graph.h',
     'graph_utils.h',
     'logger.h',
