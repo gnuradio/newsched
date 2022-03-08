@@ -42,10 +42,10 @@ public:
     void post_write(int num_items) override
     {
         // send the data from buffer over the socket
-        GR_LOG_DEBUG(_debug_logger, "sending {} items", num_items);
+        d_debug_logger->debug("sending {} items", num_items);
         auto res = _socket.send(zmq::buffer(write_ptr(), num_items * _item_size),
                                 zmq::send_flags::none);
-        GR_LOG_DEBUG(_debug_logger, "send returned code {}", *res);
+        d_debug_logger->debug("send returned code {}", *res);
     }
 
     std::shared_ptr<buffer_reader>
@@ -69,8 +69,8 @@ private:
     gr::buffer_sptr _circbuf;
     gr::buffer_reader_sptr _circbuf_rdr;
 
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
 public:
     bool _recv_done = false;
@@ -95,7 +95,7 @@ public:
     std::vector<tag_t> get_tags(size_t num_items) override { return {}; }
     void post_read(int num_items) override
     {
-        GR_LOG_DEBUG(_debug_logger, "post_read: {}", num_items);
+        d_debug_logger->debug("post_read: {}", num_items);
         _circbuf_rdr->post_read(num_items);
     }
 };

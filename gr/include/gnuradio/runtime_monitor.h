@@ -2,10 +2,11 @@
 
 
 #include <gnuradio/concurrent_queue.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/runtime_proxy.h>
 #include <thread>
 #include <vector>
+#include <map>
 
 namespace gr {
 
@@ -82,7 +83,7 @@ private:
     std::vector<std::shared_ptr<scheduler>> d_schedulers;
     std::vector<std::shared_ptr<runtime_proxy>> d_runtime_proxies;
 
-    logger_sptr _logger, _debug_logger;
+    logger_ptr d_logger, d_debug_logger;
 
 protected:
     concurrent_queue<rt_monitor_message_sptr> msgq;

@@ -47,8 +47,7 @@ file_sink_base::file_sink_base(const std::string& filename, bool is_binary, bool
     if (!open(filename.c_str()))
         throw std::runtime_error("can't open file");
 
-    d_logger = logging::get_logger("file_sink_base", "default");
-    d_debug_logger = logging::get_logger("file_sink_base_dbg", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "file_sink_base");
 }
 
 file_sink_base::~file_sink_base()
@@ -75,7 +74,7 @@ bool file_sink_base::open(const char* filename)
         flags = O_WRONLY | O_CREAT | O_TRUNC | OUR_O_LARGEFILE | OUR_O_BINARY;
     }
     if ((fd = ::open(filename, flags, 0664)) < 0) {
-        GR_LOG_ERROR(d_logger, "{}: {}", filename, strerror(errno));
+        d_logger->error("{}: {}", filename, strerror(errno));
         return false;
     }
     if (d_new_fp) { // if we've already got a new one open, close it
@@ -84,7 +83,7 @@ bool file_sink_base::open(const char* filename)
     }
 
     if ((d_new_fp = fdopen(fd, d_is_binary ? "wb" : "w")) == NULL) {
-        GR_LOG_ERROR(d_logger, "{}: {}", filename, strerror(errno));
+        d_logger->error("{}: {}", filename, strerror(errno));
         ::close(fd); // don't leak file descriptor if fdopen fails.
     }
 

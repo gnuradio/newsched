@@ -69,7 +69,7 @@ void pull_msg_source_cpu::readloop()
 
             if (!ok) {
                 // Should not happen, we've checked POLLIN.
-                GR_LOG_ERROR(_logger, "Failed to receive message.");
+                d_logger->error("Failed to receive message.");
                 std::this_thread::sleep_for(100us);
                 continue;
             }
@@ -80,7 +80,7 @@ void pull_msg_source_cpu::readloop()
                 auto m = pmtf::pmt::deserialize(sb);
                 _msg_out->post(m);
             } catch (...){ // Take out PMT specific exception for now
-                GR_LOG_ERROR(_logger, std::string("Invalid PMT message: "));
+                d_logger->error(std::string("Invalid PMT message: "));
             }
 
         } else {

@@ -27,7 +27,7 @@ public:
 
     void on_parameter_query(param_action_sptr action) override
     {
-        gr_log_debug(this->_debug_logger,
+        this->d_debug_logger->debug(
                      "block {}: on_parameter_query param_id: {}",
                      this->id(),
                      action->id());

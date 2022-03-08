@@ -17,7 +17,7 @@ runtime_headers = [
     'gpdict.h',
     'graph.h',
     'graph_utils.h',
-    'logging.h',
+    'logger.h',
     'neighbor_interface.h',
     'node.h',
     'nodeid_generator.h',

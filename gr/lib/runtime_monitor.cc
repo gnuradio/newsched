@@ -1,4 +1,4 @@
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/runtime_monitor.h>
 #include <gnuradio/scheduler.h>
 #include <nlohmann/json.hpp>
@@ -10,11 +10,10 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
     : d_schedulers(sched_ptrs), d_runtime_proxies(proxy_ptrs)
 {
     empty_queue();
-    _logger = logging::get_logger("runtime_monitor " + fgname, "default");
-    _debug_logger = logging::get_logger("runtime_monitor_dbg " + fgname, "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "runtime_monitor");
     // Start a monitor thread to keep track of when the schedulers signal info back to
     // the main thread
-    GR_LOG_DEBUG(_debug_logger, "Start Runtime Monitor Thread");
+    d_debug_logger->debug("Start Runtime Monitor Thread");
     std::thread monitor([this]() {
         while (!_monitor_thread_stopped) {
             // try to pop messages off the queue
@@ -22,7 +21,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
             if (pop_message(msg)) // this blocks
             {
                 if (msg->type() == rt_monitor_message_t::KILL) {
-                    GR_LOG_DEBUG(_debug_logger, "KILL");
+                    d_debug_logger->debug("KILL");
                     _monitor_thread_stopped = true;
                     for (auto& s : d_runtime_proxies) {
                         s->push_message(
@@ -31,7 +30,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                     break;
                 }
                 else if (msg->type() == rt_monitor_message_t::START) {
-                    GR_LOG_DEBUG(_debug_logger, "START");
+                    d_debug_logger->debug("START");
                     for (auto s : d_schedulers) {
                         s->start();
                     }
@@ -43,27 +42,22 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                     }
                 }
                 else if (msg->type() == rt_monitor_message_t::DONE) {
-                    GR_LOG_DEBUG(_debug_logger, "DONE");
+                    d_debug_logger->debug("DONE");
                     // One scheduler signaled it is done
                     // Notify the other schedulers that they need to flush
                     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // DEBUG
                     for (auto& s : d_schedulers) {
-                        GR_LOG_DEBUG(_debug_logger, "a");
                         s->push_message(std::make_shared<scheduler_action>(
                             scheduler_action_t::DONE, 0));
                     }
                     for (auto& s : d_runtime_proxies) {
-                        GR_LOG_DEBUG(_debug_logger, "b");
                         s->push_message(
                             rt_monitor_message::make(rt_monitor_message_t::DONE));
                     }
-                    GR_LOG_DEBUG(_debug_logger, "c");
                     break;
                 }
             }
         }
-
-        GR_LOG_DEBUG(_debug_logger, "Going into second loop");
 
         std::map<int, bool> sched_done;
         for (auto s : d_schedulers) {
@@ -79,7 +73,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
             if (pop_message(msg)) // this blocks
             {
                 if (msg->type() == rt_monitor_message_t::KILL) {
-                    GR_LOG_DEBUG(_debug_logger, "KILL2");
+                    d_debug_logger->debug("KILL2");
                     _monitor_thread_stopped = true;
                     for (auto& s : d_runtime_proxies) {
                         if (s->upstream()) {
@@ -91,7 +85,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                 }
                 else if (msg->type() == rt_monitor_message_t::FLUSHED) {
                     sched_done[msg->schedid()] = true;
-                    GR_LOG_DEBUG(_debug_logger, "FLUSHED from {}", msg->schedid());
+                    d_debug_logger->debug("FLUSHED from {}", msg->schedid());
 
                     bool all_done = true;
                     for (auto s : d_schedulers) {
@@ -119,13 +113,13 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                             }
                         }
                         for (auto s : d_schedulers) {
-                            GR_LOG_DEBUG(_debug_logger, "Telling Schedulers to Exit()");
+                            d_debug_logger->debug("Telling Schedulers to Exit()");
                             s->push_message(std::make_shared<scheduler_action>(
                                 scheduler_action_t::EXIT, 0));
                         }
                         for (auto s : d_runtime_proxies) {
                             if (s->upstream()) {
-                                GR_LOG_DEBUG(_debug_logger,
+                                d_debug_logger->debug(
                                              "Telling Downstream Proxies to Exit()");
                                 s->push_message(
                                     rt_monitor_message::make(rt_monitor_message_t::KILL));
@@ -139,7 +133,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
             }
         }
 
-        GR_LOG_DEBUG(_debug_logger, "Out of Monitor Thread");
+        d_debug_logger->debug("Out of Monitor Thread");
     });
     monitor.detach();
 } // TODO: bound the queue size

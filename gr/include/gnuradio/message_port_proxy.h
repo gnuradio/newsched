@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/port_interface.h>
 #include <gnuradio/scheduler_message.h>
 #include <zmq.hpp>
@@ -46,7 +46,7 @@ private:
     bool _connected = false;
     int _id;
 
-    logger_sptr _logger;
+    logger_ptr d_logger, debug_logger;
     bool _rcv_done = false;
 };
 
@@ -61,9 +61,7 @@ public:
     message_port_proxy_downstream(int port)
         : _context(1), _socket(_context, zmq::socket_type::pull), _port(port)
     {
-        _logger = logging::get_logger("message_proxy_downstream", "default");
-        // _debug_logger = logging::get_logger("message_proxy_downstream"+ "_dbg",
-        // "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, "message_proxy_downstream");
         _socket.set(zmq::sockopt::sndhwm, 1);
         _socket.set(zmq::sockopt::rcvhwm, 1);
 
@@ -89,12 +87,12 @@ public:
     void start_rx()
     {
         std::thread t([this]() {
-            _logger->info("Client is connected, starting recv loop");
+            d_logger->info("Client is connected, starting recv loop");
             while (!this->_rcv_done) {
-                _logger->info("top");
+                d_logger->info("top");
                 try {
                     _rcv_msg.rebuild();
-                    _logger->info("Going into recv");
+                    d_logger->info("Going into recv");
                     if (auto res = _socket.recv(_rcv_msg)) //, zmq::recv_flags::dontwait))
                     {
                         auto str = _rcv_msg.to_string();
@@ -107,7 +105,7 @@ public:
                         std::this_thread::sleep_for(std::chrono::milliseconds(250));
                     }
                 } catch (zmq::error_t const& err) {
-                    _logger->info("Caught error");
+                    d_logger->info("Caught error");
                     this->_rcv_done = true;
                 }
             }
@@ -131,7 +129,7 @@ private:
     bool _connected = false;
     int _id;
 
-    logger_sptr _logger;
+    logger_ptr d_logger, d_debug_logger;
     bool _rcv_done = false;
 };
 

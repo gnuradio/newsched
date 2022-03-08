@@ -12,8 +12,7 @@ thread_wrapper::thread_wrapper(int id,
                                runtime_monitor_sptr rtmon)
     : _id(id), d_block_group(bgp), d_blocks(bgp.blocks())
 {
-    _logger = logging::get_logger(bgp.name(), "default");
-    _debug_logger = logging::get_logger(bgp.name() + "_dbg", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, bgp.name());
 
     for (auto b : d_blocks) {
         d_block_id_to_block_map[b->id()] = b;
@@ -68,8 +67,7 @@ bool thread_wrapper::handle_work_notification()
     // If any of the blocks are done, notify the flowgraph monitor
     for (auto elem : s) {
         if (elem.second == executor_iteration_status::DONE) {
-            GR_LOG_DEBUG(
-                _debug_logger, "Signalling DONE to RTMON from block {}", elem.first);
+            d_debug_logger->debug("Signalling DONE to RTMON from block {}", elem.first);
             d_rtmon->push_message(
                 rt_monitor_message::make(rt_monitor_message_t::DONE, id(), elem.first));
             break; // only notify the fgmon once
@@ -89,7 +87,7 @@ bool thread_wrapper::handle_work_notification()
         }
 
         if (elem.second == executor_iteration_status::MSG_ONLY) {
-            //     gr_log_debug(_debug_logger,
+            //     gr_log_debug(d_debug_logger,
             //                  "size_approx {}",
             //                  msgq.size_approx());
             // if (msgq.size_approx() != 0)
@@ -109,7 +107,7 @@ bool thread_wrapper::handle_work_notification()
     if (d_flushing) {
         if (all_blkd) {
             if (++d_flush_cnt >= 8) {
-                gr_log_debug(_debug_logger,
+                d_debug_logger->debug(
                              "All blocks in thread {} blocked, pushing flushed",
                              id());
                 d_rtmon->push_message(
@@ -124,7 +122,7 @@ bool thread_wrapper::handle_work_notification()
         }
         else {
             d_flush_cnt = 0;
-            gr_log_debug(_debug_logger, "Not all blocks reporting BLKD");
+            d_debug_logger->debug("Not all blocks reporting BLKD");
         }
     }
 
@@ -134,7 +132,7 @@ bool thread_wrapper::handle_work_notification()
     //     // after some period of time, drop a message in the queue to try again on this
     //     // thread
     //     this->kick_pending = true;
-    //     gr_log_debug(_debug_logger, "Kicking myself");
+    //     gr_log_debug(d_debug_logger, "Kicking myself");
     //     std::thread th([this] {
     //         std::this_thread::sleep_for(
     //             std::chrono::milliseconds(100)); // make configurable
@@ -147,7 +145,7 @@ bool thread_wrapper::handle_work_notification()
     //     th.detach();
     // }
 
-    gr_log_debug(_debug_logger, "notify_self = {}", notify_self_);
+    d_debug_logger->debug("notify_self = {}", notify_self_);
     return notify_self_;
 }
 
@@ -155,8 +153,7 @@ void thread_wrapper::handle_parameter_query(std::shared_ptr<param_query_action> 
 {
     auto b = d_block_id_to_block_map[item->blkid()];
 
-    gr_log_debug(
-        _debug_logger, "handle parameter query {} - {}", item->blkid(), b->alias());
+    d_debug_logger->debug("handle parameter query {} - {}", item->blkid(), b->alias());
 
     b->on_parameter_query(item->param_action());
 
@@ -168,8 +165,7 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
 {
     auto b = d_block_id_to_block_map[item->blkid()];
 
-    gr_log_debug(
-        _debug_logger, "handle parameter change {} - {}", item->blkid(), b->alias());
+    d_debug_logger->debug("handle parameter change {} - {}", item->blkid(), b->alias());
 
     b->on_parameter_change(item->param_action());
 
@@ -180,7 +176,7 @@ void thread_wrapper::handle_parameter_change(std::shared_ptr<param_change_action
 
 void thread_wrapper::thread_body(thread_wrapper* top)
 {
-    GR_LOG_INFO(top->_debug_logger, "starting thread");
+    GR_LOG_INFO(top->d_debug_logger, "starting thread");
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
@@ -219,11 +215,11 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         bool do_some_work = false;
         while (valid && !top->d_thread_stopped) {
             if (blocking_queue) {
-                gr_log_debug(top->_debug_logger, "Going into blocking queue");
+                top->d_debug_logger->debug("Going into blocking queue");
                 valid = top->pop_message(msg);
             }
             else {
-                gr_log_debug(top->_debug_logger, "Going into nonblocking queue");
+                top->d_debug_logger->debug("Going into nonblocking queue");
 
                 valid = top->pop_message_nonblocking(msg);
             }
@@ -247,14 +243,14 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                         // -- hang in this state until all the blocks in this thread
                         // report
                         //    either BLKD_IN or BLKD_OUT
-                        gr_log_debug(top->_debug_logger,
+                        top->d_debug_logger->debug(
                                      "rtmon signaled DONE, start flushing");
                         top->start_flushing();
                         do_some_work = true;
 
                         break;
                     case scheduler_action_t::EXIT:
-                        gr_log_debug(top->_debug_logger,
+                        top->d_debug_logger->debug(
                                      "rtmon signaled EXIT, exiting thread");
                         // rtmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
@@ -262,20 +258,18 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                         top->d_thread_stopped = true;
                         break;
                     case scheduler_action_t::NOTIFY_OUTPUT:
-                        gr_log_debug(top->_debug_logger,
+                        top->d_debug_logger->debug(
                                      "got NOTIFY_OUTPUT from {}",
                                      msg->blkid());
                         do_some_work = true;
                         break;
                     case scheduler_action_t::NOTIFY_INPUT:
-                        gr_log_debug(
-                            top->_debug_logger, "got NOTIFY_INPUT from {}", msg->blkid());
+                        top->d_debug_logger->debug("got NOTIFY_INPUT from {}", msg->blkid());
 
                         do_some_work = true;
                         break;
                     case scheduler_action_t::NOTIFY_ALL: {
-                        gr_log_debug(
-                            top->_debug_logger, "got NOTIFY_ALL from {}", msg->blkid());
+                        top->d_debug_logger->debug("got NOTIFY_ALL from {}", msg->blkid());
                         do_some_work = true;
                         break;
                     }
@@ -317,7 +311,7 @@ void thread_wrapper::thread_body(thread_wrapper* top)
         }
     }
 
-    gr_log_debug(top->_debug_logger, "Exiting Thread");
+    top->d_debug_logger->debug("Exiting Thread");
 }
 
 } // namespace schedulers

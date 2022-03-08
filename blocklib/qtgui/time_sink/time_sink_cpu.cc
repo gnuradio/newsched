@@ -188,7 +188,7 @@ void time_sink_cpu<T>::_gui_update_trigger()
         // We restrict the delay to be within the window of time being
         // plotted.
         if ((delay < 0) || (delay >= d_size)) {
-            GR_LOG_WARN(this->_logger,
+            this->d_logger->warn(
                         "Trigger delay ({}) outside of display range (0:{}).",
                         (delay / d_samp_rate),
                         ((d_size - 1) / d_samp_rate));
@@ -603,7 +603,7 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
 
         // If delay was set beyond the new boundary, pull it back.
         if (d_trigger_delay >= d_size) {
-            GR_LOG_WARN(this->_logger,
+            this->d_logger->warn(
                         "Trigger delay ({}) outside of display range "
                         "(0:{}). Moving to 50%% point.",
                         (d_trigger_delay / d_samp_rate),

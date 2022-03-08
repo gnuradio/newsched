@@ -61,8 +61,8 @@ public:
 class buffer_cuda_sm_reader : public buffer_sm_reader
 {
 private:
-    // logger_sptr _logger;
-    // logger_sptr _debug_logger;
+    // logger_ptr d_logger;
+    // logger_ptr d_debug_logger;
 
     std::shared_ptr<buffer_cuda_sm> _buffer_cuda_sm;
 
@@ -74,8 +74,7 @@ public:
         : buffer_sm_reader(buffer, itemsize, buf_props, read_index)
     {
         _buffer_cuda_sm = buffer;
-        // _logger = logging::get_logger("buffer_cuda_sm_reader", "default");
-        // _debug_logger = logging::get_logger("buffer_cuda_sm_reader_dbg", "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_cuda_sm");
     }
 
     // virtual void post_read(int num_items);
@@ -88,7 +87,7 @@ public:
 
         auto items_avail = items_available();
 
-        // GR_LOG_DEBUG(_debug_logger,
+        // GR_LOG_DEBUG(d_debug_logger,
         //              "input_blocked_callback: items_avail {}, _read_index {}, "
         //              "_write_index {}, items_required {}",
         //              items_avail,
@@ -96,7 +95,7 @@ public:
         //              _buffer->write_index(),
         //              items_required);
 
-        // GR_LOG_DEBUG(_debug_logger,
+        // GR_LOG_DEBUG(d_debug_logger,
         //              "input_blocked_callback: total_written {}, total_read {}",
         //              _buffer->total_written(),
         //              total_read());
@@ -105,7 +104,7 @@ public:
         // Maybe adjust read pointers from min read index?
         // This would mean that *all* readers must be > (passed) the write index
         if (items_avail < items_required && _buffer->write_index() < read_index()) {
-            // GR_LOG_DEBUG(_debug_logger, "Calling adjust_buffer_data ");
+            // GR_LOG_DEBUG(d_debug_logger, "Calling adjust_buffer_data ");
 
             switch (_buffer_cuda_sm->type()) {
             case buffer_cuda_sm_type::H2D:

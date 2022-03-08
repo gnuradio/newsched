@@ -26,7 +26,7 @@ load_cuda::load_cuda(block_args args) : INHERITED_CONSTRUCTORS, d_load(args.iter
 
 {
     load_cu::get_block_and_grid(&d_min_grid_size, &d_block_size);
-    GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
+    GR_LOG_INFO(d_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 

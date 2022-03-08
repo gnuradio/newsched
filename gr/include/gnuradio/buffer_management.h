@@ -2,7 +2,7 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/flat_graph.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/neighbor_interface.h>
 
 namespace gr {
@@ -15,16 +15,15 @@ private:
     const size_t s_min_buf_items = 1;
 
     std::string _name = "buffer_manager";
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
 public:
     using sptr = std::shared_ptr<buffer_manager>;
     buffer_manager(const unsigned int default_buffer_size_in_bytes)
         : s_fixed_buf_size(default_buffer_size_in_bytes)
     {
-        _logger = logging::get_logger(_name, "default");
-        _debug_logger = logging::get_logger(_name + "_dbg", "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, _name); 
     }
     ~buffer_manager() {}
 

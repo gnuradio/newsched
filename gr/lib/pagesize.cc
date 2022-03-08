@@ -13,7 +13,7 @@
 #endif
 
 #include "pagesize.h"
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <unistd.h>
 #include <cstdio>
 
@@ -26,10 +26,8 @@ extern "C" size_t getpagesize(void);
 int pagesize()
 {
     static int s_pagesize = -1;
-    auto logger = logging::get_logger("pagesize", "default");
-    auto debug_logger = logging::get_logger("pagesize_dbg", "debug");
-    // gr::logger_ptr logger, debug_logger;
-    // gr::configure_default_loggers(logger, debug_logger, "pagesize");
+    gr::logger_ptr logger, debug_logger;
+    gr::configure_default_loggers(logger, debug_logger, "pagesize");
 
     if (s_pagesize == -1) {
 #if defined(HAVE_GETPAGESIZE)
@@ -37,11 +35,11 @@ int pagesize()
 #elif defined(HAVE_SYSCONF)
         s_pagesize = sysconf(_SC_PAGESIZE);
         if (s_pagesize == -1) {
-            GR_LOG_ERROR(logger, "_SC_PAGESIZE: {}", strerror(errno));
+            logger->error("_SC_PAGESIZE: {}", strerror(errno));
             s_pagesize = 4096;
         }
 #else
-        GR_LOG_ERROR(logger, "no info; setting pagesize = 4096");
+        logger->error("no info; setting pagesize = 4096");
         s_pagesize = 4096;
 #endif
     }

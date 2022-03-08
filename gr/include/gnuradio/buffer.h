@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gnuradio/api.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/neighbor_interface.h>
 #include <gnuradio/tag.h>
 #include <functional>
@@ -140,8 +140,8 @@ protected:
 
     std::vector<buffer_reader*> _readers;
 
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    gr::logger_ptr d_logger;
+    gr::logger_ptr d_debug_logger;
 
 public:
     buffer(size_t num_items,

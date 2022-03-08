@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <zmq.hpp>
 #include <thread>
 
@@ -32,7 +32,7 @@ private:
     bool _connected = false;
     int _id;
 
-    logger_sptr _logger;
+    logger_ptr d_logger, d_debug_logger;
 
     bool _rcv_done = false;
 

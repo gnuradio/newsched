@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <gnuradio/api.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/nodeid_generator.h>
 #include <gnuradio/port.h>
 #include <gnuradio/rpc_client_interface.h>
@@ -36,8 +36,8 @@ protected:
     std::vector<port_sptr> d_input_ports;
     std::vector<port_sptr> d_output_ports;
 
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    gr::logger_ptr d_logger;
+    gr::logger_ptr d_debug_logger;
 
     std::string d_rpc_name = "";
     rpc_client_interface_sptr d_rpc_client = nullptr;
@@ -65,7 +65,9 @@ protected:
 
 public:
     node() : d_name("") {}
-    node(const std::string& name) : d_name(name), d_alias(name)
+    node(const std::string& name) : d_name(name), d_alias(name),
+      d_logger(std::make_shared<gr::logger>(name)),
+      d_debug_logger(std::make_shared<logger_ptr::element_type>(name + " (debug)"))
     {
         d_id = nodeid_generator::get_id();
     }
@@ -127,8 +129,8 @@ public:
     std::string name() const { return d_name; };
     std::string alias() const { return d_alias; }
 
-    logger_sptr logger() const { return _logger; }
-    logger_sptr debug_logger() const { return _debug_logger; }
+    logger_ptr logger() const { return d_logger; }
+    logger_ptr debug_logger() const { return d_debug_logger; }
 
     uint32_t id() { return d_id; }
     void set_alias(std::string alias)
@@ -136,8 +138,7 @@ public:
         d_alias = alias;
 
         // Instantiate the loggers when the alias is set
-        _logger = logging::get_logger(alias, "default");
-        _debug_logger = logging::get_logger(alias + "_dbg", "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, alias);
     }
 
     void set_id(uint32_t id) { d_id = id; }

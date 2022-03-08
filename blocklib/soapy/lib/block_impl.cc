@@ -608,7 +608,7 @@ void block_impl::set_gain(size_t channel, double gain)
     range_t rGain = d_device->getGainRange(d_direction, channel);
 
     if (!value_in_range(rGain, gain)) {
-        GR_LOG_ERROR(_debug_logger,
+        d_debug_logger->error(
                      "Gain out of range: {} <= gain <= {}",
                      rGain.minimum(),
                      rGain.maximum());
@@ -632,7 +632,7 @@ void block_impl::set_gain(size_t channel, const std::string& name, double gain)
     /* Validate gain value */
     range_t rGain = d_device->getGainRange(d_direction, channel, name);
     if (!value_in_range(rGain, gain)) {
-        GR_LOG_ERROR(_debug_logger,
+        d_debug_logger->error(
                      "Gain {} out of range: {} <= gain <= {}",
                      name,
                      rGain.minimum(),
@@ -1263,7 +1263,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_frequency(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: freq must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: freq must be float/int");
 //         return;
 //     }
 //     set_frequency(channel, pmtf::scalar<double>(val));
@@ -1275,13 +1275,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     // overall gain or a dict with a gain element and element-specific
 //     // value.
 //     if (!(val->is_number() && !val->is_complex()) && !val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: gain must be float/int or a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: gain must be float/int or a dict");
 //         return;
 //     }
 
 //     if (val->is_dict()) {
 //         if (!pmt::dict_has_key(val, CMD_GAIN_KEY)) {
-//             GR_LOG_ERROR(_debug_logger, "soapy: gain dict must contain key \"gain\"");
+//             GR_LOG_ERROR(d_debug_logger, "soapy: gain dict must contain key \"gain\"");
 //             return;
 //         }
 
@@ -1300,7 +1300,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_samp_rate(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: rate must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: rate must be float/int");
 //         return;
 //     }
 //     set_sample_rate(channel, pmtf::scalar<double>(val));
@@ -1309,7 +1309,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_bw(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: bw must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: bw must be float/int");
 //         return;
 //     }
 //     set_bandwidth(channel, pmtf::scalar<double>(val));
@@ -1318,7 +1318,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_antenna(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_symbol()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: ant must be string");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: ant must be string");
 //         return;
 //     }
 //     set_antenna(channel, pmt::symbol_to_string(val));
@@ -1327,7 +1327,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_gain_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: gain mode must be bool");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: gain mode must be bool");
 //         return;
 //     }
 //     set_gain_mode(channel, pmt::to_bool(val));
@@ -1336,7 +1336,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_frequency_correction(pmtf::pmt val, size_t channel)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: frequency correction must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: frequency correction must be float/int");
 //         return;
 //     }
 //     set_frequency_correction(channel, pmtf::scalar<double>(val));
@@ -1345,7 +1345,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_dc_offset_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: DC offset mode must be bool");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: DC offset mode must be bool");
 //         return;
 //     }
 //     set_dc_offset_mode(channel, pmt::to_bool(val));
@@ -1354,7 +1354,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_dc_offset(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_number()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: DC offset must be numeric");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: DC offset must be numeric");
 //         return;
 //     }
 //     set_dc_offset(channel, pmt::to_complex(val));
@@ -1363,7 +1363,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_iq_balance(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_number()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance must be numeric");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: IQ balance must be numeric");
 //         return;
 //     }
 //     set_iq_balance(channel, pmt::to_complex(val));
@@ -1372,7 +1372,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_iq_balance_mode(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_bool()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: IQ balance mode must be bool");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: IQ balance mode must be bool");
 //         return;
 //     }
 //     set_iq_balance_mode(channel, pmt::to_bool(val));
@@ -1381,7 +1381,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_master_clock_rate(pmtf::pmt val, size_t)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: master clock rate must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: master clock rate must be float/int");
 //         return;
 //     }
 //     set_master_clock_rate(pmtf::scalar<double>(val));
@@ -1390,7 +1390,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_reference_clock_rate(pmtf::pmt val, size_t)
 // {
 //     if (!(val->is_number() && !val->is_complex())) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: reference clock rate must be float/int");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: reference clock rate must be float/int");
 //         return;
 //     }
 //     set_reference_clock_rate(pmtf::scalar<double>(val));
@@ -1399,7 +1399,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_clock_source(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_symbol()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: clock source must be string");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: clock source must be string");
 //         return;
 //     }
 //     set_clock_source(pmt::symbol_to_string(val));
@@ -1408,7 +1408,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_time_source(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_symbol()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: time source must be string");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: time source must be string");
 //         return;
 //     }
 //     set_time_source(pmt::symbol_to_string(val));
@@ -1417,12 +1417,12 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_hardware_time(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: hardware time must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: hardware time must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_TIME_KEY)) {
-//         GR_LOG_ERROR(_debug_logger,
+//         GR_LOG_ERROR(d_debug_logger,
 //                      "soapy: hardware time dict must contain key \"time\"");
 //         return;
 //     }
@@ -1438,7 +1438,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_register(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: register write param must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: register write param must be a dict");
 //         return;
 //     }
 
@@ -1446,7 +1446,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     ||
 //         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
 //         GR_LOG_ERROR(
-//             _debug_logger,
+//             d_debug_logger,
 //             "soapy: register write dict must contain keys \"name\", \"addr\",
 //             \"value\"");
 //         return;
@@ -1463,14 +1463,14 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_registers(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: multi-register write param must be a
+//         GR_LOG_ERROR(d_debug_logger, "soapy: multi-register write param must be a
 //         dict"); return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_ADDR_KEY)
 //     ||
 //         !pmt::dict_has_key(val, CMD_VALUE_KEY)) {
-//         GR_LOG_ERROR(_debug_logger,
+//         GR_LOG_ERROR(d_debug_logger,
 //                      "soapy: multi-register write dict must contain keys \"name\", "
 //                      "\"addr\", \"value\"");
 //         return;
@@ -1489,13 +1489,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_setting(pmtf::pmt val, size_t channel)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: GPIO must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_KEY_KEY) || !pmt::dict_has_key(val, CMD_VALUE_KEY))
 //     {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"key\",
+//         GR_LOG_ERROR(d_debug_logger, "soapy: GPIO must contain keys \"key\",
 //         \"value\""); return;
 //     }
 
@@ -1517,13 +1517,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_gpio(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: setting must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: setting must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val,
 //     CMD_VALUE_KEY)) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO must contain keys \"bank\",
+//         GR_LOG_ERROR(d_debug_logger, "soapy: GPIO must contain keys \"bank\",
 //         \"value\""); return;
 //     }
 
@@ -1545,13 +1545,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     static const pmtf::pmt CMD_DIR_KEY = pmtf::string("dir");
 
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: GPIO dir must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: GPIO dir must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_BANK_KEY) || !pmt::dict_has_key(val, CMD_DIR_KEY))
 //     {
-//         GR_LOG_ERROR(_debug_logger,
+//         GR_LOG_ERROR(d_debug_logger,
 //                      "soapy: GPIO dir must contain keys \"bank\", \"dir\"");
 //         return;
 //     }
@@ -1572,13 +1572,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_i2c(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: I2C must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: I2C must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY))
 //     {
-//         GR_LOG_ERROR(_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
 //         return;
 //     }
 
@@ -1592,13 +1592,13 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 // void block_impl::cmd_handler_uart(pmtf::pmt val, size_t)
 // {
 //     if (!val->is_dict()) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: UART must be a dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: UART must be a dict");
 //         return;
 //     }
 
 //     if (!pmt::dict_has_key(val, CMD_NAME_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY))
 //     {
-//         GR_LOG_ERROR(_debug_logger, "soapy: UART must contain keys \"name\",
+//         GR_LOG_ERROR(d_debug_logger, "soapy: UART must contain keys \"name\",
 //         \"data\""); return;
 //     }
 
@@ -1615,7 +1615,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     const long CHANNEL_ALL = 0x12345678; // arbitrary
 
 //     if (!pmt::is_dict(msg)) {
-//         GR_LOG_ERROR(_debug_logger, "soapy: commands must be pmt::dict");
+//         GR_LOG_ERROR(d_debug_logger, "soapy: commands must be pmt::dict");
 //         return;
 //     }
 
@@ -1624,7 +1624,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //     size_t channel = pmt::to_long(pmt::dict_ref(msg, CMD_CHAN_KEY, channel_all_pmt));
 
 //     if (channel != CHANNEL_ALL && channel >= d_nchan) {
-//         GR_LOG_ERROR(_debug_logger,
+//         GR_LOG_ERROR(d_debug_logger,
 //                      "soapy: ignoring command for invalid channel {}",
 //                          channel);
 //         return;
@@ -1641,7 +1641,7 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 //         // Find command handler
 //         auto it = d_cmd_handlers.find(key);
 //         if (it == d_cmd_handlers.end()) {
-//             GR_LOG_ERROR(_debug_logger,
+//             GR_LOG_ERROR(d_debug_logger,
 //                          "soapy: ignoring unknown command key '{}'",
 //                              pmt::symbol_to_string(key));
 //             continue;

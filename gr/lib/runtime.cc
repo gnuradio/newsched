@@ -71,15 +71,14 @@ void runtime::add_proxy(runtime_proxy_sptr proxy)
 void runtime::initialize(graph_sptr fg)
 {
     flowgraph::check_connections(fg);
-    auto _logger =
-        logging::get_logger(fmt::format("runtime_init_{}", fg->name()), "default");
-    GR_LOG_INFO(_logger, "initialize {}", d_schedulers.size());
+    gr::logger_ptr d_logger, d_debug_logger;
+    gr::configure_default_loggers(d_logger, d_debug_logger, fmt::format("runtime_init_{}", fg->name()));
+    d_logger->info("initialize {}", d_schedulers.size());
 
     if (d_schedulers.size() == 1) {
         d_rtmon = std::make_shared<runtime_monitor>(
             d_schedulers, d_runtime_proxies, fg->alias());
         for (auto& p : d_runtime_proxies) {
-            GR_LOG_DEBUG(_logger, ".");
             p->set_runtime_monitor(d_rtmon);
         }
         d_schedulers[0]->initialize(flat_graph::make_flat(fg), d_rtmon);

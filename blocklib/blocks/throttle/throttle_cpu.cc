@@ -64,8 +64,7 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
 
         d_sleeping = true;
         std::thread t([this, expected_time, now]() {
-            GR_LOG_DEBUG(
-                this->debug_logger(),
+                d_debug_logger->debug(
                 "Throttle sleeping {}",
                 std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
                     .count());
@@ -90,7 +89,7 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
     }
     work_output[0]->n_produced = n;
 
-    GR_LOG_DEBUG(this->debug_logger(), "Throttle produced {}", n);
+    d_debug_logger->debug( "Throttle produced {}", n);
     return work_return_code_t::WORK_OK;
 }
 
