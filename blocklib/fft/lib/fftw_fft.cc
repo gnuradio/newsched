@@ -38,14 +38,14 @@ static int my_fftw_read_char(void* f) { return fgetc((FILE*)f); }
 #include <stdexcept>
 
 #include <gnuradio/prefs.h>
+#include <gnuradio/file_lock.h>
 
-#include <boost/interprocess/sync/file_lock.hpp>
 namespace fs = std::filesystem;
 
 namespace gr {
 namespace fft {
 static std::mutex wisdom_thread_mutex;
-boost::interprocess::file_lock wisdom_lock;
+gr::file_lock wisdom_lock;
 static bool wisdom_lock_init_done = false; // Modify while holding 'wisdom_thread_mutex'
 
 gr_complex* malloc_complex(int size)
@@ -94,7 +94,7 @@ static void wisdom_lock_init()
                                  wisdom_lock_file);
     }
     close(fd);
-    wisdom_lock = boost::interprocess::file_lock(wisdom_lock_file.c_str());
+    wisdom_lock = gr::file_lock(wisdom_lock_file);
     wisdom_lock_init_done = true;
 }
 
