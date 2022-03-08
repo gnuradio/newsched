@@ -8,7 +8,7 @@
  *
  */
 
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 
 #ifdef HAVE_SCHED_H
 #include <sched.h>
@@ -103,10 +103,10 @@ rt_status_t enable_realtime_scheduling(rt_sched_param p)
         if (result == EPERM) // N.B., return value, not errno
             return RT_NO_PRIVS;
         else {
-            auto logger = logging::get_logger("realtime", "default");
-            GR_LOG_ERROR(logger,
-                         "pthread_setschedparam: failed to set real time priority: {}",
-                         strerror(result));
+            gr::logger_ptr logger, debug_logger;
+            gr::configure_default_loggers(logger, debug_logger, "realtime");
+            logger->error("pthread_setschedparam: failed to set real time priority: {}",
+                          strerror(result));
             return RT_OTHER_ERROR;
         }
     }
@@ -140,8 +140,9 @@ rt_status_t enable_realtime_scheduling(rt_sched_param p)
         if (errno == EPERM)
             return RT_NO_PRIVS;
         else {
-            auto logger = logging::get_logger("realtime", "default");
-            GR_LOG_ERROR(logger,
+            gr::logger_ptr logger, debug_logger;
+            gr::configure_default_loggers(logger, debug_logger, "realtime");
+            logger->error(
                          "sched_setscheduler: failed to set real time priority: {}",
                          strerror(result));
             return RT_OTHER_ERROR;

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <gnuradio/buffer.h>
-// #include <gnuradio/logging.h>
+// #include <gnuradio/logger.h>
 
 namespace gr {
 
@@ -20,8 +20,8 @@ class buffer_sm : public buffer
 private:
     std::vector<uint8_t> _buffer;
 
-    // logger_sptr _logger;
-    // logger_sptr _debug_logger;
+    // logger_ptr d_logger;
+    // logger_ptr d_debug_logger;
 
 public:
     using sptr = std::shared_ptr<buffer_sm>;
@@ -56,8 +56,8 @@ public:
 class buffer_sm_reader : public buffer_reader
 {
 private:
-    // logger_sptr _logger;
-    // logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
 protected:
     std::shared_ptr<buffer_sm> _buffer_sm;

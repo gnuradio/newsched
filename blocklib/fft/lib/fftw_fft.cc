@@ -120,9 +120,9 @@ static void import_wisdom()
         int r = fftwf_import_wisdom_from_file(fp);
         fclose(fp);
         if (!r) {
-            gr::logger_sptr logger, debug_logger;
-            logger = logging::get_logger("fft::import_wisdom", "default");
-            GR_LOG_ERROR(logger, "can't import wisdom from {}", filename.c_str());
+            gr::logger_ptr logger, debug_logger;
+            gr::configure_default_loggers(logger, debug_logger, "fft::import_wisdom");
+            logger->error("can't import wisdom from {}", filename.c_str());
         }
     }
 }
@@ -150,9 +150,9 @@ static void export_wisdom()
         fclose(fp);
     }
     else {
-        gr::logger_sptr logger, debug_logger;
-        logger = logging::get_logger("fft::export_wisdom", "default");
-        GR_LOG_ERROR(logger, "{}}: {}}", filename.c_str(), strerror(errno));
+        gr::logger_ptr logger, debug_logger;
+        gr::configure_default_loggers(logger, debug_logger, "fft::import_wisdom");
+        logger->error("{}}: {}}", filename.c_str(), strerror(errno));
     }
 }
 
@@ -163,8 +163,7 @@ template <class T, bool forward>
 fftw_fft<T, forward>::fftw_fft(int fft_size, int nthreads)
     : d_nthreads(nthreads), d_inbuf(fft_size), d_outbuf(fft_size)
 {
-    d_logger = logging::get_logger("fft_complex", "default");
-    d_debug_logger = logging::get_logger("fft_complex(dbg)", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "fft_complex");
     // Hold global mutex during plan construction and destruction.
     std::scoped_lock lock(planner::mutex());
 
@@ -181,7 +180,7 @@ fftw_fft<T, forward>::fftw_fft(int fft_size, int nthreads)
 
     initialize_plan(fft_size);
     if (d_plan == NULL) {
-        GR_LOG_ERROR(d_logger, "creating plan failed");
+        d_logger->error("creating plan failed");
         throw std::runtime_error("Creating fftw plan failed");
     }
     export_wisdom(); // store new wisdom to disk

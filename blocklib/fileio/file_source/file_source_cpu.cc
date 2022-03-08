@@ -83,19 +83,19 @@ bool file_source_cpu::seek(int64_t seek_point, int whence)
             seek_point = d_length_items - seek_point;
             break;
         default:
-            GR_LOG_WARN(_logger, "bad seek mode");
+            d_logger->warn("bad seek mode");
             return 0;
         }
 
         if ((seek_point < (int64_t)d_start_offset_items) ||
             (seek_point > (int64_t)(d_start_offset_items + d_length_items - 1))) {
-            GR_LOG_WARN(_logger, "bad seek point");
+            d_logger->warn("bad seek point");
             return 0;
         }
         return GR_FSEEK((FILE*)d_fp, seek_point * d_itemsize, SEEK_SET) == 0;
     }
     else {
-        GR_LOG_WARN(_logger, "file not seekable");
+        d_logger->warn("file not seekable");
         return 0;
     }
 }
@@ -115,14 +115,14 @@ void file_source_cpu::open(const std::string& filename,
     }
 
     if ((d_new_fp = fopen(filename.c_str(), "rb")) == NULL) {
-        GR_LOG_ERROR(_logger, "{}:{}", filename, strerror(errno));
+        d_logger->error("{}:{}", filename, strerror(errno));
         throw std::runtime_error("can't open file");
     }
 
     struct GR_STAT st;
 
     if (GR_FSTAT(GR_FILENO(d_new_fp), &st)) {
-        GR_LOG_ERROR(_logger, "{}:{}", filename, strerror(errno));
+        d_logger->error("{}:{}", filename, strerror(errno));
         throw std::runtime_error("can't fstat file");
     }
     if (S_ISREG(st.st_mode)) {
@@ -144,10 +144,10 @@ void file_source_cpu::open(const std::string& filename,
         // Make sure there will be at least one item available
         if ((file_size / d_itemsize) < (start_offset_items + 1)) {
             if (start_offset_items) {
-                GR_LOG_WARN(_logger, "file is too small for start offset");
+                d_logger->warn("file is too small for start offset");
             }
             else {
-                GR_LOG_WARN(_logger, "file is too small");
+                d_logger->warn("file is too small");
             }
             fclose(d_new_fp);
             throw std::runtime_error("file is too small");
@@ -163,7 +163,7 @@ void file_source_cpu::open(const std::string& filename,
     if (length_items == 0) {
         length_items = items_available;
         if (file_size % d_itemsize) {
-            GR_LOG_WARN(_logger, "file size is not a multiple of item size");
+            d_logger->warn("file size is not a multiple of item size");
         }
     }
 
@@ -171,7 +171,7 @@ void file_source_cpu::open(const std::string& filename,
     // exception.
     if (length_items > items_available) {
         length_items = items_available;
-        GR_LOG_WARN(_logger, "file too short, will read fewer than requested items");
+        d_logger->warn("file too short, will read fewer than requested items");
     }
 
     // Rewind to start offset
@@ -190,13 +190,13 @@ void file_source_cpu::open(const std::string& filename,
         if (file_size && file_size != INT64_MAX) {
             if (auto ret = posix_fadvise(
                     fd, start_offset, file_size - start_offset, POSIX_FADV_SEQUENTIAL)) {
-                GR_LOG_WARN(_logger,
+                d_logger->warn(
                             "failed to advise to read sequentially, " +
                                 fadv_errstrings.at(ret));
             }
             if (auto ret = posix_fadvise(
                     fd, start_offset, file_size - start_offset, POSIX_FADV_WILLNEED)) {
-                GR_LOG_WARN(_logger,
+                d_logger->warn(
                             "failed to advise we'll need file contents soon, " +
                                 fadv_errstrings.at(ret));
             }

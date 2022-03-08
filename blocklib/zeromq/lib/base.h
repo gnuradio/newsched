@@ -12,7 +12,7 @@
 #pragma once
 
 #include "zmq_common_impl.h"
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/tag.h>
 
 namespace gr {
@@ -36,7 +36,8 @@ protected:
     bool d_pass_tags;
     const std::string d_key;
 
-    logger_sptr d_logger;
+    logger_ptr d_base_logger;
+    logger_ptr d_base_debug_logger;
 };
 
 class base_sink : public base

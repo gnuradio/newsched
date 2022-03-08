@@ -1,6 +1,6 @@
 #include <gnuradio/buffer_sm.h>
 
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 
 namespace gr {
 
@@ -26,8 +26,8 @@ buffer_sm::buffer_sm(size_t num_items,
 
     set_type("buffer_sm");
 
-    // _logger = logging::get_logger(_type, "default");
-    // _debug_logger = logging::get_logger(_type + "_dbg", "debug");
+
+    gr::configure_default_loggers(d_logger, d_debug_logger, _type);
 }
 
 buffer_sptr buffer_sm::make(size_t num_items,
@@ -74,7 +74,7 @@ bool buffer_sm::output_blocked_callback_logic(bool force, memmove_func_t memmove
             }
         }
 
-        // GR_LOG_DEBUG(_debug_logger,
+        // GR_LOG_DEBUG(d_debug_logger,
         //              "output_blocked_callback, space_avail {}, min_read_idx {}, "
         //              "_write_index {}",
         //              space_avail,
@@ -94,7 +94,7 @@ bool buffer_sm::output_blocked_callback_logic(bool force, memmove_func_t memmove
         }
 
         // GR_LOG_DEBUG(
-        //     _debug_logger, "output_blocked_callback, moving {} bytes", to_move_bytes);
+        //     d_debug_logger, "output_blocked_callback, moving {} bytes", to_move_bytes);
 
         // Shift "to be read" data back to the beginning of the buffer
         std::memmove(_buffer.data(), _buffer.data() + (min_read_idx), to_move_bytes);
@@ -103,7 +103,7 @@ bool buffer_sm::output_blocked_callback_logic(bool force, memmove_func_t memmove
         _write_index -= min_read_idx;
 
         // for (size_t idx = 0; idx < _readers.size(); ++idx) {
-        //     GR_LOG_DEBUG(_debug_logger,
+        //     GR_LOG_DEBUG(d_debug_logger,
         //                  "output_blocked_callback,setting _read_index to {}",
         //                  _readers[idx]->read_index() - min_read_idx);
         //     _readers[idx]->set_read_index(_readers[idx]->read_index() - min_read_idx);
@@ -202,7 +202,7 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
         return false;
     }
 
-    // GR_LOG_DEBUG(_debug_logger,
+    // GR_LOG_DEBUG(d_debug_logger,
     //              "adust_buffer_data: max_bytes_avail {}, gap {}",
     //              max_bytes_avail,
     //              gap);
@@ -220,7 +220,7 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
 
     // Finally adjust all reader pointers
     for (size_t idx = 0; idx < _readers.size(); ++idx) {
-        // GR_LOG_DEBUG(_debug_logger,
+        // GR_LOG_DEBUG(d_debug_logger,
         //              "adjust_buffer_data,setting _read_index to {}",
         //              _readers[idx]->read_index() - min_read_idx);
         _readers[idx]->set_read_index(max_items_avail - _readers[idx]->items_available());
@@ -239,8 +239,7 @@ buffer_sm_reader::buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
                                    size_t read_index)
     : buffer_reader(buffer, buf_props, itemsize, read_index), _buffer_sm(buffer)
 {
-    // _logger = logging::get_logger("buffer_sm_reader", "default");
-    // _debug_logger = logging::get_logger("buffer_sm_reader_dbg", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_sm_reader");
 }
 
 void buffer_sm_reader::post_read(int num_items)
@@ -248,7 +247,7 @@ void buffer_sm_reader::post_read(int num_items)
     std::scoped_lock guard(_rdr_mutex);
 
     // GR_LOG_DEBUG(
-    // _debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
+    // d_debug_logger, "post_read: _read_index {}, num_items {}", _read_index, num_items);
 
     // advance the read pointer
     _read_index += num_items * _itemsize; //_buffer->item_size();
@@ -257,7 +256,7 @@ void buffer_sm_reader::post_read(int num_items)
         _read_index = 0;
     }
     if (_read_index > _buffer->buf_size()) {
-        // GR_LOG_INFO(_logger,
+        // GR_LOG_INFO(d_logger,
         //             "too far: num_items {}, prev_index {}, post_index {}",
         //             num_items,
         //             _read_index - num_items * _buffer->item_size(),
@@ -266,7 +265,7 @@ void buffer_sm_reader::post_read(int num_items)
         // // throw std::runtime_error("buffer_sm_reader: Wrote too far into buffer");
     }
 
-    // GR_LOG_DEBUG(_debug_logger, "post_read: _read_index {}", _read_index);
+    // GR_LOG_DEBUG(d_debug_logger, "post_read: _read_index {}", _read_index);
 }
 
 bool buffer_sm_reader::input_blocked_callback(size_t items_required)
@@ -276,7 +275,7 @@ bool buffer_sm_reader::input_blocked_callback(size_t items_required)
 
     auto items_avail = items_available();
 
-    // GR_LOG_DEBUG(_debug_logger,
+    // GR_LOG_DEBUG(d_debug_logger,
     //              "input_blocked_callback: items_avail {}, _read_index {}, "
     //              "_write_index {}, items_required {}",
     //              items_avail,
@@ -284,7 +283,7 @@ bool buffer_sm_reader::input_blocked_callback(size_t items_required)
     //              _buffer->write_index(),
     //              items_required);
 
-    // GR_LOG_DEBUG(_debug_logger,
+    // GR_LOG_DEBUG(d_debug_logger,
     //              "input_blocked_callback: total_written {}, total_read {}",
     //              _buffer->total_written(),
     //              total_read());
@@ -293,7 +292,7 @@ bool buffer_sm_reader::input_blocked_callback(size_t items_required)
     // Maybe adjust read pointers from min read index?
     // This would mean that *all* readers must be > (passed) the write index
     if (items_avail < items_required && _buffer->write_index() < read_index()) {
-        // GR_LOG_DEBUG(_debug_logger, "Calling adjust_buffer_data ");
+        // GR_LOG_DEBUG(d_debug_logger, "Calling adjust_buffer_data ");
         return _buffer_sm->adjust_buffer_data(std::memcpy, std::memmove);
     }
 
@@ -322,7 +321,7 @@ size_t buffer_sm_reader::bytes_available()
 
     // return ret;
 
-    // GR_LOG_DEBUG(_debug_logger,
+    // GR_LOG_DEBUG(d_debug_logger,
     //              "items_available: write_index {}, read_index {}, ret {}, total_read "
     //              "{}, total_written {}",
     //              w,
@@ -332,7 +331,7 @@ size_t buffer_sm_reader::bytes_available()
     //              _buffer->total_written());
 
     if (_buffer->total_written() - total_read() < ret * _itemsize) {
-        // GR_LOG_DEBUG(_debug_logger,
+        // GR_LOG_DEBUG(d_debug_logger,
         //              "check_math {} {} {} {}",
         //              _buffer->total_written() - total_read(),
         //              ret,

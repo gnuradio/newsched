@@ -30,15 +30,15 @@ protected:
     {
 
         // gr_log_info(
-        //     _logger, "{} got message: {}", this->alias(), pmtf::string(msg).data());
-        // GR_LOG_INFO(_logger, "got msg on block {}", alias());
+        //     d_logger, "{} got message: {}", this->alias(), pmtf::string(msg).data());
+        // GR_LOG_INFO(d_logger, "got msg on block {}", alias());
         // d_msg_cnt++;
 
         size_t msg_cnt = pmtf::get_as<size_t>(*param_message_count);
         *param_message_count = ++msg_cnt;
 
-        gr_log_debug(_debug_logger, "{}", msg_cnt);
-        gr_log_info(_logger, "{}", msg_cnt);
+        d_debug_logger->debug( "{}", msg_cnt);
+        d_logger->info( "{}", msg_cnt);
         if (d_max_messages && msg_cnt >= d_max_messages) {
             input_message_port("system")->post("done");
         }

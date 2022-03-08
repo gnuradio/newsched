@@ -39,8 +39,8 @@ private:
     std::vector<block_sptr> d_blocks;
     std::map<nodeid_t, block_sptr> d_block_id_to_block_map;
 
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
     runtime_monitor_sptr d_rtmon;
 

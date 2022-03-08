@@ -15,7 +15,7 @@
  */
 
 #include <gnuradio/fft/api.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/types.h>
 #include <volk/volk_alloc.hh>
 
@@ -89,8 +89,8 @@ class FFT_API fftw_fft
     volk::vector<typename fft_inbuf<T, forward>::type> d_inbuf;
     volk::vector<typename fft_outbuf<T, forward>::type> d_outbuf;
     void* d_plan;
-    gr::logger_sptr d_logger;
-    gr::logger_sptr d_debug_logger;
+    gr::logger_ptr d_logger;
+    gr::logger_ptr d_debug_logger;
     void initialize_plan(int fft_size);
 
 public:

@@ -79,7 +79,7 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
 
         // Report and yield back to scheduler on other errors.
         default:
-            GR_LOG_WARN(logger(), "Soapy source error: {}", SoapySDR::errToStr(result));
+            logger()->warn("Soapy source error: {}", SoapySDR::errToStr(result));
             break;
         }
 

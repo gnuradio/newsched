@@ -1,4 +1,4 @@
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 
 namespace gr {
 
@@ -16,14 +16,13 @@ class executor
 {
 protected:
     std::string _name;
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
 public:
     executor(const std::string& name) : _name(name)
     {
-        _logger = logging::get_logger(_name, "default");
-        _debug_logger = logging::get_logger(_name + "_dbg", "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, _name);
     }
 };
 

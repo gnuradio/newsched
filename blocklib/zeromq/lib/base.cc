@@ -54,7 +54,8 @@ base_sink::base_sink(int type,
                      const std::string& key)
     : base(type, itemsize, timeout, pass_tags, key)
 {
-    d_logger = logging::get_logger("zmq_base_source", "default");
+    gr::configure_default_loggers(d_base_logger, d_base_debug_logger, "zmq_base_source");
+
     /* Set high watermark */
     if (hwm >= 0) {
         d_socket.set(zmq::sockopt::sndhwm, hwm);
@@ -183,7 +184,7 @@ bool base_source::load_message(bool wait)
     if (!ok) {
         // This shouldn't happen since we polled POLLIN, but ZMQ wants us to check
         // the return value.
-        GR_LOG_WARN(d_logger, "Failed to recv() message.");
+        d_base_logger->warn("Failed to recv() message.");
         return false;
     }
 
@@ -197,7 +198,7 @@ bool base_source::load_message(bool wait)
             const bool multi_ok = bool(d_socket.recv(d_msg));
 
             if (!multi_ok) {
-                GR_LOG_ERROR(d_logger, "Failure to receive multi-part message.");
+                d_base_logger->error("Failure to receive multi-part message.");
             }
         }
         else {

@@ -9,7 +9,7 @@
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/flowgraph.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/realtime.h>
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>

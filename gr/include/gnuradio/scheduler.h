@@ -7,7 +7,7 @@
 
 #include <gnuradio/buffer.h>
 #include <gnuradio/flat_graph.h>
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <gnuradio/runtime_monitor.h>
 #include <gnuradio/scheduler_message.h>
 namespace gr {
@@ -23,8 +23,7 @@ public:
     scheduler(const std::string& name)
     {
         _name = name;
-        _logger = logging::get_logger(name, "default");
-        _debug_logger = logging::get_logger(name + "_dbg", "debug");
+        gr::configure_default_loggers(d_logger, d_debug_logger, name);
     };
     ~scheduler() override {}
     std::shared_ptr<scheduler> base() { return shared_from_this(); }
@@ -45,8 +44,8 @@ public:
     }
 
 protected:
-    logger_sptr _logger;
-    logger_sptr _debug_logger;
+    logger_ptr d_logger;
+    logger_ptr d_debug_logger;
 
     std::shared_ptr<buffer_properties> _default_buf_properties = nullptr;
 

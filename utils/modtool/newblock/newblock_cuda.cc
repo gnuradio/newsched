@@ -30,7 +30,7 @@ newblock_cuda::newblock_cuda(block_args args) : newblock(args)
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
-    GR_LOG_INFO(_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
+    GR_LOG_INFO(d_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
 
     cudaStreamCreate(&d_stream);
 }

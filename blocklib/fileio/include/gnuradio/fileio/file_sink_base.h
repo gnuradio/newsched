@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/logging.h>
+#include <gnuradio/logger.h>
 #include <cstdio>
 #include <mutex>
 
@@ -30,7 +30,7 @@ protected:
     std::mutex d_mutex;
     bool d_unbuffered;
     bool d_append;
-    gr::logger_sptr d_logger, d_debug_logger;
+    gr::logger_ptr d_logger, d_debug_logger;
 
 protected:
     file_sink_base(const std::string& filename, bool is_binary, bool append);

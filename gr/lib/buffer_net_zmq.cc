@@ -37,7 +37,7 @@ buffer_net_zmq::buffer_net_zmq(size_t num_items,
       _context(1),
       _socket(_context, zmq::socket_type::push)
 {
-    _debug_logger = logging::get_logger("buffer_net_zmq", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_net_zmq");
     set_type("buffer_net_zmq");
     _buffer.resize(_buf_size);
     _socket.set(zmq::sockopt::sndhwm, 1);
@@ -75,7 +75,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
       _context(1),
       _socket(_context, zmq::socket_type::pull)
 {
-    _debug_logger = logging::get_logger("buffer_net_zmq_reader", "debug");
+    gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_net_zmq_reader");
     auto bufprops = std::make_shared<buffer_cpu_vmcirc_properties>();
     _circbuf = gr::buffer_cpu_vmcirc::make(
         8192,
@@ -101,12 +101,12 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 
 
     std::string endpoint = "tcp://" + ipaddr + ":" + std::to_string(port);
-    GR_LOG_DEBUG(_debug_logger, "rcv_endpoint: {}", endpoint);
+    d_debug_logger->debug("rcv_endpoint: {}", endpoint);
     _socket.set(zmq::sockopt::sndhwm, 1);
     _socket.set(zmq::sockopt::rcvhwm, 1);
     // _socket.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     _socket.connect(endpoint);
-    GR_LOG_DEBUG(_debug_logger, "   ... connected");
+    d_debug_logger->debug("   ... connected");
 
     std::thread t([this]() {
         while (!this->_recv_done) {
@@ -128,8 +128,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 
             if (bytes_to_write > 0) {
                 memcpy(wi.ptr, (uint8_t*)_msg.data() + _msg_idx, bytes_to_write);
-                GR_LOG_DEBUG(
-                    _debug_logger, "copied {} items", bytes_to_write / wi.item_size);
+                d_debug_logger->debug("copied {} items", bytes_to_write / wi.item_size);
                 _msg_idx += bytes_to_write;
                 n_bytes_left_in_msg = _msg.size() - _msg_idx;
                 _circbuf->post_write(items_to_write);
@@ -138,16 +137,16 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
 
             if (n_bytes_left_in_msg == 0) {
                 _msg.rebuild();
-                GR_LOG_DEBUG(_debug_logger, "going into recv");
+                d_debug_logger->debug("going into recv");
                 auto r = _socket.recv(_msg, zmq::recv_flags::none);
                 if (r) {
-                    GR_LOG_DEBUG(_debug_logger,
+                    d_debug_logger->debug(
                                  "received msg with size {} items",
                                  _msg.size() / wi.item_size);
                     _msg_idx = 0;
                 }
             }
-            // GR_LOG_DEBUG(_debug_logger, "recv: {}", wi.n_items);
+            // GR_LOG_DEBUG(d_debug_logger, "recv: {}", wi.n_items);
             // auto ret = this->_socket.recv(
             //     zmq::mutable_buffer(_circbuf->write_ptr(), wi.n_items * wi.item_size),
             //     zmq::recv_flags::none);
@@ -157,7 +156,7 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
             // auto recbuf = *ret;
             // assert(recbuf.size == wi.n_items * wi.item_size);
 
-            // GR_LOG_DEBUG(_debug_logger, "nbytesrcv: {}", recbuf.size);
+            // GR_LOG_DEBUG(d_debug_logger, "nbytesrcv: {}", recbuf.size);
             // std::cout << "    ---> msg received " << msg.size() << " bytes" <<
             // std::endl;
         }

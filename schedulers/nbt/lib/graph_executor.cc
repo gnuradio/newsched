@@ -28,8 +28,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         // to indicate that the rest of the flowgraph should clean up
         if (b->finished()) {
             per_block_status[b->id()] = executor_iteration_status::DONE;
-            GR_LOG_DEBUG(
-                _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+            d_debug_logger->debug("pbs[{}]: {}", b->id(), per_block_status[b->id()]);
             continue;
         }
 
@@ -51,7 +50,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             buffer_info_t read_info;
             ready = p_buf->read_info(read_info);
-            GR_LOG_DEBUG(_debug_logger,
+            d_debug_logger->debug(
                          "read_info {} - {} - {}",
                          b->alias(),
                          read_info.n_items,
@@ -99,7 +98,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             buffer_info_t write_info;
             ready = p_buf->write_info(write_info);
-            GR_LOG_DEBUG(_debug_logger,
+            d_debug_logger->debug(
                          "write_info {} - {} @ {} {}",
                          b->alias(),
                          write_info.n_items,
@@ -149,37 +148,35 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             while (true) {
 
                 if (!work_output.empty()) {
-                    GR_LOG_DEBUG(_debug_logger,
+                    d_debug_logger->debug(
                                  "do_work (output) for {}, {}",
                                  b->alias(),
                                  work_output[0]->n_items);
                 }
                 else if (!work_input.empty())
                 {
-                    GR_LOG_DEBUG(_debug_logger,
+                    d_debug_logger->debug(
                                  "do_work (input) for {}, {}",
                                  b->alias(),
                                  work_input[0]->n_items);
                 }
                 else {
-                    GR_LOG_DEBUG(_debug_logger, "do_work for {}", b->alias());
+                    d_debug_logger->debug("do_work for {}", b->alias());
                 }
 
 
                 ret = b->do_work(work_input, work_output);
-                GR_LOG_DEBUG(_debug_logger, "do_work returned {}", ret);
+                d_debug_logger->debug("do_work returned {}", ret);
                 // ret = work_return_code_t::WORK_OK;
 
                 if (ret == work_return_code_t::WORK_DONE) {
                     per_block_status[b->id()] = executor_iteration_status::DONE;
-                    GR_LOG_DEBUG(
-                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    d_debug_logger->debug("pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     break;
                 }
                 else if (ret == work_return_code_t::WORK_OK) {
                     per_block_status[b->id()] = executor_iteration_status::READY;
-                    GR_LOG_DEBUG(
-                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    d_debug_logger->debug("pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
                     if (work_input.empty() && !work_output.empty()) {
@@ -190,7 +187,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         if (max_output <= 0) {
                             per_block_status[b->id()] =
                                 executor_iteration_status::BLKD_IN;
-                            GR_LOG_DEBUG(_debug_logger,
+                            d_debug_logger->debug(
                                          "pbs[{}]: {}",
                                          b->id(),
                                          per_block_status[b->id()]);
@@ -210,7 +207,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     if (work_output[0]->n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
-                        GR_LOG_DEBUG(_debug_logger,
+                        d_debug_logger->debug(
                                      "pbs[{}]: {}",
                                      b->id(),
                                      per_block_status[b->id()]);
@@ -220,8 +217,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 }
                 else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
                     per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
-                    GR_LOG_DEBUG(
-                        _debug_logger, "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                    d_debug_logger->debug("pbs[{}]: {}", b->id(), per_block_status[b->id()]);
                     // call the output blocked callback
                     break;
                 }
@@ -263,7 +259,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         }
                     }
 
-                    GR_LOG_DEBUG(_debug_logger,
+                    d_debug_logger->debug(
                                  "post_read {} - {}",
                                  b->alias(),
                                  work_input[input_port_index]->n_consumed);
@@ -279,7 +275,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 for (auto p : b->output_stream_ports()) {
                     auto p_buf = p->buffer();
 
-                    GR_LOG_DEBUG(_debug_logger,
+                    d_debug_logger->debug(
                                  "post_write {} - {}",
                                  b->alias(),
                                  work_output[output_port_index]->n_produced);

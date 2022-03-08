@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -16,15 +17,27 @@ namespace gr {
 class prefs
 {
 public:
-    static prefs& get_instance()
+    static prefs* get_instance()
     {
         static prefs p;
-        return p;
+        return &p;
     }
 
     static YAML::Node get_section(const std::string& name)
     {
-        return get_instance()._config[name];
+        return get_instance()->_config[name];
+    }
+
+    static const std::string get_string(const std::string& section,
+                                        const std::string& option,
+                                        const std::string& default_val)
+    {
+        try {
+            auto s = get_section(section);
+            return s[option].as<std::string>();
+        } catch (const std::exception& e) {
+            return default_val;
+        }
     }
 
     static const char* appdata_path()
