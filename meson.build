@@ -91,7 +91,7 @@ if (get_option('enable_testing'))
       join_paths( meson.build_root(),'blocklib','streamops','lib'),
       join_paths( meson.build_root(),'blocklib','zmq','lib')
     )
-    TEST_ENV.prepend('PYTHONPATH', join_paths(meson.build_root(),'python'))
+    TEST_ENV.prepend('PYTHONPATH', join_paths(meson.build_root(),'python')+':'+join_paths(meson.build_root(), 'subprojects/pmt/python') )
 
 endif
 
