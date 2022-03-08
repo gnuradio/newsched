@@ -28,7 +28,11 @@ void bind_port(py::module& m)
         .def("format_descriptor", &gr::port_base::format_descriptor)
         .def("dims", &gr::port_base::dims)
         .def("index", &gr::port_base::index)
-        .def("connect", &gr::port_base::connect);
+        .def("name", &gr::port_base::name)
+        .def("connect", &gr::port_base::connect)
+        .def("itemsize", &gr::port_base::itemsize)
+        .def("type", &gr::port_base::type)
+        ;
 
     py::class_<port_f, port_base, std::shared_ptr<port_f>>(m, "port_f")
         .def(py::init(&port_f::make),
