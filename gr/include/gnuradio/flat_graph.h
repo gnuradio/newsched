@@ -122,6 +122,8 @@ private:
 
     std::vector<block_vector_t> partition();
     block_vector_t topological_sort(block_vector_t& blocks);
+
+    std::map<block_sptr, int> block_color; 
 };
 
 using flat_graph_sptr = std::shared_ptr<flat_graph>;

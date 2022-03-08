@@ -119,16 +119,16 @@ block_vector_t flat_graph::calc_reachable_blocks(block_sptr block, block_vector_
     block_vector_t result;
 
     // Mark all blocks as unvisited
-    for (block_viter_t p = blocks.begin(); p != blocks.end(); p++)
-        (*p)->attributes.set_int_value(BLOCK_COLOR_KEY, WHITE);
+    for (auto& b : blocks)
+        block_color[b] = WHITE;
 
     // Recursively mark all reachable blocks
     reachable_dfs_visit(block, blocks);
 
     // Collect all the blocks that have been visited
-    for (block_viter_t p = blocks.begin(); p != blocks.end(); p++)
-        if ((*p)->attributes.get_int_value(BLOCK_COLOR_KEY) == BLACK)
-            result.push_back(*p);
+    for (auto& b : blocks)
+        if (block_color[b] == BLACK)
+            result.push_back(b);
 
     return result;
 }
@@ -137,14 +137,14 @@ block_vector_t flat_graph::calc_reachable_blocks(block_sptr block, block_vector_
 void flat_graph::reachable_dfs_visit(block_sptr block, block_vector_t& blocks)
 {
     // Mark the current one as visited
-    block->attributes.set_int_value(BLOCK_COLOR_KEY, BLACK);
+    block_color[block] = BLACK;
 
     // Recurse into adjacent vertices
     block_vector_t adjacent = calc_adjacent_blocks(block, blocks);
 
-    for (block_viter_t p = adjacent.begin(); p != adjacent.end(); p++)
-        if ((*p)->attributes.get_int_value(BLOCK_COLOR_KEY) == WHITE)
-            reachable_dfs_visit(*p, blocks);
+    for (auto& b : adjacent)
+        if (block_color[b] == WHITE)
+            reachable_dfs_visit(b, blocks);
 }
 
 // Return a list of block adjacent to a given block along any edge
@@ -170,12 +170,12 @@ block_vector_t flat_graph::topological_sort(block_vector_t& blocks)
     tmp = sort_sources_first(blocks);
 
     // Start 'em all white
-    for (block_viter_t p = tmp.begin(); p != tmp.end(); p++)
-        (*p)->attributes.set_int_value(BLOCK_COLOR_KEY, WHITE);
+    for (auto& b : tmp)
+        block_color[b] = WHITE;
 
-    for (block_viter_t p = tmp.begin(); p != tmp.end(); p++) {
-        if ((*p)->attributes.get_int_value(BLOCK_COLOR_KEY) == WHITE)
-            topological_dfs_visit(*p, result);
+    for (auto& b : tmp) {
+        if (block_color[b] == WHITE)
+            topological_dfs_visit(b, result);
     }
 
     reverse(result.begin(), result.end());
@@ -206,13 +206,13 @@ bool flat_graph::source_p(block_sptr block) { return calc_upstream_edges(block).
 
 void flat_graph::topological_dfs_visit(block_sptr block, block_vector_t& output)
 {
-    block->attributes.set_int_value(BLOCK_COLOR_KEY, GREY);
+    block_color[block] = GREY;
     block_vector_t blocks(calc_downstream_blocks(block));
 
-    for (block_viter_t p = blocks.begin(); p != blocks.end(); p++) {
-        switch ((*p)->attributes.get_int_value(BLOCK_COLOR_KEY)) {
+    for (auto& b : blocks) {
+        switch (block_color[b]) {
         case WHITE:
-            topological_dfs_visit(*p, output);
+            topological_dfs_visit(b, output);
             break;
 
         case GREY:

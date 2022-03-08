@@ -7,7 +7,6 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/block_work_io.h>
-#include <gnuradio/gpdict.h>
 #include <gnuradio/neighbor_interface.h>
 #include <gnuradio/node.h>
 #include <gnuradio/parameter.h>
@@ -145,7 +144,6 @@ public:
 
     static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
     static sptr cast(node_sptr n) { return std::static_pointer_cast<block>(n); }
-    gpdict attributes; // this is a HACK for storing metadata.  Needs to go.
 };
 
 using block_sptr = block::sptr;
