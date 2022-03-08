@@ -1,3 +1,9 @@
+# Legacy logging options
+LOG:
+    log_level: debug
+    debug_level: debug
+    log_file: stderr
+
 logging:
 -   id: default
     type: console
