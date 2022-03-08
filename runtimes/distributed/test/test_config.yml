@@ -1,0 +1,16 @@
+# Distributed Flowgraph Configuration
+
+# All available hosts - not all need to be used
+# Assumes all nodes are networkable by hostname to each other
+hosts:
+  - id: "newsched1"
+    rpc_type: rest
+    hostname: "127.0.0.1"
+    port: 8000
+    ## More things that could be defined:
+    ## - Compute Capacity
+    ## - Networking
+  - id: "newsched2"
+    rpc_type: rest
+    hostname: "127.0.0.1"
+    port: 8001
