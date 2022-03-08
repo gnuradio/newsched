@@ -14,11 +14,11 @@
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>
 
-#include <gnuradio/buffer_cpu_simple.hh>
+#include <gnuradio/buffer_cpu_simple.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
-#include <gnuradio/buffer_cuda.hh>
-#include <gnuradio/buffer_cuda_pinned.hh>
-#include <gnuradio/buffer_cuda_sm.hh>
+#include <gnuradio/buffer_cuda.h>
+#include <gnuradio/buffer_cuda_pinned.h>
+#include <gnuradio/buffer_cuda_sm.h>
 #include <iostream>
 
 #include "CLI/App.hpp"

@@ -8,8 +8,8 @@
  *
  */
 
-#include "newblock_cpu.hh"
-#include "newblock_cpu_gen.hh"
+#include "newblock_cpu.h"
+#include "newblock_cpu_gen.h"
 
 namespace gr {
 namespace newmod {
