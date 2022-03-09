@@ -50,7 +50,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
 
     // Storing the current noutput_items as the value to the "noutput_items" key
     auto srcid = pmtf::string(alias());
-    auto key = pmtf::string("seq");
+    auto key = "seq";
 
     // Work does nothing to the data stream; just copy all inputs to outputs
     // Adds a new tag when the number of items read is a multiple of d_when
@@ -64,7 +64,8 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
         for (unsigned i = 0; i < d_num_outputs; i++) {
             if (abs_N % d_when == 0) {
                 auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
-                work_output[i]->buffer->add_tag(abs_N, key, value, srcid);
+                // tag_map tm = {{key, value}, {"srcid",srcid}};
+                work_output[i]->buffer->add_tag(abs_N, {{key, value}, {"srcid",srcid}});
             }
 
             // We don't really care about the data here

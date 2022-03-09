@@ -81,9 +81,9 @@ struct block_work_output {
 
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void
-    add_tag(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid = nullptr)
+    add_tag(uint64_t offset, std::map<std::string, pmtf::pmt> map)
     {
-        buffer->add_tag(offset, key, value, srcid);
+        buffer->add_tag(offset, map);
     }
 
     static std::vector<void*> all_items(const std::vector<sptr>& work_outputs)

@@ -16,37 +16,38 @@ enum class tag_propagation_policy_t {
                            application-specific forwarding behaviour. */
 };
 
+using tag_map = std::map<std::string, pmtf::pmt>;
 class tag_t
 {
 public:
-    uint64_t offset = 0;
-    pmtf::pmt key = nullptr;
-    pmtf::pmt value = nullptr;
-    pmtf::pmt srcid = nullptr;
-    bool modified = false;
-    tag_t() {}
-    tag_t(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid = nullptr)
-        : offset(offset), key(key), value(value), srcid(srcid)
-    {
-    }
 
-    /*!
-     * Comparison function to test which tag, \p x or \p y, came
-     * first in time
-     */
-    static inline bool offset_compare(const tag_t& x, const tag_t& y)
+    tag_t() {}
+    tag_t(uint64_t offset, std::map<std::string, pmtf::pmt> map)
+        : _offset(offset), _map(map)
     {
-        return x.offset < y.offset;
     }
 
     bool operator==(const tag_t& rhs) const
     {
-        return (rhs.key == key && rhs.value == value && rhs.srcid == srcid);
+        return (rhs.offset() == offset() && rhs.map() == map());
     }
     bool operator!=(const tag_t& rhs) const
     {
-        return (rhs.key != key || rhs.value != value || rhs.srcid == srcid);
+        return (rhs.offset() != offset() && rhs.map() != map());
     }
+    
+    void set_offset(uint64_t offset) { _offset = offset; }
+    pmtf::pmt operator[]( const std::string& key) const {
+        return _map[key];
+    }
+    uint64_t offset() const { return _offset; }
+    pmtf::map map() const { return _map; }
+
+
+private:
+    uint64_t _offset = 0;
+    pmtf::map _map;
+
 };
 
 } // namespace gr

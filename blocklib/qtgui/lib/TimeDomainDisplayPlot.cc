@@ -229,7 +229,7 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                 for (unsigned int i = 0; i < d_nplots; i += mult) {
                     std::vector<gr::tag_t>::const_iterator t;
                     for (t = tag->begin(); t != tag->end(); t++) {
-                        uint64_t offset = (*t).offset;
+                        uint64_t offset = (*t).offset();
 
                         // Ignore tag if its offset is outside our plottable vector.
                         if (offset >= (uint64_t)d_numPoints) {
@@ -238,8 +238,8 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
 
                         double sample_offset = double(offset) / d_sample_rate;
 
-                        std::stringstream s;
-                        s << (*t).key << ": " << (*t).value;
+                        std::stringstream s; 
+                        // s << (*t).key << ": " << (*t).value; //FIXME: displaying new tag format on QT plots
 
                         // Select the right input stream to put the tag on. If real,
                         // just use i; if it's a complex stream, find the max of the
