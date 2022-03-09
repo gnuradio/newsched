@@ -190,15 +190,13 @@ void file_source_cpu::open(const std::string& filename,
         if (file_size && file_size != INT64_MAX) {
             if (auto ret = posix_fadvise(
                     fd, start_offset, file_size - start_offset, POSIX_FADV_SEQUENTIAL)) {
-                d_logger->warn(
-                            "failed to advise to read sequentially, " +
-                                fadv_errstrings.at(ret));
+                d_logger->warn("failed to advise to read sequentially, " +
+                               fadv_errstrings.at(ret));
             }
             if (auto ret = posix_fadvise(
                     fd, start_offset, file_size - start_offset, POSIX_FADV_WILLNEED)) {
-                d_logger->warn(
-                            "failed to advise we'll need file contents soon, " +
-                                fadv_errstrings.at(ret));
+                d_logger->warn("failed to advise we'll need file contents soon, " +
+                               fadv_errstrings.at(ret));
             }
         }
 #endif
@@ -242,7 +240,7 @@ void file_source_cpu::do_update()
     }
 }
 
-void file_source_cpu::set_begin_tag(pmtf::pmt val) { d_add_begin_tag = val; }
+void file_source_cpu::set_begin_tag(const std::string& val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                          std::vector<block_work_output_sptr>& work_output)
@@ -267,11 +265,10 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
 
         // Add stream tag whenever the file starts again
         if (d_file_begin && !d_add_begin_tag.empty()) {
-            work_output[0]->buffer->add_tag(work_output[0]->buffer->total_written() +
-                                                noutput_items - size,
-                                            d_add_begin_tag,
-                                            pmtf::scalar<int64_t>(d_repeat_cnt),
-                                            _id);
+            work_output[0]->buffer->add_tag(
+                work_output[0]->buffer->total_written() + noutput_items - size,
+                { { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
+                  { "srcid", _id } });
 
             d_file_begin = false;
         }
@@ -296,7 +293,6 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
 
         // Ran out of items ("EOF")
         if (d_items_remaining == 0) {
-
             // Repeat: rewind and request tag
             if (d_repeat && d_seekable) {
                 if (GR_FSEEK(d_fp, d_start_offset_items * d_itemsize, SEEK_SET) == -1) {

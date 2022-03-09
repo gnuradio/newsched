@@ -221,7 +221,7 @@ public:
 
     void add_tag(tag_t tag);
     void
-    add_tag(uint64_t offset, pmtf::pmt key, pmtf::pmt value, pmtf::pmt srcid = nullptr);
+    add_tag(uint64_t offset, std::map<std::string, pmtf::pmt> map);
 
     void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 

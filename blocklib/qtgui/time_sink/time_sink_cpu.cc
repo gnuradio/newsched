@@ -167,7 +167,7 @@ void time_sink_cpu<T>::_adjust_tags(int adj)
 {
     for (size_t n = 0; n < d_tags.size(); n++) {
         for (size_t t = 0; t < d_tags[n].size(); t++) {
-            d_tags[n][t].offset += adj;
+            d_tags[n][t].set_offset(d_tags[n][t].offset() + adj);
         }
     }
 }
