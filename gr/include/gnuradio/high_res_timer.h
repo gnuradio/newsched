@@ -11,7 +11,6 @@
 #pragma once
 
 #include <gnuradio/api.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 // Use architecture defines to determine the implementation
@@ -26,8 +25,6 @@
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #define GNURADIO_HRT_USE_CLOCK_GETTIME
 #include <ctime>
-#else
-#define GNURADIO_HRT_USE_MICROSEC_CLOCK
 #endif
 
 
@@ -45,9 +42,6 @@ high_res_timer_type high_res_timer_now_perfmon(void);
 
 //! Get the number of ticks per second
 high_res_timer_type high_res_timer_tps(void);
-
-//! Get the tick count at the epoch
-high_res_timer_type high_res_timer_epoch(void);
 
 #ifdef GNURADIO_HRT_USE_CLOCK_GETTIME
 //! storage for high res timer type
@@ -120,34 +114,3 @@ inline gr::high_res_timer_type gr::high_res_timer_tps(void)
     return freq.QuadPart;
 }
 #endif
-
-////////////////////////////////////////////////////////////////////////
-#ifdef GNURADIO_HRT_USE_MICROSEC_CLOCK
-inline gr::high_res_timer_type gr::high_res_timer_now(void)
-{
-    static const boost::posix_time::ptime epoch(boost::posix_time::from_time_t(0));
-    return (boost::posix_time::microsec_clock::universal_time() - epoch).ticks();
-}
-
-inline gr::high_res_timer_type gr::high_res_timer_now_perfmon(void)
-{
-    return gr::high_res_timer_now();
-}
-
-inline gr::high_res_timer_type gr::high_res_timer_tps(void)
-{
-    return boost::posix_time::time_duration::ticks_per_second();
-}
-#endif
-
-////////////////////////////////////////////////////////////////////////
-inline gr::high_res_timer_type gr::high_res_timer_epoch(void)
-{
-    static const double hrt_ticks_per_utc_ticks =
-        gr::high_res_timer_tps() /
-        double(boost::posix_time::time_duration::ticks_per_second());
-    boost::posix_time::time_duration utc =
-        boost::posix_time::microsec_clock::universal_time() -
-        boost::posix_time::from_time_t(0);
-    return gr::high_res_timer_now() - utc.ticks() * hrt_ticks_per_utc_ticks;
-}
