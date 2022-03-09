@@ -74,11 +74,6 @@ public:
 
     virtual gr::high_res_timer_type getZeroTime() const { return _zeroTime; }
 
-    virtual void setZeroTime(const gr::high_res_timer_type newTime)
-    {
-        _zeroTime = newTime - gr::high_res_timer_epoch();
-    }
-
     virtual void setSecondsPerLine(const double newTime) { _secondsPerLine = newTime; }
 
     virtual double getSecondsPerLine() const { return _secondsPerLine; }
