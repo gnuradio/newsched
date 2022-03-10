@@ -28,7 +28,7 @@ work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& wor
         if (has_pending()) {
             /* Flush anything pending */
             done += flush_pending(
-                out + (done * d_vsize), noutput_items - done, nitems_written + done);
+                work_output[0], noutput_items - done, done);
 
             /* No more space ? */
             if (done == noutput_items)

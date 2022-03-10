@@ -89,7 +89,7 @@ int base_sink::send_message(const void* in_buf,
 
     /* Create message */
     size_t payload_len = in_nitems * d_vsize;
-    size_t msg_len = d_pass_tags ? payload_len /*+ header.length()*/ : payload_len;
+    size_t msg_len = d_pass_tags ? payload_len + header.length() : payload_len;
     zmq::message_t msg(msg_len);
 
     if (d_pass_tags) {
@@ -132,7 +132,7 @@ base_source::base_source(int type,
 
 bool base_source::has_pending() { return d_msg.size() > d_consumed_bytes; }
 
-int base_source::flush_pending(void* out_buf,
+int base_source::flush_pending(block_work_output_sptr work_output,
                                const int out_nitems,
                                const uint64_t out_offset)
 {
@@ -140,19 +140,22 @@ int base_source::flush_pending(void* out_buf,
     int to_copy_items =
         std::min(out_nitems, (int)((d_msg.size() - d_consumed_bytes) / d_vsize));
     int to_copy_bytes = d_vsize * to_copy_items;
+    auto nw = work_output->nitems_written();
 
     /* Copy actual data */
-    memcpy(out_buf, (uint8_t*)d_msg.data() + d_consumed_bytes, to_copy_bytes);
+    memcpy(work_output->items<uint8_t>() + out_offset * d_vsize,
+           (uint8_t*)d_msg.data() + d_consumed_bytes,
+           to_copy_bytes);
 
-    // /* Add tags matching this segment of samples */
-    // for (unsigned int i = 0; i < d_tags.size(); i++) {
-    //     if ((d_tags[i].offset >= (uint64_t)d_consumed_items) &&
-    //         (d_tags[i].offset < (uint64_t)d_consumed_items + to_copy_items)) {
-    //         gr::tag_t nt = d_tags[i];
-    //         nt.offset += out_offset - d_consumed_items;
-    //         add_item_tag(0, nt);
-    //     }
-    // }
+    /* Add tags matching this segment of samples */
+    for (unsigned int i = 0; i < d_tags.size(); i++) {
+        if ((d_tags[i].offset() >= (uint64_t)d_consumed_items) &&
+            (d_tags[i].offset() < (uint64_t)d_consumed_items + to_copy_items)) {
+            gr::tag_t nt = d_tags[i];
+            nt.set_offset(nt.offset() + nw + out_offset - d_consumed_items);
+            work_output->add_tag(nt);
+        }
+    }
 
     /* Update pointer */
     d_consumed_items += to_copy_items;

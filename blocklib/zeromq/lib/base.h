@@ -14,6 +14,7 @@
 #include "zmq_common_impl.h"
 #include <gnuradio/logger.h>
 #include <gnuradio/tag.h>
+#include <gnuradio/block_work_io.h>
 
 namespace gr {
 namespace zeromq {
@@ -76,7 +77,9 @@ protected:
     int d_consumed_items;
 
     bool has_pending();
-    int flush_pending(void* out_buf, const int out_nitems, const uint64_t out_offset);
+    int flush_pending(block_work_output_sptr work_output,
+                      const int out_nitems,
+                      const uint64_t out_offset);
     bool load_message(bool wait);
 };
 
