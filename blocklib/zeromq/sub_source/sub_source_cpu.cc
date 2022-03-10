@@ -25,9 +25,7 @@ sub_source_cpu::sub_source_cpu(block_args args)
 work_return_code_t sub_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                         std::vector<block_work_output_sptr>& work_output)
 {
-    auto out = work_output[0]->items<uint8_t>();
     auto noutput_items = work_output[0]->n_items;
-    auto nwritten = work_output[0]->nitems_written();
     bool first = true;
     int done = 0;
 

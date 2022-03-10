@@ -41,7 +41,7 @@ public:
     }
 
     void set_offset(uint64_t offset) { _offset = offset; }
-    pmtf::pmt operator[](const std::string& key) const { return _map[key]; }
+    pmtf::pmt operator[](const std::string& key) const { return _map.at(key); }
     uint64_t offset() const { return _offset; }
     pmtf::map map() const { return _map; }
 
