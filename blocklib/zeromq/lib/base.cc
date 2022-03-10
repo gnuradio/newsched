@@ -70,7 +70,8 @@ base_sink::base_sink(int type,
 
 int base_sink::send_message(const void* in_buf,
                             const int in_nitems,
-                            const uint64_t in_offset)
+                            const uint64_t in_offset,
+                            const std::vector<tag_t>& tags)
 {
     /* Send key if it exists */
     if (!d_key.empty()) {
@@ -81,9 +82,9 @@ int base_sink::send_message(const void* in_buf,
     /* Meta-data header */
     std::string header("");
     if (d_pass_tags) {
-        std::vector<gr::tag_t> tags;
+        // std::vector<gr::tag_t> tags;
         // get_tags_in_range(tags, 0, in_offset, in_offset + in_nitems);
-        // header = gen_tag_header(in_offset, tags);
+        header = gen_tag_header(in_offset, tags);
     }
 
     /* Create message */
@@ -205,18 +206,18 @@ bool base_source::load_message(bool wait)
             return false;
         }
     }
-    // /* Parse header from the first (or only) message of a multi-part message */
-    // if (d_pass_tags && !more) {
-    //     uint64_t rcv_offset;
+    /* Parse header from the first (or only) message of a multi-part message */
+    if (d_pass_tags && !more) {
+        uint64_t rcv_offset;
 
-    //     /* Parse header */
-    //     d_consumed_bytes = parse_tag_header(d_msg, rcv_offset, d_tags);
+        /* Parse header */
+        d_consumed_bytes = parse_tag_header(d_msg, rcv_offset, d_tags);
 
-    //     /* Fixup the tags offset to be relative to the start of this message */
-    //     for (unsigned int i = 0; i < d_tags.size(); i++) {
-    //         d_tags[i].offset -= rcv_offset;
-    //     }
-    // }
+        /* Fixup the tags offset to be relative to the start of this message */
+        for (unsigned int i = 0; i < d_tags.size(); i++) {
+            d_tags[i].set_offset(d_tags[i].offset() - rcv_offset);
+        }
+    }
 
     /* Each message must contain an integer multiple of data vectors */
     if ((d_msg.size() - d_consumed_bytes) % d_vsize != 0) {

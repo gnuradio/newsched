@@ -21,7 +21,8 @@ work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_
     if (itemsout[0].revents & ZMQ_POLLOUT) {
         work_input[0]->n_consumed = send_message(work_input[0]->raw_items(),
                                                  work_input[0]->n_items,
-                                                 work_input[0]->nitems_read());
+                                                 work_input[0]->nitems_read(),
+                                                 work_input[0]->tags_in_window(0, work_input[0]->n_items) );
     }
 
     return work_return_code_t::WORK_OK;

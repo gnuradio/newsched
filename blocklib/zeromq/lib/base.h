@@ -52,7 +52,10 @@ public:
               const std::string& key = "");
 
 protected:
-    int send_message(const void* in_buf, const int in_nitems, const uint64_t in_offset);
+    int send_message(const void* in_buf,
+                     const int in_nitems,
+                     const uint64_t in_offset,
+                     const std::vector<tag_t>& tags);
 };
 
 class base_source : public base

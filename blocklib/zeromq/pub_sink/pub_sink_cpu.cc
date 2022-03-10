@@ -21,8 +21,10 @@ work_return_code_t pub_sink_cpu::work(std::vector<block_work_input_sptr>& work_i
 {
     auto noutput_items = work_input[0]->n_items;
     auto nread = work_input[0]->nitems_read();
-    auto nsent = send_message(work_input[0]->raw_items(), noutput_items, nread);
-
+    auto nsent = send_message(work_input[0]->raw_items(),
+                              noutput_items,
+                              nread,
+                              work_input[0]->tags_in_window(0, noutput_items));
     consume_each(nsent, work_input);
     return work_return_code_t::WORK_OK;
 }
