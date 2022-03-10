@@ -28,7 +28,14 @@ vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_a
       d_vlen(args.vlen),
       d_tags(args.tags)
 {
-    if ((args.data.size() % args.vlen) != 0)
+    if (d_tags.empty()) {
+        d_settags = 0;
+    }
+    else {
+        d_settags = 1;
+        this->set_output_multiple(d_data.size() / d_vlen);
+    }
+    if ((d_data.size() % d_vlen) != 0)
         throw std::invalid_argument("data length must be a multiple of vlen");
 }
 
@@ -49,10 +56,25 @@ vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         if (size == 0)
             return work_return_code_t::WORK_DONE;
 
-        for (int i = 0; i < static_cast<int>(noutput_items * d_vlen); i++) {
-            optr[i] = d_data[offset++];
-            if (offset >= size) {
-                offset = 0;
+        if (d_settags) {
+            int n_outputitems_per_vector = d_data.size() / d_vlen;
+            for (int i = 0; i < noutput_items; i += n_outputitems_per_vector) {
+                // FIXME do proper vector copy
+                memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
+                optr += size;
+                for (unsigned t = 0; t < d_tags.size(); t++) {
+                    work_output[0]->add_tag(work_output[0]->nitems_written() + i +
+                                                d_tags[t].offset(),
+                                            d_tags[t].map());
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < static_cast<int>(noutput_items * d_vlen); i++) {
+                optr[i] = d_data[offset++];
+                if (offset >= size) {
+                    offset = 0;
+                }
             }
         }
 
@@ -71,10 +93,30 @@ vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         for (unsigned i = 0; i < n; i++) {
             optr[i] = d_data[d_offset + i];
         }
+        for (unsigned t = 0; t < d_tags.size(); t++) {
+            if ((d_tags[t].offset() >= d_offset) && (d_tags[t].offset() < d_offset + n)) {
+                work_output[0]->add_tag(d_tags[t]);
+            }
+        }
         d_offset += n;
 
         work_output[0]->n_produced = n / d_vlen;
         return work_return_code_t::WORK_OK;
+    }
+}
+
+template <class T>
+void vector_source_cpu<T>::set_data_and_tags(std::vector<T> data,
+                                             std::vector<gr::tag_t> tags)
+{
+    d_data = data;
+    d_tags = tags;
+    rewind();
+    if (tags.empty()) {
+        d_settags = false;
+    }
+    else {
+        d_settags = true;
     }
 }
 

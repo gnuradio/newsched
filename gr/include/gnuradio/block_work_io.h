@@ -81,7 +81,11 @@ struct block_work_output {
 
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void
-    add_tag(uint64_t offset, std::map<std::string, pmtf::pmt> map)
+    add_tag(uint64_t offset, tag_map map)
+    {
+        buffer->add_tag(offset, map);
+    }
+    void add_tag(uint64_t offset, pmtf::map map)
     {
         buffer->add_tag(offset, map);
     }

@@ -33,6 +33,9 @@ vector_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
         d_data.push_back(iptr[i]);
 
+    auto tags = work_input[0]->tags_in_window(0, noutput_items);
+    d_tags.insert(d_tags.end(), tags.begin(), tags.end());
+
     this->consume_each(noutput_items, work_input);
     this->d_debug_logger->debug("sizeof_data: {}", d_data.size());
     return work_return_code_t::WORK_OK;

@@ -8,12 +8,14 @@
  */
 
 #include <pybind11/complex.h>
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
 
 #include <gnuradio/tag.h>
+#include <fmt/core.h>
 // pydoc.h is automatically generated in the build directory
 // #include <block_pydoc.h>
 
@@ -27,6 +29,14 @@ void bind_tag(py::module& m)
         .export_values();
 
     py::class_<::gr::tag_t, std::shared_ptr<::gr::tag_t>>(m, "tag_t")
-        .def(py::init<uint64_t, std::map<std::string, pmtf::pmt>>());
-    ;
+        .def(py::init<uint64_t, std::map<std::string, pmtf::pmt>>())
+        .def(py::self == py::self)
+        .def(py::self != py::self)
+        .def("__str__", [](const gr::tag_t& tag) -> std::string {
+            std::string ret = fmt::format("{}:\n", tag.offset());
+            for (const auto& [key, value] : tag.map()) {
+                ret += "\t[" + key + "]\n";
+            }
+            return ret;
+        });
 }

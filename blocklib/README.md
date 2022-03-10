@@ -51,6 +51,7 @@ The constructor has the form:
 
 The INHERITED_CONSTRUCTORS macro covers the initialization of the base classes since the block class is virtual, this would require initializing the same thing multiple times.  In the case of a templated block class, INHERITED_CONSTRUCTORS takes the template parameter, e.g. INHERITED_CONSTRUCTORS(T).
 
+Each of the parameters that are defined in the `.yml` are available as a member of the `args` struct.  So what previously would have been a parameter to the constructor is now lumped into this struct so the constructor signature does not change.
 
 ### Work Function
 Work functions are conceptually the same as GR3, but syntactically slightly different to keep the block API separated from the scheduler API.

@@ -4,34 +4,33 @@ label: Vector Sink
 blocktype: sync_block
 
 typekeys:
-    - id: T
-      type: class
-      options: 
-        - value: gr_complex 
-          suffix: c 
-        - value: float
-          suffix: f 
-        - value: int32_t 
-          suffix: i 
-        - value: int16_t
-          suffix: s   
-        - value: uint8_t
-          suffix: b   
-
+  - id: T
+    type: class
+    options:
+      - value: gr_complex
+        suffix: c
+      - value: float
+        suffix: f
+      - value: int32_t
+        suffix: i
+      - value: int16_t
+        suffix: s
+      - value: uint8_t
+        suffix: b
 
 parameters:
--   id: vlen
+  - id: vlen
     label: Vec. Length
     dtype: size_t
     settable: false
     gettable: true
     default: 1
--   id: reserve_items
+  - id: reserve_items
     label: Reserve Items
     dtype: size_t
     settable: false
     default: 1024
--   id: data
+  - id: data
     label: Data
     dtype: T
     container: vector
@@ -39,19 +38,22 @@ parameters:
     cotr: false
     grc:
       hide: all
-# callbacks:
-# -   id: data
-#     return: std::vector<T>
+      
+callbacks:
+  # -   id: data
+  #     return: std::vector<T>
+  - id: tags
+    return: std::vector<gr::tag_t>
 
 ports:
--   domain: stream
+  - domain: stream
     id: in
     direction: input
     type: typekeys/T
     dims: parameters/vlen
 
 implementations:
--   id: cpu
+  - id: cpu
 # -   id: cuda
 
 file_format: 1

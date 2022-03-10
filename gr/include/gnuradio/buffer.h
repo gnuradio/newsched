@@ -220,8 +220,8 @@ public:
     const std::vector<tag_t>& tags() const { return _tags; }
 
     void add_tag(tag_t tag);
-    void
-    add_tag(uint64_t offset, std::map<std::string, pmtf::pmt> map);
+    void add_tag(uint64_t offset, tag_map map);
+    void add_tag(uint64_t offset, pmtf::map map);
 
     void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
 

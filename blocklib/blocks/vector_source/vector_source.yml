@@ -29,7 +29,7 @@ parameters:
 -   id: repeat
     label: Repeat
     dtype: bool
-    settable: false
+    settable: true
     default: 'false'
 -   id: vlen
     label: Vec. Length
@@ -45,6 +45,17 @@ parameters:
     grc:
       default: '[]'
     serializable: false
+
+callbacks:
+- id: set_data_and_tags
+  return: void
+  args:
+  - id: data
+    dtype: std::vector<T>
+  - id: tags
+    dtype: std::vector<gr::tag_t>
+- id: rewind
+  return: void
 
 ports:
 -   domain: stream
