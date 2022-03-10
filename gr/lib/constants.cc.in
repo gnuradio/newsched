@@ -23,9 +23,9 @@ namespace gr {
 const std::string prefix()
 {
     // Use "GR_PREFIX" environment variable when specified
-    const char* prefix = std::getenv("GR_PREFIX");
-    if (prefix != NULL)
-        return prefix;
+    const char* _prefix = std::getenv("GR_PREFIX");
+    if (_prefix != NULL)
+        return _prefix;
 
     path prefix_rel_lib = "@prefix_relative_to_lib@";
     path gr_runtime_lib_path = gr::symbol_location_ptr(prefix);
