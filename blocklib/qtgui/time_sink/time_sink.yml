@@ -59,19 +59,19 @@ parameters:
     serializable: false
 # Includes go in the blockname.h
 includes: 
-  - value: qapplication.h
-  - value: qwt_legend.h
-  - value: qwt_painter.h
-  - value: qwt_plot.h
-  - value: qwt_plot_canvas.h
-  - value: qwt_plot_curve.h
-  - value: qwt_plot_magnifier.h
-  - value: qwt_plot_marker.h
-  - value: qwt_plot_panner.h
-  - value: qwt_plot_zoomer.h
-  - value: qwt_scale_engine.h
-  - value: qwt_scale_widget.h
-  - value: qwt_symbol.h
+  - qapplication.h
+  - qwt_legend.h
+  - qwt_painter.h
+  - qwt_plot.h
+  - qwt_plot_canvas.h
+  - qwt_plot_curve.h
+  - qwt_plot_magnifier.h
+  - qwt_plot_marker.h
+  - qwt_plot_panner.h
+  - qwt_plot_zoomer.h
+  - qwt_scale_engine.h
+  - qwt_scale_widget.h
+  - qwt_symbol.h
 
 ports:
 -   domain: stream

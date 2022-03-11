@@ -1,0 +1,18 @@
+waveform_type:
+  # type: uint32_t # Only specify if necessary
+  enumerators:  
+  - id: constant
+    value: 100 # unnecessary
+  - id: sin
+  - id: cos
+  - id: square
+  - id: triangle
+  - id: sawtooth
+
+noise_type:
+  enumerators:
+  - id: uniform
+    value: 200 # unnecessary
+  - id: gaussian
+  - id: laplacian
+  - id: impulse

@@ -1,0 +1,63 @@
+module: analog
+block: sig_source
+label: Signal Source
+blocktype: sync_block
+includes:
+  - gnuradio/analog/enums.h
+  
+typekeys: 
+  - id: T
+    type: class
+    options: 
+      - value: int8_t
+        suffix: b
+      - value: int16_t
+        suffix: s  
+      - value: int32_t 
+        suffix: i 
+      - value: float
+        suffix: f   
+      - value: gr_complex 
+        suffix: c 
+
+parameters:
+-   id: sampling_freq
+    label: Sampling Freq
+    dtype: double
+    settable: true
+-   id: waveform
+    label: Waveform
+    dtype: gr::analog::waveform_type
+    is_enum: true
+    settable: true
+-   id: frequency
+    label: Wave Freq
+    dtype: double
+    settable: true
+-   id: ampl
+    label: Amplitude
+    dtype: double
+    settable: true
+-   id: offset
+    label: Offset
+    dtype: T
+    settable: true
+    default: 0
+-   id: phase
+    label: Phase
+    dtype: double
+    settable: true
+    default: 0    
+
+# Example Ports
+ports:
+-   domain: stream
+    id: out
+    direction: output
+    type: typekeys/T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

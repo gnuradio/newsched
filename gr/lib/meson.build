@@ -23,6 +23,15 @@ constants_file = configure_file(input: 'constants.cc.in',
                           configuration: cdata,
                           install: false)
 
+#### Generate the Sin/Cos Tables
+srcs = custom_target('gen_sin_table',
+                        input : [],
+                        output : ['sine_table.h'], 
+                        command : ['python3', join_paths(meson.current_source_dir(), 'math','gen_sine_table.py'),
+                            '--output', '@OUTPUT0@'],  
+                        install : false)
+gr_deps += declare_dependency(sources : [srcs[0]] )
+
 
 runtime_sources = [
   constants_file,
@@ -55,7 +64,8 @@ runtime_sources = [
   # mmap requires librt - FIXME - handle this a conditional dependency
   'buffer_cpu_vmcirc_mmap_shm_open.cc',
   'buffer_net_zmq.cc',
-  'rpc_client_interface.cc'
+  'rpc_client_interface.cc',
+  'math/fxpt.cc'
 ]
 
 if USE_CUDA

@@ -29,7 +29,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     }
                     e->src().port()->set_buffer(buf);
 
-                    d_logger->info(
+                    d_debug_logger->debug(
                                 "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
                                 e->identifier(),
                                 buf->type(),
@@ -40,7 +40,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
             }
             else {
                 auto buf = e->src().port()->buffer();
-                d_logger->info(
+                d_debug_logger->debug(
                             "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
                             e->identifier(),
                             buf->type(),
@@ -70,7 +70,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
 
                 if (ed[0]->buf_properties() &&
                     ed[0]->buf_properties()->reader_factory()) {
-                    d_logger->info(
+                    d_debug_logger->debug(
                                 "Creating Buffer Reader for Edge: {}, Independently",
                                 ed[0]->identifier());
                     p->set_buffer_reader(ed[0]->buf_properties()->reader_factory()(
@@ -79,7 +79,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                 }
                 else {
                     
-                        d_logger->info(
+                        d_debug_logger->debug(
                         "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
                         ed[0]->identifier(),
                         ed[0]->src().identifier());
