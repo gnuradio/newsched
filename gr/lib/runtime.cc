@@ -73,7 +73,7 @@ void runtime::initialize(graph_sptr fg)
     flowgraph::check_connections(fg);
     gr::logger_ptr d_logger, d_debug_logger;
     gr::configure_default_loggers(d_logger, d_debug_logger, fmt::format("runtime_init_{}", fg->name()));
-    d_logger->info("initialize {}", d_schedulers.size());
+    d_debug_logger->debug("initialize {}", d_schedulers.size());
 
     if (d_schedulers.size() == 1) {
         d_rtmon = std::make_shared<runtime_monitor>(

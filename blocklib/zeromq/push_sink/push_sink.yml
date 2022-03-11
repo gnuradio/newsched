@@ -4,7 +4,7 @@ label: PUSH Sink
 blocktype: sync_block
 # inherits: gr::zeromq::base
 # includes: 
-#   - value: gnuradio/zeromq/base.h
+#   - gnuradio/zeromq/base.h
 
 parameters:
     - id: itemsize

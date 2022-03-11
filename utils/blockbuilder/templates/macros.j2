@@ -14,7 +14,7 @@
 
 {% macro includes(includes) -%}
 {% for incl in includes %}
-#include <{{incl['value']}}>
+#include <{{incl}}>
 {% endfor %}
 {% endmacro %}
 
@@ -203,7 +203,7 @@ protected:
     //param_{{p['id']}} = {{ 'scalar' if 'container' not in p else p['container']}}_param<{{p['dtype']}}>::make(params::id_{{p['id']}}, 
     //    "{{p['id']}}"{{", args."+p['id'] if 'cotr' not in p or p['cotr']}});
     {%if 'cotr' not in p or p['cotr']%}
-    param_{{p['id']}} = std::make_shared<pmtf::pmt>({{"args."+p['id']}});
+    param_{{p['id']}} = std::make_shared<pmtf::pmt>({{'(int)' if p['is_enum']}}{{"args."+p['id']}});
     {%else%}
     param_{{p['id']}} = std::make_shared<pmtf::pmt>(pmtf::{{'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>());
     {%endif%}

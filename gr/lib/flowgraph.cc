@@ -142,7 +142,8 @@ void flowgraph::wait()
 void flowgraph::run()
 {
     if (!d_runtime_sptr) {
-        throw new std::runtime_error("run: No runtime has been created");
+        d_runtime_sptr = gr::runtime::make();
+        d_runtime_sptr->initialize(base());
     }
     d_runtime_sptr->run();
 }

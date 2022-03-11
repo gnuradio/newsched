@@ -3,7 +3,7 @@ block: msg_forward
 label: Message Forward
 blocktype: sync_block
 includes: 
-  - value: pmtf/wrap.hpp
+  - pmtf/wrap.hpp
 
 parameters:
 -   id: max_messages

@@ -47,7 +47,7 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 
     {% for p in parameters -%}
     {% if ('cotr' not in p or p['cotr']) and ('serializable' not in p or p['serializable'])%}
-    args.{{p['id']}} = pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(deserialize_param_to_pmt(json_obj["{{p['id']}}"].get<std::string>()));
+    args.{{p['id']}} = {{'('+p['dtype']+')' if p['is_enum']}}pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else 'int' if p['is_enum'] else p['dtype']}}>(deserialize_param_to_pmt(json_obj["{{p['id']}}"].get<std::string>()));
     {% endif %}
     {% endfor -%}
 
@@ -67,14 +67,22 @@ template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not 
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 void {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::set_{{p['id']}}({{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{p['id']}})
 {
-    return request_parameter_change(params::id_{{p['id']}}, {{p['id']}});
+    return request_parameter_change(params::id_{{p['id']}}, {{"(int)" if p['is_enum']}}{{p['id']}});
 }
 {% endif -%}
 {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 {{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}} {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::{{p['id']}}()
 {
+{% if p['is_enum'] %}
+{% if 'container' in p and p['container'] == 'vector' %}
+    return pmtf::get_as<{{ 'std::vector<int>' }}>(request_parameter_query(params::id_{{p['id']}}));
+{% else %}
+    return ({{p['dtype']}}) pmtf::get_as<int>(request_parameter_query(params::id_{{p['id']}}));
+{% endif %}
+{% else %}
     return pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(request_parameter_query(params::id_{{p['id']}}));
+{% endif %}
 }
 {% endif %}
 {% endfor -%}
