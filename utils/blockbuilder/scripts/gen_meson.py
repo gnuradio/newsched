@@ -88,15 +88,11 @@ def main():
                     print('   ' + y)
                     blockdirs.append(os.path.basename(y))
 
-            template = env.get_template('module.meson.build.j2')
-            rendered = template.render(module=module_name, blocks=blockdirs)
-            with open(meson_filename, 'w') as file:
-                print(f'generating: {meson_filename}')
-                file.write(rendered)
+            print(os.path.join(current_module_path,'enums.yml'))
+            has_enums = os.path.exists(os.path.join(current_module_path,'enums.yml'))
 
-            
             template = env.get_template('module.meson.build.j2')
-            rendered = template.render(module=module_name, blocks=blockdirs)
+            rendered = template.render(module=module_name, blocks=blockdirs, has_enums=has_enums)
             with open(meson_filename, 'w') as file:
                 print(f'generating: {meson_filename}')
                 file.write(rendered)
