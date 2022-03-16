@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2004, 2007, 2010, 2012, 2013, 2020 Free Software Foundation, Inc.
 #
