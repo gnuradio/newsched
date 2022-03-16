@@ -12,6 +12,25 @@ subdir('include/gnuradio/{{module}}')
 {{module}}_pybind_names = []
 {{module}}_deps = []
 
+{% if has_enums -%}
+gen_srcs = custom_target('gen_{{module}}_enums',
+                        input : ['enums.yml'],
+                        output : ['enums.h','enums_pybind.cc'], 
+                        command : ['python3', join_paths(SCRIPTS_DIR,'process_module_enums.py'),
+                            '--module', '{{module}}',
+                            '--yaml_file', '@INPUT@', 
+                            '--output_h', '@OUTPUT0@', 
+                            '--output_pybind', '@OUTPUT1@', 
+                            '--build_dir', meson.build_root()],
+                        install : true,
+                        install_dir : ['include/gnuradio/{{module}}', false])
+
+if get_option('enable_python') 
+    {{module}}_pybind_sources += gen_srcs[1]
+    {{module}}_pybind_names += 'enums'
+endif
+{% endif %}
+
 # Individual block subdirectories
 {% for b in blocks -%}
 subdir('{{b}}')
