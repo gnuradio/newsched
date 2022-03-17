@@ -18,7 +18,7 @@ namespace math {
 template <class T>
 multiply_const_cpu<T>::multiply_const_cpu(
     const typename multiply_const<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T), d_k(args.k), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen)
 {
 }
 
