@@ -1,8 +1,10 @@
 #include <gnuradio/block.h>
 #include <gnuradio/scheduler.h>
 #include <pmtf/wrap.hpp>
-
+#include <thread>
+#include <chrono>
 #include <gnuradio/pyblock_detail.h>
+#include <gnuradio/scheduler_message.h>
 
 #include <nlohmann/json.hpp>
 
@@ -237,6 +239,22 @@ void block::from_json(const std::string& json_str)
 pmtf::pmt block::deserialize_param_to_pmt(const std::string& encoded_str)
 {
     return pmtf::pmt::from_base64(encoded_str);
+}
+
+
+void block::come_back_later(size_t count_ms)
+{
+    if (!p_scheduler) {
+        return;
+    }
+    // Launch a thread to come back and try again some time later
+    std::thread t([this, count_ms]() {
+        d_debug_logger->debug("Setting timer to notify scheduler in {} ms", count_ms);
+        std::this_thread::sleep_for(std::chrono::milliseconds(count_ms));
+        p_scheduler->push_message(std::make_shared<scheduler_action>(
+            scheduler_action_t::NOTIFY_INPUT));
+    });
+    t.detach();
 }
 
 } // namespace gr

@@ -36,13 +36,7 @@ work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& wor
             /* Try to get the next message */
             if (!load_message(first)) {
                 // Launch a thread to come back and try again some time later
-                std::thread t([this]() {
-                    d_debug_logger->debug("ZMQ base_source sleeping");
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                    this->p_scheduler->push_message(std::make_shared<scheduler_action>(
-                        scheduler_action_t::NOTIFY_INPUT));
-                });
-                t.detach();
+                come_back_later(100);
                 break; /* No message, we're done for now */
             }
 
