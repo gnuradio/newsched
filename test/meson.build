@@ -1,94 +1,33 @@
-srcs = ['qa_default_runtime.cc']
-e = executable('qa_default_runtime', 
-    srcs, 
-    include_directories : incdir,
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
+
+# GR namespace tests
+qa_srcs = ['qa_default_runtime',
+           'qa_scheduler_nbt',
+           'qa_block_grouping',
+           'qa_single_mapped_buffers',
+           'qa_message_ports',
+           'qa_tags',
+           'qa_zmq_buffers',
+           'qa_fast_atan2f',
+           'qa_fxpt_nco',
+           'qa_fxpt_vco',
+           'qa_fxpt',
+           'qa_math'
+          ]
+deps = [newsched_gr_dep,
                 newsched_blocklib_blocks_dep,
                 newsched_blocklib_math_dep,
                 newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('Basic Default Runtime Tests', e, env: TEST_ENV)
+                gtest_dep]
 
-srcs = ['qa_scheduler_nbt.cc']
-e = executable('qa_scheduler_nbt', 
-    srcs, 
-    include_directories : incdir,
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('Multi Threaded Scheduler Tests', e, env: TEST_ENV)
-
-srcs = ['qa_block_grouping.cc']
-e = executable('qa_block_grouping', 
-    srcs, 
-    include_directories : incdir, 
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('NBT Block Grouping Tests', e, env: TEST_ENV)
-
-srcs = ['qa_single_mapped_buffers.cc']
-e = executable('qa_single_mapped_buffers', 
-    srcs, 
-    include_directories : incdir, 
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-
-test('NBT Single Mapped Buffers', e, env: TEST_ENV)
-
-srcs = ['qa_message_ports.cc']
-e = executable('qa_message_ports', 
-    srcs, 
-    include_directories : incdir, 
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('NBT Message Port Tests', e, env: TEST_ENV)
-
-srcs = ['qa_tags.cc']
-e = executable('qa_tags', 
-    srcs, 
-    include_directories : incdir, 
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('NBT Tags Tests', e, env: TEST_ENV)
-
-srcs = ['qa_zmq_buffers.cc']
-e = executable('qa_zmq_buffers', 
-    srcs, 
-    include_directories : incdir, 
-    link_language : 'cpp',
-    dependencies: [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
-                gtest_dep], 
-    install : true)
-test('NBT ZMQ Custom Buffers', e, env: TEST_ENV)
+foreach qa : qa_srcs
+    e = executable(qa, 
+        qa + '.cc', 
+        include_directories : incdir, 
+        link_language : 'cpp',
+        dependencies: deps, 
+        install : false)
+    test(qa, e, env: TEST_ENV)
+endforeach
 
 test('Basic Python', py3, args : files('qa_basic.py'), env: TEST_ENV)
 test('Block Parameters', py3, args : files('qa_parameters.py'), env: TEST_ENV)
