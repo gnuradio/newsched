@@ -12,7 +12,7 @@
 #include "sig_source_cpu_gen.h"
 
 #include <algorithm>
-#include <gnuradio/grmath.h>
+#include <gnuradio/kernel/math/math.h>
 
 namespace gr {
 namespace analog {

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/analog/noise_source.h>
-#include <gnuradio/random.h>
+#include <gnuradio/kernel/math/random.h>
 
 namespace gr {
 namespace analog {
@@ -26,7 +26,7 @@ public:
                                     std::vector<block_work_output_sptr>& work_output) override;
 
 private:
-    gr::random d_rng;
+    kernel::math::random d_rng;
 };
 
 

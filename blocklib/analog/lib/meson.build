@@ -1,6 +1,6 @@
-analog_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep]
+analog_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 
-analog_sources += 'kernel/agc.cc'
+# analog_sources += 'kernel/agc.cc'
 block_cpp_args = ['-DHAVE_CPU']
 # if cuda_dep.found() and get_option('enable_cuda')
 #     block_cpp_args += '-DHAVE_CUDA'

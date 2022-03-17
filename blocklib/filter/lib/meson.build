@@ -1,13 +1,13 @@
 sources = [
-    'moving_averager.cc',
-    'fir_filter.cc',
-    'mmse_fir_interpolator_ff.cc',
-    'polyphase_filterbank.cc',
-    'firdes.cc'
+    # 'moving_averager.cc',
+    # 'fir_filter.cc',
+    # 'mmse_fir_interpolator_ff.cc',
+    # 'polyphase_filterbank.cc',
+    # 'firdes.cc'
 ]
 
 filter_sources += sources
-filter_deps += [newsched_gr_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep]
+filter_deps += [newsched_gr_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 link_args = []
 block_cpp_args = ['-DHAVE_CPU']
 if USE_CUDA

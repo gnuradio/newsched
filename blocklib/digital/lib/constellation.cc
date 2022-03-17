@@ -13,7 +13,7 @@
 #endif
 
 #include <gnuradio/digital/constellation.h>
-#include <gnuradio/grmath.h>
+#include <gnuradio/kernel/math/math.h>
 
 
 #include <cassert>
@@ -323,8 +323,8 @@ std::vector<float> constellation::soft_decision_maker(gr_complex sample)
     if (has_soft_dec_lut()) {
         // Clip to just below 1 --> at 1, we can overflow the index
         // that will put us in the next row of the 2D LUT.
-        float xre = branchless_clip(sample.real(), 0.99);
-        float xim = branchless_clip(sample.imag(), 0.99);
+        float xre = gr::kernel::math::branchless_clip(sample.real(), 0.99);
+        float xim = gr::kernel::math::branchless_clip(sample.imag(), 0.99);
 
         // We normalize the constellation in the ctor, so we know that
         // the maximum dimensions go from -1 to +1. We can infer the x

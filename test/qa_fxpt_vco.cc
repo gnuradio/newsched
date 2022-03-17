@@ -8,11 +8,13 @@
  *
  */
 
-#include "vco.h"
-#include <gnuradio/fxpt_vco.h>
+#include <gnuradio/kernel/math/vco.h>
+#include <gnuradio/kernel/math/fxpt_vco.h>
 #include <unistd.h>
 #include <gtest/gtest.h>
 #include <cmath>
+
+using namespace gr::kernel::math;
 
 static const float SIN_COS_TOLERANCE = 1e-5;
 
@@ -25,8 +27,8 @@ static double max_d(double a, double b) { return fabs(a) > fabs(b) ? a : b; }
 
 TEST(FxptVco, t0)
 {
-    gr::vco<float, float> ref_vco;
-    gr::fxpt_vco new_vco;
+    vco<float, float> ref_vco;
+    fxpt_vco new_vco;
     double max_error = 0, max_phase_error = 0;
     float input[SIN_COS_BLOCK_SIZE];
 
@@ -54,8 +56,8 @@ TEST(FxptVco, t0)
 
 TEST(FxptVco, t1)
 {
-    gr::vco<float, float> ref_vco;
-    gr::fxpt_vco new_vco;
+    vco<float, float> ref_vco;
+    fxpt_vco new_vco;
     std::vector<float> ref_block(SIN_COS_BLOCK_SIZE);
     std::vector<float> new_block(SIN_COS_BLOCK_SIZE);
     std::vector<float> input(SIN_COS_BLOCK_SIZE);
@@ -80,8 +82,8 @@ TEST(FxptVco, t1)
 
 TEST(FxptVco, t2)
 {
-    gr::vco<gr_complex, float> ref_vco;
-    gr::fxpt_vco new_vco;
+    vco<gr_complex, float> ref_vco;
+    fxpt_vco new_vco;
     std::vector<gr_complex> ref_block(SIN_COS_BLOCK_SIZE);
     std::vector<gr_complex> new_block(SIN_COS_BLOCK_SIZE);
     std::vector<float> input(SIN_COS_BLOCK_SIZE);

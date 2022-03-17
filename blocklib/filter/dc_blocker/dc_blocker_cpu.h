@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/filter/dc_blocker.h>
-#include <gnuradio/filter/moving_averager.h>
+#include <gnuradio/kernel/filter/moving_averager.h>
 
 namespace gr {
 namespace filter {
@@ -31,10 +31,10 @@ public:
 protected:
     int d_length;
     bool d_long_form;
-    kernel::moving_averager<T> d_ma_0;
-    kernel::moving_averager<T> d_ma_1;
-    std::unique_ptr<kernel::moving_averager<T>> d_ma_2;
-    std::unique_ptr<kernel::moving_averager<T>> d_ma_3;
+    kernel::filter::moving_averager<T> d_ma_0;
+    kernel::filter::moving_averager<T> d_ma_1;
+    std::unique_ptr<kernel::filter::moving_averager<T>> d_ma_2;
+    std::unique_ptr<kernel::filter::moving_averager<T>> d_ma_3;
     std::deque<T> d_delay_line;
 };
 

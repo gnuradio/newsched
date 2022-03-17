@@ -21,7 +21,7 @@
 #include <QtWidgets/QtWidgets>
 #endif
 
-#include <gnuradio/filter/firdes.h>
+#include <gnuradio/kernel/filter/firdes.h>
 #include <gnuradio/qtgui/qtgui_types.h>
 #include <gnuradio/qtgui/trigger_mode.h>
 #include <qwt_symbol.h>

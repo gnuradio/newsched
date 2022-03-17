@@ -8,11 +8,13 @@
  *
  */
 
-#include <gnuradio/fxpt_nco.h>
-#include <gnuradio/nco.h>
+#include <gnuradio/kernel/math/fxpt_nco.h>
+#include <gnuradio/kernel/math/nco.h>
 #include <unistd.h>
 #include <gtest/gtest.h>
 #include <cmath>
+
+using namespace gr::kernel::math;
 
 static const float SIN_COS_TOLERANCE = 1e-5;
 
@@ -26,8 +28,8 @@ static double max_d(double a, double b) { return fabs(a) > fabs(b) ? a : b; }
 
 TEST(FxptNco, t0)
 {
-    gr::nco<float, float> ref_nco;
-    gr::fxpt_nco new_nco;
+    nco<float, float> ref_nco;
+    fxpt_nco new_nco;
     double max_error = 0, max_phase_error = 0;
 
     ref_nco.set_freq((float)(2 * GR_M_PI / SIN_COS_FREQ));
@@ -62,8 +64,8 @@ TEST(FxptNco, t0)
 
 TEST(FxptNco, t1)
 {
-    gr::nco<float, float> ref_nco;
-    gr::fxpt_nco new_nco;
+    nco<float, float> ref_nco;
+    fxpt_nco new_nco;
     std::vector<gr_complex> ref_block(SIN_COS_BLOCK_SIZE);
     std::vector<gr_complex> new_block(SIN_COS_BLOCK_SIZE);
     double max_error = 0;
