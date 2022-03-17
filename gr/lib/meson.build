@@ -65,7 +65,8 @@ runtime_sources = [
   'buffer_cpu_vmcirc_mmap_shm_open.cc',
   'buffer_net_zmq.cc',
   'rpc_client_interface.cc',
-  'math/fxpt.cc'
+  'math/fxpt.cc',
+  'math/random.cc'
 ]
 
 if USE_CUDA
