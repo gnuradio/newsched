@@ -41,7 +41,6 @@ void bind_runtime_proxy(py::module&);
 void bind_graph_utils(py::module&);
 void bind_message_port_proxy(py::module&);
 void bind_rpc_client_interface(py::module&);
-void bind_random(py::module&);
 #ifdef HAVE_CUDA
 void bind_buffer_cuda(py::module&);
 void bind_buffer_cuda_pinned(py::module&);
@@ -89,7 +88,6 @@ PYBIND11_MODULE(gr_python, m)
     bind_graph_utils(m);
     bind_message_port_proxy(m);
     bind_rpc_client_interface(m);
-    bind_random(m);
 #ifdef HAVE_CUDA
     bind_buffer_cuda(m);
     bind_buffer_cuda_pinned(m);

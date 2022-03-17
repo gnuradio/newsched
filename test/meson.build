@@ -17,7 +17,8 @@ deps = [newsched_gr_dep,
                 newsched_blocklib_blocks_dep,
                 newsched_blocklib_math_dep,
                 newsched_scheduler_nbt_dep,
-                gtest_dep]
+                gtest_dep,
+                gr_kernel_lib_dep]
 
 foreach qa : qa_srcs
     e = executable(qa, 

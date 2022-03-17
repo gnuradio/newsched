@@ -7,9 +7,11 @@
  *
  */
 
-#include <gnuradio/grmath.h>
+#include <gnuradio/kernel/math/math.h>
 #include <gtest/gtest.h>
 #include <cmath>
+
+using namespace gr::kernel::math;
 
 TEST(Math, test_binary_slicer1)
 {
@@ -18,12 +20,12 @@ TEST(Math, test_binary_slicer1)
     unsigned int y;
 
     for (unsigned int i = 0; i < 5; i++) {
-        y = gr::binary_slicer(x[i]);
+        y = binary_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 
     for (unsigned int i = 0; i < 5; i++) {
-        y = gr::branchless_binary_slicer(x[i]);
+        y = branchless_binary_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 }
@@ -38,12 +40,12 @@ TEST(Math, test_quad_0deg_slicer1)
     unsigned int y;
 
     for (unsigned int i = 0; i < 4; i++) {
-        y = gr::quad_0deg_slicer(x[i]);
+        y = quad_0deg_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 
     for (unsigned int i = 0; i < 4; i++) {
-        y = gr::branchless_quad_0deg_slicer(x[i]);
+        y = branchless_quad_0deg_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 }
@@ -59,12 +61,12 @@ TEST(Math, test_quad_45deg_slicer1)
     unsigned int y;
 
     for (unsigned int i = 0; i < 4; i++) {
-        y = gr::quad_45deg_slicer(x[i]);
+        y = quad_45deg_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 
     for (unsigned int i = 0; i < 4; i++) {
-        y = gr::branchless_quad_45deg_slicer(x[i]);
+        y = branchless_quad_45deg_slicer(x[i]);
         EXPECT_EQ(y, z[i]);
     }
 }

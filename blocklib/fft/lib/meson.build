@@ -1,8 +1,6 @@
-fftw_dep = dependency('fftw3f')
+fft_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 
-fft_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep, fftw_dep]
-
-fft_sources += ['fftw_fft.cc','window.cc']
+# fft_sources += ['fftw_fft.cc','window.cc']
 link_args = []
 
 if USE_CUDA

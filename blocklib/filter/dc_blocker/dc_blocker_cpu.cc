@@ -24,8 +24,8 @@ dc_blocker_cpu<T>::dc_blocker_cpu(const typename dc_blocker<T>::block_args& args
       d_ma_1(args.D)
 {
     if (d_long_form) {
-        d_ma_2 = std::make_unique<kernel::moving_averager<T>>(d_length);
-        d_ma_3 = std::make_unique<kernel::moving_averager<T>>(d_length);
+        d_ma_2 = std::make_unique<kernel::filter::moving_averager<T>>(d_length);
+        d_ma_3 = std::make_unique<kernel::filter::moving_averager<T>>(d_length);
         d_delay_line = std::deque<T>(d_length - 1, 0);
     }
 }

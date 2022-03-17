@@ -95,6 +95,7 @@ if (get_option('enable_testing'))
 endif
 
 subdir('gr')
+subdir('kernel')
 subdir('blocklib')
 subdir('schedulers')
 subdir('docs')

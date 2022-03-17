@@ -12,7 +12,7 @@
 #pragma once
 
 #include <gnuradio/fft/fft.h>
-#include <gnuradio/fft/fftw_fft.h>
+#include <gnuradio/kernel/fft/fftw_fft.h>
 
 namespace gr {
 namespace fft {
@@ -34,7 +34,7 @@ protected:
     std::vector<float> d_window;
     bool d_shift;
 
-    fftw_fft<gr_complex, forward> d_fft;
+    kernel::fft::fftw_fft<gr_complex, forward> d_fft;
 
     void fft_and_shift(const T* in, gr_complex* out);
 };

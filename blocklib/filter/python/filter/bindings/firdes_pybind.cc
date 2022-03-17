@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/filter/firdes.h>
+#include <gnuradio/kernel/filter/firdes.h>
 // pydoc.h is automatically generated in the build directory
 // #include <firdes_pydoc.h>
 

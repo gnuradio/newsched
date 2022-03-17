@@ -22,7 +22,6 @@ runtime_pybind_sources = files([
     'graph_utils_pybind.cc',
     'message_port_proxy_pybind.cc',
     'rpc_client_interface_pybind.cc',
-    'random_pybind.cc'
  ] )
 
 cpp_args = []

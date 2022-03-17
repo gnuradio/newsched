@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/fft/window.h>
+#include <gnuradio/kernel/fft/window.h>
 
 void bind_window(py::module& m)
 {

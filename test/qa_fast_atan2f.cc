@@ -9,9 +9,11 @@
  */
 
 #include <gtest/gtest.h>
-#include <gnuradio/grmath.h>
+#include <gnuradio/kernel/math/math.h>
 #include <cmath>
 #include <limits>
+
+using namespace gr::kernel::math;
 
 TEST(FastAtan2f, t1)
 {
@@ -25,7 +27,7 @@ TEST(FastAtan2f, t1)
             float y = j / 10.0;
             c_atan2 = atan2(y, x);
 
-            gr_atan2f = gr::fast_atan2f(y, x);
+            gr_atan2f = fast_atan2f(y, x);
 
             EXPECT_NEAR(c_atan2, gr_atan2f, 0.001);
         }
@@ -45,13 +47,13 @@ TEST(FastAtan2f, t2)
     x = inf;
     y = 0;
     c_atan2 = atan2(y, x);
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(c_atan2, gr_atan2f, 0.0);
 
     x = -inf;
     y = 0;
     c_atan2 = atan2(y, x);
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(c_atan2, gr_atan2f, 0.0);
 
 
@@ -59,54 +61,54 @@ TEST(FastAtan2f, t2)
     x = 0;
     y = inf;
     c_atan2 = atan2(y, x);
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(c_atan2, gr_atan2f, 0.0);
 
     x = 0;
     y = -inf;
     c_atan2 = atan2(y, x);
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(c_atan2, gr_atan2f, 0.0);
 
 
     /* Test x and y as INF */
     x = inf;
     y = inf;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_TRUE(std::isnan(gr_atan2f));
 
 
     /* Test x as NAN */
     x = nan;
     y = 0;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(0.0f, gr_atan2f, 0.0001);
 
     x = -nan;
     y = 0;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(0.0f, gr_atan2f, 0.0001);
 
 
     /* Test y as NAN */
     x = 0;
     y = nan;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(0.0f, gr_atan2f, 0.0001);
 
     x = 0;
     y = -nan;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_NEAR(0.0f, gr_atan2f, 0.0001);
 
     /* Test mixed NAN and INF */
     x = inf;
     y = nan;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_TRUE(std::isnan(gr_atan2f));
 
     x = nan;
     y = inf;
-    gr_atan2f = gr::fast_atan2f(y, x);
+    gr_atan2f = fast_atan2f(y, x);
     EXPECT_TRUE(std::isnan(gr_atan2f));
 }

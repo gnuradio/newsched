@@ -11,9 +11,9 @@
 #pragma once
 
 #include <gnuradio/analog/sig_source.h>
-#include <gnuradio/fxpt_nco.h>
+#include <gnuradio/kernel/math/fxpt_nco.h>
 #include <mutex>
-#include <gnuradio/grmath.h>
+#include <gnuradio/kernel/math/math.h>
 
 namespace gr {
 namespace analog {
@@ -50,7 +50,7 @@ public:
 
 private:
     // Declare private variables here
-    gr::fxpt_nco d_nco;
+    gr::kernel::math::fxpt_nco d_nco;
 
     // sig_source has some non thread safe accessors (for now)
     std::mutex d_mutex;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/filter/pfb_channelizer.h>
-#include <gnuradio/filter/polyphase_filterbank.h>
+#include <gnuradio/kernel/filter/polyphase_filterbank.h>
 
 #include <mutex>
 
@@ -19,7 +19,7 @@ namespace gr {
 namespace filter {
 
 template <class T>
-class pfb_channelizer_cpu : public pfb_channelizer<T>, kernel::polyphase_filterbank
+class pfb_channelizer_cpu : public pfb_channelizer<T>, kernel::filter::polyphase_filterbank
 {
 public:
     pfb_channelizer_cpu(const typename pfb_channelizer<T>::block_args& args);
