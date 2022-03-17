@@ -28,6 +28,7 @@ public:
          bool pass_tags,
          const std::string& key = "");
 
+    void set_vsize(size_t vsize) { d_vsize = vsize; }
 protected:
     std::string last_endpoint() const;
     zmq::context_t d_context;
