@@ -5,10 +5,6 @@ blocktype: sync_block
 # inherits: base
 
 parameters:
-    - id: itemsize
-      label: Item Size
-      dtype: size_t
-      settable: false
     - id: address
       label: IP Address
       dtype: std::string
@@ -28,7 +24,11 @@ parameters:
       dtype: int
       settable: false
       default: -1
-
+    - id: itemsize
+      label: Item Size
+      dtype: size_t
+      settable: false
+      default: 0
 ports:
     - domain: stream
       id: out
