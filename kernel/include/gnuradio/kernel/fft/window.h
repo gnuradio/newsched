@@ -15,6 +15,7 @@
 #include <vector>
 
 namespace gr {
+namespace kernel {
 namespace fft {
 
 class window
@@ -190,7 +191,7 @@ public:
     static std::vector<float> blackman_harris(int ntaps, int atten = 92);
 
     /*!
-     * Alias to gr::fft::window::blackman_harris.
+     * Alias to gr::kernel::fft::window::blackman_harris.
      */
     static std::vector<float> blackmanharris(int ntaps, int atten = 92);
 
@@ -366,4 +367,5 @@ public:
 };
 
 } /* namespace fft */
-} /* namespace gr */
+} // namespace kernel
+} // namespace gr

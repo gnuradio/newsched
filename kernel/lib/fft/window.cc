@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 namespace gr {
+namespace kernel {
 namespace fft {
 
 #define IzeroEPSILON 1E-21 /* Max error acceptable in Izero */
@@ -432,4 +433,5 @@ window::build(win_type type, int ntaps, double param, const bool normalize)
 }
 
 } /* namespace fft */
-} /* namespace gr */
+} // namespace kernel
+} // namespace gr

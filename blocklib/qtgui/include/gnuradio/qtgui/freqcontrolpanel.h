@@ -11,7 +11,7 @@
 #ifndef FREQ_CONTROL_PANEL_H
 #define FREQ_CONTROL_PANEL_H
 
-#include <gnuradio/fft/window.h>
+#include <gnuradio/kernel/fft/window.h>
 #include <gnuradio/qtgui/displayform.h>
 #include <gnuradio/qtgui/freqdisplayform.h>
 #include <QtGui/QtGui>
@@ -40,7 +40,7 @@ public slots:
     void toggleMinHold(bool en);
 
     void toggleFFTSize(int val);
-    void toggleFFTWindow(const gr::fft::window::win_type win);
+    void toggleFFTWindow(const gr::kernel::fft::window::win_type win);
 
     void toggleTriggerMode(gr::qtgui::trigger_mode mode);
 

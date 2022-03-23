@@ -126,15 +126,15 @@ callbacks:
 -   id: fft_average
     return: float
     const: true
-    # virtual void set_fft_window(const gr::fft::window::win_type win) = 0;
+    # virtual void set_fft_window(const gr::kernel::fft::window::win_type win) = 0;
 -   id: set_fft_window
     return: void
     args:
     - id: win
-      dtype: const gr::fft::window::win_type
-    # virtual gr::fft::window::win_type fft_window() = 0;
+      dtype: const gr::kernel::fft::window::win_type
+    # virtual gr::kernel::fft::window::win_type fft_window() = 0;
 -   id: fft_window
-    return: gr::fft::window::win_type
+    return: gr::kernel::fft::window::win_type
     const: true
     # //! If true, normalize window to unit power
     # virtual void set_fft_window_normalized(const bool enable) = 0;

@@ -47,7 +47,7 @@ void bind_firdes(py::module& m)
                     py::arg("sampling_freq"),
                     py::arg("cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -58,7 +58,7 @@ void bind_firdes(py::module& m)
                     py::arg("cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -68,7 +68,7 @@ void bind_firdes(py::module& m)
                     py::arg("sampling_freq"),
                     py::arg("cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -79,7 +79,7 @@ void bind_firdes(py::module& m)
                     py::arg("cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -90,7 +90,7 @@ void bind_firdes(py::module& m)
                     py::arg("low_cutoff_freq"),
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -102,7 +102,7 @@ void bind_firdes(py::module& m)
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -113,7 +113,7 @@ void bind_firdes(py::module& m)
                     py::arg("low_cutoff_freq"),
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -125,7 +125,7 @@ void bind_firdes(py::module& m)
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -136,7 +136,7 @@ void bind_firdes(py::module& m)
                     py::arg("low_cutoff_freq"),
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -148,7 +148,7 @@ void bind_firdes(py::module& m)
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -159,7 +159,7 @@ void bind_firdes(py::module& m)
                     py::arg("low_cutoff_freq"),
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
@@ -171,14 +171,14 @@ void bind_firdes(py::module& m)
                     py::arg("high_cutoff_freq"),
                     py::arg("transition_width"),
                     py::arg("attenuation_dB"),
-                    py::arg("window") = ::gr::fft::window::win_type::WIN_HAMMING,
+                    py::arg("window") = ::gr::kernel::fft::window::win_type::WIN_HAMMING,
                     py::arg("param") = 6.7599999999999998)
 
 
         .def_static("hilbert",
                     &firdes::hilbert,
                     py::arg("ntaps") = 19,
-                    py::arg("windowtype") = ::gr::fft::window::win_type::WIN_RECTANGULAR,
+                    py::arg("windowtype") = ::gr::kernel::fft::window::win_type::WIN_RECTANGULAR,
                     py::arg("param") = 6.7599999999999998)
 
 
