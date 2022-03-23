@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/kernel/fft/window.h>
-#include <gnuradio/kernel/gr_complex.h>
+#include <gnuradio/gr_complex.h>
 #include <cmath>
 #include <vector>
 

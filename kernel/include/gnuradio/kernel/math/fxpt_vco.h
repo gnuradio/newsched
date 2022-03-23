@@ -11,7 +11,7 @@
 #pragma once
 
 #include <gnuradio/kernel/math/fxpt.h>
-#include <gnuradio/kernel/gr_complex.h>
+#include <gnuradio/gr_complex.h>
 
 namespace gr {
 namespace kernel {

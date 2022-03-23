@@ -4,7 +4,7 @@ srcs = files([
  ] )
 
 cpp_args = []
-deps = [python3_dep, pybind11_dep]
+deps = [python3_dep, pybind11_dep, gr_kernel_lib_dep]
 
 kernel_math_pybind = py3_inst.extension_module('gr_python',
     srcs, 
