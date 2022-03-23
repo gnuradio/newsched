@@ -15,13 +15,13 @@ struct neighbor_interface
 In order to incorporate the `neighbor_interface` with the schedulers we will
 1. Derive from neighbor interface
 
-(`runtime/include/gnuradio/scheduler.hh`)
+(`runtime/include/gnuradio/scheduler.h`)
 ```diff
 -class scheduler : public std::enable_shared_from_this<scheduler>
 +class scheduler : public std::enable_shared_from_this<scheduler>, public neighbor_interface
 ```
 ## Partitioning the Flowgraph
-The burden is not on the user to create all these hidden connections such as Domain Adapters and Inter-Scheduler interfaces, so we take the simply-created flowgraph with blocks and edges, and partition it across the specified schedulers
+The burden is not on the user to create all these hidden connections such as Inter-Scheduler interfaces, so we take the simply-created flowgraph with blocks and edges, and partition it across the specified schedulers
 
 ### User Configuration
 Say the user wants to create a simple flowgraph which is `src->block1->block2->snk`, and there is a domain boundary between `block1` and `block2`.  The user needs to provide the following to inform the flowgraph partitioning where the blocks should go

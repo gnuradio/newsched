@@ -3,13 +3,10 @@
 
 ## Nodes
 
-Reference [commit](https://github.com/gnuradio/newsched/commit/b18d2fe2e2e4fbdee7d99f55da0b4a1c4c46df38)
-
-
 Everything that can be connected together in newsched derives from ***node***.  A node _has_ a name, and alias, an global id, and ports, and some methods to search through the port vectors.  Node is a pretty thin base class.
 
 ### Name (string)
-Upon instantiation, each node is given a name.  If the node is a block for example, it might be given the name `"add"`
+Upon instantiation, each node is given a name.  If the node is an `add` block for example, it might be given the name `"add"`
 
 ### Alias (string)
 A unique name that combines the name with another identifier.  Currently the identifier is the global id
@@ -21,12 +18,9 @@ The id represents a unique value for this node across all the nodes (and potenti
 The Nodeid generator is a singleton class that spits out incrementing integers so each node can have a unique ID.  This could be done in a more complex manner if desired.  It is called through the static method `nodeid_generator::get_id();`
 
 ### Ports (vector of port_base_sptr)
-The list of ports associated with this node
-
+The list of ports associated with this node.  There are additional convenience wrappers to access e.g. input ports, or message ports, or just the output stream ports.
 
 ## Block
-
-Reference [commit](https://github.com/gnuradio/newsched/commit/23a4a829fa8762ad1defa0bd3a9594753e1d0977)
 
 The block class is much more interesting than its base class because it is closer to where signal processing will take place.  Much of the functionality of GR has been stripped out in the above commit in order to provide a basic set of methods for running a simple flowgraph.  Just enough to get to a work function, and a reference to tags, though we won't be doing anything with them just yet.
 
@@ -63,11 +57,19 @@ is passed in.  This allows more complex operations to be done some particular bu
 (e.g. OpenCL) don't have unrestricted raw memory access.  The buffer also holds the tags, so these can be 
 accessed via convenience methods within `block_work_input` and `block_work_output`
 
+Inside the `work` function, the raw pointers can be obtained by calling the templated `items()` method on the `block_work_input` or `block_work_output` item.  For examples
+
+```cpp
+auto in = work_input[0]->items<float>();
+```
+
+The `void *` pointer from the buffer can also be accessed using `->raw_items()`
+
 ### Work function
 
 ```cpp
-virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) = 0;
+virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output) = 0;
 ```
 Some notable changes on the work function from GR
 
@@ -82,6 +84,8 @@ Some notable changes on the work function from GR
     - Blocks will be responsible for saving samples for their own history
 
 ### Tags
-`runtime/include/gnuradio/tag.hh` creates a tag class that looks very similar to GR, and it is intended that tags are used to attach metadata.
+`runtime/include/gnuradio/tag.h` creates a tag class that takes advantage of the new `pmtf` library (https://github.com/gnuradio/pmt).  This structure might change once tags are defined explicitly in the `pmtf` library
 
 The tags are associated with the buffer class, not the work I/O function
+
+[--> Next: Graphs and Buffers](04_GraphsBuffers)

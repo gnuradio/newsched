@@ -1,7 +1,5 @@
 # The Build System
 
-Reference [commit](https://github.com/gnuradio/newsched/commit/aea8908465bd497d94614eebac98e132d06d0216) 
-
 We have chosen to use [Meson Build](https://mesonbuild.com/), which greatly simplifies build configuration and has convenient mechanisms for cross compiling
 
 Take a look through the commit to see how simple it was to set up dependencies, and create build and installation targets. 

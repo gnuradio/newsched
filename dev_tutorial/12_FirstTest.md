@@ -1,7 +1,5 @@
 # The First Test
 
-Reference [commit](https://github.com/gnuradio/newsched/commit/91fe50e87b2a6e1e572cd0dde0e699460d975d86)
-
 We can now create a simple test case to try out our newly created blocks: `schedulers/st/test/qa_scheduler_st.cpp`
 
 The testing framework used is [gtest](https://github.com/google/googletest), which has already been added into the `meson.build` as a dependency

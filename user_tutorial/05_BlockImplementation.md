@@ -1,12 +1,12 @@
 # Block Implementation
 
-Let's take a look at what might be in our `foo_cpu.hh` and `foo_cpu.cc` file
+Let's take a look at what might be in our `foo_cpu.h` and `foo_cpu.cc` file
 
-## Implementation Header (`foo_cpu.hh`)
+## Implementation Header (`foo_cpu.h`)
 ```cpp
 #pragma once
 
-#include <gnuradio/myoot/foo.hh>
+#include <gnuradio/myoot/foo.h>
 
 namespace gr {
 namespace myoot {
@@ -46,8 +46,8 @@ At its simplest, the implementation source can be __just a work function__ :open
 us to the original design goal - `<insert signal processing here>`
 
 ```cpp
-#include "foo_cpu.hh"
-#include "foo_cpu_gen.hh"
+#include "foo_cpu.h"
+#include "foo_cpu_gen.h"
 
 namespace gr {
 namespace josh {
@@ -65,7 +65,7 @@ work_return_code_t foo_cpu::work(std::vector<block_work_input>& work_input,
 } // namespace gr
 ```
 
-We of course include `foo_cpu.hh`, but we also need to include `foo_cpu_gen.hh` - which is some
+We of course include `foo_cpu.h`, but we also need to include `foo_cpu_gen.h` - which is some
 boiler plate code necessary per implementation.  This includes the `make_cpu` method which 
 just wraps the constructor, and for templated blocks, the explicit instantiation for types
 that we specified in the yaml file

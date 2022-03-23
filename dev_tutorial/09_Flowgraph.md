@@ -1,31 +1,27 @@
 # The Flowgraph
 
-Reference [commit](https://github.com/gnuradio/newsched/commit/8bb970e59fd30baded00b6bf96a7f5fc23a663ad)
-
-The flowgraph is the highest level object, and what could be considered "launching an instance" of newsched.
+The flowgraph is just a `graph` (blocks and edges), but with some additional methods so that it can be used as the highest level of execution
 
 Flowgraph derives from _graph_, as it is used to connect _blocks_ together, and start and stop execution.  It is also given a scheduler object(s) to handle execution of the flowgraph
 
-The constructor is empty, but the main interface methods are:
+The constructor only consists of a `name`, but the main interface methods are (as they wrap `runtime`):
 
 ```cpp
-void set_scheduler(scheduler_sptr sched);
-void validate();
 void start();
 void stop();
 void wait();
 ```
 
-(more methods for setting multiple schedulers will be shown later)
+### check_connections
 
-### set_scheduler
-Simply stores the scheduler pointer for use by the execution commands
+Static method used ensure that a graph is connected correctly.  This method also sets itemsizes of ports that are previously set to 0 by inferring the size based on connected ports.
 
-### validate
-Kicks off the initialization of the scheduler(s).  Used to indicate that flowgraph configuration is complete
+### make_flat
+
+Used to return the flattened representation of the graph
 
 ### start/stop/wait
-Passes through start/stop/wait to the schedulers and the Flowgraph Monitor
+If using the default runtime, passes through start/stop/wait to the runtime object (and subsequently the runtime monitor)
 
 ---
 

@@ -23,6 +23,7 @@ In order to get more developers involved in the newsched project, which is aimed
 - [Multi-Threaded Scheduler](16_MTScheduler)
 - [CUDA Custom Buffers](17_CudaCustomBuffers)
 - [Benchmarking](18_Benchmarking)
+- [Distributed Flowgraphs](19_Distributed)
 - ... TODO
 - More Blocks
 - Block Parameters and Callbacks

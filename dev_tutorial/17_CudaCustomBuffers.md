@@ -43,11 +43,11 @@ We implement 2 types of CUDA custom buffers
 
 The `buffer_cuda_sm.cu` buffer class uses the single mapped buffer abstraction, but still working out some of the kinks
 
-`buffer_cuda_pinned.cu` is almost exactly the same as `simplebuffer.hpp` just with a CUDA host allocated pinned buffer instead of normal CPU memory.
+`buffer_cuda_pinned.cu` is almost exactly the same as `simplebuffer.h` just with a CUDA host allocated pinned buffer instead of normal CPU memory.
 
 `buffer_cuda.cu` is more interesting, especially in its `post_write` method.
 
-In `buffer_cuda.hh`, we have defined some convenience macros to wrap the buffer creation arguments:
+In `buffer_cuda.h`, we have defined some convenience macros to wrap the buffer creation arguments:
 ```c++
 #define CUDA_BUFFER_ARGS_H2D buffer_cuda_properties::make(buffer_cuda_type::H2D)
 #define CUDA_BUFFER_ARGS_D2H buffer_cuda_properties::make(buffer_cuda_type::D2H)

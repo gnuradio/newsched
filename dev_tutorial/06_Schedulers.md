@@ -1,7 +1,5 @@
 # Schedulers
 
-Reference [commit](https://github.com/gnuradio/newsched/commit/f008524aa786270519faefb409a611c3367994be)
-
 In this section we will discuss the common interface into schedulers, not any specific implementation of scheduling
 
 A scheduler - derived from `class scheduler` - has a fairly simple interface that could foreseeably evolve as more schedulers are implemented.  We will take a look at the current interface:
@@ -35,5 +33,4 @@ The block ID of the target block this message corresponds to
 
 ***Note: This needs to be expanded with ?portid? src and dst blockID*** 
 
-
-
+[--> Next: Runtime](07_Runtime)

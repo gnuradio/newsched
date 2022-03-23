@@ -31,9 +31,9 @@ This has the benefit of not constantly navigating the source tree when working w
 ```
 math
 ├── multiply_const
-│   ├── multiply_const_cpu.hh
+│   ├── multiply_const_cpu.h
 │   ├── multiply_const_cpu.cc
-│   ├── multiply_const_cuda.hh
+│   ├── multiply_const_cuda.h
 │   ├── multiply_const_cuda.cc
 │   ├── multiply_const.yml
 │   └── meson.build
