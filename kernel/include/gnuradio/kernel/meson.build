@@ -1,6 +1,5 @@
 headers = [
-    'api.h',
-    'gr_complex.h'
+    'api.h'
 ]
 
 install_headers(headers, subdir : 'gnuradio/kernel')

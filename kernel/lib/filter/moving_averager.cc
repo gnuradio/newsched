@@ -9,7 +9,7 @@
  */
 
 #include <gnuradio/kernel/filter/moving_averager.h>
-#include <gnuradio/kernel/gr_complex.h>
+#include <gnuradio/gr_complex.h>
 
 #include <cstdio>
 #include <memory>

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <gnuradio/gr_complex.h>
 #include <pmtf/base.hpp>
-#include <complex>
 #include <cstddef> // size_t
 #include <cstdint>
 #include <typeindex>
@@ -13,7 +13,5 @@ using gr_vector_float = std::vector<float>;
 using gr_vector_double = std::vector<double>;
 using gr_vector_void_star = std::vector<void*>;
 using gr_vector_const_void_star = std::vector<const void*>;
-using gr_complex = std::complex<float>;
-using gr_complexd = std::complex<double>;
 
 using pmt_sptr = std::shared_ptr<pmtf::pmt>;

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <gnuradio/kernel/gr_complex.h>
+#include <gnuradio/gr_complex.h>
 #include <gnuradio/kernel/math/xoroshiro128p.h>
 
 #include <limits>

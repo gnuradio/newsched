@@ -14,7 +14,7 @@
  * Wrappers for FFTW single precision 1d dft
  */
 
-#include <gnuradio/kernel/gr_complex.h>
+#include <gnuradio/gr_complex.h>
 #include <gnuradio/logger.h>
 #include <volk/volk_alloc.hh>
 
