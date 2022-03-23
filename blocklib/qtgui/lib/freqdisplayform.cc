@@ -52,9 +52,9 @@ FreqDisplayForm::FreqDisplayForm(int nplots, QWidget* parent)
     connect(
         d_avgmenu, SIGNAL(whichTrigger(float)), this, SLOT(setFFTAverage(const float)));
     connect(d_winmenu,
-            SIGNAL(whichTrigger(gr::fft::window::win_type)),
+            SIGNAL(whichTrigger(gr::kernel::fft::window::win_type)),
             this,
-            SLOT(setFFTWindowType(const gr::fft::window::win_type)));
+            SLOT(setFFTWindowType(const gr::kernel::fft::window::win_type)));
 
     PopupMenu* maxymenu = new PopupMenu("Y Max", this);
     d_menu->addAction(maxymenu);
@@ -178,14 +178,14 @@ void FreqDisplayForm::setupControlPanel()
     connect(
         d_sizemenu, SIGNAL(whichTrigger(int)), d_controlpanel, SLOT(toggleFFTSize(int)));
     connect(d_winmenu,
-            SIGNAL(whichTrigger(gr::fft::window::win_type)),
+            SIGNAL(whichTrigger(gr::kernel::fft::window::win_type)),
             d_controlpanel,
-            SLOT(toggleFFTWindow(gr::fft::window::win_type)));
+            SLOT(toggleFFTWindow(gr::kernel::fft::window::win_type)));
     connect(this, SIGNAL(signalFFTSize(int)), d_controlpanel, SLOT(toggleFFTSize(int)));
     connect(this,
-            SIGNAL(signalFFTWindow(gr::fft::window::win_type)),
+            SIGNAL(signalFFTWindow(gr::kernel::fft::window::win_type)),
             d_controlpanel,
-            SLOT(toggleFFTWindow(gr::fft::window::win_type)));
+            SLOT(toggleFFTWindow(gr::kernel::fft::window::win_type)));
     connect(d_maxhold_act,
             SIGNAL(triggered(bool)),
             d_controlpanel,
@@ -261,7 +261,7 @@ int FreqDisplayForm::getFFTSize() const { return d_fftsize; }
 
 float FreqDisplayForm::getFFTAverage() const { return d_fftavg; }
 
-gr::fft::window::win_type FreqDisplayForm::getFFTWindowType() const
+gr::kernel::fft::window::win_type FreqDisplayForm::getFFTWindowType() const
 {
     return d_fftwintype;
 }
@@ -288,7 +288,7 @@ void FreqDisplayForm::setFFTAverage(const float newavg)
     // emit signalFFTAverage(newavg);
 }
 
-void FreqDisplayForm::setFFTWindowType(const gr::fft::window::win_type newwin)
+void FreqDisplayForm::setFFTWindowType(const gr::kernel::fft::window::win_type newwin)
 {
     d_fftwintype = newwin;
     d_winmenu->getActionFromWindow(newwin)->setChecked(true);
@@ -553,28 +553,28 @@ void FreqDisplayForm::notifyFFTSize(const QString& s) { setFFTSize(s.toInt()); }
 void FreqDisplayForm::notifyFFTWindow(const QString& s)
 {
     if (s == "None") {
-        d_fftwintype = gr::fft::window::WIN_NONE;
+        d_fftwintype = gr::kernel::fft::window::WIN_NONE;
     }
     else if (s == "Hamming") {
-        d_fftwintype = gr::fft::window::WIN_HAMMING;
+        d_fftwintype = gr::kernel::fft::window::WIN_HAMMING;
     }
     else if (s == "Hann") {
-        d_fftwintype = gr::fft::window::WIN_HANN;
+        d_fftwintype = gr::kernel::fft::window::WIN_HANN;
     }
     else if (s == "Blackman") {
-        d_fftwintype = gr::fft::window::WIN_BLACKMAN;
+        d_fftwintype = gr::kernel::fft::window::WIN_BLACKMAN;
     }
     else if (s == "Blackman-harris") {
-        d_fftwintype = gr::fft::window::WIN_BLACKMAN_hARRIS;
+        d_fftwintype = gr::kernel::fft::window::WIN_BLACKMAN_hARRIS;
     }
     else if (s == "Rectangular") {
-        d_fftwintype = gr::fft::window::WIN_RECTANGULAR;
+        d_fftwintype = gr::kernel::fft::window::WIN_RECTANGULAR;
     }
     else if (s == "Kaiser") {
-        d_fftwintype = gr::fft::window::WIN_KAISER;
+        d_fftwintype = gr::kernel::fft::window::WIN_KAISER;
     }
     else if (s == "Flat-top") {
-        d_fftwintype = gr::fft::window::WIN_FLATTOP;
+        d_fftwintype = gr::kernel::fft::window::WIN_FLATTOP;
     }
 
     d_winmenu->getActionFromWindow(d_fftwintype)->setChecked(true);

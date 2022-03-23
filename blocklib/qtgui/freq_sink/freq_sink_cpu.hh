@@ -1,9 +1,9 @@
 #pragma once
 
 #include <gnuradio/qtgui/freq_sink.h>
-#include <gnuradio/fft/fftw_fft.h>
+#include <gnuradio/kernel/fft/fftw_fft.h>
 // #include <gnuradio/fft/fft_shift.h>
-#include <gnuradio/fft/window.h>
+#include <gnuradio/kernel/fft/window.h>
 
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/freqdisplayform.h>

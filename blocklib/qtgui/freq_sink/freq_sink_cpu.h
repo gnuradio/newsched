@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gnuradio/fft/fftw_fft.h>
+#include <gnuradio/kernel/fft/fftw_fft.h>
 #include <gnuradio/qtgui/freq_sink.h>
 // #include <gnuradio/fft/fft_shift.h>
-#include <gnuradio/fft/window.h>
+#include <gnuradio/kernel/fft/window.h>
 
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/freqdisplayform.h>
@@ -28,8 +28,8 @@ public:
     int fft_size() const override;
     void set_fft_average(const float fftavg) override;
     float fft_average() const override;
-    void set_fft_window(const fft::window::win_type win) override;
-    fft::window::win_type fft_window() const override;
+    void set_fft_window(const kernel::fft::window::win_type win) override;
+    kernel::fft::window::win_type fft_window() const override;
     void set_fft_window_normalized(const bool enable) override;
 
     void set_frequency_range(const double centerfreq, const double bandwidth) override;
@@ -81,7 +81,7 @@ private:
     int d_fftsize;
     // fft::fft_shift<float> d_fft_shift;
     float d_fftavg;
-    fft::window::win_type d_wintype;
+    kernel::fft::window::win_type d_wintype;
     std::vector<float> d_window;
     bool d_window_normalize = false; //<! If true, window functions will be normalized
     double d_center_freq;
@@ -94,7 +94,7 @@ private:
 
     // Perform fftshift operation;
     // this is usually desired when plotting
-    std::unique_ptr<fft::fft_complex_fwd> d_fft;
+    std::unique_ptr<kernel::fft::fft_complex_fwd> d_fft;
 
     int d_index = 0;
     std::vector<volk::vector<T>> d_residbufs;

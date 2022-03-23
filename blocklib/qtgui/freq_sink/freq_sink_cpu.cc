@@ -22,7 +22,7 @@ freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
       d_fftsize(args.fftsize),
       //   d_fft_shift(fftsize),
       d_fftavg(1.0),
-      d_wintype((fft::window::win_type)(args.wintype)),
+      d_wintype((kernel::fft::window::win_type)(args.wintype)),
       d_window_normalize(args.wintype & (1 << 15)),
       d_center_freq(args.fc),
       d_bandwidth(args.bw),
@@ -31,7 +31,7 @@ freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
       d_port(pmtf::string("freq")),
       d_port_bw(pmtf::string("bw"))
 {
-    d_fft = std::make_unique<fft::fft_complex_fwd>(d_fftsize);
+    d_fft = std::make_unique<kernel::fft::fft_complex_fwd>(d_fftsize);
     d_fbuf.resize(d_fftsize);
 
     // save the last "connection" for the PDU memory
@@ -199,13 +199,13 @@ float freq_sink_cpu<T>::fft_average() const
 }
 
 template <class T>
-void freq_sink_cpu<T>::set_fft_window(const fft::window::win_type win)
+void freq_sink_cpu<T>::set_fft_window(const kernel::fft::window::win_type win)
 {
     d_main_gui->setFFTWindowType(win);
 }
 
 template <class T>
-fft::window::win_type freq_sink_cpu<T>::fft_window() const
+kernel::fft::window::win_type freq_sink_cpu<T>::fft_window() const
 {
     return d_wintype;
 }
@@ -493,7 +493,7 @@ bool freq_sink_cpu<T>::windowreset()
 {
     std::scoped_lock lock(d_setlock);
 
-    fft::window::win_type newwintype;
+    kernel::fft::window::win_type newwintype;
     newwintype = d_main_gui->getFFTWindowType();
     if (d_wintype != newwintype) {
         d_wintype = newwintype;
@@ -507,8 +507,8 @@ template <class T>
 void freq_sink_cpu<T>::buildwindow()
 {
     d_window.clear();
-    if (d_wintype != fft::window::WIN_NONE) {
-        d_window = fft::window::build(d_wintype, d_fftsize, 6.76, d_window_normalize);
+    if (d_wintype != kernel::fft::window::WIN_NONE) {
+        d_window = kernel::fft::window::build(d_wintype, d_fftsize, 6.76, d_window_normalize);
     }
 }
 
@@ -542,7 +542,7 @@ bool freq_sink_cpu<T>::fftresize()
         buildwindow();
 
         // Reset FFTW plan for new size
-        d_fft = std::make_unique<fft::fft_complex_fwd>(d_fftsize);
+        d_fft = std::make_unique<kernel::fft::fft_complex_fwd>(d_fftsize);
 
         d_fbuf.clear();
         d_fbuf.resize(d_fftsize);
