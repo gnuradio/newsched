@@ -33,6 +33,8 @@ if path.endswith(path_ending):
     __path__.append(os.path.join(build_path, 'gr', 'python'))
     __path__.append(os.path.join(build_path, 'schedulers', 'nbt', 'python'))
 
+    ###KERNEL###
+    __path__.append(os.path.join(build_path, 'kernel', 'python'))
 
     ###BLOCKLIB###
     __path__.append(os.path.join(build_path, 'blocklib', 'analog', 'python'))

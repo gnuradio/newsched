@@ -6,12 +6,7 @@ qa_srcs = ['qa_default_runtime',
            'qa_single_mapped_buffers',
            'qa_message_ports',
            'qa_tags',
-           'qa_zmq_buffers',
-           'qa_fast_atan2f',
-           'qa_fxpt_nco',
-           'qa_fxpt_vco',
-           'qa_fxpt',
-           'qa_math'
+           'qa_zmq_buffers'
           ]
 deps = [newsched_gr_dep,
                 newsched_blocklib_blocks_dep,
