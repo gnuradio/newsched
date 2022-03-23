@@ -12,11 +12,11 @@
 #include <config.h>
 #endif
 
-#include <gnuradio/sincos.h>
+#include <gnuradio/kernel/math/sincos.h>
 #include <gtest/gtest.h>
 #include <cmath>
 
-TEST(t1)
+TEST(Sincos, t1)
 {
     static const unsigned int N = 1000;
     double c_sin, c_cos;
@@ -27,14 +27,14 @@ TEST(t1)
         c_sin = sin(x);
         c_cos = cos(x);
 
-        gr::sincos(x, &gr_sin, &gr_cos);
+        gr::kernel::math::sincos(x, &gr_sin, &gr_cos);
 
-        EXPECT_TRUE_CLOSE(c_sin, gr_sin, 0.0001);
-        EXPECT_TRUE_CLOSE(c_cos, gr_cos, 0.0001);
+        EXPECT_NEAR(c_sin, gr_sin, 0.0001);
+        EXPECT_NEAR(c_cos, gr_cos, 0.0001);
     }
 }
 
-TEST(t2)
+TEST(Sincos, t2)
 {
     static const unsigned int N = 1000;
     float c_sin, c_cos;
@@ -45,9 +45,9 @@ TEST(t2)
         c_sin = sinf(x);
         c_cos = cosf(x);
 
-        gr::sincosf(x, &gr_sin, &gr_cos);
+        gr::kernel::math::sincosf(x, &gr_sin, &gr_cos);
 
-        EXPECT_TRUE_CLOSE(c_sin, gr_sin, 0.0001);
-        EXPECT_TRUE_CLOSE(c_cos, gr_cos, 0.0001);
+        EXPECT_NEAR(c_sin, gr_sin, 0.0001);
+        EXPECT_NEAR(c_cos, gr_cos, 0.0001);
     }
 }

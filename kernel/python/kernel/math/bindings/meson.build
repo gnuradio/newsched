@@ -6,10 +6,10 @@ srcs = files([
 cpp_args = []
 deps = [python3_dep, pybind11_dep, gr_kernel_lib_dep]
 
-kernel_math_pybind = py3_inst.extension_module('gr_python',
+kernel_math_pybind = py3_inst.extension_module('kernel_math_python',
     srcs, 
     dependencies : deps,
-    include_directories: ['../../../include/'],
+    include_directories: ['../../../../include/'],
     link_language : 'cpp',
     install : true,
     cpp_args : cpp_args,

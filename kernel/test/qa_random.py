@@ -9,7 +9,8 @@
 #
 
 
-from gnuradio import gr, gr_unittest
+from gnuradio import gr_unittest
+from gnuradio.kernel import math
 import numpy as np
 
 
@@ -21,7 +22,7 @@ class test_random(gr_unittest.TestCase):
     def test_1(self):
         num_tests = 10000
         values = np.zeros(num_tests)
-        rndm = gr.random()
+        rndm = math.random()
         for k in range(num_tests):
             values[k] = rndm.ran1()
         for value in values:
@@ -32,8 +33,8 @@ class test_random(gr_unittest.TestCase):
     def test_2_same_seed(self):
         num = 5
         # Init with fixed seed.
-        rndm0 = gr.random(42)
-        rndm1 = gr.random(42)
+        rndm0 = math.random(42)
+        rndm1 = math.random(42)
         for k in range(num):
             x = rndm0.ran1()
             y = rndm1.ran1()
@@ -44,7 +45,7 @@ class test_random(gr_unittest.TestCase):
         num = 5
         x = np.zeros(num)
         y = np.zeros(num)
-        rndm = gr.random(43)  # init with fix seed 1
+        rndm = math.random(43)  # init with fix seed 1
         for k in range(num):
             x[k] = rndm.ran1()
         rndm.reseed(43)  # init with fix seed 2
@@ -56,7 +57,7 @@ class test_random(gr_unittest.TestCase):
         nitems = 100000
         minimum = 2
         maximum = 42
-        rng = gr.random(1, minimum, maximum)
+        rng = math.random(1, minimum, maximum)
         rnd_vals = np.zeros(nitems, dtype=int)
         for i in range(nitems):
             rnd_vals[i] = rng.ran_int()
@@ -71,7 +72,7 @@ class test_random(gr_unittest.TestCase):
         We simply check for the first value of a sequence
         being the same as it was when the module was integrated.
         """
-        rng = gr.xoroshiro128p_prng(42)
+        rng = math.xoroshiro128p_prng(42)
         self.assertEqual(3520422898491873512, rng())
 
     def test_006_xoroshiro128p_reproducibility(self):
@@ -81,8 +82,8 @@ class test_random(gr_unittest.TestCase):
         """
         seed = 123456
         N = 10000
-        rng1 = gr.xoroshiro128p_prng(123456)
-        rng2 = gr.xoroshiro128p_prng(123456)
+        rng1 = math.xoroshiro128p_prng(123456)
+        rng2 = math.xoroshiro128p_prng(123456)
         self.assertSequenceEqual(
             tuple(rng1() for _ in range(N)),
             tuple(rng2() for _ in range(N)))
@@ -94,9 +95,9 @@ class test_random(gr_unittest.TestCase):
         """
         N = 10**6
 
-        self.assertEqual(gr.xoroshiro128p_prng.min(), 0)
-        self.assertEqual(gr.xoroshiro128p_prng.max(), 2**64 - 1)
-        rng = gr.xoroshiro128p_prng(42)
+        self.assertEqual(math.xoroshiro128p_prng.min(), 0)
+        self.assertEqual(math.xoroshiro128p_prng.max(), 2**64 - 1)
+        rng = math.xoroshiro128p_prng(42)
         arr = all((0 <= rng() <= 2**64 - 1 for _ in range(N)))
         self.assertTrue(arr)
 
