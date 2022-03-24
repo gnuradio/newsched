@@ -50,5 +50,3 @@ github_projects :
 # The following is a list of files to exclude from inclusion in the
 # generated gh-pages website.
 exclude : [ README.md , version.txt  ]
-
-paginate : 10
