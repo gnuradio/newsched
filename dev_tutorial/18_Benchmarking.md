@@ -4,7 +4,7 @@ This is not an exhaustive description of how to benchmark GNU Radio and schedule
 
 For a more thorough consideration of benchmarking GNU Radio see [gr-sched](https://github.com/bastibl/gr-sched) and the associated [paper](https://www.bastibl.net/bib/bloessl2019benchmarking/bloessl2019benchmarking.pdf) and [blog](https://www.bastibl.net/gnuradio-performance-1/)
 
-As you will see, we use some of the concepts from Bastian Bloessl's work to standardize how basic throughput testing will be done in-tree
+As you will see, we use some of the concepts from Bastian Bloessl's work to standardize how basic throughput testing could be done in-tree
 
 ## vmcircbuf
 

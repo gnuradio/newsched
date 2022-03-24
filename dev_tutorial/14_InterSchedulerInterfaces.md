@@ -1,6 +1,6 @@
 # Inter-Scheduler Interfaces
 
-Schedulers must communicate with each other through the input queues of their threads, notifying each other when work has been done amongst other things
+In a flowgraph that uses multiple schedulers, these schedulers must communicate with each other through the input queues of their threads, notifying each other when work has been done amongst other things
 
 Previously, we had given a scheduler a `push_message` method. Let's generalize this now to a `neighbor_interface` class from which schedulers will derive.  Note that this interface only has one method `push_message` which is the only way to communicate with a scheduler.
 
@@ -26,17 +26,26 @@ The burden is not on the user to create all these hidden connections such as Int
 ### User Configuration
 Say the user wants to create a simple flowgraph which is `src->block1->block2->snk`, and there is a domain boundary between `block1` and `block2`.  The user needs to provide the following to inform the flowgraph partitioning where the blocks should go
 
-1. Create a vector of domain configurations, one for each domain.  The domain configuration specifies the `scheduler`, and the `blocks`
-```cpp
-    domain_conf_vec dconf{ domain_conf(sched1, { src, block1 }),
-                           domain_conf(sched2, { block2, snk }) };
-```
-3. Tell the flowgraph to partition the graph
-```cpp
-    fg->partition(dconf);
+First, create the scheduler objects - these could be different domain schedulers, but for now we will just use the default scheduler
+```c++
+    auto sched1 = schedulers::scheduler_nbt::make("sched1");
+    auto sched2 = schedulers::scheduler_nbt::make("sched2");
 ```
 
-Note: the schedulers would need to have been added to the flowgraph object using `fg->add_scheduler(schedN)`
+Next, create the runtime object and add the schedulers to it.  The `initialize` method will handle the partitioning across the schedulers
+```c++
+    auto rt = runtime::make();
+    rt->add_scheduler({ sched1, { src, mult1 } });
+    rt->add_scheduler({ sched2, { mult2, snk } });
+    rt->initialize(fg);
+```
+... and run the flowgraph (via the runtime) as usual
+
+```c++
+
+    rt->start();
+    rt->wait();
+```
 
 ### Partitioning the graph
 The flowgraph object is now responsible for breaking up the user flowgraph into smaller subgraphs.  Inside `flowgraph::partition`, the bulk of the work to this end is being done by `graph_utils::partition`, and there is a lot going on in this method, which takes in the graph, the schedulers, the domain confs and returns an information struct about the partitioned graph
@@ -90,4 +99,3 @@ For each detected crossing, we need to
 ```
 
 When these edges are added, the port objects that are connected get a reference to each other. 
-This will have to be revisited for distributed operation
