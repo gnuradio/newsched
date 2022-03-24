@@ -22,7 +22,7 @@ export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$DIR/lib64/pkgconfig:$PKG_CONFIG_PATH
 ```
 
 Every time a new terminal is launched where newsched is to be used, just call
-```
+```bash
 source setup_env.sh
 ```
 
@@ -36,7 +36,6 @@ The following dependencies are necessary to build and run `newsched`
 - [spdlog](https://github.com/gabime/spdlog)
 - [yamlcpp](https://github.com/jbeder/yaml-cpp)
 - [GTest](https://github.com/google/googletest)
-- [Boost](https://www.boost.org/)
 - FFTW
 - C++17 capable compiler (g++9)
 - flatbuffers (>=2.0.0)
@@ -66,9 +65,6 @@ sudo apt-get install -qy \
     python3-numpy \
     libqwt-qt5-dev \
     ninja-build \
-    libboost-dev \
-    libboost-program-options-dev \
-    libboost-thread-dev \
     libfftw3-dev \
     git \ 
     cmake \

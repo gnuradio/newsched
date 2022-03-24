@@ -14,7 +14,7 @@ namespace myoot {
 class foo_cpu : public foo
 {
 public:
-    foo_cpu(block_args args) : sync_block("foo"), foo(args) {}
+    foo_cpu(block_args args);
     virtual work_return_code_t work(std::vector<block_work_input>& work_input,
                                     std::vector<block_work_output>& work_output) override;
 
@@ -51,6 +51,9 @@ us to the original design goal - `<insert signal processing here>`
 
 namespace gr {
 namespace josh {
+
+foo_cpu::foo_cpu::const block_args& args) : INHERITED_CONSTRUCTORS
+{}
 
 work_return_code_t foo_cpu::work(std::vector<block_work_input>& work_input,
                                   std::vector<block_work_output>& work_output)

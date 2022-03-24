@@ -67,7 +67,7 @@ typekeys:
 ```
 Next, we have parameters, which define how the block will be instantiated
 and accessed.  Unless told otherwise, all parameters become constructor 
-arguments
+arguments. Set `cotr: false` to not have a parameter as a constructor argument.  It can then have only setter and/or getter
 
 ```yaml
 parameters:
