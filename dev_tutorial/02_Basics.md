@@ -15,7 +15,7 @@ You will also see that much of the code is copied or the ideas copied from GNU R
 Since newsched is designed with modularity in mind, the key components that will be modular are pulled away from the runtime (now called the `gr`) directory
 
 - gr - core components used by other modules (formerly `gnuradio-runtime`)
-- blocklib - block library - already modular in GNU radio but pulled away from runtime
+- blocklib - block library - already modular in GR3.x but pulled into a contained folder
 - schedulers - implementations of in-tree cpu and common domain schedulers
 - docs - all general documentation related things
 - bench - benchmarking flowgraphs 

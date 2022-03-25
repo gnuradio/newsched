@@ -88,4 +88,4 @@ Some notable changes on the work function from GR
 
 The tags are associated with the buffer class, not the work I/O function
 
-[--> Next: Graphs and Buffers](04_GraphsBuffers)
+[--> Next: Graphs and Buffers](05_GraphsBuffers)
