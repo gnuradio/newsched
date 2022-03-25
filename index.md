@@ -4,6 +4,8 @@ title : "Intro to newsched"
 permalink: /
 ---
 
+# Newsched 
+
 <table><tr>
 <th><b><a href="user_tutorial/01_Intro">User Tutorial</a></b></th>
 <th><b><a href="dev_tutorial/01_Intro">Developer Tutorial</a></b></th>
