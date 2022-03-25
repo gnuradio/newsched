@@ -14,6 +14,7 @@
 #include <gnuradio/kernel/math/math.h>
 #include <gnuradio/kernel/math/sincos.h>
 
+#include <gnuradio/kernel/api.h>
 #include <cmath>
 #include <vector>
 

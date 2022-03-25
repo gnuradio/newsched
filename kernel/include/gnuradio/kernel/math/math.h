@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <gnuradio/kernel/api.h>
 #include <gnuradio/gr_complex.h>
 #include <cmath>
 

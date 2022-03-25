@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <gnuradio/kernel/api.h>
 #include <gnuradio/kernel/filter/fir_filter.h>
 
 namespace gr {

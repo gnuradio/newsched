@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <gnuradio/kernel/api.h>
 #include <gnuradio/gr_complex.h>
 #include <volk/volk_alloc.hh>
 #include <cstdint>

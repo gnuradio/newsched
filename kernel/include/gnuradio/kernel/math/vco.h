@@ -17,6 +17,8 @@
 #include <cmath>
 #include <vector>
 
+#include <gnuradio/kernel/api.h>
+
 namespace gr {
 namespace kernel {
 namespace math {
