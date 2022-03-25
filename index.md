@@ -1,7 +1,7 @@
 ---
 layout : page  
-title : Intro to newsched
-exclude : false  
+title : "Intro to newsched"
+permalink: /
 ---
 
 <table><tr>
