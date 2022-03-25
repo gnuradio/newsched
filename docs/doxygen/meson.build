@@ -1,7 +1,6 @@
 doxygen = find_program('doxygen', required : false)
 
 if doxygen.found()
-
   cdata = configuration_data()
   cdata.set('VERSION', meson.project_version())
 
@@ -13,13 +12,12 @@ if doxygen.found()
 
   cdata.set('PROJECT_NAME',meson.project_name())
   cdata.set('PROJECT_LOGO', join_paths(meson.current_source_dir()))
+  cdata.set('TOP_SRCDIR', meson.project_source_root())
+  cdata.set('TOP_BUILDDIR', meson.build_root())
   cdata.set('IMAGE_PATH', join_paths(meson.current_source_dir(), 'images'))
-  cdata.set('enable_html_docs', true)
-  cdata.set('enable_latex_docs', false)
-  cdata.set('enable_xml_docs', true)
-  cdata.set('top_builddir', join_paths(meson.build_root()))
-  cdata.set('top_srcdir', join_paths(meson.source_root()))
-  cdata.set('abs_top_srcdir', join_paths(meson.source_root()))
+  cdata.set('ENABLE_HTML_DOCS', 'YES')
+  cdata.set('ENABLE_LATEX_DOCS', 'NO')
+  cdata.set('ENABLE_XML_DOCS', 'YES')
   cdata.set('CURRENT_SRC_DIR', join_paths(meson.current_source_dir()))
 
   doxyfile = configure_file(input: 'Doxyfile.in',
@@ -27,15 +25,17 @@ if doxygen.found()
                             configuration: cdata,
                             install: false)
 
-  datadir = join_paths(get_option('datadir'), 'doc','gnuradio')
+  doc_target = run_target('doxygen', command: [doxygen, doxyfile])
 
-  # TODO: Figure out how to install docs
-  html_target = custom_target('doc',
-			      build_always_stale : not meson.is_subproject(),
-                              input: doxyfile,
-                              output: 'html',
-                              command: [doxygen, doxyfile],
-                              install: false,
-                              install_dir: datadir)
+  # datadir = join_paths(get_option('datadir'), 'doc','gnuradio')
+
+  # # TODO: Figure out how to install docs
+  # html_target = custom_target('doc',
+	# 		      build_always_stale : not meson.is_subproject(),
+  #                             input: doxyfile,
+  #                             output: 'html',
+  #                             command: [doxygen, doxyfile],
+  #                             install: false,
+  #                             install_dir: datadir)
 
 endif
