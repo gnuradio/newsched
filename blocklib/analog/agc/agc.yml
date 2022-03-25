@@ -17,15 +17,18 @@ parameters:
 -   id: rate
     label: Rate
     dtype: float
-    default: 1e-4
+    # default: 1e-4
+    doc: the update rate of the loop
 -   id: reference
     label: Reference
     dtype: float
     default: 1.0
+    doc: reference value to adjust signal power to
 -   id: gain
     label: Gain
     dtype: float
     default: 1.0
+    doc: initial gain value
 
 ports:
 -   domain: stream
@@ -37,6 +40,12 @@ ports:
     id: out
     direction: output
     type: typekeys/T
+
+doc: 
+  brief: high performance Automatic Gain Control Block.  
+  long: |-
+   Power is approximated by absolute value
+   second line
 
 implementations:
 -   id: cpu
