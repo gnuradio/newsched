@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <gnuradio/kernel/api.h>
 #include <deque>
 
 namespace gr {

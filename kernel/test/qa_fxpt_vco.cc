@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-using namespace gr::kernel::math;
+using namespace grk::math;
 
 static const float SIN_COS_TOLERANCE = 1e-5;
 

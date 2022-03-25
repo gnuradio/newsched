@@ -10,8 +10,8 @@
 
 #pragma once
 
+#include <gnuradio/kernel/api.h>
 #include <cmath>
-
 namespace gr {
 namespace kernel {
 namespace math {
