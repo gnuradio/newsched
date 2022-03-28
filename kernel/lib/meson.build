@@ -1,6 +1,6 @@
 fftw_dep = dependency('fftw3f')
 
-kernel_deps = [volk_dep, newsched_gr_dep, fftw_dep]
+kernel_deps = [volk_dep, gnuradio_gr_dep, fftw_dep]
 kernel_sources = [
     'analog/agc.cc',
     'fft/window.cc',

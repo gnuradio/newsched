@@ -2,31 +2,31 @@
 #     'fast_atan2f.cc'
 # ]
 
-math_deps += [newsched_gr_dep, volk_dep, fmt_dep, pmtf_dep]
+math_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmtf_dep]
 
 link_args = []
 block_cpp_args = ['-DHAVE_CPU', '-DHAVE_NUMPY']
 if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 
-    # newsched_blocklib_math_cu = library('newsched-blocklib-math-cu', 
+    # gnuradio_blocklib_math_cu = library('gnuradio-blocklib-math-cu', 
     #     math_cu_sources, 
     #     include_directories : incdir, 
     #     install : true, 
     #     dependencies : [cuda_dep])
 
-    # newsched_blocklib_math_cu_dep = declare_dependency(include_directories : incdir,
-    #                     link_with : newsched_blocklib_math_cu,
+    # gnuradio_blocklib_math_cu_dep = declare_dependency(include_directories : incdir,
+    #                     link_with : gnuradio_blocklib_math_cu,
     #                     dependencies : cuda_dep)
 
     link_args += '-lcusp'
-    # math_deps += [newsched_blocklib_math_cu_dep, cuda_dep, cusp_dep]
+    # math_deps += [gnuradio_blocklib_math_cu_dep, cuda_dep, cusp_dep]
     math_deps += [cuda_dep, cusp_dep]
 
 endif
 
 incdir = include_directories(['../include/gnuradio/math','../include'])
-newsched_blocklib_math_lib = library('newsched-blocklib-math', 
+gnuradio_blocklib_math_lib = library('gnuradio-blocklib-math', 
     math_sources, 
     include_directories : incdir, 
     install : true,
@@ -35,11 +35,11 @@ newsched_blocklib_math_lib = library('newsched-blocklib-math',
     dependencies : math_deps,
     cpp_args : block_cpp_args)
 
-newsched_blocklib_math_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_math_lib,
+gnuradio_blocklib_math_dep = declare_dependency(include_directories : incdir,
+					   link_with : gnuradio_blocklib_math_lib,
                        dependencies : math_deps)
 
-# TODO - export this as a subproject of newsched
+# TODO - export this as a subproject of gnuradio
 
 conf = configuration_data()
 conf.set('prefix', prefix)
@@ -52,9 +52,9 @@ cmake_conf = configuration_data()
 cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
 cmake_conf.set('module', 'math')
 cmake.configure_package_config_file(
-  name : 'newsched-math',
-  input : join_paths(meson.source_root(),'cmake','Modules','newschedConfigModule.cmake.in'),
-  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'newsched',
+  name : 'gnuradio-math',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfigModule.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
   configuration : cmake_conf
 )
 
@@ -64,7 +64,7 @@ h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
 pkg.generate(libraries : libs,
              subdirs : h,
              version : meson.project_version(),
-             name : 'libnewsched-math',
-             filebase : 'newsched-math',
+             name : 'libgnuradio-math',
+             filebase : 'gnuradio-math',
              install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
-             description : 'Newsched Math Module')
+             description : 'GNU Radio Math Blocks')

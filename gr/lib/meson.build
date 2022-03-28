@@ -198,36 +198,6 @@ if compiler.compiles(code, name : 'HAVE_SHM_OPEN', dependencies : [rt_dep])
   cpp_args += '-DHAVE_SHM_OPEN'
 endif
 
-code = '''#define _GNU_SOURCE
-     #include <math.h>
-     int main(){double x, sin, cos; sincos(x, &sin, &cos); return 0;}
-'''
-if compiler.compiles(code, name : 'HAVE_SINCOS')
-  cpp_args += '-DHAVE_SINCOS'
-endif
-
-code = '''#define _GNU_SOURCE
-     #include <math.h>
-     int main(){float x, sin, cos; sincosf(x, &sin, &cos); return 0;}
-'''
-if compiler.compiles(code, name : 'HAVE_SINCOSF')
-  cpp_args += '-DHAVE_SINCOSF'
-endif
-
-code = '''#include <math.h>
-     int main(){sinf(0); return 0;}
-'''
-if compiler.compiles(code, name : 'HAVE_SINF')
-  cpp_args += '-DHAVE_SINF'
-endif
-
-code = '''#include <math.h>
-     int main(){cosf(0); return 0;}
-'''
-if compiler.compiles(code, name : 'HAVE_COSF')
-  cpp_args += '-DHAVE_COSF'
-endif
-
 code = '''#include <sys/mman.h>
     int main(){mmap(0, 0, 0, 0, 0, 0); return 0;}
 '''
@@ -268,7 +238,7 @@ if compiler.compiles(code, name : 'HAVE_STD_FILESYSTEM')
 endif
 
 
-newsched_gr_lib = library('newsched-runtime', 
+gnuradio_gr_lib = library('gnuradio-runtime', 
     runtime_sources, 
     install : true, 
     dependencies : gr_deps,
@@ -276,12 +246,12 @@ newsched_gr_lib = library('newsched-runtime',
     include_directories : incdir,
     cpp_args : cpp_args)
 
-newsched_gr_dep = declare_dependency(include_directories : incdir,
+gnuradio_gr_dep = declare_dependency(include_directories : incdir,
 					   dependencies: gr_deps, # have to disable this for blocklib_blocks_cuda_cu to link
-					   link_with : newsched_gr_lib)
+					   link_with : gnuradio_gr_lib)
 
 
-# TODO - export this as a subproject of newsched
+# TODO - export this as a subproject of gnuradio
 
 prefix = get_option('prefix')
 # Escape spaces
@@ -298,9 +268,9 @@ conf.set('LIBVER', '0.0.0')
 cmake_conf = configuration_data()
 cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
 cmake.configure_package_config_file(
-  name : 'newsched-runtime',
-  input : join_paths(meson.source_root(),'cmake','Modules','newschedConfig.cmake.in'),
-  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'newsched',
+  name : 'gnuradio-runtime',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfig.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
   configuration : cmake_conf
 )
 
@@ -310,8 +280,8 @@ h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
 pkg.generate(libraries : libs,
              subdirs : h,
              version : meson.project_version(),
-             name : 'libnewsched-runtime',
-             filebase : 'newsched-runtime',
+             name : 'libgnuradio-runtime',
+             filebase : 'gnuradio-runtime',
              install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
-             description : 'Newsched Runtime')
+             description : 'GNU Radio Core Components')
 

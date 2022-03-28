@@ -37,7 +37,7 @@ SCRIPTS_DIR = join_paths(share_dir, 'utils','blockbuilder','scripts' )
 volk_dep = dependency('volk', version : '>=2.2')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
 pmtf_dep = dependency('pmtf', version : '>= 0.0.2')
-newsched_gr_dep = dependency('newsched-runtime')
+gnuradio_gr_dep = dependency('gnuradio-runtime')
 
 run_command('python3', join_paths(SCRIPTS_DIR,'gen_meson.py'), 
   join_paths(meson.project_source_root(),'blocklib'), check: true)

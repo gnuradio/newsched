@@ -8,7 +8,7 @@ qa_srcs = ['qa_fast_atan2f',
            'qa_sincos'
           ]
 deps = [gr_kernel_lib_dep,
-         newsched_gr_dep,
+         gnuradio_gr_dep,
                 gtest_dep,
                 ]
 

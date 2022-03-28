@@ -19,7 +19,7 @@ try:
 except:
     pass
 
-# For newsched, connect and msg_connect are the same
+# For GR 4.0, connect and msg_connect are the same
 graph.msg_connect = graph.connect
 # Alias top_block as flowgraph
 top_block = flowgraph

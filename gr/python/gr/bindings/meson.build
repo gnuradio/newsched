@@ -25,7 +25,7 @@ runtime_pybind_sources = files([
  ] )
 
 cpp_args = []
-runtime_pybind_deps = [newsched_gr_dep, python3_dep, pybind11_dep, pmtf_dep]
+runtime_pybind_deps = [gnuradio_gr_dep, python3_dep, pybind11_dep, pmtf_dep]
 if USE_CUDA
     runtime_pybind_sources += [
         'buffer_cuda_pybind.cc', 
@@ -34,7 +34,7 @@ if USE_CUDA
     runtime_pybind_deps += cuda_dep
     cpp_args = '-DHAVE_CUDA'
 endif
-newsched_runtime_pybind = py3_inst.extension_module('gr_python',
+gnuradio_runtime_pybind = py3_inst.extension_module('gr_python',
     runtime_pybind_sources, 
     dependencies : runtime_pybind_deps,
     link_language : 'cpp',
@@ -43,5 +43,5 @@ newsched_runtime_pybind = py3_inst.extension_module('gr_python',
     install_dir : join_paths(py3_inst.get_install_dir(),'gnuradio','gr')
 )
 
-newsched_runtime_pybind_dep = declare_dependency(
-					   link_with : newsched_runtime_pybind)
+gnuradio_runtime_pybind_dep = declare_dependency(
+					   link_with : gnuradio_runtime_pybind)
