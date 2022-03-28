@@ -41,15 +41,15 @@ sources = [
 
 incdir = include_directories(['../../include/gnuradio/fec','../../include'])
 
-newsched_blocklib_fec_lib = library('newsched-blocklib-fec', 
+gnuradio_blocklib_fec_lib = library('gnuradio-blocklib-fec', 
     sources, 
     include_directories : incdir, 
     install : true, 
-    dependencies : [newsched_gr_dep],
+    dependencies : [gnuradio_gr_dep],
     pic : true)
 
-newsched_blocklib_fec_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_fec_lib)
+gnuradio_blocklib_fec_dep = declare_dependency(include_directories : incdir,
+					   link_with : gnuradio_blocklib_fec_lib)
 
 
 # target_sources(gnuradio-fec PRIVATE $<TARGET_OBJECTS:gr_fec_rs>)

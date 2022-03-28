@@ -8,10 +8,10 @@ if get_option('enable_testing')
         srcs, 
         # include_directories : incdir, 
         link_language : 'cpp',
-        dependencies: [newsched_gr_dep,
+        dependencies: [gnuradio_gr_dep,
                     cuda_dep,
-                    newsched_blocklib_blocks_dep,
-                    newsched_scheduler_nbt_dep,
+                    gnuradio_blocklib_blocks_dep,
+                    gnuradio_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)
     test('NBT Cuda Copy Tests', e)

@@ -9,7 +9,7 @@ runtime::runtime()
     // Dynamically load the module containing the default scheduler
     // Search path needs to be set correctly for qa in build dir
     void* handle = dlopen(
-        ("libnewsched-scheduler-" + s_default_scheduler_name + ".so").c_str(), RTLD_LAZY);
+        ("libgnuradio-scheduler-" + s_default_scheduler_name + ".so").c_str(), RTLD_LAZY);
     if (!handle) {
         throw std::runtime_error("Unable to load default scheduler dynamically");
     }

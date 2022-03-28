@@ -1,6 +1,6 @@
 subdir('reed-solomon')
 
-# TODO - export this as a subproject of newsched
+# TODO - export this as a subproject of gnuradio
 
 conf = configuration_data()
 conf.set('prefix', prefix)
@@ -13,9 +13,9 @@ cmake_conf = configuration_data()
 cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
 cmake_conf.set('module', 'fec')
 cmake.configure_package_config_file(
-  name : 'newsched-fec',
-  input : join_paths(meson.source_root(),'cmake','Modules','newschedConfigModule.cmake.in'),
-  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'newsched',
+  name : 'gnuradio-fec',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfigModule.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
   configuration : cmake_conf
 )
 
@@ -25,7 +25,7 @@ h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
 pkg.generate(libraries : libs,
              subdirs : h,
              version : meson.project_version(),
-             name : 'libnewsched-fec',
-             filebase : 'newsched-fec',
+             name : 'libgnuradio-fec',
+             filebase : 'gnuradio-fec',
              install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
-             description : 'Newsched GR 4.0 Prototype')
+             description : 'GNU Radio FEC Blocks')

@@ -8,10 +8,10 @@ qa_srcs = ['qa_default_runtime',
            'qa_tags',
            'qa_zmq_buffers'
           ]
-deps = [newsched_gr_dep,
-                newsched_blocklib_blocks_dep,
-                newsched_blocklib_math_dep,
-                newsched_scheduler_nbt_dep,
+deps = [gnuradio_gr_dep,
+                gnuradio_blocklib_blocks_dep,
+                gnuradio_blocklib_math_dep,
+                gnuradio_scheduler_nbt_dep,
                 gtest_dep,
                 gr_kernel_lib_dep]
 

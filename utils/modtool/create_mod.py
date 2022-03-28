@@ -1,4 +1,4 @@
-# Python script to create new module in newsched
+# Python script to create new module in GR 4.0
 
 import argparse
 import os
@@ -55,6 +55,6 @@ for path, subdirs, files in os.walk(new_mod_dir):
         fin.write(data)
         fin.close()
 
-# add new module path to newsched/python/newsched/__init__.py
+# add new module path to gnuradio/python/gnuradio/__init__.py
 
 

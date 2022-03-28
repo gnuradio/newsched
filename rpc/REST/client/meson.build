@@ -3,9 +3,9 @@
 #  ] )
 
 # cpp_args = []
-# runtime_pybind_deps = [newsched_gr_dep, python3_dep, pybind11_dep, pmtf_dep]
+# runtime_pybind_deps = [gnuradio_gr_dep, python3_dep, pybind11_dep, pmtf_dep]
 
-# newsched_rpc_rest_client_pybind = py3_inst.extension_module('rpc_rest_client_python',
+# gnuradio_rpc_rest_client_pybind = py3_inst.extension_module('rpc_rest_client_python',
 #     runtime_pybind_sources, 
 #     dependencies : runtime_pybind_deps,
 #     link_language : 'cpp',
@@ -14,8 +14,8 @@
 #     install_dir : join_paths(py3_inst.get_install_dir(),'gnuradio','gr','rpc','rest')
 # )
 
-# newsched_rpc_rest_client_pybind_dep = declare_dependency(
-# 					   link_with : newsched_rpc_rest_client_pybind)
+# gnuradio_rpc_rest_client_pybind_dep = declare_dependency(
+# 					   link_with : gnuradio_rpc_rest_client_pybind)
 
 
 

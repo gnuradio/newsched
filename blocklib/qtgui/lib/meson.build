@@ -29,29 +29,29 @@ qtgui_moc_sources = qt5_mod.compile_moc(headers: moc_srcs)
 qtgui_sources += qtgui_moc_sources
 
 
-qtgui_deps += [newsched_gr_dep, newsched_blocklib_filter_dep, volk_dep, fmt_dep, pmtf_dep, qt5widgets_dep, qwt_dep]
+qtgui_deps += [gnuradio_gr_dep, gnuradio_blocklib_filter_dep, volk_dep, fmt_dep, pmtf_dep, qt5widgets_dep, qwt_dep]
 
 block_cpp_args = ['-DHAVE_CPU','-DQWT_DLL']
 
 # if cuda_dep.found() and get_option('enable_cuda')
 #     block_cpp_args += '-DHAVE_CUDA'
 
-#     newsched_blocklib_qtgui_cu = library('newsched-blocklib-qtgui-cu', 
+#     gnuradio_blocklib_qtgui_cu = library('gnuradio-blocklib-qtgui-cu', 
 #         qtgui_cu_sources, 
 #         include_directories : incdir, 
 #         install : true, 
 #         dependencies : [cuda_dep])
 
-#     newsched_blocklib_qtgui_cu_dep = declare_dependency(include_directories : incdir,
-#                         link_with : newsched_blocklib_qtgui_cu,
+#     gnuradio_blocklib_qtgui_cu_dep = declare_dependency(include_directories : incdir,
+#                         link_with : gnuradio_blocklib_qtgui_cu,
 #                         dependencies : cuda_dep)
 
-#     qtgui_deps += [newsched_blocklib_qtgui_cu_dep, cuda_dep]
+#     qtgui_deps += [gnuradio_blocklib_qtgui_cu_dep, cuda_dep]
 
 # endif
 
 incdir = include_directories(['../include/gnuradio/qtgui','../include'])
-newsched_blocklib_qtgui_lib = library('newsched-blocklib-qtgui', 
+gnuradio_blocklib_qtgui_lib = library('gnuradio-blocklib-qtgui', 
     qtgui_sources, 
     include_directories : incdir, 
     install : true,
@@ -59,6 +59,6 @@ newsched_blocklib_qtgui_lib = library('newsched-blocklib-qtgui',
     dependencies : qtgui_deps,
     cpp_args : block_cpp_args)
 
-newsched_blocklib_qtgui_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_qtgui_lib,
+gnuradio_blocklib_qtgui_dep = declare_dependency(include_directories : incdir,
+					   link_with : gnuradio_blocklib_qtgui_lib,
                        dependencies : qtgui_deps)

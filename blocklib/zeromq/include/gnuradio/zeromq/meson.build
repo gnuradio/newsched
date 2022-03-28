@@ -4,7 +4,7 @@ zeromq_headers = [
 
 install_headers(zeromq_headers, subdir : 'gnuradio/zeromq')
 
-# TODO - export this as a subproject of newsched
+# TODO - export this as a subproject of gnuradio
 
 conf = configuration_data()
 conf.set('prefix', prefix)
@@ -17,9 +17,9 @@ cmake_conf = configuration_data()
 cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
 cmake_conf.set('module', 'zeromq')
 cmake.configure_package_config_file(
-  name : 'newsched-zeromq',
-  input : join_paths(meson.source_root(),'cmake','Modules','newschedConfigModule.cmake.in'),
-  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'newsched',
+  name : 'gnuradio-zeromq',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfigModule.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
   configuration : cmake_conf
 )
 
@@ -29,7 +29,7 @@ h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
 pkg.generate(libraries : libs,
              subdirs : h,
              version : meson.project_version(),
-             name : 'libnewsched-zeromq',
-             filebase : 'newsched-zeromq',
+             name : 'libgnuradio-zeromq',
+             filebase : 'gnuradio-zeromq',
              install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
-             description : 'Newsched Digital Library')
+             description : 'GNU Radio ZeroMQ Blocks')

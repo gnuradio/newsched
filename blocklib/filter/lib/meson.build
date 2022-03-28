@@ -7,20 +7,20 @@ sources = [
 ]
 
 filter_sources += sources
-filter_deps += [newsched_gr_dep, newsched_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
+filter_deps += [gnuradio_gr_dep, gnuradio_blocklib_fft_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 link_args = []
 block_cpp_args = ['-DHAVE_CPU']
 if USE_CUDA
     block_cpp_args += '-DHAVE_CUDA'
 
-#     newsched_blocklib_filter_cu = library('newsched-blocklib-filter-cu', 
+#     gnuradio_blocklib_filter_cu = library('gnuradio-blocklib-filter-cu', 
 #         filter_cu_sources, 
 #         include_directories : incdir, 
 #         install : true, 
 #         dependencies : [cuda_dep])
 
-#     newsched_blocklib_filter_cu_dep = declare_dependency(include_directories : incdir,
-#                         link_with : newsched_blocklib_filter_cu,
+#     gnuradio_blocklib_filter_cu_dep = declare_dependency(include_directories : incdir,
+#                         link_with : gnuradio_blocklib_filter_cu,
 #                         dependencies : cuda_dep)
 
     filter_deps += [cuda_dep, cusp_dep]
@@ -29,7 +29,7 @@ endif
 
 
 incdir = include_directories(['../include/gnuradio/filter','../include'])
-newsched_blocklib_filter_lib = library('newsched-blocklib-filter', 
+gnuradio_blocklib_filter_lib = library('gnuradio-blocklib-filter', 
     filter_sources, 
     include_directories : incdir, 
     install : true,
@@ -38,11 +38,11 @@ newsched_blocklib_filter_lib = library('newsched-blocklib-filter',
     link_args : link_args,  # why is this necesary???
     cpp_args : block_cpp_args)
 
-newsched_blocklib_filter_dep = declare_dependency(include_directories : incdir,
-					   link_with : newsched_blocklib_filter_lib,
+gnuradio_blocklib_filter_dep = declare_dependency(include_directories : incdir,
+					   link_with : gnuradio_blocklib_filter_lib,
                        dependencies : filter_deps)
 
-# TODO - export this as a subproject of newsched
+# TODO - export this as a subproject of gnuradio
 
 conf = configuration_data()
 conf.set('prefix', prefix)
@@ -55,9 +55,9 @@ cmake_conf = configuration_data()
 cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
 cmake_conf.set('module', 'filter')
 cmake.configure_package_config_file(
-  name : 'newsched-filter',
-  input : join_paths(meson.source_root(),'cmake','Modules','newschedConfigModule.cmake.in'),
-  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'newsched',
+  name : 'gnuradio-filter',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfigModule.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
   configuration : cmake_conf
 )
 
@@ -67,7 +67,7 @@ h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
 pkg.generate(libraries : libs,
              subdirs : h,
              version : meson.project_version(),
-             name : 'libnewsched-filter',
-             filebase : 'newsched-filter',
+             name : 'libgnuradio-filter',
+             filebase : 'gnuradio-filter',
              install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
-             description : 'Newsched GR 4.0 Prototype')
+             description : 'GNU Radio Filter Blocks')
