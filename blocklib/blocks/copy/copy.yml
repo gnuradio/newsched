@@ -3,6 +3,12 @@ block: copy
 label: Copy
 blocktype: sync_block
 
+doc:
+  brief: output[i] = input[i]
+  detail: |-
+    When enabled (default), this block copies its input to its
+    output. When disabled, this block drops its input on the floor.
+
 parameters:
     - id: itemsize
       label: Item Size
