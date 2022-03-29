@@ -74,7 +74,7 @@ public:
         : buffer_sm_reader(buffer, itemsize, buf_props, read_index)
     {
         _buffer_cuda_sm = buffer;
-        gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_cuda_sm");
+        // gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_cuda_sm");
     }
 
     // virtual void post_read(int num_items);
