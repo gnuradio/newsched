@@ -45,10 +45,6 @@ qt5_mod = import('qt5', required: false)
 qt5widgets_dep = dependency('qt5', modules : 'Widgets', required: false)
 qwt_dep = dependency('Qwt', method: 'cmake', cmake_module_path: join_paths(meson.source_root(), 'cmake','Modules'), required: false )
 
-if USE_CUDA
-cusp_dep = dependency('cusp', version : '>=0.0.1', required : USE_CUDA) 
-endif
-
 # pmtf_dep = dependency('pmtf', version : '>=0.0.2')
 libpmtf = subproject('pmt')
 pmtf_dep = libpmtf.get_variable('pmtf_dep')
@@ -71,6 +67,10 @@ libmoodycamel = cmake.subproject('moodycamel')
 # message('CMaket targets:\n - ' + '\n - '.join(libmoodycamel.target_list()))
 moodycamel_dep = libmoodycamel.dependency('concurrentqueue')
 
+if USE_CUDA
+  libcusp = subproject('cusp')
+  cusp_dep = libcusp.get_variable('cusp_dep')
+endif
 
 if (get_option('enable_testing'))
     TEST_ENV = environment()
