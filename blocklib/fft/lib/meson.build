@@ -6,7 +6,6 @@ link_args = []
 if USE_CUDA
     fft_deps += cuda_dep
     fft_deps += cusp_dep
-    link_args += '-lcusp'
 endif
 
 block_cpp_args = ['-DHAVE_CPU']

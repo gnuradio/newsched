@@ -20,7 +20,6 @@ if USE_CUDA
     #                     dependencies : cuda_dep)
 
     streamops_deps += [cuda_dep, cusp_dep]
-    link_args += ['-lcusp']
 
 endif
 

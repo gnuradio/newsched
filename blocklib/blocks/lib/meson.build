@@ -16,7 +16,6 @@ if USE_CUDA
                         dependencies : cuda_dep)
 
     blocks_deps += [gnuradio_blocklib_blocks_cu_dep, cuda_dep, cusp_dep]
-    link_args += '-lcusp'
 endif 
 
 incdir = include_directories(['../include/gnuradio/blocks','../include'])

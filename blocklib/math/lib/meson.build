@@ -19,7 +19,6 @@ if USE_CUDA
     #                     link_with : gnuradio_blocklib_math_cu,
     #                     dependencies : cuda_dep)
 
-    link_args += '-lcusp'
     # math_deps += [gnuradio_blocklib_math_cu_dep, cuda_dep, cusp_dep]
     math_deps += [cuda_dep, cusp_dep]
 
