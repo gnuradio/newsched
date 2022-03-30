@@ -9,7 +9,7 @@
 # GNU Radio version: 3.9.0.0-git
 
 from gnuradio import gr, blocks, streamops, fft
-from gnuradio.filter import firdes
+from gnuradio.kernel.filter import firdes
 from gnuradio.schedulers import nbt
 import sys
 import signal
