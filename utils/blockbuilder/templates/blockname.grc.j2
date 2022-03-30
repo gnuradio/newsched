@@ -9,6 +9,14 @@
 {%- elif type in ['gui_hint'] -%}gui_hint
 {%- else -%}{{default}}{%-endif-%}
 {%- endmacro -%}
+{%- macro vec_type_lookup(type, default) -%}
+{%- if type in ['int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int_vector
+{%- elif type in ['short', 'unsigned short', 'uint16_t', 'int16_t'] -%}int_vector
+{%- elif type in ['uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}int_vector
+{%- elif type in ['std::complex<float>', 'gr_complex'] -%}complex_vector
+{%- elif type in ['float'] -%}float_vector
+{%- else -%}{{default}}{%-endif-%}
+{%- endmacro -%}
 {% macro get_linked_value(value, ports, parameters, typekeys) -%}
     {% set newvalue = value -%}
     {% if '/' in value | string() -%}
@@ -39,7 +47,7 @@ parameters:
 {% if 'grc' not in param or 'hide' not in param['grc'] or ('hide' in param['grc'] and param['grc']['hide'] != 'all') -%}
 -   id: {{param['id']}}
     label: {{param['label']}}
-    dtype: {{type_lookup(param['dtype'],'raw')}}
+    dtype: {{type_lookup(param['dtype'],'raw') if 'container' not in param or param['container'] == 'scalar' else vec_type_lookup(param['dtype'],'raw')}}
     {%if 'grc' in param and 'default' in param['grc']%}default: {{param['grc']['default']}}{%elif 'default' in param %}default: {{param['default']}}{%endif%}
     {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
 {% endif %}{% endfor -%}{% endif %}
