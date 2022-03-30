@@ -9,7 +9,7 @@ grc:
     imports: |-
       from PyQt5 import Qt
       from gnuradio import qtgui
-      from gnuradio.filter import firdes
+      from gnuradio.kernel.filter import firdes
       import sip
     make: |
       <%

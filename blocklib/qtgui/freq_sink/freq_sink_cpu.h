@@ -2,8 +2,8 @@
 
 #include <gnuradio/kernel/fft/fftw_fft.h>
 #include <gnuradio/qtgui/freq_sink.h>
-// #include <gnuradio/fft/fft_shift.h>
 #include <gnuradio/kernel/fft/window.h>
+#include <gnuradio/kernel/fft/fft_shift.h>
 
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/freqdisplayform.h>
@@ -79,7 +79,7 @@ private:
     void initialize();
 
     int d_fftsize;
-    // fft::fft_shift<float> d_fft_shift;
+    kernel::fft::fft_shift<float> d_fft_shift;
     float d_fftavg;
     kernel::fft::window::win_type d_wintype;
     std::vector<float> d_window;

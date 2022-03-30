@@ -20,7 +20,7 @@ template <class T>
 freq_sink_cpu<T>::freq_sink_cpu(const typename freq_sink<T>::block_args& args)
     : INHERITED_CONSTRUCTORS(T),
       d_fftsize(args.fftsize),
-      //   d_fft_shift(fftsize),
+      d_fft_shift(args.fftsize),
       d_fftavg(1.0),
       d_wintype((kernel::fft::window::win_type)(args.wintype)),
       d_window_normalize(args.wintype & (1 << 15)),
@@ -460,7 +460,7 @@ void freq_sink_cpu<gr_complex>::fft(float* data_out, const gr_complex* data_in, 
     volk_32fc_s32f_x2_power_spectral_density_32f(
         data_out, d_fft->get_outbuf(), size, 1.0, size);
 
-    // d_fft_shift.shift(data_out, size);
+    d_fft_shift.shift(data_out, size);
 }
 
 template <>
@@ -479,7 +479,7 @@ void freq_sink_cpu<float>::fft(float* data_out, const float* data_in, int size)
     volk_32fc_s32f_x2_power_spectral_density_32f(
         data_out, d_fft->get_outbuf(), size, 1.0, size);
 
-    // d_fft_shift.shift(data_out, size);
+    d_fft_shift.shift(data_out, size);
 }
 
 template <class T>
@@ -547,7 +547,7 @@ bool freq_sink_cpu<T>::fftresize()
         d_fbuf.clear();
         d_fbuf.resize(d_fftsize);
 
-        // d_fft_shift.resize(d_fftsize);
+        d_fft_shift.resize(d_fftsize);
 
         d_last_time = 0;
 
