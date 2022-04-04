@@ -64,7 +64,7 @@ void bind_{{ block }}(py::module& m)
 {% for opt in key1['options'] -%}
     bind_{{ block }}_template<{{ opt['value'] }}>(m, "{{ block }}_{{ opt['suffix'] }}");
 {% endfor %}
-{% else -%}
+{% elif typekeys | length == 2 -%}
 {%set key1 = typekeys|first %}
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
@@ -78,6 +78,25 @@ void bind_{{ block }}(py::module& m)
 {% else %}
     bind_{{ block }}_template<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>(m, "{{ block }}_{{ opt1['suffix'] }}{{ opt2['suffix'] }}");
 {% endif %}
+{% endfor %}
+{% endfor %}
+{% else -%}
+{%set key1 = typekeys|first %}
+{%set key2 = typekeys[1] %}
+{%set key3 = typekeys|last %}
+{% for opt1 in key1['options'] -%}
+{% for opt2 in key2['options'] -%}
+{% for opt3 in key3['options'] -%}
+{% if type_inst -%}
+{% for typev in type_inst -%}
+{% if opt1['value'] == typev[0] and opt2['value'] == typev[1] and opt3['value'] == typev[2] -%}
+    bind_{{ block }}_template<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}, {{ opt3['value']|lower if key2['type'] == 'bool' else opt3['value']}}>(m, "{{ block }}_{{ opt1['suffix'] }}{{ opt2['suffix'] }}{{ opt3['suffix'] }}");
+{% endif %}
+{% endfor %}
+{% else %}
+    bind_{{ block }}_template<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}, {{ opt3['value']|lower if key2['type'] == 'bool' else opt3['value']}}>(m, "{{ block }}_{{ opt1['suffix'] }}{{ opt2['suffix'] }}{{ opt3['suffix'] }}");
+{% endif %}
+{% endfor %}
 {% endfor %}
 {% endfor %}
 {% endif %}
