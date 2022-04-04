@@ -35,6 +35,7 @@ protected:
     
 };
 
+
 {%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
@@ -45,7 +46,15 @@ using {{block}}_{{ opt['suffix'] }} = {{block}}<{{ opt['value']}}>;
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
 {% for opt2 in key2['options'] -%}
-using {{block}}_{{ opt1['suffix'] }}_{{ opt2['suffix'] }} = {{block}}<{{ opt1['value']+ ", " + opt2['value']}}>;
+{% if type_inst -%}
+{% for typev in type_inst -%}
+{% if opt1['value'] == typev[0] and opt2['value'] == typev[1] -%}
+using {{block}}_{{ opt1['suffix'] }}{{ opt2['suffix'] }} = {{block}}<{{ opt1['value']+ ", " + opt2['value']}}>;
+{% endif -%}
+{% endfor -%}
+{% else -%}
+using {{block}}_{{ opt1['suffix'] }}{{ opt2['suffix'] }} = {{block}}<{{ opt1['value']+ ", " + opt2['value']}}>;
+{% endif -%}
 {% endfor -%}
 {% endfor -%}
 {% endif -%}

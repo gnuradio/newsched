@@ -27,7 +27,15 @@ template class {{block}}<{{ opt['value']}}>;
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
 {% for opt2 in key2['options'] -%}
+{% if type_inst -%}
+{% for typev in type_inst -%}
+{% if opt1['value'] == typev[0] and opt2['value'] == typev[1] -%}
 template class {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>;
+{% endif %}
+{% endfor %}
+{% else %}
+template class {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>;
+{% endif %}
 {% endfor -%}
 {% endfor -%}
 {% endif -%}
