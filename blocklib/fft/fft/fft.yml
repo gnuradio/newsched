@@ -42,13 +42,13 @@ ports:
     id: in
     direction: input
     type: typekeys/T
-    dims: parameters/fft_size
+    shape: parameters/fft_size
 
 -   domain: stream
     id: out
     direction: output
     type: typekeys/T
-    dims: parameters/fft_size
+    shape: parameters/fft_size
 
 implementations:
 -   id: cpu

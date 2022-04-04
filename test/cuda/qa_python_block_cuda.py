@@ -14,14 +14,14 @@ from gnuradio import gr, gr_unittest, blocks
 
 
 class add_2_f32_1_f32(gr.cupy_sync_block):
-    def __init__(self, dims=[1]):
+    def __init__(self, shape=[1]):
         gr.cupy_sync_block.__init__(
             self,
             name="add 2 f32")
 
-        self.add_port(gr.port_f("in1", gr.INPUT, dims))
-        self.add_port(gr.port_f("in2", gr.INPUT, dims))
-        self.add_port(gr.port_f("out", gr.OUTPUT, dims))
+        self.add_port(gr.port_f("in1", gr.INPUT, shape))
+        self.add_port(gr.port_f("in2", gr.INPUT, shape))
+        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
 
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items
@@ -41,13 +41,13 @@ class add_2_f32_1_f32(gr.cupy_sync_block):
 
 
 class copy_f32(gr.cupy_sync_block):
-    def __init__(self, dims=[1]):
+    def __init__(self, shape=[1]):
         gr.cupy_sync_block.__init__(
             self,
             name="add 2 f32")
 
-        self.add_port(gr.port_f("in", gr.INPUT, dims))
-        self.add_port(gr.port_f("out", gr.OUTPUT, dims))
+        self.add_port(gr.port_f("in", gr.INPUT, shape))
+        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
 
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items
@@ -98,7 +98,7 @@ class test_block_gateway(gr_unittest.TestCase):
     #     tb = gr.flowgraph()
     #     src0 = blocks.vector_source_f(10*[1, 3, 5, 7, 9], False, 5)
     #     src1 = blocks.vector_source_f(10*[0, 2, 4, 6, 8], False, 5)
-    #     adder = add_2_f32_1_f32(dims=[5])
+    #     adder = add_2_f32_1_f32(shape=[5])
     #     adder.name()
     #     sink = blocks.vector_sink_f(5)
     #     tb.connect((src0, 0), (adder, 0))

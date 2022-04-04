@@ -20,7 +20,7 @@ ports:
     id: in
     direction: input
     type: int16_t
-    dims: '2'
+    shape: '2'
 
 -   domain: stream
     id: out

@@ -32,13 +32,13 @@ ports:
     id: in
     direction: input
     type: typekeys/T
-    dims: parameters/vlen
+    shape: parameters/vlen
 
 -   domain: stream
     id: out
     direction: output
     type: typekeys/T
-    dims: parameters/vlen
+    shape: parameters/vlen
 
 implementations:
 -   id: cpu

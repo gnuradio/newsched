@@ -5,26 +5,26 @@ port_sptr port_base::make(const std::string& name,
                           const port_direction_t direction,
                           const param_type_t data_type,
                           const port_type_t port_type,
-                          const std::vector<size_t>& dims,
+                          const std::vector<size_t>& shape,
                           const bool optional,
                           const int multiplicity)
 {
     return std::make_shared<port_base>(
-        name, direction, data_type, port_type, dims, optional, multiplicity);
+        name, direction, data_type, port_type, shape, optional, multiplicity);
 }
 
 port_base::port_base(const std::string& name,
                      const port_direction_t direction,
                      const param_type_t data_type,
                      const port_type_t port_type,
-                     const std::vector<size_t>& dims,
+                     const std::vector<size_t>& shape,
                      const bool optional,
                      const int multiplicity)
     : _name(name),
       _direction(direction),
       _data_type(data_type),
       _port_type(port_type),
-      _dims(dims),
+      _shape(shape),
       _optional(optional),
       _multiplicity(multiplicity)
 {
@@ -32,10 +32,10 @@ port_base::port_base(const std::string& name,
     _datasize = parameter_functions::param_size_info(_data_type);
     _itemsize = _datasize;
 
-    // If dims is empty or [1], then the port type is a scalar value
-    // If dims has values, then the total itemsize is the product of the dimensions *
+    // If shape is empty or [1], then the port type is a scalar value
+    // If shape has values, then the total itemsize is the product of the dimensions *
     // the scalar itemsize
-    for (auto d : _dims)
+    for (auto d : _shape)
         _itemsize *= d;
 }
 
@@ -112,18 +112,18 @@ void port_base::disconnect(port_interface_sptr other_port)
 template <typename T>
 std::shared_ptr<port<T>> port<T>::make(const std::string& name,
                                        const port_direction_t direction,
-                                       const std::vector<size_t>& dims,
+                                       const std::vector<size_t>& shape,
                                        const bool optional,
                                        const int multiplicity)
 {
     return std::shared_ptr<port<T>>(
-        new port<T>(name, direction, dims, optional, multiplicity));
+        new port<T>(name, direction, shape, optional, multiplicity));
 }
 
 template <typename T>
 port<T>::port(const std::string& name,
               const port_direction_t direction,
-              const std::vector<size_t>& dims,
+              const std::vector<size_t>& shape,
               const bool optional,
               const int multiplicity)
     : port_base(
@@ -132,7 +132,7 @@ port<T>::port(const std::string& name,
           direction,
           parameter_functions::get_param_type_from_typeinfo(std::type_index(typeid(T))),
           port_type_t::STREAM,
-          dims,
+          shape,
           optional,
           multiplicity)
 {

@@ -80,7 +80,7 @@ inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
     optional: {{ port['optional'] if 'optional' in port else 'false' }}
@@ -96,7 +96,7 @@ outputs:
 {% if port['direction'] == 'output'-%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
-    {%if 'dims' in port %}vlen: {{get_linked_value(port['dims'])}}{% endif %}
+    {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
     optional: {{ port['optional'] if 'optional' in port else 'false' }}

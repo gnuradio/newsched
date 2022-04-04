@@ -20,8 +20,7 @@ from . import gr_python as gr
 # http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
 ########################################################################
 
-def pointer_to_ndarray(addr, typestr, dims, nitems):
-    shape = dims
+def pointer_to_ndarray(addr, typestr, shape, nitems):
     if len(shape) > 0 and shape[-1] == 1:
         shape = shape[:-1]
     shape = (nitems,) + tuple(shape)
@@ -46,7 +45,7 @@ def get_input_array(self, work_input, index):
     return pointer_to_ndarray(
             ctypes.pythonapi.PyCapsule_GetPointer(work_input[index].raw_items(), None),
             port.format_descriptor(),
-            port.dims(),
+            port.shape(),
             work_input[index].n_items)
 
 def get_output_array(self, work_output, index):
@@ -59,5 +58,5 @@ def get_output_array(self, work_output, index):
     return pointer_to_ndarray(
             ctypes.pythonapi.PyCapsule_GetPointer(work_output[index].raw_items(), None),
             port.format_descriptor(),
-            port.dims(),
+            port.shape(),
             work_output[index].n_items)

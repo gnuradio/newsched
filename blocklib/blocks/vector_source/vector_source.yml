@@ -62,7 +62,7 @@ ports:
     id: out
     direction: output
     type: typekeys/T
-    dims: parameters/vlen
+    shape: parameters/vlen
 
 implementations:
 -   id: cpu

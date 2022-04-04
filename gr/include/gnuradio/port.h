@@ -41,7 +41,7 @@ public:
                      const port_direction_t direction,
                      const param_type_t data_type = param_type_t::CFLOAT,
                      const port_type_t port_type = port_type_t::STREAM,
-                     const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+                     const std::vector<size_t>& shape = std::vector<size_t>{ 1 },
                      const bool optional = false,
                      const int multiplicity = 1);
 
@@ -49,7 +49,7 @@ public:
               const port_direction_t direction,
               const param_type_t data_type = param_type_t::CFLOAT,
               const port_type_t port_type = port_type_t::STREAM,
-              const std::vector<size_t>& dims = std::vector<size_t>{ 1 },
+              const std::vector<size_t>& shape = std::vector<size_t>{ 1 },
               const bool optional = false,
               const int multiplicity = 1);
     port_base(const std::string& name,
@@ -72,7 +72,7 @@ public:
     size_t data_size() { return _datasize; }
     size_t itemsize() { return _itemsize; }
     void set_itemsize(size_t itemsize) { _itemsize = itemsize; }
-    std::vector<size_t> dims() { return _dims; }
+    std::vector<size_t> shape() { return _shape; }
     sptr base() { return shared_from_this(); }
     bool optional() { return _optional; }
     auto& connected_ports() { return _connected_ports; }
@@ -98,12 +98,12 @@ protected:
     param_type_t _data_type;
     port_type_t _port_type;
     int _index = -1;           // how does this get set??
-    std::vector<size_t> _dims; // allow for matrices to be sent naturally across ports
-    // empty dims refers to a scalar, dims=[n] same as vlen=n
+    std::vector<size_t> _shape; // allow for matrices to be sent naturally across ports
+    // empty shape refers to a scalar, shape=[n] same as vlen=n
     bool _optional;
     int _multiplicity; // port can be replicated as in grc
     size_t _datasize;
-    size_t _itemsize; // data size across all dims
+    size_t _itemsize; // data size across all shape
     std::string _format_descriptor = "";
 
     std::vector<port_interface_sptr> _connected_ports;
@@ -132,12 +132,12 @@ class GR_RUNTIME_API port : public port_base
 public:
     static std::shared_ptr<port<T>> make(const std::string& name,
                                          const port_direction_t direction,
-                                         const std::vector<size_t>& dims = { 1 },
+                                         const std::vector<size_t>& shape = { 1 },
                                          const bool optional = false,
                                          const int multiplicity = 1);
     port(const std::string& name,
          const port_direction_t direction,
-         const std::vector<size_t>& dims = { 1 },
+         const std::vector<size_t>& shape = { 1 },
          const bool optional = false,
          const int multiplicity = 1);
 };
