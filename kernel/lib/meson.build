@@ -5,6 +5,7 @@ kernel_sources = [
     'analog/agc.cc',
     'fft/window.cc',
     'fft/fftw_fft.cc',
+    'filter/fft_filter.cc',
     'filter/fir_filter.cc',
     'filter/firdes.cc',
     'filter/mmse_fir_interpolator_ff.cc',
