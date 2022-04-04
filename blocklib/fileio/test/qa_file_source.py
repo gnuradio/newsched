@@ -133,7 +133,7 @@ class test_file_source(gr_unittest.TestCase):
 
     #     src = blocks.file_source(gr.sizeof_float, self._datafilename, True)
     #     src.set_begin_tag(pmt.string_to_symbol("file_begin"))
-    #     head = blocks.head(gr.sizeof_float, 2 * len(self._vector))
+    #     head = streamops.head(gr.sizeof_float, 2 * len(self._vector))
     #     snk = blocks.vector_sink_f()
     #     self.tb.connect(src, head, snk)
     #     self.tb.run()

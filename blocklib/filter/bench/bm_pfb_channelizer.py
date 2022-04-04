@@ -38,7 +38,7 @@ class benchmark_pfb_channelizer(gr.flowgraph):
         ##################################################
         self.nsrc = blocks.null_source(gr.sizeof_gr_complex*1)
         self.nsnk = blocks.null_sink(gr.sizeof_gr_complex*1, nports=nchans)
-        self.hd = blocks.head(gr.sizeof_gr_complex*1, int(nsamples))
+        self.hd = streamops.head(gr.sizeof_gr_complex*1, int(nsamples))
 
         if not args.cuda:
             self.channelizer = filter.pfb_channelizer_cc(

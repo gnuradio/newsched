@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/copy.h>
+#include <gnuradio/streamops/copy.h>
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
@@ -23,7 +23,7 @@ TEST(DefaultRuntimeTest, SeparateRuntime)
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make({ input_data, false });
-    auto blk = blocks::copy::make({});
+    auto blk = streamops::copy::make({});
     auto snk = blocks::vector_sink_f::make({});
 
     auto fg = flowgraph::make();

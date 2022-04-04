@@ -9,7 +9,7 @@
 #
 
 
-from gnuradio import gr, gr_unittest, blocks
+from gnuradio import gr, gr_unittest, blocks, streamops
 # import pmt
 
 
@@ -30,7 +30,7 @@ class test_delay(gr_unittest.TestCase):
         expected_result = list(delta_t * [0.0] + src_data)
 
         src = blocks.vector_source_f(src_data)
-        op = blocks.delay(delta_t)
+        op = streamops.delay(delta_t)
         dst = blocks.vector_sink_f()
 
         tb.connect(src, op)
@@ -47,7 +47,7 @@ class test_delay(gr_unittest.TestCase):
         expected_result = list(delta_t * [0.0] + src_data)
 
         src = blocks.vector_source_f(src_data)
-        op = blocks.delay(delta_t)
+        op = streamops.delay(delta_t)
         dst = blocks.vector_sink_f()
 
         tb.connect(src, op)
@@ -66,8 +66,8 @@ class test_delay(gr_unittest.TestCase):
     #         pmt.intern("TEST"),
     #         100,
     #         pmt.intern("strobe"))
-    #     head = blocks.head(gr.sizeof_float * 1, 10**5)
-    #     delay = blocks.delay(gr.sizeof_float * 1, 100)
+    #     head = streamops.head(gr.sizeof_float * 1, 10**5)
+    #     delay = streamops.delay(gr.sizeof_float * 1, 100)
     #     tb.connect((delay, 0), (head, 0))
     #     tb.connect((head, 0), (vector_sink, 0))
     #     tb.connect((tags_strobe, 0), (delay, 0))

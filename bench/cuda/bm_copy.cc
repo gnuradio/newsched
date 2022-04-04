@@ -2,8 +2,8 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/head.h>
-#include <gnuradio/blocks/load.h>
+#include <gnuradio/streamops/head.h>
+#include <gnuradio/streamops/load.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/blocks/null_source.h>
 #include <gnuradio/blocks/vector_sink.h>
@@ -54,9 +54,9 @@ int main(int argc, char* argv[])
         std::cout << "Error: failed to enable real-time scheduling." << std::endl;
     }
 
-    std::vector<blocks::load::sptr> copy_blks(nblocks);
+    std::vector<streamops::load::sptr> copy_blks(nblocks);
     for (int i = 0; i < nblocks; i++) {
-        copy_blks[i] = blocks::load::make_cuda({ sizeof(gr_complex), load });
+        copy_blks[i] = streamops::load::make_cuda({ sizeof(gr_complex), load });
     }
 
     // std::vector<gr_complex> input_data(samples);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
     auto src = blocks::null_source::make({ sizeof(gr_complex) });
     auto snk = blocks::null_sink::make({ sizeof(gr_complex) });
-    auto head = blocks::head::make_cpu({ sizeof(gr_complex), samples });
+    auto head = streamops::head::make_cpu({ sizeof(gr_complex), samples });
 
     auto fg = flowgraph::make();
 

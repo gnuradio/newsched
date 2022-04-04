@@ -8,6 +8,7 @@ executable('bm_nbt_cuda_copy',
     dependencies: [gnuradio_gr_dep,
                    cuda_dep,
                    gnuradio_blocklib_blocks_dep,
+                   gnuradio_blocklib_streamops_dep,
                    gnuradio_scheduler_nbt_dep,
                    CLI11_dep], 
     install : true)

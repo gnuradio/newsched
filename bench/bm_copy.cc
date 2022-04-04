@@ -2,8 +2,8 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/copy.h>
-#include <gnuradio/blocks/head.h>
+#include <gnuradio/streamops/copy.h>
+#include <gnuradio/streamops/head.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/blocks/null_source.h>
 #include <gnuradio/buffer_cpu_simple.h>
@@ -58,11 +58,11 @@ int main(int argc, char* argv[])
     {
         auto src = blocks::null_source::make({ 1, sizeof(gr_complex) * veclen });
         auto head =
-            blocks::head::make_cpu({ samples / veclen, sizeof(gr_complex) * veclen });
+            streamops::head::make_cpu({ samples / veclen, sizeof(gr_complex) * veclen });
         auto snk = blocks::null_sink::make({ 1, sizeof(gr_complex) * veclen });
-        std::vector<blocks::copy::sptr> copy_blks(nblocks);
+        std::vector<streamops::copy::sptr> copy_blks(nblocks);
         for (unsigned int i = 0; i < nblocks; i++) {
-            copy_blks[i] = blocks::copy::make({ sizeof(gr_complex) * veclen });
+            copy_blks[i] = streamops::copy::make({ sizeof(gr_complex) * veclen });
         }
         flowgraph_sptr fg(new flowgraph());
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from gnuradio import gr_unittest, gr, blocks
+from gnuradio import gr_unittest, gr, blocks, streamops
 
 class test_basic(gr_unittest.TestCase):
 
@@ -17,8 +17,8 @@ class test_basic(gr_unittest.TestCase):
         input_data = list(range(nsamples))
 
         src = blocks.vector_source_f(input_data, False)
-        cp1 = blocks.copy(gr.sizeof_float)
-        cp2 = blocks.copy(gr.sizeof_float)
+        cp1 = streamops.copy(gr.sizeof_float)
+        cp2 = streamops.copy(gr.sizeof_float)
         snk1 = blocks.vector_sink_f()
         snk2 = blocks.vector_sink_f()
 
