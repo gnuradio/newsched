@@ -8,9 +8,9 @@ typekeys:
     type: class
     options:
       - value: gr_complex
-        suffix: cc 
+        suffix: cc_
       - value: float
-        suffix: ff
+        suffix: ff_
   - id: direction
     type: bool
     label: Direction
