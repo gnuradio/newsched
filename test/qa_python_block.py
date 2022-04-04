@@ -13,14 +13,14 @@ from gnuradio import gr, gr_unittest, blocks, math
 
 #This test is a pure python block that inherits from sync_block
 class add_2_f32_1_f32(gr.sync_block):
-    def __init__(self, dims=[1]):
+    def __init__(self, shape=[1]):
         gr.sync_block.__init__(
             self,
             name="add 2 f32")
 
-        self.add_port(gr.port_f("in1", gr.INPUT, dims))
-        self.add_port(gr.port_f("in2", gr.INPUT, dims))
-        self.add_port(gr.port_f("out", gr.OUTPUT, dims))
+        self.add_port(gr.port_f("in1", gr.INPUT, shape))
+        self.add_port(gr.port_f("in2", gr.INPUT, shape))
+        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
 
     def work(self, inputs, outputs):
         noutput_items = outputs[0].n_items
@@ -37,7 +37,7 @@ class add_2_f32_1_f32(gr.sync_block):
 
 # This test extends the existing add_ff block by adding a custom python implementation
 class add_ff_numpy(math.add_ff):
-    def __init__(self, dims=[1]):
+    def __init__(self, shape=[1]):
         math.add_ff.__init__(self, impl = math.add_ff.available_impl.pyshell)
         self.set_pyblock_detail(gr.pyblock_detail(self))
 
@@ -87,7 +87,7 @@ class test_block_gateway(gr_unittest.TestCase):
     #     tb = gr.flowgraph()
     #     src0 = blocks.vector_source_f(10*[1, 3, 5, 7, 9], False, 5)
     #     src1 = blocks.vector_source_f(10*[0, 2, 4, 6, 8], False, 5)
-    #     adder = add_2_f32_1_f32(dims=[5])
+    #     adder = add_2_f32_1_f32(shape=[5])
     #     sink = blocks.vector_sink_f(5)
     #     tb.connect((src0, 0), (adder, 0))
     #     tb.connect((src1, 0), (adder, 1))

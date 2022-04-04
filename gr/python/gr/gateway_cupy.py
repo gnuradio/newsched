@@ -23,8 +23,8 @@ from .gr_python import python_block, python_sync_block
 # http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
 ########################################################################
 
-def pointer_to_cupyarray(addr, typestr, dims, nitems):
-    shape = dims
+def pointer_to_cupyarray(addr, typestr, shape, nitems):
+
     if shape[-1] == 1:
         shape = shape[:-1]
     shape = (nitems,) + tuple(shape)
@@ -91,7 +91,7 @@ class sync_block(python_sync_block):
         return pointer_to_cupyarray(
                 ctypes.pythonapi.PyCapsule_GetPointer(work_input[index].raw_items(), None),
                 port.format_descriptor(),
-                port.dims(),
+                port.shape(),
                 work_input[index].n_items)
 
     def get_output_array(self, work_output, index):
@@ -104,5 +104,5 @@ class sync_block(python_sync_block):
         return pointer_to_cupyarray(
                 ctypes.pythonapi.PyCapsule_GetPointer(work_output[index].raw_items(), None),
                 port.format_descriptor(),
-                port.dims(),
+                port.shape(),
                 work_output[index].n_items)

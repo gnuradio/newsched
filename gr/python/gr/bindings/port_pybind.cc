@@ -26,7 +26,7 @@ void bind_port(py::module& m)
 
     py::class_<port_base, gr::port_interface, std::shared_ptr<port_base>>(m, "port_base")
         .def("format_descriptor", &gr::port_base::format_descriptor)
-        .def("dims", &gr::port_base::dims)
+        .def("shape", &gr::port_base::shape)
         .def("index", &gr::port_base::index)
         .def("name", &gr::port_base::name)
         .def("connect", &gr::port_base::connect)
@@ -38,35 +38,35 @@ void bind_port(py::module& m)
         .def(py::init(&port_f::make),
              py::arg("name"),
              py::arg("direction"),
-             py::arg("dims") = std::vector<size_t>{ 1 },
+             py::arg("shape") = std::vector<size_t>{ 1 },
              py::arg("optional") = false,
              py::arg("multiplicity") = 1);
     py::class_<port_c, port_base, std::shared_ptr<port_c>>(m, "port_c")
         .def(py::init(&port_c::make),
              py::arg("name"),
              py::arg("direction"),
-             py::arg("dims") = std::vector<size_t>{ 1 },
+             py::arg("shape") = std::vector<size_t>{ 1 },
              py::arg("optional") = false,
              py::arg("multiplicity") = 1);
     py::class_<port_s, port_base, std::shared_ptr<port_s>>(m, "port_s")
         .def(py::init(&port_s::make),
              py::arg("name"),
              py::arg("direction"),
-             py::arg("dims") = std::vector<size_t>{ 1 },
+             py::arg("shape") = std::vector<size_t>{ 1 },
              py::arg("optional") = false,
              py::arg("multiplicity") = 1);
     py::class_<port_i, port_base, std::shared_ptr<port_i>>(m, "port_i")
         .def(py::init(&port_i::make),
              py::arg("name"),
              py::arg("direction"),
-             py::arg("dims") = std::vector<size_t>{ 1 },
+             py::arg("shape") = std::vector<size_t>{ 1 },
              py::arg("optional") = false,
              py::arg("multiplicity") = 1);
     py::class_<port_b, port_base, std::shared_ptr<port_b>>(m, "port_b")
         .def(py::init(&port_b::make),
              py::arg("name"),
              py::arg("direction"),
-             py::arg("dims") = std::vector<size_t>{ 1 },
+             py::arg("shape") = std::vector<size_t>{ 1 },
              py::arg("optional") = false,
              py::arg("multiplicity") = 1);
 
