@@ -11,6 +11,7 @@ if get_option('enable_testing')
         dependencies: [gnuradio_gr_dep,
                     cuda_dep,
                     gnuradio_blocklib_blocks_dep,
+                    gnuradio_blocklib_streamops_dep,
                     gnuradio_scheduler_nbt_dep,
                     gtest_dep], 
         install : true)

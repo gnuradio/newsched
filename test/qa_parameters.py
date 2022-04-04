@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from gnuradio import gr_unittest, gr, blocks, math
+from gnuradio import gr_unittest, gr, blocks, math, streamops
 from time import time, sleep
 
 class test_basic(gr_unittest.TestCase):
@@ -17,7 +17,7 @@ class test_basic(gr_unittest.TestCase):
         run_time = 1
 
         src = blocks.vector_source_f([1,2,3,4,5],True)
-        throttle = blocks.throttle(32000)
+        throttle = streamops.throttle(32000)
         mult1 = math.multiply_const_ff(100.0)
         snk1 = blocks.vector_sink_f()
         snk2 = blocks.vector_sink_f()

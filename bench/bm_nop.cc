@@ -2,8 +2,8 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/nop.h>
-#include <gnuradio/blocks/nop_head.h>
+#include <gnuradio/streamops/nop.h>
+#include <gnuradio/streamops/nop_head.h>
 #include <gnuradio/blocks/nop_source.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/buffer_cpu_simple.h>
@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
     {
         auto src = blocks::nop_source::make({ 1, sizeof(gr_complex) * veclen });
         auto head =
-            blocks::nop_head::make({ samples / veclen, sizeof(gr_complex) * veclen });
+            streamops::nop_head::make({ samples / veclen, sizeof(gr_complex) * veclen });
         auto snk = blocks::null_sink::make({ 1, sizeof(gr_complex) * veclen });
-        std::vector<blocks::nop::sptr> blks(nblocks);
+        std::vector<streamops::nop::sptr> blks(nblocks);
         for (int i = 0; i < nblocks; i++) {
-            blks[i] = blocks::nop::make({ sizeof(gr_complex) * veclen });
+            blks[i] = streamops::nop::make({ sizeof(gr_complex) * veclen });
         }
         flowgraph_sptr fg(new flowgraph());
 

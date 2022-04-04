@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/blocks/copy.h>
+#include <gnuradio/streamops/copy.h>
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
@@ -139,9 +139,9 @@ TEST(SchedulerMTTest, CustomCPUBuffers)
         input_data[i] = i;
     }
     auto src = blocks::vector_source_f::make({ input_data, false });
-    auto copy1 = blocks::copy::make({ sizeof(float) });
-    auto copy2 = blocks::copy::make({ sizeof(float) });
-    auto copy3 = blocks::copy::make({ sizeof(float) });
+    auto copy1 = streamops::copy::make({ sizeof(float) });
+    auto copy2 = streamops::copy::make({ sizeof(float) });
+    auto copy3 = streamops::copy::make({ sizeof(float) });
     auto snk1 = blocks::vector_sink_f::make({});
     auto snk2 = blocks::vector_sink_f::make({});
 

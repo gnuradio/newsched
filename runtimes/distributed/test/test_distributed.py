@@ -13,9 +13,9 @@ input_data = list(range(nsamples))
 
 # Blocks are created locally, but will be replicated on the remote host
 src = blocks.vector_source_f(input_data, False)
-cp1 = blocks.copy()
+cp1 = streamops.copy()
 mc = math.multiply_const_ff(1.0)
-cp2 = blocks.copy()
+cp2 = streamops.copy()
 snk = blocks.vector_sink_f()
 
 fg1 = gr.flowgraph("FG On Local Host")

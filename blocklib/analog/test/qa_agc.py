@@ -93,7 +93,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_c(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100.0)
         dst1 = blocks.vector_sink_c()
-        head = blocks.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
+        head = streamops.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
 
         agc = analog.agc_cc(1e-3, 1, 1)
 
@@ -178,7 +178,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_f(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100.0)
         dst1 = blocks.vector_sink_f()
-        head = blocks.head(gr.sizeof_float, int(5 * sampling_freq * 0.10))
+        head = streamops.head(gr.sizeof_float, int(5 * sampling_freq * 0.10))
 
         agc = analog.agc_ff(1e-3, 1, 1)
 
@@ -265,7 +265,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_c(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100)
         dst1 = blocks.vector_sink_c()
-        head = blocks.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
+        head = streamops.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
 
         agc = analog.agc2_cc(1e-2, 1e-3, 1, 1)
 
@@ -352,7 +352,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_f(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100)
         dst1 = blocks.vector_sink_f()
-        head = blocks.head(gr.sizeof_float, int(5 * sampling_freq * 0.10))
+        head = streamops.head(gr.sizeof_float, int(5 * sampling_freq * 0.10))
 
         agc = analog.agc2_ff(1e-2, 1e-3, 1, 1)
 
@@ -424,7 +424,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_c(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100)
         dst1 = blocks.vector_sink_c()
-        head = blocks.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
+        head = streamops.head(gr.sizeof_gr_complex, int(5 * sampling_freq * 0.10))
 
         agc = analog.agc2_cc(1e-2, 1e-3, 1, 1)
 
@@ -458,7 +458,7 @@ class test_agc(gr_unittest.TestCase):
         src1 = analog.sig_source_c(sampling_freq, analog.GR_SIN_WAVE,
                                    sampling_freq * 0.10, 100)
         dst1 = blocks.vector_sink_c()
-        head = blocks.head(gr.sizeof_gr_complex, N)
+        head = streamops.head(gr.sizeof_gr_complex, N)
 
         ref = 1
         agc = analog.agc3_cc(1e-2, 1e-3, ref)

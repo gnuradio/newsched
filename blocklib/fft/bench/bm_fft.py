@@ -37,7 +37,7 @@ class benchmark_cuda_fft(gr.flowgraph):
         ##################################################
         self.nsrc = blocks.null_source(gr.sizeof_gr_complex*fftsize)
         self.nsnk = blocks.null_sink(gr.sizeof_gr_complex*fftsize)
-        self.hd = blocks.head(gr.sizeof_gr_complex *
+        self.hd = streamops.head(gr.sizeof_gr_complex *
                               fftsize, int(nsamples) // fftsize)
 
         blks = []

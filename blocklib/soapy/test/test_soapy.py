@@ -9,7 +9,7 @@ src.set_frequency(0, 99500000)
 src.set_frequency_correction(0, 0)
 src.set_gain(0, 'TUNER', 20)
 
-hd = blocks.head(gr.sizeof_gr_complex,100000)
+hd = streamops.head(gr.sizeof_gr_complex,100000)
 snk = blocks.null_sink(gr.sizeof_gr_complex)
 
 fg = gr.flowgraph()

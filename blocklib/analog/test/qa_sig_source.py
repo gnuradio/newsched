@@ -11,7 +11,7 @@
 
 import math
 # import pmt
-from gnuradio import gr, gr_unittest, analog, blocks
+from gnuradio import gr, gr_unittest, analog, blocks, streamops
 
 
 class test_sig_source(gr_unittest.TestCase):
@@ -25,7 +25,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
         src1 = analog.sig_source_f(1e6, analog.waveform_type.constant, 0, 1.5)
-        op = blocks.head(10)
+        op = streamops.head(10)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -37,7 +37,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [1, 1, 1, 1]
         src1 = analog.sig_source_i(1e6, analog.waveform_type.constant, 0, 1)
-        op = blocks.head(4)
+        op = streamops.head(4)
         dst1 = blocks.vector_sink_i()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -49,7 +49,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [1, 1, 1, 1]
         src1 = analog.sig_source_b(1e6, analog.waveform_type.constant, 0, 1)
-        op = blocks.head(4)
+        op = streamops.head(4)
         dst1 = blocks.vector_sink_b()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -62,7 +62,7 @@ class test_sig_source(gr_unittest.TestCase):
         sqrt2 = math.sqrt(2) / 2
         expected_result = [0, sqrt2, 1, sqrt2, 0, -sqrt2, -1, -sqrt2, 0]
         src1 = analog.sig_source_f(8, analog.waveform_type.sin, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -77,7 +77,7 @@ class test_sig_source(gr_unittest.TestCase):
         amp = 8
         expected_result = tuple([int(z * amp) for z in temp_result])
         src1 = analog.sig_source_b(8, analog.waveform_type.sin, 1.0, amp)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_b()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -92,7 +92,7 @@ class test_sig_source(gr_unittest.TestCase):
         sqrt2 = math.sqrt(2) / 2
         expected_result = [1, sqrt2, 0, -sqrt2, -1, -sqrt2, 0, sqrt2, 1]
         src1 = analog.sig_source_f(8, analog.waveform_type.cos, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -109,7 +109,7 @@ class test_sig_source(gr_unittest.TestCase):
             sqrt2 - sqrt2j, 1
         ]
         src1 = analog.sig_source_c(8, analog.waveform_type.cos, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_c()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -121,7 +121,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb  # arg6 is a bit before -PI/2
         expected_result = [1j, 1j, 0, 0, 1, 1, 1 + 0j, 1 + 1j, 1j]
         src1 = analog.sig_source_c(8, analog.waveform_type.square, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_c()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -136,7 +136,7 @@ class test_sig_source(gr_unittest.TestCase):
             .5 + 0j, .75 + .25j, 1 + .5j
         ]
         src1 = analog.sig_source_c(8, analog.waveform_type.triangle, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_c()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -151,7 +151,7 @@ class test_sig_source(gr_unittest.TestCase):
             .125 + .875j, .25 + 1j, .375 + .125j, .5 + .25j
         ]
         src1 = analog.sig_source_c(8, analog.waveform_type.sawtooth, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_c()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -163,7 +163,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [0, 0, 0, 0, 1, 1, 1, 1, 0]
         src1 = analog.sig_source_f(8, analog.waveform_type.square, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -175,7 +175,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [1, .75, .5, .25, 0, .25, .5, .75, 1]
         src1 = analog.sig_source_f(8, analog.waveform_type.triangle, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -187,7 +187,7 @@ class test_sig_source(gr_unittest.TestCase):
         tb = self.tb
         expected_result = [.5, .625, .75, .875, 0, .125, .25, .375, .5]
         src1 = analog.sig_source_f(8, analog.waveform_type.sawtooth, 1.0, 1.0)
-        op = blocks.head(9)
+        op = streamops.head(9)
         dst1 = blocks.vector_sink_f()
         tb.connect(src1, op)
         tb.connect(op, dst1)
@@ -197,7 +197,7 @@ class test_sig_source(gr_unittest.TestCase):
 
     # def test_cmd_msg(self):
     #     src = analog.sig_source_c(8, analog.GR_SIN_WAVE, 1.0, 1.0)
-    #     op = blocks.head(gr.sizeof_gr_complex, 9)
+    #     op = streamops.head(gr.sizeof_gr_complex, 9)
     #     snk = blocks.vector_sink_c()
     #     self.tb.connect(src, op, snk)
     #     self.assertAlmostEqual(src.frequency(), 1.0)
