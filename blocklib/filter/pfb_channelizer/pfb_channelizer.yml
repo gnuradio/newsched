@@ -1,6 +1,6 @@
 module: filter
 block: pfb_channelizer
-label: Multiply Constant
+label: PFB Channelizer
 blocktype: block
 
 typekeys:
