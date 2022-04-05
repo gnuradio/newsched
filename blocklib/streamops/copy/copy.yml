@@ -5,7 +5,7 @@ blocktype: sync_block
 
 doc:
   brief: output[i] = input[i]
-  detail: |-
+  detail: |- 
     When enabled (default), this block copies its input to its
     output. When disabled, this block drops its input on the floor.
 
@@ -17,6 +17,7 @@ parameters:
       default: 0
       grc:
           hide: part
+      doc: Size in bytes of each item to be copied (set to 0 [default] to propagate from connected ports)
 ports:
     - domain: stream
       id: in
