@@ -37,8 +37,8 @@ protected:
         size_t msg_cnt = pmtf::get_as<size_t>(*param_message_count);
         *param_message_count = ++msg_cnt;
 
-        d_debug_logger->debug( "{}", msg_cnt);
-        d_logger->info( "{}", msg_cnt);
+        // d_debug_logger->debug( "{}", msg_cnt);
+        // d_logger->info( "{}", msg_cnt);
         if (d_max_messages && msg_cnt >= d_max_messages) {
             input_message_port("system")->post("done");
         }

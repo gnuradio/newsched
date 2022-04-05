@@ -183,7 +183,6 @@ void message_port::post(pmtf::pmt msg)
 }
 void message_port::push_message(scheduler_message_sptr msg)
 {
-    std::cout << "got message on " << _name << std::endl;
     auto m = std::static_pointer_cast<msgport_message>(msg);
     m->set_callback(callback());
 
