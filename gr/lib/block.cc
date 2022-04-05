@@ -1,12 +1,12 @@
 #include <gnuradio/block.h>
-#include <gnuradio/scheduler.h>
-#include <pmtf/wrap.hpp>
-#include <thread>
-#include <chrono>
 #include <gnuradio/pyblock_detail.h>
+#include <gnuradio/scheduler.h>
 #include <gnuradio/scheduler_message.h>
-
 #include <nlohmann/json.hpp>
+#include <pmtf/wrap.hpp>
+#include <atomic>
+#include <chrono>
+#include <thread>
 
 namespace gr {
 
@@ -62,14 +62,16 @@ void block::set_tag_propagation_policy(tag_propagation_policy_t policy)
 
 void block::on_parameter_change(param_action_sptr action)
 {
-    d_debug_logger->debug("block {}: on_parameter_change param_id: {}", id(), action->id());
+    d_debug_logger->debug(
+        "block {}: on_parameter_change param_id: {}", id(), action->id());
     auto param = d_parameters.get(action->id());
     *param = action->pmt_value();
 }
 
 void block::on_parameter_query(param_action_sptr action)
 {
-    d_debug_logger->debug("block {}: on_parameter_query param_id: {}", id(), action->id());
+    d_debug_logger->debug(
+        "block {}: on_parameter_query param_id: {}", id(), action->id());
     auto param = d_parameters.get(action->id());
     action->set_pmt_value(*param);
 }
@@ -122,14 +124,19 @@ void block::handle_msg_system(pmtf::pmt msg)
 void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool block)
 {
     if (rpc_client() && !rpc_name().empty()) {
-        rpc_client()->block_parameter_change(rpc_name(), get_param_str(param_id), new_value.to_base64() );
+        rpc_client()->block_parameter_change(
+            rpc_name(), get_param_str(param_id), new_value.to_base64());
     }
     else if (p_scheduler && d_running) {
         std::condition_variable cv;
         std::mutex m;
+        bool ready{ false };
         auto lam = [&](param_action_sptr a) {
-            std::unique_lock<std::mutex> lk(m);
-            cv.notify_one();
+            {
+                std::unique_lock<std::mutex> lk(m);
+                ready = true;
+            }
+            cv.notify_all();
         };
 
         p_scheduler->push_message(std::make_shared<param_change_action>(
@@ -138,7 +145,7 @@ void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool blo
         if (block) {
             // block until confirmation that parameter has been set
             std::unique_lock<std::mutex> lk(m);
-            cv.wait(lk);
+            cv.wait(lk, [&ready]() { return ready == true; });
         }
     }
     // else go ahead and update parameter value
@@ -149,9 +156,10 @@ void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool blo
 
 pmtf::pmt block::request_parameter_query(int param_id)
 {
-    
+
     if (rpc_client() && !rpc_name().empty()) {
-        auto encoded_str = rpc_client()->block_parameter_query(rpc_name(), get_param_str(param_id));
+        auto encoded_str =
+            rpc_client()->block_parameter_query(rpc_name(), get_param_str(param_id));
         return pmtf::pmt::from_base64(encoded_str);
     }
     // call back to the scheduler if ptr is not null
@@ -159,10 +167,14 @@ pmtf::pmt block::request_parameter_query(int param_id)
         std::condition_variable cv;
         std::mutex m;
         pmtf::pmt newval;
+        bool ready{ false };
         auto lam = [&](param_action_sptr a) {
-            std::unique_lock<std::mutex> lk(m);
-            newval = a->pmt_value();
-            cv.notify_one();
+            {
+                std::unique_lock<std::mutex> lk(m);
+                newval = a->pmt_value();
+                ready = true;
+            }
+            cv.notify_all();
         };
 
         auto msg =
@@ -170,7 +182,7 @@ pmtf::pmt block::request_parameter_query(int param_id)
         p_scheduler->push_message(msg);
 
         std::unique_lock<std::mutex> lk(m);
-        cv.wait(lk);
+        cv.wait(lk, [&ready]() { return ready == true; });
         return newval;
     }
     // else go ahead and return parameter value
@@ -251,8 +263,8 @@ void block::come_back_later(size_t count_ms)
     std::thread t([this, count_ms]() {
         d_debug_logger->debug("Setting timer to notify scheduler in {} ms", count_ms);
         std::this_thread::sleep_for(std::chrono::milliseconds(count_ms));
-        p_scheduler->push_message(std::make_shared<scheduler_action>(
-            scheduler_action_t::NOTIFY_INPUT));
+        p_scheduler->push_message(
+            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
     });
     t.detach();
 }
