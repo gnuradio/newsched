@@ -6,6 +6,7 @@ import os
 import shutil
 import sys
 from datetime import datetime
+from pathlib import Path
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a new block within specified module using newblock template')
@@ -33,6 +34,8 @@ if mod_name.startswith('ns-'):
     mod_name = current_dir_name.split('-')[1]
 
 path_of_this_file = os.path.dirname(os.path.abspath(__file__))
+
+Path(os.path.join(current_dir_name, 'meson.build')).touch()
 
 # # check if module exists, if not return an error
 # mod_path = os.path.join(path, mod_name)
