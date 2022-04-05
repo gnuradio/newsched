@@ -213,3 +213,18 @@ protected:
 {% endfor -%}
 {% endif -%}
 {% endmacro %}
+
+{% macro block_docstring(doc,parameters,ports) -%}
+{% if doc -%}
+,R"({{doc['brief'] if 'brief' in doc}}
+{{'\n' if 'brief' in doc and 'detail' in doc}}
+{{doc['detail'] if 'detail' in doc}}
+{% if ports %}
+Ports: 
+{% for port in ports -%}
+  {{"  " + port['id']}} ({{port['direction']}} {{port['domain']}} port) [{{port['type']}}-{{port['size']}}]
+{% endfor -%}
+{% endif -%}
+)"
+{% endif -%}
+{% endmacro%}
