@@ -1,3 +1,4 @@
+{% import 'macros.j2' as macros -%}
 {% set blocktype = 'sync' if properties|selectattr("id", "equalto", "blocktype")|map(attribute='value')|first == 'sync' else 'general' -%}
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
@@ -20,7 +21,7 @@ void bind_{{block}}(py::module& m)
     gr::block, gr::node,
     {% endif -%}
     {# {% for b in properties|selectattr("id", "equalto", "base_class") %} {{ b['value'] }}, {% endfor -%} #}
-    std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}");
+    std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}"{{macros.block_docstring(doc,parameters,ports)}});
 
     py::enum_<::gr::{{module}}::{{block}}::available_impl>({{block}}_class, "available_impl")
     {% for impl in implementations -%}
