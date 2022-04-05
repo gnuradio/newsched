@@ -2,6 +2,7 @@
 
 #include <gnuradio/block.h>
 #include <gnuradio/graph.h>
+#include <gnuradio/hier_block.h>
 
 namespace gr {
 
@@ -78,8 +79,7 @@ public:
 
     static std::shared_ptr<flat_graph> make_flat(graph_sptr g)
     {
-        // FIXME: Actually do the flattening
-        // for now assume it is already flat, and just cast things
+        std::map<std::shared_ptr<gr::hier_block>, bool> hier_block_map;
         auto fg = std::make_shared<flat_graph>();
         for (auto e : g->edges()) {
             // connect only if both sides of the edge are in this graph
@@ -87,7 +87,82 @@ public:
                     g->nodes().end() &&
                 std::find(g->nodes().begin(), g->nodes().end(), e->dst().node()) !=
                     g->nodes().end()) {
-                fg->connect(e->src(), e->dst())->set_custom_buffer(e->buf_properties());
+
+
+                auto src_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->src().node());
+                auto dst_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->dst().node());
+
+                // the dst side of the edge is a hier block
+                if (dst_hier_block) {
+
+                    // find the input ports that originate from dst().port()
+                    for (auto& hbe : dst_hier_block->input_edges()) {
+                        if (hbe->src().port() == e->dst().port()) {
+                            // connect with the original source port
+                            fg->connect(e->src(), hbe->dst())
+                                ->set_custom_buffer(e->buf_properties());
+                            
+                            e->src().port()->disconnect(e->dst().port());
+                        }
+                    }
+
+                    // if this hier block has not yet been handled
+                    if (!hier_block_map.count(dst_hier_block)) {
+                        // connect up the rest of the hier block
+                        for (auto& hbe : dst_hier_block->edges()) {
+                            // pad connections are INPUT-->INPUT and OUTPUT-->OUTPUT
+                            if (!(hbe->src().port()->direction() ==
+                                      port_direction_t::INPUT ||
+                                  hbe->dst().port()->direction() ==
+                                      port_direction_t::OUTPUT)) {
+                                // then we have an internal connection that needs to be
+                                // replicated
+                                hbe->src().port()->disconnect(hbe->dst().port());
+                                fg->connect(hbe->src(), hbe->dst())
+                                    ->set_custom_buffer(hbe->buf_properties());
+                            }
+                        }
+                        hier_block_map[dst_hier_block] = true;
+                    }
+                }
+                if (src_hier_block) {
+
+                    // find the input ports that originate from dst().port()
+                    for (auto& hbe : src_hier_block->output_edges()) {
+                        if (hbe->dst().port() == e->src().port()) {
+                            // connect with the original source port
+                            fg->connect(hbe->src(), e->dst())
+                                ->set_custom_buffer(e->buf_properties());
+                            
+                            e->dst().port()->disconnect(e->src().port());
+                            hbe->src().port()->disconnect(hbe->dst().port());
+                        }
+                    }
+
+                    // if this hier block has not yet been handled
+                    if (!hier_block_map.count(src_hier_block)) {
+                        // connect up the rest of the hier block
+                        for (auto& hbe : src_hier_block->edges()) {
+                            // pad connections are INPUT-->INPUT and OUTPUT-->OUTPUT
+                            if (!(hbe->src().port()->direction() ==
+                                      port_direction_t::INPUT ||
+                                  hbe->dst().port()->direction() ==
+                                      port_direction_t::OUTPUT)) {
+                                // then we have an internal connection that needs to be
+                                // replicated
+                                hbe->src().port()->disconnect(hbe->dst().port());
+                                fg->connect(hbe->src(), hbe->dst())
+                                    ->set_custom_buffer(hbe->buf_properties());
+                                    
+                            }
+                        }
+                        hier_block_map[src_hier_block] = true;
+                    }
+                }
+                if (!src_hier_block && !dst_hier_block) {
+                    fg->connect(e->src(), e->dst())
+                        ->set_custom_buffer(e->buf_properties());
+                }
             }
             else { // edge is a pathway into another domain
                 fg->add_edge(e);
@@ -123,8 +198,8 @@ private:
     std::vector<block_vector_t> partition();
     block_vector_t topological_sort(block_vector_t& blocks);
 
-    std::map<block_sptr, int> block_color; 
-};
+    std::map<block_sptr, int> block_color;
+}; // namespace gr
 
 using flat_graph_sptr = std::shared_ptr<flat_graph>;
 

@@ -28,6 +28,7 @@ void bind_block(py::module&);
 void bind_sync_block(py::module&);
 void bind_edge(py::module&);
 void bind_graph(py::module&);
+void bind_hier_block(py::module&);
 void bind_flowgraph(py::module&);
 void bind_scheduler(py::module&);
 void bind_buffer(py::module&);
@@ -76,6 +77,7 @@ PYBIND11_MODULE(gr_python, m)
     bind_edge(m);
     bind_domain(m);
     bind_graph(m);
+    bind_hier_block(m);
     bind_flowgraph(m);
     bind_scheduler(m);
     bind_buffer(m);

@@ -39,8 +39,8 @@ public:
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
     node_vector_t& nodes() { return _nodes; }
     node_vector_t all_nodes();
-    edge_sptr connect(const node_endpoint& src, const node_endpoint& dst);
-    edge_sptr connect(node_sptr src_node,
+    virtual edge_sptr connect(const node_endpoint& src, const node_endpoint& dst);
+    virtual edge_sptr connect(node_sptr src_node,
                       unsigned int src_port_index,
                       node_sptr dst_node,
                       unsigned int dst_port_index);

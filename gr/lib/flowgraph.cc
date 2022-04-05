@@ -55,7 +55,7 @@ void flowgraph::check_connections(const graph_sptr& g)
                     }
                     else if (port->connected_ports().size() > 1) {
                         throw std::runtime_error("More than 1 port connected to " +
-                                                 port->alias());
+                                                 node->name() + ": " + port->name());
                     }
                 }
                 else if (port->type() == port_type_t::MESSAGE) {
