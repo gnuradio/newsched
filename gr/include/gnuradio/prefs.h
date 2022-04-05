@@ -148,7 +148,7 @@ private:
         // Find if there is a ~/.gnuradio/config.conf.yml file and add this to
         // the end of the file list to override any preferences in the
         // installed path config files.
-        fs::path userconf = fs::path(gr::userconf_path()) / "config.conf";
+        fs::path userconf = fs::path(gr::userconf_path()) / "config.yml";
         if (fs::exists(userconf)) {
             fnames.push_back(userconf.string());
         }
