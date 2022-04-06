@@ -36,8 +36,8 @@ void bind_runtime(py::module& m)
         .def("add_proxy", &gr::runtime::add_proxy)
         // .def("clear_schedulers", &gr::flowgraph::clear_schedulers)
         .def("initialize", &gr::runtime::initialize)
-        .def("start", &gr::runtime::start)
-        .def("stop", &gr::runtime::stop)
+        .def("start", &gr::runtime::start, py::call_guard<py::gil_scoped_release>())
+        .def("stop", &gr::runtime::stop, py::call_guard<py::gil_scoped_release>())
         .def("wait", &gr::runtime::wait, py::call_guard<py::gil_scoped_release>())
         .def("run", &gr::runtime::run, py::call_guard<py::gil_scoped_release>());
 }
