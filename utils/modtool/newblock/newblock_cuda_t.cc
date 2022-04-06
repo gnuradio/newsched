@@ -17,21 +17,18 @@ namespace newmod {
 
 template <class T>
 newblock_cuda<T>::newblock_cuda(const typename newblock<T>::block_args& args)
-    : newblock<T>(args), d_k(args.k), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(T)
 {
     newblock_cu::get_block_and_grid<T>(&d_min_grid_size, &d_block_size);
-    GR_LOG_INFO(
-        gr::node::d_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 
 template <>
 newblock_cuda<gr_complex>::newblock_cuda(
     const typename newblock<gr_complex>::block_args& args)
-    : newblock<gr_complex>(args), d_k(args.k), d_vlen(args.vlen)
+    : INHERITED_CONSTRUCTORS(gr_complex)
 {
     newblock_cu::get_block_and_grid<cuFloatComplex>(&d_min_grid_size, &d_block_size);
-    GR_LOG_INFO(d_logger, "minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
 }
 

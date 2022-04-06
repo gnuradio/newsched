@@ -26,7 +26,7 @@ extern void apply_newblock(
 
 extern void get_block_and_grid(int* minGrid, int* minBlock);
 
-newblock_cuda::newblock_cuda(block_args args) : newblock(args)
+newblock_cuda::newblock_cuda(block_args args) : INHERITED_CONSTRUCTORS
 
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
