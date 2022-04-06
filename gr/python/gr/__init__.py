@@ -19,6 +19,9 @@ try:
 except:
     pass
 
+from .gateway_numpy import block as numpy_block
+from .gateway_numpy import sync_block as numpy_sync_block
+
 # For GR 4.0, connect and msg_connect are the same
 graph.msg_connect = graph.connect
 # Alias top_block as flowgraph

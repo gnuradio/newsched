@@ -30,8 +30,8 @@ void bind_flowgraph(py::module& m)
         .def_static("check_connections", &gr::flowgraph::check_connections)
         .def("make_flat", &::gr::flowgraph::make_flat)
 
-        .def("start", &::gr::flowgraph::start)
-        .def("stop", &::gr::flowgraph::stop)
-        .def("wait", &::gr::flowgraph::wait)
-        .def("run", &::gr::flowgraph::run);
+        .def("start", &::gr::flowgraph::start, py::call_guard<py::gil_scoped_release>())
+        .def("stop", &::gr::flowgraph::stop, py::call_guard<py::gil_scoped_release>())
+        .def("wait", &::gr::flowgraph::wait, py::call_guard<py::gil_scoped_release>())
+        .def("run", &::gr::flowgraph::run, py::call_guard<py::gil_scoped_release>());
 }

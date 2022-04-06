@@ -11,10 +11,10 @@
 import numpy as np
 from gnuradio import gr, gr_unittest, blocks, math
 
-#This test is a pure python block that inherits from sync_block
-class add_2_f32_1_f32(gr.sync_block):
+#This test is a pure python block that inherits from numpy_sync_block
+class add_2_f32_1_f32(gr.numpy_sync_block):
     def __init__(self, shape=[1]):
-        gr.sync_block.__init__(
+        gr.numpy_sync_block.__init__(
             self,
             name="add 2 f32")
 
@@ -70,30 +70,31 @@ class test_block_gateway(gr_unittest.TestCase):
         rt.run()
         self.assertEqual(sink.data(), [1, 5, 9, 13, 17])
 
-    # def test_add_f32(self):
-    #     tb = gr.flowgraph()
-    #     src0 = blocks.vector_source_f([1, 3, 5, 7, 9], False)
-    #     src1 = blocks.vector_source_f([0, 2, 4, 6, 8], False)
-    #     adder = add_2_f32_1_f32()
-    #     sink = blocks.vector_sink_f()
-    #     tb.connect((src0, 0), (adder, 0))
-    #     tb.connect((src1, 0), (adder, 1))
-    #     tb.connect(adder, sink)
-    #     tb.run()
-    #     self.assertEqual(sink.data(), [1, 5, 9, 13, 17])
+    def test_add_f32(self):
+        tb = gr.flowgraph()
+        rt = gr.runtime()
+        src0 = blocks.vector_source_f([1, 3, 5, 7, 9], False)
+        src1 = blocks.vector_source_f([0, 2, 4, 6, 8], False)
+        adder = add_2_f32_1_f32()
+        sink = blocks.vector_sink_f()
+        tb.connect((src0, 0), (adder, 0))
+        tb.connect((src1, 0), (adder, 1))
+        tb.connect(adder, sink)
+        tb.run()
+        self.assertEqual(sink.data(), [1, 5, 9, 13, 17])
 
 
-    # def test_add_f32_vector(self):
-    #     tb = gr.flowgraph()
-    #     src0 = blocks.vector_source_f(10*[1, 3, 5, 7, 9], False, 5)
-    #     src1 = blocks.vector_source_f(10*[0, 2, 4, 6, 8], False, 5)
-    #     adder = add_2_f32_1_f32(shape=[5])
-    #     sink = blocks.vector_sink_f(5)
-    #     tb.connect((src0, 0), (adder, 0))
-    #     tb.connect((src1, 0), (adder, 1))
-    #     tb.connect(adder, sink)
-    #     tb.run()
-    #     self.assertEqual(sink.data(), 10*[1, 5, 9, 13, 17])
+    def test_add_f32_vector(self):
+        tb = gr.flowgraph()
+        src0 = blocks.vector_source_f(10*[1, 3, 5, 7, 9], False, 5)
+        src1 = blocks.vector_source_f(10*[0, 2, 4, 6, 8], False, 5)
+        adder = add_2_f32_1_f32(shape=[5])
+        sink = blocks.vector_sink_f(5)
+        tb.connect((src0, 0), (adder, 0))
+        tb.connect((src1, 0), (adder, 1))
+        tb.connect(adder, sink)
+        tb.run()
+        self.assertEqual(sink.data(), 10*[1, 5, 9, 13, 17])
 
 
 if __name__ == '__main__':
