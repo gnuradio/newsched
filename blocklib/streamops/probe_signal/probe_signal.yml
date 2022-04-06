@@ -1,0 +1,38 @@
+module: streamops
+block: probe_signal
+label: Probe Signal
+blocktype: sync_block
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+      - value: int8_t
+        suffix: b   
+      - value: int16_t
+        suffix: s   
+      - value: int32_t 
+        suffix: i
+      - value: float
+        suffix: f
+      - value: gr_complex 
+        suffix: c
+
+parameters:
+-   id: level
+    label: Probe Level
+    dtype: T
+    gettable: true
+    cotr: false
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: typekeys/T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
