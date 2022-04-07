@@ -26,6 +26,15 @@
         # {% set newvalue = '${' + list1[1] + '}' %}{% endif -%} #}
     {%- endif -%}
 {{newvalue}}{% endmacro -%}
+{% macro get_linked_value2(value, ports, parameters, typekeys) -%}
+    {% set newvalue = value -%}
+    {% if '/' in value | string() -%}
+        {% set list1 = value.split('/') -%}
+        {% set newvalue = list1[1] -%}
+        {# {% if list1[0] == 'typekeys' %}
+        # {% set newvalue = '${' + list1[1] + '}' %}{% endif -%} #}
+    {%- endif -%}
+{{newvalue}}{% endmacro -%}
 id: {{module}}_{% if grc and 'id' in grc %}{{grc['id']}}{% else %}{{block}}{%endif%}
 label: '{% if grc and 'label' in grc %}{{grc['label']}}{% else %}{{label if label else block}}{%endif%}'
 {% if grc %}flags: {{grc['flags']}}{% else %}flags: [python]{% endif %}
@@ -33,6 +42,17 @@ category: '[GR 4.0]/{{module}}'
 
 parameters:
 {% if typekeys -%} {# We have a templated block, enable type parameter#}
+{% if type_inst -%}
+-   id: type_inst
+    label: Type
+    dtype: enum
+    options: [{% for typev in type_inst %}{%for v in typev['value']%}{%for o in typekeys[loop.index0]['options']%}{{o['suffix'] if o['value']==v}}{%endfor%}{%endfor%},{%endfor%}]
+    option_labels: [{% for opt in type_inst %}{{opt['label']}}{{"," if not loop.last}} {% endfor %}]
+    option_attributes:
+    {%-for key in typekeys%} {% set outer_loop = loop %}
+        {{key['id']}}: [{% for typev in type_inst %}{{type_lookup(typev['value'][outer_loop.index0])}},{%endfor%}]
+    {%-endfor-%}
+{% else %}
 {% for key in typekeys -%}
 -   id: {{key['id']}}
     label: {% if 'label' in key %}{{key['label']}}{% else %}IO Type{% endif %}
@@ -42,6 +62,7 @@ parameters:
         fcn: [{% for opt in key['options'] %}{{opt['suffix']}}{{"," if not loop.last}} {% endfor %}]
     hide: part
 {% endfor %}
+{% endif %}
 {% endif -%}
 {% if parameters %}{% for param in parameters -%}
 {% if 'grc' not in param or 'hide' not in param['grc'] or ('hide' in param['grc'] and param['grc']['hide'] != 'all') -%}
@@ -79,7 +100,11 @@ parameters:
 inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
+{% if type_inst %}
+    dtype: ${ type_inst.{{type_lookup(get_linked_value2(port['type']),get_linked_value2(port['type']))}} }
+{% else %}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
+{% endif %}
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
@@ -95,7 +120,11 @@ outputs:
 {% for port in ports -%}
 {% if port['direction'] == 'output'-%}
 -   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
+{% if type_inst %}
+    dtype: ${ type_inst.{{type_lookup(get_linked_value2(port['type']),get_linked_value2(port['type']))}} }
+{% else %}
     dtype: {{type_lookup(get_linked_value(port['type']),get_linked_value(port['type']))}}
+{% endif %}
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
@@ -112,12 +141,16 @@ templates:
 {% else -%}{# Do the default template #}
 templates:
     imports: from gnuradio import {{module}}
-    make: {{module}}.{{block}}{% if typekeys -%}{% for key in typekeys %}_{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
+    {%- if type_inst %}
+    make: {{module}}.{{block}}{% if typekeys -%}_{{'${type_inst}'}}{%endif%}(
+    {%- else %}
+    make: {{module}}.{{block}}{% if typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
+    {%- endif %}
         {% if parameters %}{%- for param in parameters -%}
           {%- if 'cotr' not in param or param['cotr'] -%}
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
-        {%-endfor-%}{% endif %} impl={{module}}.{{block}}{% if typekeys -%}{% for key in typekeys %}_{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${domain})
+        {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${domain})
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
