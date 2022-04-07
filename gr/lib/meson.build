@@ -3,7 +3,7 @@ incdir = [
 ]
 
 
-gr_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, pmtf_dep, cppzmq_dep, json_dep, moodycamel_dep]
+gr_deps = [yaml_dep, spdlog_dep, threads_dep, fmt_dep, rt_dep, pmtf_dep, libdl_dep, cppzmq_dep, json_dep, moodycamel_dep]
 
 libdir = get_option('libdir')
 prefix = get_option('prefix')
@@ -38,6 +38,7 @@ runtime_sources = [
   'runtime.cc',
   'runtime_monitor.cc',
   'runtime_proxy.cc',
+  'scheduler_message.cc',
   'thread.cc',
   'parameter_types.cc',
   'edge.cc',

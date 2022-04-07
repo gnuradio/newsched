@@ -1,6 +1,5 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
 #include <pmtf/wrap.hpp>
 
 namespace gr {
@@ -66,22 +65,8 @@ public:
     void set_callback(message_port_callback_fcn cb) { _cb = cb; }
     message_port_callback_fcn callback() { return _cb; }
     pmtf::pmt message() { return _msg; }
-    std::string to_json() override
-    {
-        nlohmann::json ret;
-        ret["type"] = "msgport_message";
-        ret["msg"] = _msg.to_base64();
-        return ret.dump();
-    }
-    scheduler_message_sptr from_json(const std::string& str) override
-    {
-        auto json_obj = nlohmann::json::parse(str);
-        if (json_obj["type"] != "msgport_message") {
-            throw std::runtime_error("Invalid message type for msgport_message");
-        }
-        auto msg = pmtf::pmt::from_base64(str);
-        return std::make_shared<msgport_message>(msg, nullptr);
-    }
+    std::string to_json() override;
+    scheduler_message_sptr from_json(const std::string& str) override;
 
 private:
     pmtf::pmt _msg;

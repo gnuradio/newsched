@@ -1,4 +1,5 @@
 runtime_headers = [
+    'api.h',
     'attributes.h',
     'block.h',
     'block_work_io.h',
@@ -37,7 +38,9 @@ runtime_headers = [
     'python_block.h',
     'pyblock_detail.h',
     'rpc_client_interface.h',
-    'sys_paths.h'
+    'sys_paths.h',
+    'gr_complex.h',
+    'port_interface.h'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')
