@@ -11,10 +11,10 @@
 import numpy as np
 from gnuradio import gr, gr_unittest, blocks, math
 
-#This test is a pure python block that inherits from numpy_sync_block
-class add_2_f32_1_f32(gr.numpy_sync_block):
+#This test is a pure python block that inherits from sync_block
+class add_2_f32_1_f32(gr.sync_block):
     def __init__(self, shape=[1]):
-        gr.numpy_sync_block.__init__(
+        gr.sync_block.__init__(
             self,
             name="add 2 f32")
 
