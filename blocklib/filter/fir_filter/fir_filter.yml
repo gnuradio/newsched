@@ -11,7 +11,7 @@ typekeys:
         suffix: f
       - value: gr_complex 
         suffix: c 
-      - value: std::int16_t
+      - value: int16_t
         suffix: s
   - id: OUT_T
     type: class
@@ -20,7 +20,7 @@ typekeys:
         suffix: f   
       - value: gr_complex 
         suffix: c
-      - value: std::int16_t
+      - value: int16_t
         suffix: s
   - id: TAP_T
     type: class
@@ -30,12 +30,18 @@ typekeys:
       - value: gr_complex 
         suffix: c
 type_inst:
-  - [gr_complex, gr_complex, gr_complex]
-  - [gr_complex, gr_complex, float]
-  - [float, gr_complex, gr_complex]
-  - [float, float, float]
-  - [float, std::int16_t, float]
-  - [std::int16_t, gr_complex, gr_complex]
+  - value: [gr_complex, gr_complex, gr_complex]
+    label: Complex->Complex (Complex Taps)
+  - value: [gr_complex, gr_complex, float]
+    label: Complex->Complex (Real Taps)
+  - value: [float, gr_complex, gr_complex]
+    label: Float->Complex (Complex Taps)
+  - value: [float, float, float]
+    label: Float->Float (Real Taps)
+  - value: [float, int16_t, float]
+    label: Float->Short (Real Taps)
+  - value: [int16_t, gr_complex, gr_complex]
+    label: Short->Complex (Complex Taps)
 
 parameters:
 -   id: decimation
