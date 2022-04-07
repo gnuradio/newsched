@@ -1,0 +1,66 @@
+module: filter
+block: fir_filter
+label: FIR Filter
+blocktype: block
+
+typekeys:
+  - id: IN_T
+    type: class
+    options: 
+      - value: float
+        suffix: f
+      - value: gr_complex 
+        suffix: c 
+      - value: std::int16_t
+        suffix: s
+  - id: OUT_T
+    type: class
+    options: 
+      - value: float
+        suffix: f   
+      - value: gr_complex 
+        suffix: c
+      - value: std::int16_t
+        suffix: s
+  - id: TAP_T
+    type: class
+    options: 
+      - value: float
+        suffix: f   
+      - value: gr_complex 
+        suffix: c
+type_inst:
+  - [gr_complex, gr_complex, gr_complex]
+  - [gr_complex, gr_complex, float]
+  - [float, gr_complex, gr_complex]
+  - [float, float, float]
+  - [float, std::int16_t, float]
+  - [std::int16_t, gr_complex, gr_complex]
+
+parameters:
+-   id: decimation
+    label: Decimation
+    dtype: size_t
+    settable: false
+-   id: taps
+    label: Taps
+    dtype: TAP_T
+    container: vector
+    settable: true
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: typekeys/IN_T
+
+-   domain: stream
+    id: out
+    direction: output
+    type: typekeys/OUT_T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
