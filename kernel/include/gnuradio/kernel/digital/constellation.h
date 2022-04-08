@@ -10,13 +10,14 @@
 
 #pragma once
 
-#include <gnuradio/digital/api.h>
-#include <gnuradio/digital/metric_type.h>
-#include <gnuradio/types.h>
+#include <gnuradio/kernel/api.h>
+#include <gnuradio/kernel/digital/metric_type.h>
+#include <gnuradio/gr_complex.h>
 #include <memory>
 #include <vector>
 
 namespace gr {
+namespace kernel {
 namespace digital {
 
 /************************************************************/
@@ -44,7 +45,7 @@ using constellation_sptr = std::shared_ptr<constellation>;
  * from this class and overloaded to perform optimized slicing and
  * constellation mappings.
  */
-class DIGITAL_API constellation : public std::enable_shared_from_this<constellation>
+class constellation : public std::enable_shared_from_this<constellation>
 {
 public:
     enum normalization_t {
@@ -78,7 +79,7 @@ public:
     //! For use with the viterbi algorithm.
     virtual void calc_metric(const gr_complex* sample,
                              float* metric,
-                             gr::digital::trellis_metric_type_t type);
+                             gr::kernel::digital::trellis_metric_type_t type);
     virtual void calc_euclidean_metric(const gr_complex* sample, float* metric);
     virtual void calc_hard_symbol_metric(const gr_complex* sample, float* metric);
 
@@ -223,7 +224,7 @@ protected:
  * constellation for decision making. Inefficient for large
  * constellations.
  */
-class DIGITAL_API constellation_calcdist : public constellation
+class constellation_calcdist : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_calcdist>;
@@ -274,7 +275,7 @@ protected:
  * Constellation space is divided into sectors. Each sector is
  * associated with the nearest constellation point.
  */
-class DIGITAL_API constellation_sector : public constellation
+class constellation_sector : public constellation
 {
 public:
     /*!
@@ -330,7 +331,7 @@ private:
  * Works for any generic constellation provided sectors are not
  * too large.
  */
-class DIGITAL_API constellation_rect : public constellation_sector
+class constellation_rect : public constellation_sector
 {
 public:
     using sptr = std::shared_ptr<constellation_rect>;
@@ -404,7 +405,7 @@ private:
  * the closest constellation point, however sometimes it's nice to
  * have the flexibility.
  */
-class DIGITAL_API constellation_expl_rect : public constellation_rect
+class constellation_expl_rect : public constellation_rect
 {
 public:
     using sptr = std::shared_ptr<constellation_expl_rect>;
@@ -454,7 +455,7 @@ private:
  *
  * Assumes that there is a constellation point at 1.x
  */
-class DIGITAL_API constellation_psk : public constellation_sector
+class constellation_psk : public constellation_sector
 {
 public:
     using sptr = std::shared_ptr<constellation_psk>;
@@ -493,7 +494,7 @@ protected:
    0 | 1
    \endverbatim
  */
-class DIGITAL_API constellation_bpsk : public constellation
+class constellation_bpsk : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_bpsk>;
@@ -529,7 +530,7 @@ protected:
    00 | 10
    \endverbatim
  */
-class DIGITAL_API constellation_qpsk : public constellation
+class constellation_qpsk : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_qpsk>;
@@ -564,7 +565,7 @@ protected:
    11 | 10
    \endverbatim
  */
-class DIGITAL_API constellation_dqpsk : public constellation
+class constellation_dqpsk : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_dqpsk>;
@@ -601,7 +602,7 @@ protected:
        111 | 110
    \endverbatim
  */
-class DIGITAL_API constellation_8psk : public constellation
+class constellation_8psk : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_8psk>;
@@ -637,7 +638,7 @@ protected:
        110 | 111
    \endverbatim
  */
-class DIGITAL_API constellation_8psk_natural : public constellation
+class constellation_8psk_natural : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_8psk_natural>;
@@ -675,7 +676,7 @@ protected:
 0011   0110 | 0111   0010
    \endverbatim
  */
-class DIGITAL_API constellation_16qam : public constellation
+class constellation_16qam : public constellation
 {
 public:
     using sptr = std::shared_ptr<constellation_16qam>;
@@ -691,5 +692,6 @@ protected:
     constellation_16qam();
 };
 
-} /* namespace digital */
+} // namespace digital
+} // namespace kernel
 } /* namespace gr */

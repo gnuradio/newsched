@@ -13,7 +13,8 @@ kernel_sources = [
     'filter/polyphase_filterbank.cc',
     'math/fast_atan2f.cc',
     'math/fxpt.cc',
-    'math/random.cc'
+    'math/random.cc',
+    'digital/constellation.cc'
 ]
 
 compiler = meson.get_compiler('cpp')
@@ -52,7 +53,7 @@ endif
 subdir('math')
 
 incdir = include_directories(['../include'])
-gr_kernel_lib = library('gnuradio-kernellib', 
+gr_kernel_lib = library('gnuradio-kernel', 
     kernel_sources, 
     include_directories : incdir, 
     install : true,
@@ -62,3 +63,36 @@ gr_kernel_lib = library('gnuradio-kernellib',
 gr_kernel_lib_dep = declare_dependency(include_directories : incdir,
 					   link_with : gr_kernel_lib,
                        dependencies : kernel_deps)
+
+prefix = get_option('prefix')
+# Escape spaces
+prefix_parts = prefix.split(' ')
+prefix = '\ '.join(prefix_parts)
+
+conf = configuration_data()
+conf.set('prefix', prefix)
+conf.set('exec_prefix', '${prefix}')
+conf.set('libdir', join_paths('${prefix}',get_option('libdir')))
+conf.set('includedir', join_paths('${prefix}',get_option('includedir')))
+conf.set('LIBVER', '0.0.1')
+
+cmake_conf = configuration_data()
+cmake_conf.set('libdir', join_paths(prefix,get_option('libdir')))
+cmake_conf.set('module', 'kernel')
+cmake.configure_package_config_file(
+  name : 'gnuradio-kernel',
+  input : join_paths(meson.source_root(),'cmake','Modules','gnuradioConfigModule.cmake.in'),
+  install_dir : get_option('prefix') / 'lib' / 'cmake' / 'gnuradio',
+  configuration : cmake_conf
+)
+
+pkg = import('pkgconfig')
+libs = []     # the library/libraries users need to link against
+h = ['.'] # subdirectories of ${prefix}/${includedir} to add to header path
+pkg.generate(libraries : libs,
+             subdirs : h,
+             version : meson.project_version(),
+             name : 'libgnuradio-kernel',
+             filebase : 'gnuradio-kernel',
+             install_dir : get_option('prefix') / 'lib' / 'pkgconfig',
+             description : 'GNU Radio Kernel Library (Math and Signal Processing)')
