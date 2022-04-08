@@ -7,23 +7,21 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  */
+#pragma once
 
-#include <cuComplex.h>
 #include <cuComplex.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
 
 namespace gr {
 namespace newmod {
-namespace newblock {
+namespace newblock_cu {
 
-template <typename T>
-void exec_kernel(
-    const T* in, T* out, int grid_size, int block_size, cudaStream_t stream);
+void exec_newblock(
+    const uint8_t* in, uint8_t* out, int grid_size, int block_size, cudaStream_t stream);
 
-template <typename T>
 void get_block_and_grid(int* minGrid, int* minBlock);
 
-} // namespace newblock
+} // namespace newblock_cu
 } // namespace newmod
 } // namespace gr

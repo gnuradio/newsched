@@ -28,7 +28,7 @@ public:
     virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
                                     std::vector<block_work_output_sptr>& work_output) override;
 
-protected:
+private:
     T d_k;
     size_t d_vlen;
 
