@@ -11,6 +11,7 @@
 #pragma once
 
 namespace gr {
+namespace kernel {
 namespace digital {
 
 enum trellis_metric_type_t {
@@ -19,5 +20,6 @@ enum trellis_metric_type_t {
     TRELLIS_HARD_BIT
 };
 
-} /* namespace digital */
-} /* namespace gr */
+} // namespace digital
+} // namespace kernel
+} // namespace gr

@@ -1,6 +1,6 @@
 digital_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 
-digital_sources += ['constellation.cc']
+digital_sources += []
 
 block_cpp_args = ['-DHAVE_CPU']
 # if cuda_dep.found() and get_option('enable_cuda')

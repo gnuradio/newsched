@@ -12,7 +12,7 @@
 #include "config.h"
 #endif
 
-#include <gnuradio/digital/constellation.h>
+#include <gnuradio/kernel/digital/constellation.h>
 #include <gnuradio/kernel/math/math.h>
 
 
@@ -22,6 +22,7 @@
 #include <stdexcept>
 
 namespace gr {
+namespace kernel {
 namespace digital {
 
 // Base Constellation Class
@@ -939,4 +940,5 @@ unsigned int constellation_16qam::decision_maker(const gr_complex* sample)
 
 
 } /* namespace digital */
-} /* namespace gr */
+} // namespace kernel
+} // namespace gr
