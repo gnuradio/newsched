@@ -18,7 +18,7 @@ path_of_this_file = os.path.dirname(os.path.abspath(__file__))
 
 # copy newmod template
 src = os.path.join(path_of_this_file, 'newmod')
-dest = os.path.join(path, 'ns-' + mod_name)
+dest = os.path.join(path, 'gr4-' + mod_name)
 
 new_mod_dir = shutil.copytree(src, dest)
 

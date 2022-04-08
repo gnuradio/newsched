@@ -30,7 +30,7 @@ templated_arg = args.templated # boolean for templated
 # get current working directory
 current_dir_name = os.getcwd()
 mod_name = os.path.basename(current_dir_name)
-if mod_name.startswith('ns-'):
+if mod_name.startswith('ns-') or mod_name.startswith('gr4-'):
     mod_name = current_dir_name.split('-')[1]
 
 path_of_this_file = os.path.dirname(os.path.abspath(__file__))
