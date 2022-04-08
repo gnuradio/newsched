@@ -95,7 +95,7 @@ class ${class_name}(Qt.QWidget):
         self.fg.wait()
     
     def connect(self,*args):
-        self.fg.connect(*args)
+        return self.fg.connect(*args)
 
     def __init__(${param_str}):
         self.fg = gr.flowgraph("${title}")
