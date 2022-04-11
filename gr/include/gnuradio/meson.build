@@ -40,7 +40,9 @@ runtime_headers = [
     'rpc_client_interface.h',
     'sys_paths.h',
     'gr_complex.h',
-    'port_interface.h'
+    'port_interface.h',
+    'hier_block.h',
+    'runtime_proxy.h'
 ]
 
 install_headers(runtime_headers, subdir : 'gnuradio')

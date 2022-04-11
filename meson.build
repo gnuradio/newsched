@@ -59,13 +59,8 @@ libcpphttp = subproject('cpp-httplib')
 cpphttp_dep = libcpphttp.get_variable('cpp_httplib_dep')
 
 cmake = import('cmake')
-
 libcppzmq = cmake.subproject('cppzmq')
 cppzmq_dep = libcppzmq.dependency('cppzmq')
-
-libmoodycamel = cmake.subproject('moodycamel')
-# message('CMaket targets:\n - ' + '\n - '.join(libmoodycamel.target_list()))
-moodycamel_dep = libmoodycamel.dependency('concurrentqueue')
 
 if USE_CUDA
   libcusp = subproject('cusp')
