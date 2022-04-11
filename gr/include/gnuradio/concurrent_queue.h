@@ -1,6 +1,6 @@
 #pragma once
 
-#include <blockingconcurrentqueue.h>
+#include <moodycamel/blockingconcurrentqueue.h>
 
 namespace gr {
 
