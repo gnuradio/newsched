@@ -7,14 +7,10 @@ typekeys:
   - id: T
     type: class
     options: 
-      - value: gr_complex 
-        suffix: cc 
-      - value: float
-        suffix: ff 
-      - value: int32_t 
-        suffix: ii
-      - value: int16_t
-        suffix: ss
+        - cf32
+        - rf32
+        - ri32
+        - ri16
 
 parameters:
 -   id: k

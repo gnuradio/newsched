@@ -19,6 +19,9 @@ def argParse():
 
     return parser.parse_args()
 
+def is_list(value):
+    return isinstance(value, list)
+
 def main():
     args = argParse()
     # env = Environment(loader = FileSystemLoader(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','templates'))
@@ -33,10 +36,12 @@ def main():
     paths.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','templates'))
     paths.append(os.path.dirname(os.path.realpath(args.yaml_file)))
     env = Environment(loader = FileSystemLoader(paths))
+    env.filters['is_list'] = is_list
 
     
     blockname = os.path.basename(os.path.dirname(os.path.realpath(args.yaml_file)))
     
+  
 
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)

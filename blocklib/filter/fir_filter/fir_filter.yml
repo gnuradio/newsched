@@ -7,40 +7,35 @@ typekeys:
   - id: IN_T
     type: class
     options: 
-      - value: float
-        suffix: f
-      - value: gr_complex 
-        suffix: c 
-      - value: int16_t
-        suffix: s
+        - cf32
+        - rf32
+        - ri16
+
   - id: OUT_T
     type: class
     options: 
-      - value: float
-        suffix: f   
-      - value: gr_complex 
-        suffix: c
-      - value: int16_t
-        suffix: s
+        - cf32
+        - rf32
+        - ri16
+
   - id: TAP_T
     type: class
     options: 
-      - value: float
-        suffix: f   
-      - value: gr_complex 
-        suffix: c
+        - cf32
+        - rf32
+
 type_inst:
-  - value: [gr_complex, gr_complex, gr_complex]
+  - value: [cf32, cf32, cf32]
     label: Complex->Complex (Complex Taps)
-  - value: [gr_complex, gr_complex, float]
+  - value: [cf32, cf32, rf32]
     label: Complex->Complex (Real Taps)
-  - value: [float, gr_complex, gr_complex]
+  - value: [rf32, cf32, cf32]
     label: Float->Complex (Complex Taps)
-  - value: [float, float, float]
+  - value: [rf32, rf32, rf32]
     label: Float->Float (Real Taps)
-  - value: [float, int16_t, float]
+  - value: [rf32, ri16, rf32]
     label: Float->Short (Real Taps)
-  - value: [int16_t, gr_complex, gr_complex]
+  - value: [ri16, cf32, cf32]
     label: Short->Complex (Complex Taps)
 
 parameters:

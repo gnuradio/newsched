@@ -7,18 +7,14 @@ typekeys:
   - id: T
     type: class
     options:
-      - value: gr_complex
-        suffix: cc_
-      - value: float
-        suffix: ff_
+        - cf32
+        - rf32
   - id: direction
     type: bool
     label: Direction
     options:
-      - value: 'true' 
-        suffix: fwd
-      - value: 'false'
-        suffix: rev
+      - ['true','_fwd']
+      - ['false','_rev']
 
 
 parameters:

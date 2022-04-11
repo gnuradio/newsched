@@ -7,10 +7,8 @@ typekeys:
   - id: T
     type: class
     options: 
-      - value: gr_complex 
-        suffix: cc 
-      - value: float
-        suffix: ff 
+      - cf32
+      - rf32
 
 parameters:
 -   id: D

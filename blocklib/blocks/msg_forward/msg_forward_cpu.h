@@ -20,10 +20,6 @@ class msg_forward_cpu : public msg_forward
 {
 public:
     msg_forward_cpu(block_args args);
-    work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
-    // virtual size_t message_count() { return d_msg_cnt; }
 
 protected:
     void handle_msg_in(pmtf::pmt msg) override

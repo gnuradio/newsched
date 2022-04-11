@@ -23,10 +23,8 @@ typekeys:
 - id: T
   type: class
   options: 
-    - value: gr_complex
-      suffix: c
-    - value: float
-      suffix: f 
+        - cf32
+        - rf32
 
 parameters:
 -   id: size
