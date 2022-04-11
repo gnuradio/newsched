@@ -28,9 +28,11 @@ ports:
 -   domain: message
     id: print
     direction: input
+    optional: true
 -   domain: message
     id: store
     direction: input
+    optional: true
 
 implementations:
 -   id: cpu
