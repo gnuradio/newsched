@@ -57,7 +57,7 @@ parameters:
 -   id: {{key['id']}}
     label: {% if 'label' in key %}{{key['label']}}{% else %}IO Type{% endif %}
     dtype: enum
-    options: [{% for opt in key['options'] %}{{type_lookup(opt['value'],opt['value'])}}{{"," if not loop.last}} {% endfor %}]
+    options: [{% for opt in key['options'] %}{{type_lookup(opt,opt)}}{{"," if not loop.last}} {% endfor %}]
     option_attributes:
         fcn: [{% for opt in key['options'] %}{{opt['suffix']}}{{"," if not loop.last}} {% endfor %}]
     hide: part

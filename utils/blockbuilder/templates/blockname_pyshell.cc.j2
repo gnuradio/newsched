@@ -22,14 +22,14 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
 {%if typekeys | length == 1 -%}
 {%set key1 = typekeys|first %}
 {% for opt in key1['options'] -%}
-template class {{block}}<{{ opt['value']}}>;
+template class {{block}}<{{ macros.cpp_type_lookup(opt)}}>;
 {% endfor -%}
 {% elif typekeys | length == 2 -%}
 {%set key1 = typekeys|first %}
 {%set key2 = typekeys|last %}
 {% for opt1 in key1['options'] -%}
 {% for opt2 in key2['options'] -%}
-template class {{block}}<{{ opt1['value']|lower if key1['type'] == 'bool' else opt1['value']}}, {{ opt2['value']|lower if key2['type'] == 'bool' else opt2['value']}}>;
+template class {{block}}<{{ opt1|lower if key1['type'] == 'bool' else opt1}}, {{ opt2|lower if key2['type'] == 'bool' else opt2}}>;
 {% endfor -%}
 {% endfor -%}
 {% endif -%}

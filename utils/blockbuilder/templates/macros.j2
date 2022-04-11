@@ -228,3 +228,44 @@ Ports:
 )"
 {% endif -%}
 {% endmacro%}
+
+{% macro cpp_type_lookup(sigmf_type) %}
+{%- set lu_type = sigmf_type -%}{%- if sigmf_type | is_list() -%}{%- set lu_type = sigmf_type[0] -%}{% endif %}
+{%- set cpp_type = lu_type -%}
+{%- if sigmf_type | trim() == 'cf32'-%}{%- set cpp_type = 'gr_complex' -%}
+{%- elif sigmf_type | trim() == 'rf32'-%}{%- set cpp_type = 'float' -%}
+{%- elif sigmf_type | trim() == 'ri64'-%}{%- set cpp_type = 'std::int64_t' -%}
+{%- elif sigmf_type | trim() == 'ri32'-%}{%- set cpp_type = 'std::int32_t' -%}
+{%- elif sigmf_type | trim() == 'ri16'-%}{%- set cpp_type = 'std::int16_t' -%}
+{%- elif sigmf_type | trim() == 'ri8'-%}{%- set cpp_type = 'std::int8_t' -%}
+{%- elif sigmf_type | trim() == 'ru8'-%}{%- set cpp_type = 'std::uint8_t' -%}
+{%- endif -%}{{cpp_type}}
+{%- endmacro -%}
+
+{% macro suffix_lookup(type) %}
+{%- set suffix = type -%}
+{%- if type | trim() == 'cf32'-%}{%- set suffix = 'c' -%}
+{%- elif type | trim() == 'rf32'-%}{%- set suffix = 'f' -%}
+{%- elif type | trim() == 'ri32'-%}{%- set suffix = 'i' -%}
+{%- elif type | trim() == 'ri16'-%}{%- set suffix = 's' -%}
+{%- elif type | trim() == 'ri8'-%}{%- set suffix = 'b' -%}
+{%- elif type | trim() == 'ru8'-%}{%- set suffix = 'b' -%}
+{%- endif -%}{{suffix}}
+{%- endmacro -%}
+
+{%- macro typekey_suffix(type, id, ports) -%}
+{%- set suffix = suffix_lookup(type) -%}
+{%- set suffix_accum = suffix_lookup(type) -%}
+{%- set vars = {'ports': False} -%}
+{%- if type | is_list() -%}{{type[1]}}
+{%- else -%}
+    {%- for p in ports -%}
+    {%- if '/' in p['type'] | string() -%}
+    {%- set list1 = p['type'].split('/') -%}
+    {%- if list1[0] == 'typekeys' -%}{%- if list1[1] == id -%}{{suffix_lookup(type)}}{% if vars.update({'ports': True}) %} {% endif %}{%- endif -%}{%- endif -%}
+    {%- endif -%}
+    {%- endfor -%}
+    {%- if not vars.ports -%}{{suffix_lookup(type)}}{%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+{#%- set suffix = suffix ~ suffix_lookup(type) -%#}

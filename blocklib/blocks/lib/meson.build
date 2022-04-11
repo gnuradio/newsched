@@ -1,7 +1,7 @@
 blocks_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmtf_dep]
 
-# block_cpp_args = ['-DHAVE_CPU']
-# link_args = []
+block_cpp_args = ['-DHAVE_CPU']
+link_args = []
 # if USE_CUDA
 #     block_cpp_args += '-DHAVE_CUDA'
 

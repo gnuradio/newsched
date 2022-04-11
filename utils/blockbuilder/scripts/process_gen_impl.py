@@ -4,6 +4,9 @@ import yaml
 import argparse
 import shutil
 
+def is_list(value):
+    return isinstance(value, list)
+    
 def argParse():
     """Parses commandline args."""
     desc='Scrape the doxygen generated xml for docstrings to insert into python bindings'
@@ -29,7 +32,7 @@ def main():
     paths.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','templates'))
     paths.append(os.path.dirname(os.path.realpath(args.yaml_file)))
     env = Environment(loader = FileSystemLoader(paths))
-
+    env.filters['is_list'] = is_list
     
     blockname = os.path.basename(os.path.dirname(os.path.realpath(args.yaml_file)))
     
