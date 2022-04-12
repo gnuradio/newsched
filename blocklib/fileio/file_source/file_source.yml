@@ -4,10 +4,6 @@ label: File Source
 blocktype: sync_block
 
 parameters:
--   id: itemsize
-    label: Item Size
-    dtype: size_t
-    settable: false
 -   id: filename
     label: File Name
     dtype: std::string
@@ -17,6 +13,11 @@ parameters:
     dtype: bool
     settable: false
     default: 'false'
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+    default: 0
 -   id: offset
     label: Offset
     dtype: uint64_t

@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdio>
+#include <filesystem>
 #include <stdexcept>
 
 #include <pmtf/scalar.hpp>
@@ -35,24 +36,33 @@
 #define GR_STAT stat
 #endif
 
+namespace fs = std::filesystem;
+
 namespace gr {
 namespace fileio {
 
 file_source_cpu::file_source_cpu(const file_source::block_args& args)
     : INHERITED_CONSTRUCTORS,
-      d_itemsize(args.itemsize),
+
       d_start_offset_items(args.offset),
       d_length_items(args.len),
-      d_fp(0),
-      d_new_fp(0),
       d_repeat(args.repeat),
-      d_updated(false),
-      d_file_begin(true),
-      d_repeat_cnt(0)
+      d_itemsize(args.itemsize),
+      d_filename(args.filename),
+      d_offset(args.offset)
 {
 
-    open(args.filename, args.repeat, args.offset, args.len);
-    do_update();
+    if (args.itemsize > 0) {
+        open(d_filename, d_repeat, d_offset, d_length_items);
+        do_update();
+    }
+    else {
+        fs::path f{ d_filename };
+        if (!fs::exists(f)) {
+            throw new std::runtime_error(
+                fmt::format("file_source: the file {} does not exist", d_filename));
+        }
+    }
 
     std::stringstream str;
     str << name() << id();
@@ -248,6 +258,11 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
     auto out = work_output[0]->items<uint8_t>();
     auto noutput_items = work_output[0]->n_items;
     uint64_t size = noutput_items;
+
+    if (d_itemsize == 0) {
+        d_itemsize = work_output[0]->buffer->item_size();
+        open(d_filename, d_repeat, d_offset, d_length_items);
+    }
 
     do_update(); // update d_fp is reqd
     if (d_fp == NULL)

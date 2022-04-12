@@ -41,7 +41,7 @@ class test_file_source(gr_unittest.TestCase):
         self.rt = None
 
     def test_file_source(self):
-        src = fileio.file_source(gr.sizeof_float, self._datafilename)
+        src = fileio.file_source(self._datafilename)
         snk = blocks.vector_sink_f()
         self.tb.connect(src, snk)
         self.rt.initialize(self.tb)
@@ -56,7 +56,7 @@ class test_file_source(gr_unittest.TestCase):
         Try to open a non-existent file and verify exception is thrown.
         """
         try:
-            _ = fileio.file_source(gr.sizeof_float, "___no_such_file___")
+            _ = fileio.file_source("___no_such_file___")
             self.assertTrue(False)
         except RuntimeError:
             self.assertTrue(True)
@@ -65,7 +65,6 @@ class test_file_source(gr_unittest.TestCase):
         expected_result = self._vector[100:]
 
         src = fileio.file_source(
-            gr.sizeof_float,
             self._datafilename,
             offset=100)
         snk = blocks.vector_sink_f()
@@ -82,7 +81,6 @@ class test_file_source(gr_unittest.TestCase):
         expected_result = self._vector[100:100 + 600]
 
         src = fileio.file_source(
-            gr.sizeof_float,
             self._datafilename,
             offset=100,
             len=600)
@@ -97,7 +95,7 @@ class test_file_source(gr_unittest.TestCase):
 
     def test_file_source_can_seek_after_open(self):
 
-        src = fileio.file_source(gr.sizeof_float, self._datafilename)
+        src = fileio.file_source(self._datafilename, itemsize=gr.sizeof_float)
         self.assertTrue(src.seek(0, os.SEEK_SET))
         self.assertTrue(src.seek(len(self._vector) - 1, os.SEEK_SET))
         # Seek past end of file - this will also log a warning

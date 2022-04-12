@@ -54,17 +54,20 @@ public:
     void set_begin_tag(const std::string& val);
 
 private:
-    const size_t d_itemsize;
+    
     uint64_t d_start_offset_items;
     uint64_t d_length_items;
     uint64_t d_items_remaining;
-    FILE* d_fp;
-    FILE* d_new_fp;
+    FILE* d_fp = nullptr;
+    FILE* d_new_fp = nullptr;
     bool d_repeat;
-    bool d_updated;
-    bool d_file_begin;
+    size_t d_itemsize;
+    std::string d_filename;
+    size_t d_offset;
+    bool d_updated = false;
+    bool d_file_begin = true;
     bool d_seekable;
-    long d_repeat_cnt;
+    long d_repeat_cnt = 0;
     std::string d_add_begin_tag;
 
     std::mutex fp_mutex;
