@@ -109,6 +109,13 @@ void scheduler_nbt::run()
     }
 }
 
+void scheduler_nbt::kill()
+{
+    for (const auto& thd : _threads) {
+        thd->kill();
+    }
+}
+
 } // namespace schedulers
 } // namespace gr
 

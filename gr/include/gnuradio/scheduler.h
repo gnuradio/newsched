@@ -32,6 +32,7 @@ public:
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void wait() = 0;
+    virtual void kill() = 0;
 
     std::string name() { return _name; }
     int id() { return _id; }

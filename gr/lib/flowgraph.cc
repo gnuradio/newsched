@@ -148,4 +148,13 @@ void flowgraph::run()
     d_runtime_sptr->run();
 }
 
+void flowgraph::kill()
+{
+    if (!d_runtime_sptr) {
+        throw new std::runtime_error("wait: No runtime has been created");
+    }
+    d_runtime_sptr->kill();
+}
+
+
 } // namespace gr

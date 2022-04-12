@@ -52,6 +52,7 @@ public:
     void stop() override;
     void wait() override;
     void run();
+    void kill() override;
 };
 } // namespace schedulers
 } // namespace gr

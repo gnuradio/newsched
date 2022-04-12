@@ -27,6 +27,7 @@ public:
     void stop();
     void wait();
     void run();
+    void kill();
 
 private:
     std::shared_ptr<gr::runtime> d_runtime_sptr = nullptr;

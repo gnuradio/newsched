@@ -11,9 +11,13 @@
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+#include <chrono>
 #include <thread>
 
 namespace py = pybind11;
+using namespace std::chrono_literals;
+
 
 #include <gnuradio/flowgraph.h>
 // pydoc.h is automatically generated in the build directory
@@ -32,6 +36,55 @@ void bind_flowgraph(py::module& m)
 
         .def("start", &::gr::flowgraph::start, py::call_guard<py::gil_scoped_release>())
         .def("stop", &::gr::flowgraph::stop, py::call_guard<py::gil_scoped_release>())
-        .def("wait", &::gr::flowgraph::wait, py::call_guard<py::gil_scoped_release>())
-        .def("run", &::gr::flowgraph::run, py::call_guard<py::gil_scoped_release>());
+        .def(
+            "wait",
+            [](gr::flowgraph::sptr fg) {
+                bool ready{ false };
+                std::thread th([&fg, &ready] {
+                    fg->wait();
+                    ready = true;
+                });
+                th.detach();
+
+                while (!ready) {
+                    {
+                        py::gil_scoped_acquire acquire;
+                        if (PyErr_CheckSignals() != 0) {
+                            fg->kill();
+                            if (th.joinable()) {
+                                th.join();
+                            }
+                            throw py::error_already_set();
+                        }
+                    }
+                    std::this_thread::sleep_for(100us);
+                }
+            },
+            py::call_guard<py::gil_scoped_release>())
+        .def(
+            "run",
+            [](gr::flowgraph::sptr fg) {
+                bool ready{ false };
+                std::thread th([&fg, &ready] {
+                    fg->run();
+                    ready = true;
+                });
+                th.detach();
+
+                while (!ready) {
+                    {
+                        py::gil_scoped_acquire acquire;
+                        if (PyErr_CheckSignals() != 0) {
+                            fg->kill();
+                            if (th.joinable()) {
+                                th.join();
+                            }
+                            throw py::error_already_set();
+                        }
+                    }
+                    std::this_thread::sleep_for(100us);
+                }
+            },
+            py::call_guard<py::gil_scoped_release>());
+    ;
 }

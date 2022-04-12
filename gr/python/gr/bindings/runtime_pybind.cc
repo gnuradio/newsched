@@ -18,7 +18,11 @@
 
 #include <gnuradio/runtime.h>
 
+#include <chrono>
+#include <thread>
+
 namespace py = pybind11;
+using namespace std::chrono_literals;
 
 void bind_runtime(py::module& m)
 {
@@ -38,6 +42,56 @@ void bind_runtime(py::module& m)
         .def("initialize", &gr::runtime::initialize)
         .def("start", &gr::runtime::start, py::call_guard<py::gil_scoped_release>())
         .def("stop", &gr::runtime::stop, py::call_guard<py::gil_scoped_release>())
-        .def("wait", &gr::runtime::wait, py::call_guard<py::gil_scoped_release>())
-        .def("run", &gr::runtime::run, py::call_guard<py::gil_scoped_release>());
+        .def(
+            "wait",
+            [](gr::runtime::sptr rt) {
+                bool ready{ false };
+                std::thread th([&rt, &ready] {
+                    rt->wait();
+                    ready = true;
+                });
+                th.detach();
+
+                while (!ready) {
+                    {
+                        py::gil_scoped_acquire acquire;
+                        if (PyErr_CheckSignals() != 0) {
+                            rt->kill();
+                            if (th.joinable()) {
+                                th.join();
+                            }
+                            throw py::error_already_set();
+                        }
+                    }
+                    std::this_thread::sleep_for(100us);
+                }
+            },
+            py::call_guard<py::gil_scoped_release>())
+
+        .def(
+            "run",
+            [](gr::runtime::sptr rt) {
+                bool ready{ false };
+                std::thread th([&rt, &ready] {
+                    rt->run();
+                    ready = true;
+                });
+                th.detach();
+
+                while (!ready) {
+                    {
+                        py::gil_scoped_acquire acquire;
+                        if (PyErr_CheckSignals() != 0) {
+                            rt->kill();
+                            if (th.joinable()) {
+                                th.join();
+                            }
+                            throw py::error_already_set();
+                        }
+                    }
+                    std::this_thread::sleep_for(100us);
+                }
+            },
+            py::call_guard<py::gil_scoped_release>());
+    ;
 }
