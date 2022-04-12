@@ -64,7 +64,7 @@ for section in snippet_sections:
 %for section in snippet_sections:
 %if snippets[section]:
 
-def snippets_${section}(fg):
+def snippets_${section}(fg, rt=None):
     % for snip in snippets[section]:
     ${indent(snip['call'])}
     % endfor
@@ -377,20 +377,22 @@ def main(flowgraph_cls=${class_name}, options=None):
     qapp = Qt.QApplication(sys.argv)
 
     fg = flowgraph_cls(${ ', '.join(params_eq_list) })
-    ${'snippets_main_after_init(fg)' if snippets['main_after_init'] else ''}
+    rt = gr.runtime()
+    ${'snippets_main_after_init(fg, rt)' if snippets['main_after_init'] else ''}
     % if flow_graph.get_option('run'):
-    fg.start(${flow_graph.get_option('max_nouts') or ''})
+    rt.initialize(fg)
+    rt.start(${flow_graph.get_option('max_nouts') or ''})
     % endif
-    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
+    ${'snippets_main_after_start(fg, rt)' if snippets['main_after_start'] else ''}
     % if flow_graph.get_option('qt_qss_theme'):
     fg.setStyleSheetFromFile("${ flow_graph.get_option('qt_qss_theme') }")
     % endif
     fg.show()
 
     def sig_handler(sig=None, frame=None):
-        fg.stop()
-        fg.wait()
-        ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
+        rt.stop()
+        rt.wait()
+        ${'snippets_main_after_stop(fg, rt)' if snippets['main_after_stop'] else ''}
         Qt.QApplication.quit()
 
     signal.signal(signal.SIGINT, sig_handler)
@@ -437,55 +439,49 @@ def main(flowgraph_cls=${class_name}, options=None):
             print("Exiting the simulation. Stopping Bokeh Server")
             fg.stop()
             fg.wait()
-            ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
+            ${'snippets_main_after_stop(fg, rt)' if snippets['main_after_stop'] else ''}
     finally:
         serverProc.terminate()
         serverProc.kill()
     % elif generate_options == 'no_gui':
     fg = flowgraph_cls(${ ', '.join(params_eq_list) })
-    ${'snippets_main_after_init(fg)' if snippets['main_after_init'] else ''}
-    def sig_handler(sig=None, frame=None):
-        % for m in monitors:
-        % if m.params['en'].get_value() == 'True':
-        fg.${m.name}.stop()
-        % endif
-        % endfor
-        fg.stop()
-        fg.wait()
-        ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
+    rt = gr.runtime()
+    ${'snippets_main_after_init(fg, rt)' if snippets['main_after_init'] else ''}
+    
+    rt.initialize(fg)
 
     % if flow_graph.get_option('run_options') == 'prompt':
-    fg.start(${ flow_graph.get_option('max_nouts') or '' })
-    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
+    rt.start(${ flow_graph.get_option('max_nouts') or '' })
+    ${'snippets_main_after_start(fg, rt)' if snippets['main_after_start'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    fg.${m.name}.start()
+    rt.${m.name}.start()
     % endif
     % endfor
     try:
         input('Press Enter to quit: ')
     except EOFError:
         pass
-    fg.stop()
+    rt.stop()
     ## ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
     % elif flow_graph.get_option('run_options') == 'run':
-    fg.start(${flow_graph.get_option('max_nouts') or ''})
-    ${'snippets_main_after_start(fg)' if snippets['main_after_start'] else ''}
+    rt.start(${flow_graph.get_option('max_nouts') or ''})
+    ${'snippets_main_after_start(fg, rt)' if snippets['main_after_start'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
     fg.${m.name}.start()
     % endif
     % endfor
     % endif
-    fg.wait()
-    ${'snippets_main_after_stop(fg)' if snippets['main_after_stop'] else ''}
+    try:
+        rt.wait()
+    except KeyboardInterrupt:
+        rt.stop()
+        rt.wait()
+    ${'snippets_main_after_stop(fg, rt)' if snippets['main_after_stop'] else ''}
     % for m in monitors:
     % if m.params['en'].get_value() == 'True':
-    fg.${m.name}.stop()
+    rt.${m.name}.stop()
     % endif
     % endfor
     % endif

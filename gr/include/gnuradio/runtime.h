@@ -17,6 +17,7 @@ public:
     void stop();
     void wait();
     void run();
+    void kill();
     /**
      * @brief Add a scheduler via a pair of scheduler and vector of blocks
      *

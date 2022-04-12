@@ -118,6 +118,13 @@ void runtime::wait()
     }
 }
 
+void runtime::kill()
+{
+    for (auto s : d_schedulers) {
+        s->kill();
+    }
+}
+
 void runtime::run()
 {
     start();

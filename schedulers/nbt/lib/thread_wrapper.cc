@@ -40,7 +40,7 @@ void thread_wrapper::start()
 void thread_wrapper::stop()
 {
     d_thread_stopped = true;
-    push_message(std::make_shared<scheduler_action>(scheduler_action_t::EXIT, 0));
+    kill();
     if (d_thread.joinable()) { d_thread.join(); }
     for (auto& b : d_blocks) {
         b->stop();
@@ -57,6 +57,11 @@ void thread_wrapper::run()
 {
     start();
     wait();
+}
+
+void thread_wrapper::kill()
+{
+    push_message(std::make_shared<scheduler_action>(scheduler_action_t::EXIT, 0));
 }
 
 bool thread_wrapper::handle_work_notification()

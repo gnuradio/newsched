@@ -83,6 +83,7 @@ public:
     }
     void wait();
     void run();
+    void kill();
 
     bool handle_work_notification();
     void handle_parameter_query(std::shared_ptr<param_query_action> item);
