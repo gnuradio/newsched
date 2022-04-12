@@ -30,6 +30,10 @@ work_return_code_t file_sink_cpu::work(std::vector<block_work_input_sptr>& work_
     auto inbuf = work_input[0]->items<uint8_t>();
     auto noutput_items = work_input[0]->n_items;
 
+    if (d_itemsize == 0) {
+        d_itemsize = work_input[0]->buffer->item_size();
+    }
+
     int nwritten = 0;
 
     do_update(); // update d_fp is reqd

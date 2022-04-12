@@ -31,7 +31,7 @@ class test_file_sink(gr_unittest.TestCase):
 
         with tempfile.NamedTemporaryFile() as temp:
             src = blocks.vector_source_f(data)
-            snk = fileio.file_sink(gr.sizeof_float, temp.name)
+            snk = fileio.file_sink(temp.name)
             snk.set_unbuffered(True) # FIXME: comes from base class no pybind yet
             self.tb.connect(src, snk)
             self.rt.initialize(self.tb)
@@ -42,10 +42,10 @@ class test_file_sink(gr_unittest.TestCase):
             self.assertEqual(file_size, 4 * len(data))
 
             # Check file contents
-            datafile = open(temp.name, 'rb')
-            result_data = array.array('f')
-            result_data.fromfile(datafile, len(data))
-            self.assertFloatTuplesAlmostEqual(expected_result, result_data)
+            with open(temp.name, 'rb') as datafile:
+                result_data = array.array('f')
+                result_data.fromfile(datafile, len(data))
+                self.assertFloatTuplesAlmostEqual(expected_result, result_data)
 
 
 if __name__ == '__main__':
