@@ -1,20 +1,23 @@
+{% import 'macros.j2' as macros -%}
 {%- macro type_lookup(type, default) -%}
-{%- if type in ['int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int
-{%- elif type in ['short', 'unsigned short', 'uint16_t', 'int16_t'] -%}short
-{%- elif type in ['uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}byte
-{%- elif type in ['std::complex<float>', 'gr_complex'] -%}complex
-{%- elif type in ['float'] -%}float
+{%- if type | is_list() -%}{% set type = type[0] -%}{%- endif -%}{%- if default | is_list() -%}{% set default = default[0] -%}{%- endif -%}
+{%- if type in ['ri32','ru32', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int
+{%- elif type in ['ri16','ru16','short', 'unsigned short', 'uint16_t', 'int16_t'] -%}short
+{%- elif type in ['ri8','ru8','uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}byte
+{%- elif type in ['cf32','std::complex<float>', 'gr_complex'] -%}complex
+{%- elif type in ['rf32','float'] -%}float
 {%- elif type in ['const char *', 'const std::string&'] -%}string
 {%- elif type in ['bool'] -%}bool
 {%- elif type in ['gui_hint'] -%}gui_hint
 {%- else -%}{{default}}{%-endif-%}
 {%- endmacro -%}
 {%- macro vec_type_lookup(type, default) -%}
-{%- if type in ['int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int_vector
-{%- elif type in ['short', 'unsigned short', 'uint16_t', 'int16_t'] -%}int_vector
-{%- elif type in ['uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}int_vector
-{%- elif type in ['std::complex<float>', 'gr_complex'] -%}complex_vector
-{%- elif type in ['float'] -%}float_vector
+{%- if type | is_list() -%}{% set type = type[0] -%}{%- endif -%}{%- if default | is_list() -%}{% set default = default[0] -%}{%- endif -%}
+{%- if type in ['ri32','ru32','int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int_vector
+{%- elif type in ['ri16','ru16','short', 'unsigned short', 'uint16_t', 'int16_t'] -%}int_vector
+{%- elif type in ['ri8','ru8','uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}int_vector
+{%- elif type in ['cf32','std::complex<float>', 'gr_complex'] -%}complex_vector
+{%- elif type in ['rf32','float'] -%}float_vector
 {%- else -%}{{default}}{%-endif-%}
 {%- endmacro -%}
 {% macro get_linked_value(value, ports, parameters, typekeys) -%}
@@ -46,7 +49,7 @@ parameters:
 -   id: type_inst
     label: Type
     dtype: enum
-    options: [{% for typev in type_inst %}{%for v in typev['value']%}{%for o in typekeys[loop.index0]['options']%}{{o['suffix'] if o['value']==v}}{%endfor%}{%endfor%},{%endfor%}]
+    options: [{% for typev in type_inst %}{%for v in typev['value']%}{%for o in typekeys[loop.index0]['options']%}{{macros.typekey_suffix(o) if o==v}}{%endfor%}{%endfor%},{%endfor%}]
     option_labels: [{% for opt in type_inst %}{{opt['label']}}{{"," if not loop.last}} {% endfor %}]
     option_attributes:
     {%-for key in typekeys%} {% set outer_loop = loop %}
@@ -59,7 +62,7 @@ parameters:
     dtype: enum
     options: [{% for opt in key['options'] %}{{type_lookup(opt,opt)}}{{"," if not loop.last}} {% endfor %}]
     option_attributes:
-        fcn: [{% for opt in key['options'] %}{{opt['suffix']}}{{"," if not loop.last}} {% endfor %}]
+        fcn: [{% for opt in key['options'] %}{{macros.typekey_suffix(opt,key['id'],ports)}}{{"," if not loop.last}} {% endfor %}]
     hide: part
 {% endfor %}
 {% endif %}
