@@ -43,6 +43,8 @@ private:
     size_t d_history = 1;
 
     size_t d_nchans;
+
+    std::vector<std::vector<T>> d_deinterleaved;
 };
 
 
