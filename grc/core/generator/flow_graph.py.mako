@@ -380,7 +380,7 @@ def main(flowgraph_cls=${class_name}, options=None):
     rt = gr.runtime()
     ${'snippets_main_after_init(fg, rt)' if snippets['main_after_init'] else ''}
     % if flow_graph.get_option('run'):
-    rt.initialize(fg)
+    rt.initialize(fg.fg)
     rt.start(${flow_graph.get_option('max_nouts') or ''})
     % endif
     ${'snippets_main_after_start(fg, rt)' if snippets['main_after_start'] else ''}
