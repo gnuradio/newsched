@@ -1,6 +1,8 @@
 {% import 'macros.j2' as macros -%}
 {{ macros.header() }}
 
+#include <pmtf/base.hpp>
+
 namespace gr {
 namespace {{module}} {
 
@@ -69,5 +71,15 @@ template class {{block}}<{{ macros.cpp_type_lookup(opt1)}}, {{ macros.cpp_type_l
 #define INHERITED_CONSTRUCTORS {{blocktype}}("{{block}}", "{{module}}"), {{block}}(args)
 {% endif %}
 
+
+// Convenience parameter access macros
+// Figure out a way to do this elegantly without macros or string lookups
+{% if parameters %} {% for param in parameters -%}
+{% if 'container' not in param or param['container'] == scalar %}
+#define GET_PARAM_{{param['id']|upper()}} pmtf::get_as<{{param['dtype']}}>(*this->param_{{param['id']}})
+{% elif param['container'] == 'vector' %}
+{% endif %}
+{% endfor %}
+{% endif %}
 } // namespace {{module}}
 } // namespace gr
