@@ -40,7 +40,6 @@ private:
     bool d_initialized = false;
     std::vector<scheduler_sptr> d_schedulers;
     std::vector<std::vector<node_sptr>> d_blocks_per_scheduler;
-    std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> d_scheduler_confs;
     const std::string s_default_scheduler_name = "nbt";
     scheduler_sptr d_default_scheduler = nullptr;
     bool d_default_scheduler_inuse = true;
