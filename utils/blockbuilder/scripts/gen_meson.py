@@ -84,7 +84,7 @@ def main():
             for y in [y for y in os.listdir(current_module_path)]:
                 current_block_path = os.path.join(current_module_path, y)
                 
-                if y not in ['lib','include','test','bench','python'] and os.path.isdir(current_block_path):
+                if y not in ['lib','include','test','bench','python','examples'] and os.path.isdir(current_block_path):
                     print('   ' + y)
                     blockdirs.append(os.path.basename(y))
 
