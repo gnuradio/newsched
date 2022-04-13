@@ -59,12 +59,12 @@ pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
         d_idxlut[i] = d_nfilts - ((i + d_rate_ratio) % d_nfilts) - 1;
     }
 
-    // // Calculate the number of filtering rounds to do to evenly
-    // // align the input vectors with the output channels
-    // d_output_multiple = 1;
-    // while ((d_output_multiple * d_rate_ratio) % d_nfilts != 0)
-    //     d_output_multiple++;
-    // this->set_output_multiple(d_output_multiple);
+    // Calculate the number of filtering rounds to do to evenly
+    // align the input vectors with the output channels
+    d_output_multiple = 1;
+    while ((d_output_multiple * d_rate_ratio) % d_nfilts != 0)
+        d_output_multiple++;
+    this->set_output_multiple(d_output_multiple);
 
     // Use set_taps to also set the history requirement
     set_taps(args.taps);
@@ -81,7 +81,7 @@ void pfb_channelizer_cpu<T>::set_taps(const std::vector<float>& taps)
 
     polyphase_filterbank::set_taps(taps);
     // set_history(d_taps_per_filter + 1);
-    d_history = d_nchans * (d_taps_per_filter + 1);
+    d_history = d_taps_per_filter + 1;
     d_updated = true;
 }
 
@@ -98,28 +98,13 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto noutput_items = work_output[0]->n_items;
     auto ninput_items = work_input[0]->n_items;
 
-    if ((size_t)ninput_items < (noutput_items * d_nchans + d_history)) {
+    if ((size_t)ninput_items < (noutput_items + d_history - 1)) {
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
     if (d_updated) {
         d_updated = false;
-        this->consume_each(0, work_input);
-        this->produce_each(0, work_output);
         return work_return_code_t::WORK_OK; // history requirements may have changed.
-    }
-
-    std::vector<std::vector<T>> deinterleaved(d_nchans);
-
-    auto total_items = std::min(ninput_items / d_nchans, (size_t)noutput_items);
-
-    for (size_t j = 0; j < d_nchans; j++) {
-        if (deinterleaved[j].size() < total_items) {
-            deinterleaved[j].resize(total_items);
-        }
-        for (size_t i = 0; i < total_items; i++) {
-            deinterleaved[j][i] = in[i * d_nchans + j];
-        }
     }
 
     size_t noutputs = work_output.size();
@@ -137,25 +122,22 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     // Systems. Upper Saddle River, NJ: Prentice Hall, 2004.
 
     int n = 1, i = -1, j = 0, oo = 0, last;
-    int toconsume =
-        (int)rintf((noutput_items * d_nchans) / d_oversample_rate) - (d_history - 1);
+    int toconsume = (int)rintf(noutput_items / d_oversample_rate);
     while (n <= toconsume) {
         j = 0;
         i = (i + d_rate_ratio) % d_nfilts;
         last = i;
         while (i >= 0) {
-            // in = (gr_complex*)work_input[j].items();
-            d_fft.get_inbuf()[d_idxlut[j]] =
-                d_fir_filters[i].filter(&deinterleaved[j][n]);
+            in = work_input[j]->items<gr_complex>();
+            d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n]);
             j++;
             i--;
         }
 
         i = d_nfilts - 1;
         while (i > last) {
-            // in = (gr_complex*)work_input[j].items();
-            d_fft.get_inbuf()[d_idxlut[j]] =
-                d_fir_filters[i].filter(&deinterleaved[j][n - 1]);
+            in = work_input[j]->items<gr_complex>();
+            d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n - 1]);
             j++;
             i--;
         }
@@ -172,7 +154,6 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
         oo++;
     }
-
     this->consume_each(toconsume, work_input);
     // this->produce_each(noutput_items - (d_history / d_nchans - 1), work_output);
     this->produce_each(noutput_items, work_output);
