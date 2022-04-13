@@ -180,7 +180,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
                     if (work_input.empty() && !work_output.empty()) {
-                        auto max_output = 0;
+                        size_t max_output = 0;
                         for (auto& w : work_output) {
                             max_output = std::max(w->n_produced, max_output);
                         }

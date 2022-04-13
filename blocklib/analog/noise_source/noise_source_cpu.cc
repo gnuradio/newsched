@@ -44,25 +44,25 @@ work_return_code_t noise_source_cpu<T>::work(std::vector<block_work_input_sptr>&
 
     switch (static_cast<noise_type>(type)) {
     case noise_type::uniform:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             out[i] = static_cast<T>(ampl * ((d_rng.ran1() * 2.0) - 1.0));
         }
         break;
 
     case noise_type::gaussian:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             out[i] = static_cast<T>(ampl * d_rng.gasdev());
         }
         break;
 
     case noise_type::laplacian:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             out[i] = static_cast<T>(ampl * d_rng.laplacian());
         }
         break;
 
     case noise_type::impulse: // FIXME changeable impulse settings
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             out[i] = static_cast<T>(ampl * d_rng.impulse(9));
         }
         break;

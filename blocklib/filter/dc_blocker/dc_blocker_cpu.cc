@@ -51,7 +51,7 @@ dc_blocker_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
     if (d_long_form) {
         T y1, y2, y3, y4, d;
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             y1 = d_ma_0.filter(in[i]);
             y2 = d_ma_1.filter(y1);
             y3 = d_ma_2->filter(y2);
@@ -66,7 +66,7 @@ dc_blocker_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     }
     else {
         T y1, y2;
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             y1 = d_ma_0.filter(in[i]);
             y2 = d_ma_1.filter(y1);
             out[i] = d_ma_0.delayed_sig() - y2;

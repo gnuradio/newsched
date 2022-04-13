@@ -335,7 +335,7 @@ time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
     std::scoped_lock lock(d_setlock);
 
     int nfill = d_end - d_index;                 // how much room left in buffers
-    int nitems = std::min(noutput_items, nfill); // num items we can put in buffers
+    int nitems = std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
 
     // If auto, normal, or tag trigger, look for the trigger
     if ((d_trigger_mode != TRIG_MODE_FREE) && !d_triggered) {
@@ -412,7 +412,7 @@ time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     std::scoped_lock lock(d_setlock);
 
     int nfill = d_end - d_index;                 // how much room left in buffers
-    int nitems = std::min(noutput_items, nfill); // num items we can put in buffers
+    int nitems = std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
 
     // If auto, normal, or tag trigger, look for the trigger
     if ((d_trigger_mode != TRIG_MODE_FREE) && !d_triggered) {

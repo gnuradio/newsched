@@ -39,10 +39,10 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
     auto noutput_items = work_output[0]->n_items;
     /* This limits each work invocation to MTU transfers */
     if (d_mtu > 0) {
-        noutput_items = std::min(noutput_items, (int)d_mtu);
+        noutput_items = std::min(noutput_items, d_mtu);
     }
     else {
-        noutput_items = std::min(noutput_items, 1024);
+        noutput_items = std::min(noutput_items, size_t{1024});
     }
 
     long long int time_ns = 0;

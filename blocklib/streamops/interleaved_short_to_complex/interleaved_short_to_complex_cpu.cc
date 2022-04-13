@@ -39,7 +39,7 @@ interleaved_short_to_complex_cpu::work(std::vector<block_work_input_sptr>& work_
     volk_16i_s32f_convert_32f(out, in, d_scalar, 2 * noutput_items);
 
     if (d_swap) {
-        for (int i = 0; i < noutput_items; ++i) {
+        for (size_t i = 0; i < noutput_items; ++i) {
             float f = out[2 * i + 1];
             out[2 * i + 1] = out[2 * i];
             out[2 * i] = f;

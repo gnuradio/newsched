@@ -94,7 +94,7 @@ private:
     // this is usually desired when plotting
     std::unique_ptr<fft::fft_complex_fwd> d_fft;
 
-    int d_index = 0;
+    size_t d_index = 0;
     std::vector<volk::vector<T>> d_residbufs;
     std::vector<volk::vector<double>> d_magbufs;
     double* d_pdu_magbuf;

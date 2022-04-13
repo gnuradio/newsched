@@ -180,7 +180,7 @@ fft_cpu<T, forward>::work(std::vector<block_work_input_sptr>& work_input,
     auto out = work_output[0]->items<gr_complex>();
     auto noutput_items = work_output[0]->n_items;
 
-    int count = 0;
+    size_t count = 0;
 
     while (count++ < noutput_items) {
 

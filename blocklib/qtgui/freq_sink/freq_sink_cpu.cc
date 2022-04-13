@@ -77,7 +77,7 @@ freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     _gui_update_trigger();
 
     std::scoped_lock lock(d_setlock);
-    for (d_index = 0; d_index < noutput_items; d_index += d_fftsize) {
+    for (d_index = 0; d_index < (int)noutput_items; d_index += d_fftsize) {
 
         if ((gr::high_res_timer_now() - d_last_time) > d_update_time) {
 
@@ -86,7 +86,7 @@ freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
                 _test_trigger_tags(d_index, d_fftsize);
                 if (d_triggered) {
                     // If not enough from tag position, early exit
-                    if ((d_index + d_fftsize) >= noutput_items) {
+                    if ((size_t)(d_index + d_fftsize) >= noutput_items) {
                         this->consume_each(d_index, work_input);
                         return work_return_code_t::WORK_OK;
                     }
