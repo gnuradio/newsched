@@ -35,7 +35,7 @@ private:
     const std::string s_module;
     std::string d_suffix = "";
     tag_propagation_policy_t d_tag_propagation_policy;
-    int d_output_multiple = 1;
+    size_t d_output_multiple = 1;
     bool d_output_multiple_set = false;
     double d_relative_rate = 1.0;
 
@@ -121,10 +121,10 @@ public:
     };
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
-    static void consume_each(int num, std::vector<block_work_input_sptr>& work_input);
-    static void produce_each(int num, std::vector<block_work_output_sptr>& work_output);
-    void set_output_multiple(int multiple);
-    int output_multiple() const { return d_output_multiple; }
+    static void consume_each(size_t num, std::vector<block_work_input_sptr>& work_input);
+    static void produce_each(size_t num, std::vector<block_work_output_sptr>& work_output);
+    void set_output_multiple(size_t multiple);
+    size_t output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }
     void set_relative_rate(double relative_rate) { d_relative_rate = relative_rate; }
     double relative_rate() const { return d_relative_rate; }

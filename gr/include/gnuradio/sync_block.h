@@ -47,7 +47,7 @@ public:
                                std::vector<block_work_output_sptr>& work_output) override
     {
         // Check all inputs and outputs have the same number of items
-        int min_num_items = std::numeric_limits<int>::max();
+        auto min_num_items = std::numeric_limits<size_t>::max();
         for (auto& w : work_input) {
             min_num_items = std::min(min_num_items, w->n_items);
         }
@@ -79,10 +79,12 @@ public:
         // output port
 
         bool firsttime = true;
-        int n_produced = -1;
+        size_t n_produced = 0;
         bool allsame = true;
+        bool output_ports = false;
         for (auto& w : work_output) {
             if (firsttime) {
+                output_ports = true;
                 n_produced = w->n_produced;
                 firsttime = false;
             }
@@ -99,7 +101,7 @@ public:
         // by definition of a sync block the n_consumed must be equal to n_produced
         // also, a sync block must consume all of its items
         for (auto& w : work_input) {
-            w->n_consumed = n_produced < 0 ? w->n_items : n_produced;
+            w->n_consumed = output_ports ? n_produced : w->n_items;
         }
 
         return ret;

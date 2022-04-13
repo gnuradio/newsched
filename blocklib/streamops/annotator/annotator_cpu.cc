@@ -56,7 +56,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
     // Adds a new tag when the number of items read is a multiple of d_when
     abs_N = work_output[0]->buffer->total_written();
 
-    for (int j = 0; j < noutput_items; j++) {
+    for (size_t j = 0; j < noutput_items; j++) {
         // the min() is a hack to make sure this doesn't segfault if
         // there are a different number of ins and outs. This is
         // specifically designed to test the 1-to-1 propagation policy.

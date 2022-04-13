@@ -41,7 +41,7 @@ work_return_code_t
 moving_average_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
                              std::vector<block_work_output_sptr>& work_output)
 {
-    if (work_input[0]->n_items < (int)d_length) {
+    if (work_input[0]->n_items < d_length) {
         work_output[0]->n_produced = 0;
         work_input[0]->n_consumed = 0;
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
@@ -51,7 +51,7 @@ moving_average_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto out = work_output[0]->items<T>();
 
     size_t noutput_items =
-        std::min((int)(work_input[0]->n_items), work_output[0]->n_items);
+        std::min((work_input[0]->n_items), work_output[0]->n_items);
 
     // auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
     auto num_iter = noutput_items;

@@ -76,21 +76,21 @@ void block::on_parameter_query(param_action_sptr action)
     action->set_pmt_value(*param);
 }
 
-void block::consume_each(int num, std::vector<block_work_input_sptr>& work_input)
+void block::consume_each(size_t num, std::vector<block_work_input_sptr>& work_input)
 {
     for (auto& input : work_input) {
         input->consume(num);
     }
 }
 
-void block::produce_each(int num, std::vector<block_work_output_sptr>& work_output)
+void block::produce_each(size_t num, std::vector<block_work_output_sptr>& work_output)
 {
     for (auto& output : work_output) {
         output->produce(num);
     }
 }
 
-void block::set_output_multiple(int multiple)
+void block::set_output_multiple(size_t multiple)
 {
     if (multiple < 1)
         throw std::invalid_argument("block::set_output_multiple");

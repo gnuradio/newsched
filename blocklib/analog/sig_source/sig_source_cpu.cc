@@ -50,7 +50,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         if (offset == 0)
             break;
 
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             optr[i] += offset;
         }
         break;
@@ -59,7 +59,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         if (offset == 0)
             break;
 
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             optr[i] += offset;
         }
         break;
@@ -67,7 +67,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         /* The square wave is high from -PI to 0. */
     case waveform_type::square:
         t = (T)ampl + offset;
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < 0)
                 optr[i] = t;
             else
@@ -78,7 +78,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
 
         /* The triangle wave rises from -PI to 0 and falls from 0 to PI. */
     case waveform_type::triangle:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             double t = ampl * d_nco.get_phase() / GR_M_PI;
             if (d_nco.get_phase() < 0)
                 optr[i] = static_cast<T>(t + ampl + offset);
@@ -90,7 +90,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
 
         /* The saw tooth wave rises from -PI to PI. */
     case waveform_type::sawtooth:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             t = static_cast<T>(ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 2 +
                                offset);
             optr[i] = t;
@@ -131,7 +131,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
         if (offset == gr_complex(0, 0))
             break;
 
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             optr[i] += offset;
         }
         break;
@@ -140,7 +140,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
          * The imaginary square wave leads by 90 deg.
          */
     case waveform_type::square:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2)
                 optr[i] = gr_complex(ampl, 0) + offset;
             else if (d_nco.get_phase() < 0)
@@ -158,7 +158,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
          * 90 deg.
          */
     case waveform_type::triangle:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
                 optr[i] =
                     gr_complex(ampl * d_nco.get_phase() / GR_M_PI + ampl,
@@ -186,7 +186,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
          * The imaginary saw tooth wave leads by 90 deg.
          */
     case waveform_type::sawtooth:
-        for (int i = 0; i < noutput_items; i++) {
+        for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
                 optr[i] =
                     gr_complex(ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 2,

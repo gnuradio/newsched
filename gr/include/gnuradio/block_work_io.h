@@ -1,10 +1,10 @@
 #pragma once
 
+#include <gnuradio/buffer.h>
 #include <gnuradio/tag.h>
+#include <algorithm>
 #include <cstdint>
 #include <vector>
-
-#include <gnuradio/buffer.h>
 
 namespace gr {
 
@@ -14,10 +14,10 @@ namespace gr {
  */
 struct block_work_input {
     using sptr = std::shared_ptr<block_work_input>;
-    int n_items;
+    size_t n_items = 0;
     buffer_reader_sptr buffer;
-    int n_consumed =
-        -1; // output the number of items that were consumed on the work() call
+    size_t n_consumed =
+        0; // output the number of items that were consumed on the work() call
 
     block_work_input(int n_items_, buffer_reader_sptr p_buf_)
         : n_items(n_items_), buffer(p_buf_)
@@ -59,10 +59,10 @@ using block_work_input_sptr = block_work_input::sptr;
  */
 struct block_work_output {
     using sptr = std::shared_ptr<block_work_output>;
-    int n_items;
+    size_t n_items;
     buffer_sptr buffer;
-    int n_produced =
-        -1; // output the number of items that were produced on the work() call
+    size_t n_produced =
+        0; // output the number of items that were produced on the work() call
 
     block_work_output(int _n_items, buffer_sptr p_buf_)
         : n_items(_n_items), buffer(p_buf_)
@@ -80,15 +80,8 @@ struct block_work_output {
     void produce(int num) { n_produced = num; }
 
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
-    void
-    add_tag(uint64_t offset, tag_map map)
-    {
-        buffer->add_tag(offset, map);
-    }
-    void add_tag(uint64_t offset, pmtf::map map)
-    {
-        buffer->add_tag(offset, map);
-    }
+    void add_tag(uint64_t offset, tag_map map) { buffer->add_tag(offset, map); }
+    void add_tag(uint64_t offset, pmtf::map map) { buffer->add_tag(offset, map); }
 
     static std::vector<void*> all_items(const std::vector<sptr>& work_outputs)
     {
@@ -98,6 +91,15 @@ struct block_work_output {
         }
 
         return ret;
+    }
+
+    static size_t min_n_items(const std::vector<sptr>& work_outputs)
+    {
+        auto result = (std::min_element(
+            work_outputs.begin(), work_outputs.end(), [](const sptr& lhs, const sptr& rhs) {
+                return (lhs->n_items < rhs->n_items);
+            }));
+        return (*result)->n_items;
     }
 };
 using block_work_output_sptr = block_work_output::sptr;
