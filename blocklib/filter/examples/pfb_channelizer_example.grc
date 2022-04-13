@@ -62,7 +62,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [168, 588.0]
+    coordinate: [248, 604.0]
     rotation: 0
     state: true
 - name: analog_sig_source_0
@@ -131,7 +131,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 228.0]
+    coordinate: [736, 204.0]
     rotation: 0
     state: true
 - name: import_0
@@ -246,29 +246,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 404.0]
+    coordinate: [720, 404.0]
     rotation: 0
     state: enabled
-- name: streamops_deinterleave_0
-  id: streamops_deinterleave
-  parameters:
-    affinity: ''
-    alias: ''
-    blocksize: '1'
-    comment: ''
-    domain: cpu
-    itemsize: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nstreams: '2'
-    showports: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [648, 236.0]
-    rotation: 0
-    state: true
 
 connections:
 - [analog_noise_source_0, '0', math_add_0, '2']
@@ -276,10 +256,8 @@ connections:
 - [analog_sig_source_0_0, '0', math_add_0, '0']
 - [filter_pfb_channelizer_0, '0', qtgui_freq_sink_0_0, '0']
 - [filter_pfb_channelizer_0, '1', qtgui_freq_sink_0_0_0, '0']
+- [math_add_0, '0', filter_pfb_channelizer_0, '0']
 - [math_add_0, '0', qtgui_freq_sink_0_1, '0']
-- [math_add_0, '0', streamops_deinterleave_0, '0']
-- [streamops_deinterleave_0, '0', filter_pfb_channelizer_0, '0']
-- [streamops_deinterleave_0, '1', filter_pfb_channelizer_0, '1']
 
 metadata:
   file_format: 1

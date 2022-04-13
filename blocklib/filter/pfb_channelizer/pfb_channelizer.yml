@@ -31,7 +31,7 @@ ports:
     id: in
     direction: input
     type: typekeys/T
-    multiplicity: parameters/numchans
+    # multiplicity: parameters/numchans
 
 -   domain: stream
     id: out

@@ -35,7 +35,7 @@ pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
         throw std::invalid_argument(
             "pfb_channelizer: oversample rate must be N/i for i in [1, N]");
 
-    this->set_relative_rate(d_oversample_rate);
+    this->set_relative_rate(d_oversample_rate / d_nchans);
 
     // Default channel map. The channel map specifies which input
     // goes to which output channel; so out[0] comes from
@@ -72,6 +72,8 @@ pfb_channelizer_cpu<T>::pfb_channelizer_cpu(
     // because we need a stream_to_streams block for the input,
     // only send tags from in[i] -> out[i].
     this->set_tag_propagation_policy(tag_propagation_policy_t::TPP_ONE_TO_ONE);
+
+    d_deinterleaved.resize(d_nchans);
 }
 
 template <class T>
@@ -81,7 +83,7 @@ void pfb_channelizer_cpu<T>::set_taps(const std::vector<float>& taps)
 
     polyphase_filterbank::set_taps(taps);
     // set_history(d_taps_per_filter + 1);
-    d_history = d_taps_per_filter + 1;
+    d_history = d_nchans * (d_taps_per_filter + 1);
     d_updated = true;
 }
 
@@ -98,7 +100,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     auto noutput_items = work_output[0]->n_items;
     auto ninput_items = work_input[0]->n_items;
 
-    if ((size_t)ninput_items < (noutput_items + d_history - 1)) {
+    if ((size_t)ninput_items < d_history * d_nchans) { // if we can produce 1 output item
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
@@ -107,7 +109,20 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         return work_return_code_t::WORK_OK; // history requirements may have changed.
     }
 
+    // includes history
+    auto total_items = std::min(ninput_items / d_nchans, noutput_items + (d_history / d_nchans) );
+
+    for (size_t j = 0; j < d_nchans; j++) {
+        if (d_deinterleaved[j].size() < total_items) {
+            d_deinterleaved[j].resize(total_items);
+        }
+        for (size_t i = 0; i < total_items; i++) {
+            d_deinterleaved[j][i] = in[i * d_nchans + j];
+        }
+    }
+
     size_t noutputs = work_output.size();
+    noutput_items = total_items - d_history + 1;
 
     // The following algorithm looks more complex in order to handle
     // the cases where we want more that 1 sps for each
@@ -128,7 +143,8 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         i = (i + d_rate_ratio) % d_nfilts;
         last = i;
         while (i >= 0) {
-            in = work_input[j]->items<gr_complex>();
+            // in = work_input[j]->items<gr_complex>();
+            in = d_deinterleaved[j].data();
             d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n]);
             j++;
             i--;
@@ -136,7 +152,8 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
         i = d_nfilts - 1;
         while (i > last) {
-            in = work_input[j]->items<gr_complex>();
+            // in = work_input[j]->items<gr_complex>();
+            in = d_deinterleaved[j].data();
             d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n - 1]);
             j++;
             i--;
@@ -154,7 +171,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
         oo++;
     }
-    this->consume_each(toconsume, work_input);
+    this->consume_each(toconsume * d_nchans, work_input);
     // this->produce_each(noutput_items - (d_history / d_nchans - 1), work_output);
     this->produce_each(noutput_items, work_output);
     return work_return_code_t::WORK_OK;
