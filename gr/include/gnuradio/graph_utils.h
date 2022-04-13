@@ -25,22 +25,12 @@ struct graph_partition_info {
 using graph_partition_info_vec = std::vector<graph_partition_info>;
 
 struct graph_utils {
-    /**
-     * @brief Partition the graph into subgraphs while preserving the neighbor scheduler
-     * map
-     *
-     * @param input_graph
-     * @param scheds
-     * @param confs
-     * @param neighbor_intf_map
-     * @return graph_partition_info_vec
-     */
-    static graph_partition_info_vec
-    partition(graph_sptr input_graph,
-              std::vector<std::pair<scheduler_sptr, std::vector<node_sptr>>> confs);
-
     static std::pair<std::vector<graph_sptr>,
                      std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>
     partition(graph_sptr input_graph, std::vector<std::vector<node_sptr>> nodes);
+
+    static void connect_crossings(std::pair<std::vector<graph_sptr>,
+                     std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>&);
+
 };
 } // namespace gr

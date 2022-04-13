@@ -29,7 +29,6 @@ void runtime::add_scheduler(std::pair<scheduler_sptr, std::vector<node_sptr>> co
     }
     d_schedulers.push_back(std::get<0>(conf));
     d_blocks_per_scheduler.push_back(std::get<1>(conf));
-    d_scheduler_confs.push_back(conf);
     // assign ids to the schedulers
     int idx = 1;
     for (auto s : d_schedulers) {
@@ -72,7 +71,8 @@ void runtime::initialize(graph_sptr fg)
 {
     flowgraph::check_connections(fg);
     gr::logger_ptr d_logger, d_debug_logger;
-    gr::configure_default_loggers(d_logger, d_debug_logger, fmt::format("runtime_init_{}", fg->name()));
+    gr::configure_default_loggers(
+        d_logger, d_debug_logger, fmt::format("runtime_init_{}", fg->name()));
     d_debug_logger->debug("initialize {}", d_schedulers.size());
 
     if (d_schedulers.size() == 1) {
@@ -84,12 +84,17 @@ void runtime::initialize(graph_sptr fg)
         d_schedulers[0]->initialize(flat_graph::make_flat(fg), d_rtmon);
     }
     else {
-        auto graph_part_info = graph_utils::partition(fg, d_scheduler_confs);
+        auto graph_part_info = graph_utils::partition(fg, d_blocks_per_scheduler);
+        graph_utils::connect_crossings(graph_part_info);
+        auto graphs = std::get<0>(graph_part_info);
+        auto crossings = std::get<1>(graph_part_info);
         d_rtmon = std::make_shared<runtime_monitor>(
             d_schedulers, d_runtime_proxies, fg->alias());
-        for (auto& info : graph_part_info) {
 
-            info.scheduler->initialize(flat_graph::make_flat(info.subgraph), d_rtmon);
+        size_t idx = 0;
+        for (auto& g : graphs) {
+            d_schedulers[idx]->initialize(flat_graph::make_flat(g), d_rtmon);
+            idx++;
         }
     }
 
