@@ -205,7 +205,7 @@ protected:
     {%if 'cotr' not in p or p['cotr']%}
     param_{{p['id']}} = std::make_shared<pmtf::pmt>({{'(int)' if p['is_enum']}}{{"args."+p['id']}});
     {%else%}
-    param_{{p['id']}} = std::make_shared<pmtf::pmt>(pmtf::{{'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>());
+    param_{{p['id']}} = std::make_shared<pmtf::pmt>(pmtf::{{'scalar' if 'container' not in p else p['container']}}<{{p['dtype']}}>({%if 'default' in p %}{{p['default'] | string() | lower()}}{%endif%}));
     {%endif%}
     {% endif %}
     add_param("{{p['id']}}", d_param_str_map["{{p['id']}}"], param_{{p['id']}});
