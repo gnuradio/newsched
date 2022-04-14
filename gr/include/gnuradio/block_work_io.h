@@ -49,6 +49,14 @@ struct block_work_input {
 
         return ret;
     }
+    static size_t min_n_items(const std::vector<sptr>& work_inputs)
+    {
+        auto result = (std::min_element(
+            work_inputs.begin(), work_inputs.end(), [](const sptr& lhs, const sptr& rhs) {
+                return (lhs->n_items < rhs->n_items);
+            }));
+        return (*result)->n_items;
+    }
 };
 
 using block_work_input_sptr = block_work_input::sptr;
