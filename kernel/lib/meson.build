@@ -11,6 +11,7 @@ kernel_sources = [
     'filter/firdes.cc',
     'filter/mmse_fir_interpolator_ff.cc',
     'filter/moving_averager.cc',
+    'filter/pfb_arb_resampler.cc',
     'filter/polyphase_filterbank.cc',
     'math/fast_atan2f.cc',
     'math/fxpt.cc',
