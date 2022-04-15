@@ -37,3 +37,6 @@ endif
 if (ENABLE_GR_SOAPY)
   subdir('soapy')
 endif
+if get_option('enable_gr_audio')
+subdir('audio')
+endif
