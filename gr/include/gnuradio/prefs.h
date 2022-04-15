@@ -51,6 +51,42 @@ public:
         }
     }
 
+    static const double get_double(const std::string& section,
+                                        const std::string& option,
+                                        const double default_val)
+    {
+        try {
+            auto s = get_section(section);
+            return s[option].as<double>();
+        } catch (const std::exception& e) {
+            return default_val;
+        }
+    }
+
+    static const long get_long(const std::string& section,
+                                        const std::string& option,
+                                        const long default_val)
+    {
+        try {
+            auto s = get_section(section);
+            return s[option].as<long>();
+        } catch (const std::exception& e) {
+            return default_val;
+        }
+    }
+
+    static const bool get_bool(const std::string& section,
+                                        const std::string& option,
+                                        const bool default_val)
+    {
+        try {
+            auto s = get_section(section);
+            return s[option].as<bool>();
+        } catch (const std::exception& e) {
+            return default_val;
+        }
+    }
+
     static const char* appdata_path()
     {
         const char* path;
