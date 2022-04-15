@@ -10,6 +10,8 @@
 
 
 from gnuradio import gr, gr_unittest, fft, filter, blocks, streamops, math as grmath
+from gnuradio.kernel.filter import firdes
+from gnuradio.kernel.fft import window
 import math
 import cmath
 
@@ -35,10 +37,10 @@ class test_pfb_channelizer(gr_unittest.TestCase):
         # Input samp rate to channelizer.
         self.ifs = self.M * self.fs
 
-        self.taps = filter.firdes.low_pass_2(
+        self.taps = firdes.low_pass_2(
             1, self.ifs, self.fs / 2, self.fs / 10,
             attenuation_dB=80,
-            window=fft.window.WIN_BLACKMAN_hARRIS)
+            window=window.WIN_BLACKMAN_hARRIS)
 
         self.Ntest = 50
 
@@ -77,15 +79,15 @@ class test_pfb_channelizer(gr_unittest.TestCase):
             signals.append(blocks.vector_source_c(data))
             self.tb.connect(signals[i],0 , add, i)
 
-        s2ss = streamops.stream_to_streams(gr.sizeof_gr_complex, self.M)
+        s2ss = streamops.deinterleave(self.M)
 
-        self.tb.connect(add, 0, s2ss, 0)
-        # self.tb.connect(add, channelizer_block)
+        # self.tb.connect(add, 0, s2ss, 0)
+        self.tb.connect(add, channelizer_block)
 
         snks = list()
         for i in range(self.M):
             snks.append(blocks.vector_sink_c())
-            self.tb.connect(s2ss,i, channelizer_block,i)
+            # self.tb.connect(s2ss,i, channelizer_block,i)
             self.tb.connect(channelizer_block, i, snks[i],0)
 
         self.tb.run()
