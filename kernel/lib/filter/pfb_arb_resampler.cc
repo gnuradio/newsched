@@ -59,7 +59,7 @@ float pfb_arb_resampler<T_IN, T_OUT, TAP_T>::phase() const
 }
 
 template <class T_IN, class T_OUT, class TAP_T>
-float pfb_arb_resampler<T_IN, T_OUT, TAP_T>::phase_offset(float freq, float fs)
+float pfb_arb_resampler<T_IN, T_OUT, TAP_T>::phase_offset(float freq, float fs) const
 {
     float adj = (2.0 * GR_M_PI) * (freq / fs) / static_cast<float>(d_int_rate);
     return -adj * d_est_phase_change;
@@ -137,8 +137,8 @@ void pfb_arb_resampler<T_IN, T_OUT, TAP_T>::print_taps()
 
 
 template <class T_IN, class T_OUT, class TAP_T>
-int pfb_arb_resampler<T_IN, T_OUT, TAP_T>::filter(T_IN* output,
-                                                  T_OUT* input,
+int pfb_arb_resampler<T_IN, T_OUT, TAP_T>::filter(T_OUT* output,
+                                                  const T_IN* input,
                                                   int n_to_read,
                                                   int& n_read)
 {
