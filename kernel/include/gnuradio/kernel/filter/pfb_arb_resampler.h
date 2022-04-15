@@ -189,7 +189,7 @@ public:
      * frequency \p freq and sampling rate \p fs (assuming input
      * sine wave has 0 degree phase).
      */
-    float phase_offset(float freq, float fs);
+    float phase_offset(float freq, float fs) const;
 
     /*!
      * Performs the filter operation that resamples the signal.
@@ -205,7 +205,7 @@ public:
      * \param n_read (out) Number of samples actually read from \p input.
      * \return Number of samples put into \p output.
      */
-    int filter(T_IN* output, T_OUT* input, int n_to_read, int& n_read);
+    int filter(T_OUT* output, const T_IN* input, int n_to_read, int& n_read);
 };
 
 } // namespace filter
