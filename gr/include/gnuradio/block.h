@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include <gnuradio/api.h>
 #include <gnuradio/block_work_io.h>
@@ -86,7 +87,8 @@ public:
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
-
+    using work_t = std::function<work_return_code_t(std::vector<block_work_input_sptr>&,
+                                    std::vector<block_work_output_sptr>&)>;
     /**
      * @brief Wrapper for work to perform special checks and take care of special
      * cases for certain types of blocks, e.g. sync_block, decim_block
