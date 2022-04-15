@@ -233,6 +233,8 @@ Ports:
 {%- set lu_type = sigmf_type -%}{%- if sigmf_type | is_list() -%}{%- set lu_type = sigmf_type[0] -%}{% endif %}
 {%- set cpp_type = lu_type -%}
 {%- if sigmf_type | trim() == 'cf32'-%}{%- set cpp_type = 'gr_complex' -%}
+{%- elif sigmf_type | trim() == 'cf64'-%}{%- set cpp_type = 'gr_complexd' -%}
+{%- elif sigmf_type | trim() == 'rf64'-%}{%- set cpp_type = 'double' -%}
 {%- elif sigmf_type | trim() == 'rf32'-%}{%- set cpp_type = 'float' -%}
 {%- elif sigmf_type | trim() == 'ri64'-%}{%- set cpp_type = 'std::int64_t' -%}
 {%- elif sigmf_type | trim() == 'ri32'-%}{%- set cpp_type = 'std::int32_t' -%}
@@ -245,6 +247,8 @@ Ports:
 {% macro suffix_lookup(type) %}
 {%- set suffix = type -%}
 {%- if type | trim() == 'cf32'-%}{%- set suffix = 'c' -%}
+{%- elif type | trim() == 'cf64'-%}{%- set suffix = 'z' -%}
+{%- elif type | trim() == 'rf64'-%}{%- set suffix = 'd' -%}
 {%- elif type | trim() == 'rf32'-%}{%- set suffix = 'f' -%}
 {%- elif type | trim() == 'ri32'-%}{%- set suffix = 'i' -%}
 {%- elif type | trim() == 'ri16'-%}{%- set suffix = 's' -%}
