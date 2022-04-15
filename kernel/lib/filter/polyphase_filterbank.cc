@@ -19,7 +19,7 @@ namespace gr {
 namespace kernel {
 namespace filter {
 
-polyphase_filterbank::polyphase_filterbank(unsigned int nfilts,
+polyphase_filterbank::polyphase_filterbank(size_t nfilts,
                                            const std::vector<float>& taps)
     : d_nfilts(nfilts), d_fft(nfilts)
 {
@@ -28,7 +28,7 @@ polyphase_filterbank::polyphase_filterbank(unsigned int nfilts,
 
     // Create an FIR filter for each channel and zero out the taps
     std::vector<float> vtaps(1, 0.0f);
-    for (unsigned int i = 0; i < d_nfilts; i++) {
+    for (size_t i = 0; i < d_nfilts; i++) {
         d_fir_filters.emplace_back(vtaps);
         // d_fft_filters.emplace_back(1, vtaps);
     }
@@ -39,9 +39,9 @@ polyphase_filterbank::polyphase_filterbank(unsigned int nfilts,
 
 void polyphase_filterbank::set_taps(const std::vector<float>& taps)
 {
-    unsigned int i, j;
-    unsigned int ntaps = taps.size();
-    d_taps_per_filter = (unsigned int)ceil((double)ntaps / (double)d_nfilts);
+    size_t i, j;
+    size_t ntaps = taps.size();
+    d_taps_per_filter = (size_t)ceil((double)ntaps / (double)d_nfilts);
 
     // Create d_numchan vectors to store each channel's taps
     d_taps.resize(d_nfilts);
@@ -69,9 +69,9 @@ void polyphase_filterbank::set_taps(const std::vector<float>& taps)
 
 void polyphase_filterbank::print_taps()
 {
-    unsigned int i, j;
+    size_t i, j;
     for (i = 0; i < d_nfilts; i++) {
-        printf("filter[%d]: [", i);
+        printf("filter[%lu]: [", i);
         for (j = 0; j < d_taps_per_filter; j++) {
             printf(" %.4e", d_taps[i][j]);
         }

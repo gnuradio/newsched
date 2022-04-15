@@ -87,10 +87,10 @@ namespace filter {
 class polyphase_filterbank
 {
 protected:
-    unsigned int d_nfilts;
+    size_t d_nfilts;
     std::vector<fir_filter_ccf> d_fir_filters;
     std::vector<std::vector<float>> d_taps;
-    unsigned int d_taps_per_filter;
+    size_t d_taps_per_filter;
 
     // The FFT to handle the output de-spinning of the channels.
     gr::kernel::fft::fft_complex_rev d_fft;
@@ -98,12 +98,12 @@ protected:
 public:
     /*!
      * Build the polyphase filterbank decimator.
-     * \param nfilts (unsigned integer) Specifies the number of
+     * \param nfilts (size_teger) Specifies the number of
      *               channels <EM>M</EM>
      * \param taps (vector/list of floats) The prototype filter to
      *             populate the filterbank.
      */
-    polyphase_filterbank(unsigned int nfilts, const std::vector<float>& taps);
+    polyphase_filterbank(size_t nfilts, const std::vector<float>& taps);
 
     virtual ~polyphase_filterbank() = default;
 
