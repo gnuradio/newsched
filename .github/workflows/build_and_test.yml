@@ -22,7 +22,7 @@ jobs:
         # container (i.e., what you want to docker-pull)
         include:
           - distro: 'Ubuntu 20.04'
-            containerid: 'mormj/newsched-ci-docker'
+            containerid: 'mormj/newsched-ci-docker:ubuntu-20.04'
             cxxflags: -Werror
           - distro: 'Fedora 34'
             containerid: 'mormj/newsched-ci-docker:fedora-34'
