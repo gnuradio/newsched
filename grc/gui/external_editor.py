@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Copyright 2015 Free Software Foundation, Inc.
 This file is part of GNU Radio
