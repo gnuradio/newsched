@@ -4,6 +4,7 @@ namespace gr {
 
 edge_sptr graph::connect(const node_endpoint& src, const node_endpoint& dst)
 {
+    std::cout << "graph connect 1" << std::endl;
     if (src.port() && dst.port() && src.port()->itemsize() != dst.port()->itemsize() &&
         src.port()->itemsize() > 0 && dst.port()->itemsize() > 0) {
         std::stringstream msg;

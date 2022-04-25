@@ -1,6 +1,6 @@
 module: filter
 block: iir_filter
-label: iir_filter
+label: IIR Filter
 blocktype: sync_block
 
 typekeys:

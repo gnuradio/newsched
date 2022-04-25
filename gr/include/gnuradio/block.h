@@ -29,7 +29,7 @@ class pyblock_detail;
  * functions.
  *
  */
-class GR_RUNTIME_API block : public gr::node, public std::enable_shared_from_this<block>
+class GR_RUNTIME_API block : public gr::node
 {
 private:
     bool d_running = false;
@@ -69,7 +69,7 @@ public:
     bool finished() { return d_finished; }
 
     using sptr = std::shared_ptr<block>;
-    sptr base() { return shared_from_this(); }
+    sptr base() { return std::dynamic_pointer_cast<block>(shared_from_this()); }
 
     tag_propagation_policy_t tag_propagation_policy();
     void set_tag_propagation_policy(tag_propagation_policy_t policy);

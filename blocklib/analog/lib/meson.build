@@ -1,7 +1,7 @@
-analog_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
+analog_deps += [gnuradio_gr_dep, gnuradio_blocklib_filter_dep, volk_dep, fmt_dep, pmtf_dep, gr_kernel_lib_dep]
 
 # analog_sources += 'kernel/agc.cc'
-block_cpp_args = ['-DHAVE_CPU']
+block_cpp_args = ['-DHAVE_CPU', '-DHAVE_HIER']
 # if cuda_dep.found() and get_option('enable_cuda')
 #     block_cpp_args += '-DHAVE_CUDA'
 

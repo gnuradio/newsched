@@ -38,7 +38,7 @@ namespace {{module}} {
 
     {% for p in parameters -%}
     {% if ('cotr' not in p or p['cotr']) and ('serializable' not in p or p['serializable'])%}
-    args.{{p['id']}} = pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(deserialize_param_to_pmt(json_obj["{{p['id']}}"].get<std::string>()));
+    args.{{p['id']}} = pmtf::get_as<{{ 'std::vector<'+p['dtype']+'>' if 'container' in p and p['container'] == 'vector' else p['dtype']}}>(pmtf::pmt::from_base64(json_obj["{{p['id']}}"].get<std::string>()));
     {% endif %}
     {% endfor -%}
 
@@ -48,7 +48,7 @@ namespace {{module}} {
 
 {{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}", "{{ module }}") {
  {{ macros.ports(ports, parameters) }}
- {{ macros.parameter_instantiations(parameters) }}
+ {% if blocktype != 'hier_block'%}{{ macros.parameter_instantiations(parameters) }}{%endif%}
 }
 
 // Settable Parameters
