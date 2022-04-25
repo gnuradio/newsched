@@ -26,7 +26,7 @@ using nodeid_t = uint32_t;
  * Ports are added after construction of the node to simplify the constructor
  *
  */
-class GR_RUNTIME_API node
+class GR_RUNTIME_API node : public std::enable_shared_from_this<node>
 {
 protected:
     std::string d_name;

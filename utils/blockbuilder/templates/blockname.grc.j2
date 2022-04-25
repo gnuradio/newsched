@@ -4,8 +4,8 @@
 {%- if type in ['ri32','ru32', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int
 {%- elif type in ['ri16','ru16','short', 'unsigned short', 'uint16_t', 'int16_t'] -%}short
 {%- elif type in ['ri8','ru8','uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}byte
-{%- elif type in ['cf32','std::complex<float>', 'gr_complex'] -%}complex
-{%- elif type in ['rf32','float'] -%}float
+{%- elif type in ['cf64','cf32','std::complex<float>', 'gr_complex'] -%}complex
+{%- elif type in ['rf64','rf32','float'] -%}float
 {%- elif type in ['const char *', 'const std::string&'] -%}string
 {%- elif type in ['bool'] -%}bool
 {%- elif type in ['gui_hint'] -%}gui_hint
@@ -16,8 +16,8 @@
 {%- if type in ['ri32','ru32','int', 'uint32_t', 'int32_t', 'size_t',  'unsigned', 'unsigned int', 'long', 'unsigned long', 'long long', 'unsigned long long']  -%}int_vector
 {%- elif type in ['ri16','ru16','short', 'unsigned short', 'uint16_t', 'int16_t'] -%}int_vector
 {%- elif type in ['ri8','ru8','uint8_t', 'int8_t', 'byte', 'char', 'unsigned char'] -%}int_vector
-{%- elif type in ['cf32','std::complex<float>', 'gr_complex'] -%}complex_vector
-{%- elif type in ['rf32','float'] -%}float_vector
+{%- elif type in ['cf64','cf32','std::complex<float>', 'gr_complex'] -%}complex_vector
+{%- elif type in ['rf64','rf32','float'] -%}float_vector
 {%- else -%}{{default}}{%-endif-%}
 {%- endmacro -%}
 {% macro get_linked_value(value, ports, parameters, typekeys) -%}
@@ -85,11 +85,13 @@ parameters:
 {% endfor -%}
 {% endif -%}
 {# Add a parameter for the implementation -#}
--   id: domain
-    label: Domain
+-   id: impl
+    label: Implementation
     dtype: enum
     options: [{% for impl in implementations %}'{{impl['id']}}',{% endfor %}]
     option_labels: [{% for impl in implementations %}'{{impl['id'] | upper()}}',{% endfor %}]
+    option_attributes:
+        domain: [{% for impl in implementations %}'{{impl['domain'] if 'domain' in impl else impl['id']}}',{% endfor %}]
     category: Advanced
     default: '{{implementations[0]['id']}}'
     hide: 'none'
@@ -102,7 +104,7 @@ parameters:
 
 inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
--   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
+-   domain: {{'${impl.domain}' if port['domain'] == 'stream' else port['domain']}}
 {% if type_inst %}
     dtype: ${ type_inst.{{type_lookup(get_linked_value2(port['type']),get_linked_value2(port['type']))}} }
 {% else %}
@@ -122,7 +124,7 @@ inputs:
 outputs:
 {% for port in ports -%}
 {% if port['direction'] == 'output'-%}
--   domain: {{'${domain}' if port['domain'] == 'stream' else port['domain']}}
+-   domain: {{'${impl.domain}' if port['domain'] == 'stream' else port['domain']}}
 {% if type_inst %}
     dtype: ${ type_inst.{{type_lookup(get_linked_value2(port['type']),get_linked_value2(port['type']))}} }
 {% else %}
@@ -153,7 +155,7 @@ templates:
           {%- if 'cotr' not in param or param['cotr'] -%}
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
-        {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${domain})
+        {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${impl})
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}

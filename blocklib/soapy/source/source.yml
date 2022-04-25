@@ -2,7 +2,7 @@ module: soapy
 block: source
 label: source
 blocktype: gr::soapy::block
-inherits: gr::soapy::block
+# inherits: gr::soapy::block
 
 # This needs a lot of work - for soapy there is an N:1 relationship 
 #  between the grc files and block

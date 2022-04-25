@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/graph.h>
+#include <gnuradio/sptr_magic.h>
 
 namespace gr {
 class hier_block : public graph
@@ -9,7 +10,19 @@ private:
     std::vector<edge_sptr> _input_edges;
     std::vector<edge_sptr> _output_edges;
 
+    const std::string s_module;
+
 public:
+    hier_block(const std::string& name, const std::string& module = "")
+        : graph(name), s_module(module)
+    {
+        // This bit of magic ensures that self() works in the constructors of derived classes.
+        gnuradio::detail::sptr_magic::create_and_stash_initial_sptr(this);
+    }
+    ~hier_block() { gnuradio::detail::sptr_magic::cancel_initial_sptr(this); }
+    node_sptr self() { 
+        return shared_from_this(); 
+    }
     // add_port becomes public only for hier_block
     void add_port(port_sptr p) { graph::add_port(p); }
     edge_sptr connect(const node_endpoint& src, const node_endpoint& dst) override
@@ -34,6 +47,7 @@ public:
                       node_sptr dst_node,
                       unsigned int dst_port_index) override
     {
+        std::cout << "hb connect 1" << std::endl;
         auto src_direction = port_direction_t::OUTPUT;
         auto dst_direction = port_direction_t::INPUT;
         if (src_node.get() == this) {

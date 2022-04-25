@@ -20,7 +20,7 @@ static std::vector<T> unique_vector(std::vector<T> v)
  *
  */
 
-class graph : public node, public std::enable_shared_from_this<graph>
+class graph : public node
 {
 protected:
     node_vector_t _nodes;
@@ -32,8 +32,9 @@ public:
     using sptr = std::shared_ptr<graph>;
     static sptr make() { return std::make_shared<graph>(); }
     graph() : node() {}
+    graph(const std::string& name) : node(name) {}
     ~graph() override {}
-    std::shared_ptr<graph> base() { return shared_from_this(); }
+    std::shared_ptr<graph> base() { return std::dynamic_pointer_cast<graph>(shared_from_this()); }
     edge_vector_t& edges() { return _edges; }
     edge_vector_t& stream_edges() { return _stream_edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
