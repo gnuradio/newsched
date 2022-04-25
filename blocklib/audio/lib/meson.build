@@ -15,7 +15,6 @@ gnuradio_blocklib_audio_lib = library('gnuradio-blocklib-audio',
     install : true,
     link_language: 'cpp',
     dependencies : audio_deps,
-    link_args : ['-lgnuradio-runtime'],
     cpp_args : block_cpp_args)
 
 gnuradio_blocklib_audio_dep = declare_dependency(include_directories : incdir,
