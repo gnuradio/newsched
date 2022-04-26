@@ -1,0 +1,54 @@
+module: digital
+block: chunks_to_symbols
+label: Chunks to Symbols
+blocktype: block
+
+typekeys:
+  - id: IN_T
+    type: class
+    options: 
+        - ru8
+        - ru16
+        - ru32
+  - id: OUT_T
+    type: class
+    options: 
+        - cf32
+        - rf32
+
+parameters:
+-   id: symbol_table
+    label: Symbol Table
+    dtype: OUT_T
+    settable: true
+    container: vector
+-   id: D
+    label: Dimension
+    dtype: size_t
+    settable: false
+    default: 1
+
+# -   id: num_ports
+#     label: Num Ports
+#     dtype: size_t
+#     default: 1
+#     grc:
+#         hide: part
+
+# Example Ports
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: typekeys/IN_T
+
+-   domain: stream
+    id: out
+    direction: output
+    type: typekeys/OUT_T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
