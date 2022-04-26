@@ -1,0 +1,132 @@
+options:
+  parameters:
+    author: josh
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: ofdm_tx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_vector_source_0
+  id: blocks_vector_source
+  parameters:
+    T: byte
+    affinity: ''
+    alias: ''
+    comment: ''
+    data: numpy.random.randint(0, 255, 1000)
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    showports: 'False'
+    tags: '[]'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 196.0]
+    rotation: 0
+    state: true
+- name: digital_crc_append_0
+  id: digital_crc_append
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    final_xor: '4294967295'
+    impl: cpu
+    initial_value: '4294967295'
+    input_reflected: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_bits: '32'
+    poly: '79764919'
+    result_reflected: 'True'
+    showports: 'False'
+    skip_header_bytes: '0'
+    swap_endianness: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 172.0]
+    rotation: 0
+    state: true
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [304, 36.0]
+    rotation: 0
+    state: true
+- name: pdu_stream_to_pdu_0
+  id: pdu_stream_to_pdu
+  parameters:
+    T: byte
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: '96'
+    showports: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [616, 244.0]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_vector_source_0, '0', pdu_stream_to_pdu_0, '0']
+- [pdu_stream_to_pdu_0, pdus, digital_crc_append_0, in]
+
+metadata:
+  file_format: 1
