@@ -240,6 +240,9 @@ Ports:
 {%- elif sigmf_type | trim() == 'ri32'-%}{%- set cpp_type = 'std::int32_t' -%}
 {%- elif sigmf_type | trim() == 'ri16'-%}{%- set cpp_type = 'std::int16_t' -%}
 {%- elif sigmf_type | trim() == 'ri8'-%}{%- set cpp_type = 'std::int8_t' -%}
+{%- elif sigmf_type | trim() == 'ru64'-%}{%- set cpp_type = 'std::uint64_t' -%}
+{%- elif sigmf_type | trim() == 'ru32'-%}{%- set cpp_type = 'std::uint32_t' -%}
+{%- elif sigmf_type | trim() == 'ru16'-%}{%- set cpp_type = 'std::uint16_t' -%}
 {%- elif sigmf_type | trim() == 'ru8'-%}{%- set cpp_type = 'std::uint8_t' -%}
 {%- endif -%}{{cpp_type}}
 {%- endmacro -%}
@@ -253,6 +256,8 @@ Ports:
 {%- elif type | trim() == 'ri32'-%}{%- set suffix = 'i' -%}
 {%- elif type | trim() == 'ri16'-%}{%- set suffix = 's' -%}
 {%- elif type | trim() == 'ri8'-%}{%- set suffix = 'b' -%}
+{%- elif type | trim() == 'ru32'-%}{%- set suffix = 'i' -%}
+{%- elif type | trim() == 'ru16'-%}{%- set suffix = 's' -%}
 {%- elif type | trim() == 'ru8'-%}{%- set suffix = 'b' -%}
 {%- endif -%}{{suffix}}
 {%- endmacro -%}

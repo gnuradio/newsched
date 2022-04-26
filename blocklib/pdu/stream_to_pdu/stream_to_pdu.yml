@@ -1,0 +1,40 @@
+module: pdu
+block: stream_to_pdu
+label: Stream to PDU
+blocktype: sync_block
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+        - cf32
+        - rf32
+        - ru32
+        - ru16
+        - ru8
+
+# Example Parameters
+parameters:
+-   id: packet_len
+    label: Packet Length
+    dtype: size_t
+    grc:
+        default: 96
+
+# Example Ports
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: typekeys/T
+    
+-   domain: message
+    id: pdus
+    direction: output
+    optional: true
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
