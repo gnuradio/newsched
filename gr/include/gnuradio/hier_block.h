@@ -2,6 +2,7 @@
 
 #include <gnuradio/graph.h>
 #include <gnuradio/sptr_magic.h>
+#include <pmtf/wrap.hpp>
 
 namespace gr {
 class hier_block : public graph

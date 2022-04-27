@@ -65,7 +65,7 @@ work_return_code_t annotator_cpu::work(std::vector<block_work_input_sptr>& work_
             if (abs_N % d_when == 0) {
                 auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
                 // tag_map tm = {{key, value}, {"srcid",srcid}};
-                work_output[i]->buffer->add_tag(abs_N, {{key, value}, {"srcid",srcid}});
+                work_output[i]->buffer->add_tag(abs_N, pmtf::map{{key, value}, {"srcid",srcid}});
             }
 
             // We don't really care about the data here

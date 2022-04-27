@@ -282,7 +282,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
         if (d_file_begin && !d_add_begin_tag.empty()) {
             work_output[0]->buffer->add_tag(
                 work_output[0]->buffer->total_written() + noutput_items - size,
-                { { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
+                pmtf::map{ { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
                   { "srcid", _id } });
 
             d_file_begin = false;
