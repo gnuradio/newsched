@@ -62,18 +62,8 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
         auto limit_duration =
             std::chrono::duration<double>(std::numeric_limits<long>::max());
 
-        d_sleeping = true;
-        std::thread t([this, expected_time, now]() {
-                d_debug_logger->debug(
-                "Throttle sleeping {}",
-                std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
+        this->come_back_later(std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
                     .count());
-            std::this_thread::sleep_until(expected_time);
-            this->p_scheduler->push_message(
-                std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
-            this->d_sleeping = false;
-        });
-        t.detach();
 
         n = 0;
         d_total_samples -= noutput_items;

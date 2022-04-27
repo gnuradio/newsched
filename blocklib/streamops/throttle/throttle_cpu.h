@@ -38,7 +38,6 @@ protected:
     double d_sample_rate;
     std::chrono::duration<double> d_sample_period;
 
-    std::atomic<bool> d_sleeping = false;
 };
 
 } // namespace streamops
