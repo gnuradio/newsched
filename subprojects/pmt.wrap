@@ -1,3 +1,4 @@
 [wrap-git]
 url = https://github.com/gnuradio/pmt
-revision = 72c9926ecd7ad5a07a2fc0ae98e136d9eb48ee9a
+revision = HEAD 
+# 72c9926ecd7ad5a07a2fc0ae98e136d9eb48ee9a
