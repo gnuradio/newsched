@@ -33,6 +33,7 @@ from argparse import ArgumentParser
 #from gnuradio.eng_arg import eng_float, intx
 #from gnuradio import eng_notation
 from gnuradio import pdu
+from gnuradio.kernel import digital as digitalk
 import numpy
 
 
@@ -89,13 +90,16 @@ class ofdm_tx(Qt.QWidget):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 32000
+        self.header_mod = header_mod = digitalk.constellation_bpsk()
 
         ##################################################
         # Blocks
         ##################################################
         self.pdu_stream_to_pdu_0 = pdu.stream_to_pdu_b( 96, impl=pdu.stream_to_pdu_b.cpu)
-        self.digital_crc_append_0 = digital.crc_append( 32,79764919,4294967295,4294967295,True,True,False,0, impl=digital.crc_append.cpu)
+        self.digital_chunks_to_symbols_0 = digital.chunks_to_symbols_bc( header_mod.points(),1, impl=digital.chunks_to_symbols_bc.cpu)
+        self.digital_chunks_to_symbols_0.set_work_mode(gr.work_mode_t.PDU)
         self.blocks_vector_source_0 = blocks.vector_source_b( numpy.random.randint(0, 255, 1000),True,1,[], impl=blocks.vector_source_b.cpu)
+        self.blocks_message_debug_0 = blocks.message_debug( False, impl=blocks.message_debug.cpu)
 
 
 
@@ -103,7 +107,8 @@ class ofdm_tx(Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.blocks_vector_source_0, 0), (self.pdu_stream_to_pdu_0, 0))
-        self.msg_connect((self.pdu_stream_to_pdu_0, 'pdus'), (self.digital_crc_append_0, 'in'))
+        self.msg_connect((self.digital_chunks_to_symbols_0, 'pdus_out'), (self.blocks_message_debug_0, 'store'))
+        self.msg_connect((self.pdu_stream_to_pdu_0, 'pdus'), (self.digital_chunks_to_symbols_0, 'pdus_in'))
 
 
     def closeEvent(self, event):
@@ -119,6 +124,12 @@ class ofdm_tx(Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+
+    def get_header_mod(self):
+        return self.header_mod
+
+    def set_header_mod(self, header_mod):
+        self.header_mod = header_mod
 
 
 

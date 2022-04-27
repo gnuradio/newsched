@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include <gnuradio/api.h>
 #include <gnuradio/block_work_io.h>
@@ -17,6 +17,8 @@
 #include <pmtf/wrap.hpp>
 
 namespace gr {
+
+enum class block_work_mode_t { DEFAULT, PDU };
 
 class pyblock_detail;
 /**
@@ -45,9 +47,11 @@ protected:
     std::map<std::string, int> d_param_str_map;
     std::map<int, std::string> d_str_param_map;
     message_port_sptr _msg_param_update;
+    message_port_sptr _msg_work;
     message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
     bool d_finished = false;
+    block_work_mode_t _work_mode = block_work_mode_t::DEFAULT;
 
     void notify_scheduler();
     void notify_scheduler_input();
@@ -87,8 +91,8 @@ public:
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
-    using work_t = std::function<work_return_code_t(std::vector<block_work_input_sptr>&,
-                                    std::vector<block_work_output_sptr>&)>;
+    using work_t = std::function<work_return_code_t(
+        std::vector<block_work_input_sptr>&, std::vector<block_work_output_sptr>&)>;
     /**
      * @brief Wrapper for work to perform special checks and take care of special
      * cases for certain types of blocks, e.g. sync_block, decim_block
@@ -124,7 +128,8 @@ public:
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
     static void consume_each(size_t num, std::vector<block_work_input_sptr>& work_input);
-    static void produce_each(size_t num, std::vector<block_work_output_sptr>& work_output);
+    static void produce_each(size_t num,
+                             std::vector<block_work_output_sptr>& work_output);
     void set_output_multiple(size_t multiple);
     size_t output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }
@@ -143,6 +148,14 @@ public:
     virtual void handle_msg_param_update(pmtf::pmt msg);
 
     virtual void handle_msg_system(pmtf::pmt msg);
+
+    // Every block can have a "work" message handler that
+    // will take a pmt, run it through the work method and output
+    // to the work output port
+    virtual void handle_msg_work(pmtf::pmt msg);
+
+    block_work_mode_t work_mode() { return _work_mode; }
+    void set_work_mode(block_work_mode_t work_mode_) { _work_mode = work_mode_; }
 
     static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
     static sptr cast(node_sptr n) { return std::static_pointer_cast<block>(n); }

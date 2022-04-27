@@ -101,6 +101,12 @@ parameters:
     dtype: bool
     default: False
     hide: 'part'
+-   id: msg_work
+    label: Message Work Version
+    category: Advanced
+    dtype: bool
+    default: False
+    hide: 'part'
 
 inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
@@ -113,13 +119,19 @@ inputs:
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
-    optional: {{ port['optional'] if 'optional' in port else 'false' }}
+    optional: ${ msg_work } or {{ port['optional'] if 'optional' in port else 'false' }}
+    hide: ${ msg_work }
 {% endif %}{% endfor %}
 -   domain: message
     id: param_update
     label: param
     optional: true
     hide: ${ not showports }
+-   domain: message
+    id: pdus_in
+    label: pdus_in
+    optional: true #${ not msg_work }
+    hide: ${ not msg_work }
 
 outputs:
 {% for port in ports -%}
@@ -133,9 +145,15 @@ outputs:
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
-    optional: {{ port['optional'] if 'optional' in port else 'false' }}
+    optional: ${ msg_work } or {{ port['optional'] if 'optional' in port else 'false' }}
+    hide: ${ msg_work }
 {% endif -%}
 {% endfor -%}
+-   domain: message
+    id: pdus_out
+    label: pdus_out
+    optional: true #${ not msg_work }
+    hide: ${ not msg_work }
 
 {% if grc -%}
 templates:

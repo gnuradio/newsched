@@ -32,6 +32,18 @@ options:
     state: enabled
 
 blocks:
+- name: header_mod
+  id: variable
+  parameters:
+    comment: ''
+    value: digitalk.constellation_bpsk()
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [496, 36.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -44,6 +56,22 @@ blocks:
     coordinate: [184, 12]
     rotation: 0
     state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'False'
+    impl: cpu
+    showports: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1208, 444.0]
+    rotation: 0
+    state: true
 - name: blocks_vector_source_0
   id: blocks_vector_source
   parameters:
@@ -64,6 +92,28 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [328, 196.0]
+    rotation: 0
+    state: true
+- name: digital_chunks_to_symbols_0
+  id: digital_chunks_to_symbols
+  parameters:
+    D: '1'
+    IN_T: byte
+    OUT_T: complex
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'True'
+    showports: 'False'
+    symbol_table: header_mod.points()
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [904, 340.0]
     rotation: 0
     state: true
 - name: digital_crc_append_0
@@ -88,9 +138,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 172.0]
+    coordinate: [952, 100.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: import_0
   id: import
   parameters:
@@ -102,6 +152,19 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [304, 36.0]
+    rotation: 0
+    state: true
+- name: import_0_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: from gnuradio.kernel import digital as digitalk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [312, 108.0]
     rotation: 0
     state: true
 - name: pdu_stream_to_pdu_0
@@ -126,7 +189,8 @@ blocks:
 
 connections:
 - [blocks_vector_source_0, '0', pdu_stream_to_pdu_0, '0']
-- [pdu_stream_to_pdu_0, pdus, digital_crc_append_0, in]
+- [digital_chunks_to_symbols_0, pdus_out, blocks_message_debug_0, store]
+- [pdu_stream_to_pdu_0, pdus, digital_chunks_to_symbols_0, pdus_in]
 
 metadata:
   file_format: 1

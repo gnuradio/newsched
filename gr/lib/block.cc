@@ -8,6 +8,9 @@
 #include <chrono>
 #include <thread>
 
+
+#include <gnuradio/buffer_pdu.h>
+
 namespace gr {
 
 block::block(const std::string& name, const std::string& module)
@@ -25,6 +28,12 @@ block::block(const std::string& name, const std::string& module)
     _msg_system->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_system(msg); });
     add_port(_msg_system);
+
+    _msg_work = message_port::make("pdus_in", port_direction_t::INPUT);
+    _msg_work->register_callback(
+        [this](pmtf::pmt msg) { this->handle_msg_work(msg); });
+    add_port(_msg_work);
+    add_port(message_port::make("pdus_out", port_direction_t::OUTPUT));
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
@@ -109,6 +118,30 @@ void block::handle_msg_param_update(pmtf::pmt msg)
     auto value = pmtf::map(msg)["value"];
 
     request_parameter_change(get_param_id(id), value, false);
+}
+
+void block::handle_msg_work(pmtf::pmt msg)
+{
+
+    // only considering 1 input and 1 output for now
+    // FIXME: need checks elsewhere to enforce this
+
+    // prepare the input buffer
+    // Interpret the data based on the port that it represents
+    auto input_port = this->get_port(0, port_type_t::STREAM, port_direction_t::INPUT);
+    auto output_port = this->get_port(0, port_type_t::STREAM, port_direction_t::OUTPUT);
+
+    input_port->itemsize();
+    input_port->data_type();
+
+    auto br = buffer_pdu_reader::make(msg);
+    
+
+    std::vector<block_work_input_sptr> work_input;
+    work_input.push_back(std::make_shared<block_work_input>()
+
+    auto code = work(work_input, work_output);
+
 }
 
 void block::handle_msg_system(pmtf::pmt msg)
