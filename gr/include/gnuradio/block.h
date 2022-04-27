@@ -53,7 +53,8 @@ protected:
     void notify_scheduler_input();
     void notify_scheduler_output();
     void come_back_later(size_t time_ms);
-
+    std::atomic<bool> d_sleeping = false;
+    
 public:
     /**
      * @brief Construct a new block object

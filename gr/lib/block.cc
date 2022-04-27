@@ -260,9 +260,12 @@ void block::come_back_later(size_t count_ms)
         return;
     }
     // Launch a thread to come back and try again some time later
+
+    std::atomic<bool> d_sleeping = true;
     std::thread t([this, count_ms]() {
         d_debug_logger->debug("Setting timer to notify scheduler in {} ms", count_ms);
         std::this_thread::sleep_for(std::chrono::milliseconds(count_ms));
+        std::atomic<bool> d_sleeping = false;
         p_scheduler->push_message(
             std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_INPUT));
     });
