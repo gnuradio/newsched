@@ -54,11 +54,8 @@ public:
         auto meta = pmtf::map(pdu)["meta"];
         auto data = pmtf::map(pdu)["data"];
 
-        // Interpret the data based on the port that it represents
-        auto input_port = this->get_port(0, port_type_t::STREAM, port_direction_t::INPUT);
-        auto output_port = this->get_port(0, port_type_t::STREAM, port_direction_t::OUTPUT);
         
-        buffer_pdu_reader::make()
+        
 
         // switch (data.data_type())
         // {
