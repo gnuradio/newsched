@@ -38,9 +38,7 @@ fm_deemph_cpu::fm_deemph_cpu(block_args args) : INHERITED_CONSTRUCTORS
     // Since H(s = 0) = 1.0, then H(z = 1) = 1.0 and has 0 dB gain at DC
 
     deemph = filter::iir_filter_ffd::make({ btaps, ataps, false });
-    std::cout << "hier_block connect 1" << std::endl;
     hier_block::connect(self(), 0, deemph, 0);
-    std::cout << "hier_block connect 2" << std::endl;
     hier_block::connect(deemph, 0, self(), 0);
 }
 
