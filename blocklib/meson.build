@@ -41,3 +41,5 @@ endif
 if get_option('enable_gr_audio')
 subdir('audio')
 endif
+
+subdir('pdu')
