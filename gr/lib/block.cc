@@ -8,6 +8,9 @@
 #include <chrono>
 #include <thread>
 
+
+#include <gnuradio/buffer_pdu.h>
+
 namespace gr {
 
 block::block(const std::string& name, const std::string& module)
@@ -25,6 +28,12 @@ block::block(const std::string& name, const std::string& module)
     _msg_system->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_system(msg); });
     add_port(_msg_system);
+
+    _msg_work = message_port::make("pdus_in", port_direction_t::INPUT);
+    _msg_work->register_callback([this](pmtf::pmt msg) { this->handle_msg_work(msg); });
+    add_port(_msg_work);
+    _msg_work_out = message_port::make("pdus_out", port_direction_t::OUTPUT);
+    add_port(_msg_work_out);
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
@@ -109,6 +118,193 @@ void block::handle_msg_param_update(pmtf::pmt msg)
     auto value = pmtf::map(msg)["value"];
 
     request_parameter_change(get_param_id(id), value, false);
+}
+
+void block::handle_msg_work(pmtf::pmt msg)
+{
+
+    // only considering 1 input and 1 output for now
+    // FIXME: need checks elsewhere to enforce this
+
+    // prepare the input buffer
+    // Interpret the data based on the port that it represents
+    auto input_port = this->get_port(0, port_type_t::STREAM, port_direction_t::INPUT);
+    auto output_port = this->get_port(0, port_type_t::STREAM, port_direction_t::OUTPUT);
+
+    // The PDU must match the input port
+    auto meta = pmtf::map(msg)["meta"];
+    auto data = pmtf::map(msg)["data"];
+
+    // data should be a vector of some sort
+    uint8_t* input_items = nullptr;
+    size_t num_input_items = 0;
+    size_t input_itemsize = input_port->itemsize();
+    switch (input_port->data_type()) {
+    case param_type_t::FLOAT: {
+        auto vec = pmtf::vector<float>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::DOUBLE: {
+        auto vec = pmtf::vector<double>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::CFLOAT: {
+        auto vec = pmtf::vector<gr_complex>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::CDOUBLE: {
+        auto vec = pmtf::vector<gr_complexd>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::INT8: {
+        auto vec = pmtf::vector<int8_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::INT16: {
+        auto vec = pmtf::vector<int16_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::INT32: {
+        auto vec = pmtf::vector<int32_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::INT64: {
+        auto vec = pmtf::vector<int64_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::UINT8: {
+        auto vec = pmtf::vector<uint8_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::UINT16: {
+        auto vec = pmtf::vector<uint16_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::UINT32: {
+        auto vec = pmtf::vector<uint32_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    case param_type_t::UINT64: {
+        auto vec = pmtf::vector<uint64_t>(data);
+        input_items = reinterpret_cast<uint8_t*>(vec.data());
+        num_input_items = vec.size();
+    } break;
+    default:
+        break;
+    }
+
+    auto br = buffer_pdu_reader::make(num_input_items, input_itemsize, input_items, msg);
+
+
+    // data should be a vector of some sort
+    uint8_t* output_items = nullptr;
+    size_t output_itemsize = output_port->itemsize();
+
+    size_t num_output_items = static_cast<size_t>(num_input_items * this->relative_rate());
+    pmtf::pmt output_vec;
+
+    switch (output_port->data_type()) {
+    case param_type_t::FLOAT: {
+        auto vec = pmtf::vector<float>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::DOUBLE: {
+        auto vec = pmtf::vector<double>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::CFLOAT: {
+        auto vec = pmtf::vector<gr_complex>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::CDOUBLE: {
+        auto vec = pmtf::vector<gr_complexd>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::INT8: {
+        auto vec = pmtf::vector<int8_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::INT16: {
+        auto vec = pmtf::vector<int16_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::INT32: {
+        auto vec = pmtf::vector<int32_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::INT64: {
+        auto vec = pmtf::vector<int64_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::UINT8: {
+        auto vec = pmtf::vector<uint8_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::UINT16: {
+        auto vec = pmtf::vector<uint16_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::UINT32: {
+        auto vec = pmtf::vector<uint32_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::UINT64: {
+        auto vec = pmtf::vector<uint64_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    case param_type_t::UNTYPED: {
+        // FIXME: there is no way untyped ports will work with this ...
+        auto vec = pmtf::vector<uint8_t>(num_output_items);
+        output_items = reinterpret_cast<uint8_t*>(vec.data());
+        output_vec = vec;
+    } break;
+    default:
+        break;
+    }
+
+    auto bw = buffer_pdu::make(num_output_items, output_itemsize, output_items, output_vec);
+
+    std::vector<block_work_input_sptr> work_input;
+    std::vector<block_work_output_sptr> work_output;
+    work_input.push_back(std::make_shared<block_work_input>(num_input_items, br));
+    work_output.push_back(std::make_shared<block_work_output>(num_output_items, bw));
+
+    auto code = work(work_input, work_output);
+
+    if (code == work_return_code_t::WORK_OK)
+    {
+        // validate the n_produced
+        auto pdu = pmtf::map({ { "data", output_vec }, { "meta", meta } });
+        _msg_work_out->post(pdu);
+    }
+    else
+    {
+        // TODO: have a better call here
+        throw std::runtime_error("Generic PDU handling on work port unable to handle this work call");
+    }
 }
 
 void block::handle_msg_system(pmtf::pmt msg)
