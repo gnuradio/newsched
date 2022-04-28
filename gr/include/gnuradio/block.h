@@ -48,6 +48,7 @@ protected:
     std::map<int, std::string> d_str_param_map;
     message_port_sptr _msg_param_update;
     message_port_sptr _msg_work;
+    message_port_sptr _msg_work_out;
     message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
     bool d_finished = false;

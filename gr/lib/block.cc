@@ -32,7 +32,8 @@ block::block(const std::string& name, const std::string& module)
     _msg_work = message_port::make("pdus_in", port_direction_t::INPUT);
     _msg_work->register_callback([this](pmtf::pmt msg) { this->handle_msg_work(msg); });
     add_port(_msg_work);
-    add_port(message_port::make("pdus_out", port_direction_t::OUTPUT));
+    _msg_work_out = message_port::make("pdus_out", port_direction_t::OUTPUT);
+    add_port(_msg_work_out);
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
@@ -230,47 +231,47 @@ void block::handle_msg_work(pmtf::pmt msg)
         output_pdu = vec;
     } break;
     case param_type_t::CDOUBLE: {
-        auto vec = pmtf::vector<gr_complexd>(data);
+        auto vec = pmtf::vector<gr_complexd>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::INT8: {
-        auto vec = pmtf::vector<int8_t>(data);
+        auto vec = pmtf::vector<int8_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::INT16: {
-        auto vec = pmtf::vector<int16_t>(data);
+        auto vec = pmtf::vector<int16_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::INT32: {
-        auto vec = pmtf::vector<int32_t>(data);
+        auto vec = pmtf::vector<int32_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::INT64: {
-        auto vec = pmtf::vector<int64_t>(data);
+        auto vec = pmtf::vector<int64_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::UINT8: {
-        auto vec = pmtf::vector<uint8_t>(data);
+        auto vec = pmtf::vector<uint8_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::UINT16: {
-        auto vec = pmtf::vector<uint16_t>(data);
+        auto vec = pmtf::vector<uint16_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::UINT32: {
-        auto vec = pmtf::vector<uint32_t>(data);
+        auto vec = pmtf::vector<uint32_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
     case param_type_t::UINT64: {
-        auto vec = pmtf::vector<uint64_t>(data);
+        auto vec = pmtf::vector<uint64_t>(num_output_items);
         output_items = reinterpret_cast<uint8_t*>(vec.data());
         output_pdu = vec;
     } break;
@@ -286,6 +287,17 @@ void block::handle_msg_work(pmtf::pmt msg)
     work_output.push_back(std::make_shared<block_work_output>(num_output_items, bw));
 
     auto code = work(work_input, work_output);
+
+    if (code == work_return_code_t::WORK_OK)
+    {
+        // validate the n_produced
+        _msg_work_out->post(output_pdu);
+    }
+    else
+    {
+        // TODO: have a better call here
+        throw std::runtime_error("Generic PDU handling on work port unable to handle this work call");
+    }
 }
 
 void block::handle_msg_system(pmtf::pmt msg)
