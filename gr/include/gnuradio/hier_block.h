@@ -48,7 +48,6 @@ public:
                       node_sptr dst_node,
                       unsigned int dst_port_index) override
     {
-        std::cout << "hb connect 1" << std::endl;
         auto src_direction = port_direction_t::OUTPUT;
         auto dst_direction = port_direction_t::INPUT;
         if (src_node.get() == this) {
