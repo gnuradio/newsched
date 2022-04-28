@@ -102,7 +102,7 @@ parameters:
     default: False
     hide: 'part'
 -   id: msg_work
-    label: Message Work Version
+    label: PDU Operation
     category: Advanced
     dtype: bool
     default: False
@@ -167,13 +167,17 @@ templates:
     {%- if type_inst %}
     make: {{module}}.{{block}}{% if typekeys -%}_{{'${type_inst}'}}{%endif%}(
     {%- else %}
-    make: {{module}}.{{block}}{% if typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
+    make: |
+        {{module}}.{{block}}{% if typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
     {%- endif %}
         {% if parameters %}{%- for param in parameters -%}
           {%- if 'cotr' not in param or param['cotr'] -%}
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
         {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${impl})
+        % if context.get('msg_work')():
+        self.${id}.set_work_mode(gr.work_mode_t.PDU)
+        % endif
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
