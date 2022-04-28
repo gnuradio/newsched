@@ -134,6 +134,42 @@ void block::handle_msg_work(pmtf::pmt msg)
     input_port->itemsize();
     input_port->data_type();
 
+    // The PDU must match the input port
+    auto meta = pmtf::map(msg)["meta"];
+    auto data = pmtf::map(msg)["data"];
+
+    // data should be a vector of some sort 
+    uint8_t *items;
+    switch (input_port->data_type()) {
+        case param_type_t::FLOAT: 
+            items = reinterpret_cast<uint8_t *>(pmtf::vector<float>(data).data());
+            break;
+        case param_type_t::DOUBLE: 
+
+        case param_type_t::CFLOAT: 
+
+        case param_type_t::CDOUBLE: 
+
+        case param_type_t::INT8: 
+
+        case param_type_t::INT16: 
+
+        case param_type_t::INT32: 
+
+        case param_type_t::INT64: 
+
+        case param_type_t::UINT8: 
+
+        case param_type_t::UINT16: 
+
+        case param_type_t::UINT32: 
+
+        case param_type_t::UINT64: 
+        default:
+        break;
+    }
+
+
     auto br = buffer_pdu_reader::make(msg);
     
 

@@ -28,14 +28,14 @@ void buffer_pdu::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader>
-buffer_pdu::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
-{
-    std::shared_ptr<buffer_pdu_reader> r(
-        new buffer_pdu_reader(shared_from_this(), buf_props, itemsize, _write_index));
-    _readers.push_back(r.get());
-    return r;
-}
+// std::shared_ptr<buffer_reader>
+// buffer_pdu::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+// {
+//     std::shared_ptr<buffer_pdu_reader> r(
+//         new buffer_pdu_reader(shared_from_this(), buf_props, itemsize, _write_index));
+//     _readers.push_back(r.get());
+//     return r;
+// }
 
 
 void buffer_pdu_reader::post_read(int num_items)
