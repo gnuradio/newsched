@@ -9,7 +9,7 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: ofdm_tx
     max_nouts: '0'
@@ -19,7 +19,7 @@ options:
     realtime_scheduling: ''
     run: 'True'
     run_command: '{python} -u {filename}'
-    run_options: prompt
+    run_options: run
     sizing_mode: fixed
     thread_safe_setters: ''
     title: Not titled yet
@@ -64,26 +64,30 @@ blocks:
     comment: ''
     en_uvec: 'False'
     impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'False'
     showports: 'False'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 444.0]
+    coordinate: [1024, 44.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_vector_source_0
   id: blocks_vector_source
   parameters:
-    T: byte
+    T: float
     affinity: ''
     alias: ''
     comment: ''
-    data: numpy.random.randint(0, 255, 1000)
+    data: numpy.random.randint(0, 255, 96*10)
     impl: cpu
     maxoutbuf: '0'
     minoutbuf: '0'
-    repeat: 'True'
+    msg_work: 'False'
+    repeat: 'False'
     showports: 'False'
     tags: '[]'
     vlen: '1'
@@ -91,29 +95,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 196.0]
-    rotation: 0
-    state: true
-- name: digital_chunks_to_symbols_0
-  id: digital_chunks_to_symbols
-  parameters:
-    D: '1'
-    IN_T: byte
-    OUT_T: complex
-    affinity: ''
-    alias: ''
-    comment: ''
-    impl: cpu
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg_work: 'True'
-    showports: 'False'
-    symbol_table: header_mod.points()
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [904, 340.0]
+    coordinate: [248, 300.0]
     rotation: 0
     state: true
 - name: digital_crc_append_0
@@ -128,6 +110,7 @@ blocks:
     input_reflected: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
+    msg_work: 'False'
     num_bits: '32'
     poly: '79764919'
     result_reflected: 'True'
@@ -138,7 +121,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 100.0]
+    coordinate: [728, 36.0]
     rotation: 0
     state: disabled
 - name: import_0
@@ -167,30 +150,159 @@ blocks:
     coordinate: [312, 108.0]
     rotation: 0
     state: true
-- name: pdu_stream_to_pdu_0
-  id: pdu_stream_to_pdu
+- name: math_multiply_const_0
+  id: math_multiply_const
   parameters:
-    T: byte
+    T: float
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    k: '1.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'True'
+    showports: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [768, 316.0]
+    rotation: 0
+    state: true
+- name: math_multiply_const_0_0
+  id: math_multiply_const
+  parameters:
+    T: float
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    k: '1.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'False'
+    showports: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 452.0]
+    rotation: 0
+    state: true
+- name: pdu_pdu_to_stream_0
+  id: pdu_pdu_to_stream
+  parameters:
+    T: float
     affinity: ''
     alias: ''
     comment: ''
     impl: cpu
     maxoutbuf: '0'
     minoutbuf: '0'
+    msg_work: 'False'
+    showports: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 332.0]
+    rotation: 0
+    state: true
+- name: pdu_stream_to_pdu_0
+  id: pdu_stream_to_pdu
+  parameters:
+    T: float
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'False'
     packet_len: '96'
     showports: 'False'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 244.0]
+    coordinate: [512, 324.0]
+    rotation: 0
+    state: true
+- name: snippet_0
+  id: snippet
+  parameters:
+    alias: ''
+    code: 'from matplotlib import pyplot as plt
+
+
+      plt.plot(fg.snk1.data())
+
+      plt.plot(fg.snk2.data(), ''r:'')
+
+      plt.show()'
+    comment: ''
+    priority: '0'
+    section: main_after_stop
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 116.0]
+    rotation: 0
+    state: true
+- name: snk1
+  id: blocks_vector_sink
+  parameters:
+    T: float
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'False'
+    reserve_items: '1024'
+    showports: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1248, 436.0]
+    rotation: 0
+    state: true
+- name: snk2
+  id: blocks_vector_sink
+  parameters:
+    T: float
+    affinity: ''
+    alias: ''
+    comment: ''
+    impl: cpu
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_work: 'False'
+    reserve_items: '1024'
+    showports: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1256, 316.0]
     rotation: 0
     state: true
 
 connections:
+- [blocks_vector_source_0, '0', math_multiply_const_0_0, '0']
 - [blocks_vector_source_0, '0', pdu_stream_to_pdu_0, '0']
-- [digital_chunks_to_symbols_0, pdus_out, blocks_message_debug_0, store]
-- [pdu_stream_to_pdu_0, pdus, digital_chunks_to_symbols_0, pdus_in]
+- [math_multiply_const_0, pdus_out, pdu_pdu_to_stream_0, pdus]
+- [math_multiply_const_0_0, '0', snk1, '0']
+- [pdu_pdu_to_stream_0, '0', snk2, '0']
+- [pdu_stream_to_pdu_0, pdus, math_multiply_const_0, pdus_in]
 
 metadata:
   file_format: 1
