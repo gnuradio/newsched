@@ -39,7 +39,8 @@ void flowgraph::check_connections(const graph_sptr& g)
     // Are all non-optional ports connected to something
     for (auto& node : g->calc_used_nodes()) {
         for (auto& port : node->output_ports()) {
-            if (!port->optional() && port->connected_ports().empty()) {
+            if (!port->optional() && port->connected_ports().empty() &&
+                node->get_message_port("pdus_out")->connected_ports().empty()) {
                 throw std::runtime_error("Nothing connected to " + node->name() + ": " +
                                          port->name());
             }
@@ -49,7 +50,8 @@ void flowgraph::check_connections(const graph_sptr& g)
 
                 if (port->type() == port_type_t::STREAM) {
 
-                    if (port->connected_ports().empty()) {
+                    if (port->connected_ports().empty() &&
+                        node->get_message_port("pdus_in")->connected_ports().empty()) {
                         throw std::runtime_error("Nothing connected to " + node->name() +
                                                  ": " + port->name());
                     }
