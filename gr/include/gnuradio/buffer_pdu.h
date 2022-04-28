@@ -27,21 +27,25 @@ private:
     uint8_t* _buffer;
     pmtf::pmt _pdu;
 
-
 public:
     using sptr = std::shared_ptr<buffer_pdu>;
-    buffer_pdu(pmtf::map pdu,
-               size_t num_items,
-               size_t item_size,
-               std::shared_ptr<buffer_properties> buf_properties);
+    buffer_pdu(size_t num_items, size_t itemsize, uint8_t* items, pmtf::pmt pdu)
 
-    static buffer_sptr make(pmtf::map pdu,
-                            size_t num_items,
-                            size_t item_size,
-                            std::shared_ptr<buffer_properties> buffer_properties);
+        : buffer(num_items, itemsize, std::make_shared<buffer_properties>())
+    {
+        _pdu = pdu; // hold the pdu  -- do i need to??
+        _buffer = items;
+    }
 
-    void* read_ptr(size_t index) override;
-    void* write_ptr() override;
+    static buffer_sptr
+    make(size_t num_items, size_t itemsize, uint8_t* items, pmtf::pmt pdu)
+    {
+        return buffer_sptr(new buffer_pdu(num_items, itemsize, items, pdu));
+
+    }
+
+    void* read_ptr(size_t index) override { return _buffer; }
+    void* write_ptr() override { return _buffer; }
 
     void post_write(int num_items) override;
 
@@ -82,6 +86,7 @@ public:
         _n_items = num_items;
     }
 
+    void* read_ptr() override { return _buffer; }
     void post_read(int num_items) override;
 };
 
