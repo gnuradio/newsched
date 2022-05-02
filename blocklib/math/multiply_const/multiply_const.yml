@@ -2,6 +2,8 @@ module: math
 block: multiply_const
 label: Multiply Constant
 blocktype: sync_block
+flags: 
+    - pdu
 
 typekeys:
   - id: T
