@@ -44,14 +44,6 @@ parameters:
     settable: false
     default: 1
 
-# -   id: num_ports
-#     label: Num Ports
-#     dtype: size_t
-#     default: 1
-#     grc:
-#         hide: part
-
-# Example Ports
 ports:
 -   domain: stream
     id: in
