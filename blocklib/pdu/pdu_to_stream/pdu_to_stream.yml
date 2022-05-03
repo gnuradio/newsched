@@ -13,6 +13,12 @@ typekeys:
         - ru16
         - ru8
 
+parameters:
+  - id: vlen
+    label: Vector Length
+    dtype: size_t
+    default: 1
+
 ports:
     - domain: message
       id: pdus
@@ -23,6 +29,7 @@ ports:
       id: in
       direction: output
       type: typekeys/T
+      shape: parameters/vlen
 
 implementations:
     - id: cpu

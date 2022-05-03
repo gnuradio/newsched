@@ -11,7 +11,7 @@
 Unit tests for OFDM cyclic prefixer.
 """
 
-from gnuradio import gr, gr_unittest, digital, blocks
+from gnuradio import gr, gr_unittest, digital, blocks, pdu
 # import pmt
 
 
@@ -23,94 +23,120 @@ class test_ofdm_cyclic_prefixer (gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-    def test_wo_tags_no_rolloff(self):
-        " The easiest test: make sure the CP is added correctly. "
-        fft_len = 8
-        cp_len = 2
-        expected_result = [6, 7, 0, 1, 2, 3, 4, 5, 6, 7,
-                           6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
-        src = blocks.vector_source_c(list(range(fft_len)) * 2, False, fft_len)
-        cp = digital.ofdm_cyclic_prefixer(fft_len, [cp_len,])
-        sink = blocks.vector_sink_c()
-        self.tb.connect([src, cp, sink])
-        self.tb.run()
-        self.assertEqual(sink.data(), expected_result)
-
-    def test_wo_tags_2s_rolloff(self):
-        " No tags, but have a 2-sample rolloff "
-        fft_len = 8
-        cp_len = 2
-        rolloff = 2
-        expected_result = [7.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 1.0/2
-                           7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8]
-        src = blocks.vector_source_c(
-            list(
-                range(
-                    1,
-                    fft_len +
-                    1)) *
-            2,
-            False,
-            fft_len)
-        cp = digital.ofdm_cyclic_prefixer(fft_len, [cp_len], rolloff)
-        sink = blocks.vector_sink_c()
-        self.tb.connect([src, cp, sink])
-        self.tb.run()
-        self.assertEqual(sink.data(), expected_result)
-
-    # def test_with_tags_2s_rolloff(self):
-    #     " With tags and a 2-sample rolloff "
+    # def test_wo_tags_no_rolloff(self):
+    #     " The easiest test: make sure the CP is added correctly. "
     #     fft_len = 8
     #     cp_len = 2
-    #     tag_name = "ts_last"
-    #     expected_result = [7.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 1.0/2
-    #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1.0 / 2]
-    #     tag2 = gr.tag_t()
-    #     tag2.offset = 1
-    #     tag2.key = pmt.string_to_symbol("random_tag")
-    #     tag2.value = pmt.from_long(42)
-    #     src = blocks.vector_source_c(
-    #         list(range(1, fft_len + 1)) * 2, False, fft_len, (tag2,))
-    #     cp = digital.ofdm_cyclic_prefixer(
-    #         fft_len, fft_len + cp_len, 2, tag_name)
-    #     sink = blocks.tsb_vector_sink_c(tsb_key=tag_name)
-    #     self.tb.connect(
-    #         src,
-    #         blocks.stream_to_tagged_stream(
-    #             gr.sizeof_gr_complex,
-    #             fft_len,
-    #             2,
-    #             tag_name),
-    #         cp,
-    #         sink)
+    #     expected_result = [6, 7, 0, 1, 2, 3, 4, 5, 6, 7,
+    #                        6, 7, 0, 1, 2, 3, 4, 5, 6, 7]
+    #     src = blocks.vector_source_c(list(range(fft_len)) * 2, False, fft_len)
+    #     cp = digital.ofdm_cyclic_prefixer(fft_len, [cp_len,])
+    #     sink = blocks.vector_sink_c()
+    #     self.tb.connect([src, cp, sink])
     #     self.tb.run()
-    #     self.assertEqual(sink.data()[0], expected_result)
-    #     tags = [gr.tag_to_python(x) for x in sink.tags()]
-    #     tags = sorted([(x.offset, x.key, x.value) for x in tags])
-    #     expected_tags = [
-    #         (fft_len + cp_len, "random_tag", 42)
-    #     ]
-    #     self.assertEqual(tags, expected_tags)
+    #     self.assertEqual(sink.data(), expected_result)
 
-    def test_wo_tags_no_rolloff_multiple_cps(self):
-        "Two CP lengths, no rolloff and no tags."
-        fft_len = 8
-        cp_lengths = (3, 2, 2)
-        expected_result = [5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,  # 1
-                           6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 2
-                           6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 3
-                           5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,  # 4
-                           6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 5
-                           ]
-        src = blocks.vector_source_c(list(range(fft_len)) * 5, False, fft_len)
-        cp = digital.ofdm_cyclic_prefixer(fft_len, cp_lengths)
-        sink = blocks.vector_sink_c()
-        self.tb.connect([src, cp, sink])
-        self.tb.run()
-        self.assertEqual(sink.data(), expected_result)
+    # def test_wo_tags_2s_rolloff(self):
+    #     " No tags, but have a 2-sample rolloff "
+    #     fft_len = 8
+    #     cp_len = 2
+    #     rolloff = 2
+    #     expected_result = [7.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 1.0/2
+    #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8]
+    #     src = blocks.vector_source_c(
+    #         list(
+    #             range(
+    #                 1,
+    #                 fft_len +
+    #                 1)) *
+    #         2,
+    #         False,
+    #         fft_len)
+    #     cp = digital.ofdm_cyclic_prefixer(fft_len, [cp_len], rolloff)
+    #     sink = blocks.vector_sink_c()
+    #     self.tb.connect([src, cp, sink])
+    #     self.tb.run()
+    #     self.assertEqual(sink.data(), expected_result)
 
-    def test_wo_tags_2s_rolloff_multiple_cps(self):
-        "Two CP lengths, 2-sample rolloff and no tags."
+    # # def test_with_tags_2s_rolloff(self):
+    # #     " With tags and a 2-sample rolloff "
+    # #     fft_len = 8
+    # #     cp_len = 2
+    # #     tag_name = "ts_last"
+    # #     expected_result = [7.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 1.0/2
+    # #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1.0 / 2]
+    # #     tag2 = gr.tag_t()
+    # #     tag2.offset = 1
+    # #     tag2.key = pmt.string_to_symbol("random_tag")
+    # #     tag2.value = pmt.from_long(42)
+    # #     src = blocks.vector_source_c(
+    # #         list(range(1, fft_len + 1)) * 2, False, fft_len, (tag2,))
+    # #     cp = digital.ofdm_cyclic_prefixer(
+    # #         fft_len, fft_len + cp_len, 2, tag_name)
+    # #     sink = blocks.tsb_vector_sink_c(tsb_key=tag_name)
+    # #     self.tb.connect(
+    # #         src,
+    # #         blocks.stream_to_tagged_stream(
+    # #             gr.sizeof_gr_complex,
+    # #             fft_len,
+    # #             2,
+    # #             tag_name),
+    # #         cp,
+    # #         sink)
+    # #     self.tb.run()
+    # #     self.assertEqual(sink.data()[0], expected_result)
+    # #     tags = [gr.tag_to_python(x) for x in sink.tags()]
+    # #     tags = sorted([(x.offset, x.key, x.value) for x in tags])
+    # #     expected_tags = [
+    # #         (fft_len + cp_len, "random_tag", 42)
+    # #     ]
+    # #     self.assertEqual(tags, expected_tags)
+
+    # def test_wo_tags_no_rolloff_multiple_cps(self):
+    #     "Two CP lengths, no rolloff and no tags."
+    #     fft_len = 8
+    #     cp_lengths = (3, 2, 2)
+    #     expected_result = [5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,  # 1
+    #                        6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 2
+    #                        6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 3
+    #                        5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,  # 4
+    #                        6, 7, 0, 1, 2, 3, 4, 5, 6, 7,    # 5
+    #                        ]
+    #     src = blocks.vector_source_c(list(range(fft_len)) * 5, False, fft_len)
+    #     cp = digital.ofdm_cyclic_prefixer(fft_len, cp_lengths)
+    #     sink = blocks.vector_sink_c()
+    #     self.tb.connect([src, cp, sink])
+    #     self.tb.run()
+    #     self.assertEqual(sink.data(), expected_result)
+
+    # def test_wo_tags_2s_rolloff_multiple_cps(self):
+    #     "Two CP lengths, 2-sample rolloff and no tags."
+    #     fft_len = 8
+    #     cp_lengths = (3, 2, 2)
+    #     rolloff = 2
+    #     expected_result = [6.0 / 2, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 1
+    #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 2
+    #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 3
+    #                        6.0 / 2 + 1.0 / 2, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8,  # 4
+    #                        7.0 / 2 + 1.0 / 2, 8, 1, 2, 3, 4, 5, 6, 7, 8  # 5
+    #                        ]
+    #     src = blocks.vector_source_c(
+    #         list(
+    #             range(
+    #                 1,
+    #                 fft_len +
+    #                 1)) *
+    #         5,
+    #         False,
+    #         fft_len)
+    #     cp = digital.ofdm_cyclic_prefixer(fft_len, cp_lengths, rolloff)
+    #     sink = blocks.vector_sink_c()
+    #     self.tb.connect([src, cp, sink])
+    #     self.tb.run()
+    #     self.assertEqual(sink.data(), expected_result)
+
+    def test_pdu_wo_tags_2s_rolloff_multiple_cps(self):
+        "PDU Two CP lengths, 2-sample rolloff and no tags."
         fft_len = 8
         cp_lengths = (3, 2, 2)
         rolloff = 2
@@ -130,10 +156,18 @@ class test_ofdm_cyclic_prefixer (gr_unittest.TestCase):
             False,
             fft_len)
         cp = digital.ofdm_cyclic_prefixer(fft_len, cp_lengths, rolloff)
+        cp.set_work_mode(gr.work_mode_t.PDU)
         sink = blocks.vector_sink_c()
-        self.tb.connect([src, cp, sink])
+        # self.tb.connect([src, cp, sink])
+        s2p = pdu.stream_to_pdu_c(1, vlen=fft_len) # packets of 1 vector of fft_len
+        p2s = pdu.pdu_to_stream_c()
+        self.tb.connect(src, s2p)
+        self.tb.connect(s2p, "pdus", cp, "pdus_in")
+        self.tb.connect(cp, "pdus_out", p2s, "pdus")
+        self.tb.connect(p2s, sink)
         self.tb.run()
         self.assertEqual(sink.data(), expected_result)
+
 
     # def test_with_tags_2s_rolloff_multiples_cps(self):
     #     "Two CP lengths, 2-sample rolloff and tags."

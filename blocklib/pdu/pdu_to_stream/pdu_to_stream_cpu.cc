@@ -16,7 +16,7 @@ namespace pdu {
 
 template <class T>
 pdu_to_stream_cpu<T>::pdu_to_stream_cpu(const typename pdu_to_stream<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T)
+    : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen)
 {
 }
 
@@ -40,13 +40,13 @@ pdu_to_stream_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
 
         if (d_vec_ready) {
-            auto num_in_this_pmt = std::min(noutput_items - i, d_vec.size() - d_vec_idx);
+            auto num_in_this_pmt = std::min(noutput_items - i, (d_vec.size() - d_vec_idx) / d_vlen);
 
             std::copy(d_vec.data() + d_vec_idx,
-                      d_vec.data() + d_vec_idx + num_in_this_pmt,
-                      out + i);
+                      d_vec.data() + d_vec_idx + num_in_this_pmt * d_vlen,
+                      out + i * d_vlen);
             i += num_in_this_pmt;
-            d_vec_idx += num_in_this_pmt;
+            d_vec_idx += num_in_this_pmt * d_vlen;
 
             if (d_vec_idx >= d_vec.size()) {
                 d_vec_ready = false;

@@ -26,6 +26,7 @@ public:
 
 private:
     size_t d_packet_len;
+    size_t d_vlen;
 };
 
 

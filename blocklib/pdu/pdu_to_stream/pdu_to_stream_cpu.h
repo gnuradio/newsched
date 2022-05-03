@@ -32,6 +32,7 @@ private:
     pmtf::vector<T> d_vec;
     bool d_vec_ready = false;
     size_t d_vec_idx = 0;
+    size_t d_vlen;
 
     void handle_msg_pdus(pmtf::pmt msg) override;
 };

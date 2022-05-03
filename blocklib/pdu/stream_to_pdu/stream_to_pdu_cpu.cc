@@ -16,7 +16,7 @@ namespace pdu {
 
 template <class T>
 stream_to_pdu_cpu<T>::stream_to_pdu_cpu(const typename stream_to_pdu<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T), d_packet_len(args.packet_len)
+    : INHERITED_CONSTRUCTORS(T), d_packet_len(args.packet_len), d_vlen(args.vlen)
 {
     this->set_output_multiple(args.packet_len);
 }
@@ -32,9 +32,10 @@ stream_to_pdu_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
     for (size_t n = 0; n < n_pdu; n++) {
         auto samples =
-            pmtf::vector<T>(in + n * d_packet_len, in + (n + 1) * d_packet_len);
+            pmtf::vector<T>(in + n * d_packet_len * d_vlen, in + (n + 1) * d_packet_len * d_vlen);
         auto d = pmtf::map({
             { "packet_len", d_packet_len },
+            { "vlen", d_vlen },
         });
 
         auto pdu = pmtf::map({ { "data", samples }, { "meta", d } });

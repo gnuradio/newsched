@@ -20,6 +20,10 @@ parameters:
     dtype: size_t
     grc:
         default: 96
+-   id: vlen
+    label: Vector Length
+    dtype: size_t
+    default: 1
 
 # Example Ports
 ports:
@@ -27,7 +31,8 @@ ports:
     id: in
     direction: input
     type: typekeys/T
-    
+    shape: parameters/vlen
+
 -   domain: message
     id: pdus
     direction: output
