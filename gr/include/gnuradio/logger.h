@@ -31,8 +31,6 @@
 
 #include <spdlog/sinks/dist_sink.h>
 
-#include <boost/format.hpp>
-
 namespace gr {
 using log_level = spdlog::level::level_enum;
 
