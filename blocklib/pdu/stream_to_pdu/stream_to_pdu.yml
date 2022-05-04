@@ -3,16 +3,6 @@ block: stream_to_pdu
 label: Stream to PDU
 blocktype: sync_block
 
-typekeys:
-  - id: T
-    type: class
-    options: 
-        - cf32
-        - rf32
-        - ru32
-        - ru16
-        - ru8
-
 # Example Parameters
 parameters:
 -   id: packet_len
@@ -20,18 +10,21 @@ parameters:
     dtype: size_t
     grc:
         default: 96
--   id: vlen
-    label: Vector Length
+-   id: itemsize
+    label: Item Size
     dtype: size_t
-    default: 1
+    settable: false
+    default: 0
+    grc:
+        hide: part
 
 # Example Ports
 ports:
 -   domain: stream
     id: in
     direction: input
-    type: typekeys/T
-    shape: parameters/vlen
+    type: untyped
+    size: parameters/itemsize
 
 -   domain: message
     id: pdus

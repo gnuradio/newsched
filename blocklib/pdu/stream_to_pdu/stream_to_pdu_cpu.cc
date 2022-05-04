@@ -16,40 +16,31 @@
 namespace gr {
 namespace pdu {
 
-template <class T>
-stream_to_pdu_cpu<T>::stream_to_pdu_cpu(const typename stream_to_pdu<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T), d_packet_len(args.packet_len), d_vlen(args.vlen)
+stream_to_pdu_cpu::stream_to_pdu_cpu(const typename stream_to_pdu::block_args& args)
+    : INHERITED_CONSTRUCTORS, d_packet_len(args.packet_len)
 {
     this->set_output_multiple(args.packet_len);
 }
 
-template <class T>
 work_return_code_t
-stream_to_pdu_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                           std::vector<block_work_output_sptr>& work_output)
+stream_to_pdu_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                        std::vector<block_work_output_sptr>& work_output)
 {
 
     auto n_pdu = work_input[0]->n_items / d_packet_len;
-    auto in = work_input[0]->items<T>();
+    auto in = work_input[0]->items<uint8_t>();
+    int itemsize = work_input[0]->buffer->item_size();
 
     for (size_t n = 0; n < n_pdu; n++) {
-        auto samples =
-            pmtf::vector<T>(in + n * d_packet_len * d_vlen, in + (n + 1) * d_packet_len * d_vlen);
-        auto d = pmtf::map({
-            { "packet_len", d_packet_len },
-            { "vlen", d_vlen },
-        });
+        auto pdu_out =
+            pmtf::pdu((void *)(in + n * d_packet_len * itemsize), d_packet_len * itemsize);
 
-        // auto pdu = pmtf::map({ { "data", samples }, { "meta", d } });
-        pmtf::pdu pdu_out(samples);
         pdu_out["packet_len"] = d_packet_len;
-        pdu_out["vlen"] = d_vlen;
 
-
-        this->get_message_port("pdus")->post(pdu_out);
+        get_message_port("pdus")->post(pdu_out);
     }
 
-    this->consume_each(n_pdu * d_packet_len, work_input);
+    consume_each(n_pdu * d_packet_len, work_input);
     return work_return_code_t::WORK_OK;
 }
 
