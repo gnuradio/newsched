@@ -9,9 +9,7 @@ doc:
     brief: Adds a cyclic prefix and performs optional pulse shaping on OFDM symbols.
     detail: |-
         Input: OFDM symbols (in the time domain, i.e. after the IFFT). Optionally,
-               entire frames can be processed. In this case, \p len_tag_key must be
-               specified which holds the key of the tag that denotes how
-               many OFDM symbols are in a frame.
+               entire frames can be processed. 
         Output: A stream of (scalar) complex symbols, which include the cyclic prefix
                 and the pulse shaping.
                 Note: If complete frames are processed, and \p rolloff_len is greater
