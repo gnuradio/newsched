@@ -1,6 +1,7 @@
 subdir('include/gnuradio')
 subdir('include/moodycamel')
 subdir('lib')
+subdir('test')
 
 if (get_option('enable_python'))
     subdir('python/gr')

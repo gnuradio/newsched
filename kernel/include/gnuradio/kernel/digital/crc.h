@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <gnuradio/digital/api.h>
-
 #include <stdint.h>
 #include <array>
 #include <vector>
@@ -29,7 +27,7 @@ namespace digital {
  * A table-driven byte-by-byte approach is used in the CRC
  * computation.
  */
-class DIGITAL_API crc
+class crc
 {
 public:
     /*!
