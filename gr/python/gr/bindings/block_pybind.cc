@@ -23,6 +23,12 @@ void bind_block(py::module& m)
 {
     using block = ::gr::block;
 
+    py::enum_<gr::block_work_mode_t>(m, "work_mode_t")
+        .value("DEFAULT", gr::block_work_mode_t::DEFAULT) 
+        .value("PDU",
+               gr::block_work_mode_t::PDU) 
+        .export_values();
+
     py::class_<block, gr::node, std::shared_ptr<block>>(m, "block")
         .def("work",
              &block::work,
@@ -43,5 +49,6 @@ void bind_block(py::module& m)
              py::overload_cast<const std::string&, pmtf::pmt, bool>(
                  &block::request_parameter_change))
         .def_static("deserialize_param_to_pmt", &block::deserialize_param_to_pmt)
-        .def("to_json", &block::to_json);
+        .def("to_json", &block::to_json)
+        .def("set_work_mode", &block::set_work_mode);
 }
