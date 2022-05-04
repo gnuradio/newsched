@@ -2,7 +2,9 @@ module: fft
 block: fft
 label: FFT
 blocktype: sync_block
-
+flags: 
+  - pdu
+  
 typekeys:
   - id: T
     type: class
