@@ -19,7 +19,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         blocks = d_blocks;
     }
 
+    // This is only for streaming blocks
     for (auto const& b : blocks) { // TODO - order the blocks
+        if (b->work_mode() != block_work_mode_t::DEFAULT) {
+            continue;
+        }
 
         std::vector<block_work_input_sptr> work_input;   //(num_input_ports);
         std::vector<block_work_output_sptr> work_output; //(num_output_ports);

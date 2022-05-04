@@ -18,7 +18,7 @@ struct block_work_input {
     buffer_reader_sptr buffer;
     size_t n_consumed =
         0; // output the number of items that were consumed on the work() call
-
+    size_t n_requested = 0;
     block_work_input(int n_items_, buffer_reader_sptr p_buf_)
         : n_items(n_items_), buffer(p_buf_)
     {
@@ -71,7 +71,7 @@ struct block_work_output {
     buffer_sptr buffer;
     size_t n_produced =
         0; // output the number of items that were produced on the work() call
-
+    size_t n_requested = 0;
     block_work_output(int _n_items, buffer_sptr p_buf_)
         : n_items(_n_items), buffer(p_buf_)
     {

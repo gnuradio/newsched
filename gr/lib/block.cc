@@ -8,6 +8,10 @@
 #include <chrono>
 #include <thread>
 
+
+#include <gnuradio/buffer_pdu.h>
+#include <gnuradio/pdu.h>
+
 namespace gr {
 
 block::block(const std::string& name, const std::string& module)
@@ -25,6 +29,12 @@ block::block(const std::string& name, const std::string& module)
     _msg_system->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_system(msg); });
     add_port(_msg_system);
+
+    _msg_work = message_port::make("pdus_in", port_direction_t::INPUT);
+    _msg_work->register_callback([this](pmtf::pmt msg) { this->handle_msg_work(msg); });
+    add_port(_msg_work);
+    _msg_work_out = message_port::make("pdus_out", port_direction_t::OUTPUT);
+    add_port(_msg_work_out);
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)
@@ -109,6 +119,60 @@ void block::handle_msg_param_update(pmtf::pmt msg)
     auto value = pmtf::map(msg)["value"];
 
     request_parameter_change(get_param_id(id), value, false);
+}
+
+void block::handle_msg_work(pmtf::pmt msg)
+{
+
+    // only considering 1 input and 1 output for now
+    // FIXME: need checks elsewhere to enforce this
+    auto input_pdu = pmtf::pdu(msg);
+
+    // prepare the input buffer
+    // Interpret the data based on the port that it represents
+    auto input_port = this->get_port(0, port_type_t::STREAM, port_direction_t::INPUT);
+    auto output_port = this->get_port(0, port_type_t::STREAM, port_direction_t::OUTPUT);
+
+    size_t input_itemsize = input_port->itemsize();  // size in bytes of an item
+    size_t input_datasize = input_port->data_size(); // size in bytes of an individual element 
+
+    auto input_items = input_pdu.raw();
+    auto num_input_items = input_pdu.size_bytes() / input_itemsize;
+    
+    auto br = buffer_pdu_reader::make(num_input_items, input_itemsize, input_items, msg);
+
+    // data should be a vector of some sort
+    size_t output_itemsize = output_port->itemsize();
+    size_t output_datasize = output_port->data_size();
+    size_t num_output_items = static_cast<size_t>(num_input_items * this->relative_rate());
+    pmtf::pdu output_pdu(output_itemsize, num_output_items);
+    auto output_items = output_pdu.raw();
+    
+    auto bw = buffer_pdu::make(num_output_items, output_itemsize, output_items, output_pdu);
+
+    std::vector<block_work_input_sptr> work_input;
+    std::vector<block_work_output_sptr> work_output;
+    work_input.push_back(std::make_shared<block_work_input>(num_input_items, br));
+    work_output.push_back(std::make_shared<block_work_output>(num_output_items, bw));
+
+    auto code = work(work_input, work_output);
+
+    if (code == work_return_code_t::WORK_OK)
+    {
+        // validate the n_produced
+        if (work_output[0]->n_produced < num_output_items)
+        {
+            // resize by shrinking
+            output_pdu.resize_bytes(work_output[0]->n_produced * output_itemsize);
+        }
+
+        _msg_work_out->post(output_pdu);
+    }
+    else
+    {
+        // TODO: have a better call here
+        throw std::runtime_error("Generic PDU handling on work port unable to handle this work call");
+    }
 }
 
 void block::handle_msg_system(pmtf::pmt msg)

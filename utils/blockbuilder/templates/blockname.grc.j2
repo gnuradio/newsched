@@ -101,6 +101,14 @@ parameters:
     dtype: bool
     default: False
     hide: 'part'
+{% if flags and 'pdu' in flags -%}
+-   id: msg_work
+    label: PDU Operation
+    category: Advanced
+    dtype: bool
+    default: False
+    hide: 'part'
+{% endif -%}
 
 inputs:
 {% for port in ports -%}{%- if port['direction'] == 'input'%}
@@ -113,13 +121,25 @@ inputs:
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
+{% if flags and 'pdu' in flags %}
+    optional: ${ msg_work } or {{ port['optional'] if 'optional' in port else 'false' }}
+    hide: ${ msg_work }
+{% else %}
     optional: {{ port['optional'] if 'optional' in port else 'false' }}
+{% endif -%}
 {% endif %}{% endfor %}
 -   domain: message
     id: param_update
     label: param
     optional: true
     hide: ${ not showports }
+{% if flags and 'pdu' in flags -%}
+-   domain: message
+    id: pdus_in
+    label: pdus_in
+    optional: true #${ not msg_work }
+    hide: ${ not msg_work }
+{% endif -%}
 
 outputs:
 {% for port in ports -%}
@@ -133,9 +153,20 @@ outputs:
     {%if 'shape' in port %}vlen: {{get_linked_value(port['shape'])}}{% endif %}
     {%if 'multiplicity' in port %}multiplicity: {{get_linked_value(port['multiplicity'])}}{% endif %}
     label: {{port['id']}}
+{% if flags and 'pdu' in flags %}
+    optional: ${ msg_work } or {{ port['optional'] if 'optional' in port else 'false' }}
+    hide: ${ msg_work }
+{% else %}
     optional: {{ port['optional'] if 'optional' in port else 'false' }}
 {% endif -%}
-{% endfor -%}
+{% endif -%}{% endfor -%}
+{% if flags and 'pdu' in flags -%}
+-   domain: message
+    id: pdus_out
+    label: pdus_out
+    optional: true #${ not msg_work }
+    hide: ${ not msg_work }
+{% endif -%}
 
 {% if grc -%}
 templates:
@@ -149,13 +180,19 @@ templates:
     {%- if type_inst %}
     make: {{module}}.{{block}}{% if typekeys -%}_{{'${type_inst}'}}{%endif%}(
     {%- else %}
-    make: {{module}}.{{block}}{% if typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
+    make: |
+        {{module}}.{{block}}{% if typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}(
     {%- endif %}
         {% if parameters %}{%- for param in parameters -%}
           {%- if 'cotr' not in param or param['cotr'] -%}
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
         {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${impl})
+{%- if flags and 'pdu' in flags %}
+        % if context.get('msg_work')():
+        self.${id}.set_work_mode(gr.work_mode_t.PDU)
+        % endif
+{% endif -%}
 {% endif -%}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}

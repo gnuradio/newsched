@@ -1,0 +1,38 @@
+module: pdu
+block: stream_to_pdu
+label: Stream to PDU
+blocktype: sync_block
+
+# Example Parameters
+parameters:
+-   id: packet_len
+    label: Packet Length
+    dtype: size_t
+    grc:
+        default: 96
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+    settable: false
+    default: 0
+    grc:
+        hide: part
+
+# Example Ports
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: parameters/itemsize
+
+-   domain: message
+    id: pdus
+    direction: output
+    optional: true
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

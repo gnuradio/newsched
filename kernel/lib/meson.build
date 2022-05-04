@@ -16,7 +16,8 @@ kernel_sources = [
     'math/fast_atan2f.cc',
     'math/fxpt.cc',
     'math/random.cc',
-    'digital/constellation.cc'
+    'digital/constellation.cc',
+    'digital/crc.cc'
 ]
 
 compiler = meson.get_compiler('cpp')
