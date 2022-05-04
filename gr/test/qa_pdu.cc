@@ -7,6 +7,8 @@
 
 using namespace gr;
 
+#if 0
+
 TEST(PDU, Basics)
 {
     gr::pdu<float> pdu1(10);
@@ -15,8 +17,6 @@ TEST(PDU, Basics)
     gr::pdu<float> pdu2({1,2,3,4,5,6,7,8,9,10});
 
     EXPECT_EQ(pdu2[2], 3);
-
-
 }
 
 TEST(PDU, PassedAsPmt)
@@ -29,3 +29,16 @@ TEST(PDU, PassedAsPmt)
     gr::pdu<float> pdu3 = p;
     EXPECT_EQ(pdu3[2], 3);
 }
+#else
+TEST(PDU, Basics)
+{
+    pmtf::pdu pdu1(sizeof(float), 10);
+    pdu1.at<float>(1) = 7;
+
+    EXPECT_EQ(pdu1.at<float>(1), 7);
+    pmtf::pdu pdu2(std::vector<float>{1,2,3,4,5,6,7,8,9,10});
+
+    EXPECT_EQ(pdu2.at<float>(2), 3);
+}
+
+#endif

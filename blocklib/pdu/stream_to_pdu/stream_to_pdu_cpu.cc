@@ -11,6 +11,8 @@
 #include "stream_to_pdu_cpu.h"
 #include "stream_to_pdu_cpu_gen.h"
 
+#include <gnuradio/pdu.h>
+
 namespace gr {
 namespace pdu {
 
@@ -38,9 +40,13 @@ stream_to_pdu_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
             { "vlen", d_vlen },
         });
 
-        auto pdu = pmtf::map({ { "data", samples }, { "meta", d } });
+        // auto pdu = pmtf::map({ { "data", samples }, { "meta", d } });
+        pmtf::pdu pdu_out(samples);
+        pdu_out["packet_len"] = d_packet_len;
+        pdu_out["vlen"] = d_vlen;
 
-        this->get_message_port("pdus")->post(pdu);
+
+        this->get_message_port("pdus")->post(pdu_out);
     }
 
     this->consume_each(n_pdu * d_packet_len, work_input);

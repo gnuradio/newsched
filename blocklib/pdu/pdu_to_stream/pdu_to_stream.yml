@@ -3,22 +3,14 @@ block: pdu_to_stream
 label: PDU to Stream
 blocktype: sync_block
 
-typekeys:
-  - id: T
-    type: class
-    options: 
-        - cf32
-        - rf32
-        - ru32
-        - ru16
-        - ru8
-
 parameters:
-  - id: vlen
-    label: Vector Length
+-   id: itemsize
+    label: Item Size
     dtype: size_t
-    default: 1
-
+    settable: false
+    default: 0
+    grc:
+        hide: part
 ports:
     - domain: message
       id: pdus
@@ -26,10 +18,10 @@ ports:
       optional: true
 
     - domain: stream
-      id: in
+      id: out
       direction: output
-      type: typekeys/T
-      shape: parameters/vlen
+      type: untyped
+      size: parameters/itemsize
 
 implementations:
     - id: cpu

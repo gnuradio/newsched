@@ -160,7 +160,7 @@ class test_ofdm_cyclic_prefixer (gr_unittest.TestCase):
         sink = blocks.vector_sink_c()
         # self.tb.connect([src, cp, sink])
         s2p = pdu.stream_to_pdu_c(1, vlen=fft_len) # packets of 1 vector of fft_len
-        p2s = pdu.pdu_to_stream_c()
+        p2s = pdu.pdu_to_stream()
         self.tb.connect(src, s2p)
         self.tb.connect(s2p, "pdus", cp, "pdus_in")
         self.tb.connect(cp, "pdus_out", p2s, "pdus")

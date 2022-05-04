@@ -11,44 +11,44 @@
 #include "pdu_to_stream_cpu.h"
 #include "pdu_to_stream_cpu_gen.h"
 
+#include <gnuradio/pdu.h>
+
 namespace gr {
 namespace pdu {
 
-template <class T>
-pdu_to_stream_cpu<T>::pdu_to_stream_cpu(const typename pdu_to_stream<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen)
+pdu_to_stream_cpu::pdu_to_stream_cpu(const typename pdu_to_stream::block_args& args)
+    : INHERITED_CONSTRUCTORS
 {
 }
 
-template <class T>
 work_return_code_t
-pdu_to_stream_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
+pdu_to_stream_cpu::work(std::vector<block_work_input_sptr>& work_input,
                            std::vector<block_work_output_sptr>& work_output)
 {
-    auto out = work_output[0]->items<T>();
+    auto out = work_output[0]->items<uint8_t>();
     auto noutput_items = work_output[0]->n_items;
+    int itemsize =  work_output[0]->buffer->item_size();
 
     // fill up the output buffer with the data from the pdus
     size_t i = 0;
     while (i < noutput_items) {
         if (!d_vec_ready && !d_pmt_queue.empty()) {
-            auto data = pmtf::map(d_pmt_queue.front())["data"];
-            d_vec = pmtf::vector<T>(data);
+            d_pdu = pmtf::pdu(d_pmt_queue.front());
             d_pmt_queue.pop();
             d_vec_idx = 0;
             d_vec_ready = true;
         }
 
         if (d_vec_ready) {
-            auto num_in_this_pmt = std::min(noutput_items - i, (d_vec.size() - d_vec_idx) / d_vlen);
+            auto num_in_this_pmt = std::min(noutput_items - i, (d_pdu.size_bytes() - d_vec_idx) / itemsize );
 
-            std::copy(d_vec.data() + d_vec_idx,
-                      d_vec.data() + d_vec_idx + num_in_this_pmt * d_vlen,
-                      out + i * d_vlen);
+            std::copy(d_pdu.raw() + d_vec_idx,
+                      d_pdu.raw() + d_vec_idx + num_in_this_pmt * itemsize,
+                      out + i * itemsize);
             i += num_in_this_pmt;
-            d_vec_idx += num_in_this_pmt * d_vlen;
+            d_vec_idx += num_in_this_pmt * itemsize;
 
-            if (d_vec_idx >= d_vec.size()) {
+            if (d_vec_idx >= d_pdu.size_bytes()) {
                 d_vec_ready = false;
             }
         }
@@ -61,8 +61,7 @@ pdu_to_stream_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     return work_return_code_t::WORK_OK;
 }
 
-template <class T>
-void pdu_to_stream_cpu<T>::handle_msg_pdus(pmtf::pmt msg)
+void pdu_to_stream_cpu::handle_msg_pdus(pmtf::pmt msg)
 {
     d_pmt_queue.push(msg);
     this->notify_scheduler_output();

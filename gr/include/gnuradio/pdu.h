@@ -13,7 +13,7 @@
 #include <pmtf/map.hpp>
 #include <pmtf/vector.hpp>
 
-namespace gr {
+namespace pmtf {
 
 
 /**
@@ -22,26 +22,27 @@ namespace gr {
  * Eventually this should go into the PMTF library, but gathering concepts here
  *
  */
-template <class T>
 class pdu
 {
 public:
-    pdu(size_t size) : _data(size * sizeof(T)) { set_data_type(); }
-    // pdu(const std::vector<T>& vec)
-    //     : _data((std::vector<uint8_t>::iterator)vec.begin(),
-    //             (std::vector<uint8_t>::iterator)vec.begin() + vec.size() * sizeof(T))
-    // {
-    //     set_data_type();
-    // }
+    pdu() {}
+    pdu(size_t size, size_t numels) : _data(size * numels) {}
+    template <typename T>
+    pdu(const std::vector<T>& vec)
+        : _data((const uint8_t*)vec.data(), (const uint8_t*)(vec.data() + vec.size()))
+    {
+    }
+    template <typename T>
+    pdu(const pmtf::vector<T>& vec)
+        : _data((const uint8_t*)vec.data(), (const uint8_t*)(vec.data() + vec.size()))
+    {
+    }
+    template <typename T>
     pdu(std::initializer_list<T> il)
         : _data((uint8_t*)il.begin(), (uint8_t*)il.begin() + il.size() * sizeof(T))
     {
-        set_data_type();
     }
-    pdu(T* d, size_t size) : _data((uint8_t*)d, (uint8_t*)d + size * sizeof(T))
-    {
-        set_data_type();
-    }
+    pdu(void* d, size_t size) : _data((uint8_t*)d, (uint8_t*)d + size) {}
 
     // From a Pmt Buffer
     template <class U, typename = pmtf::IsPmt<U>>
@@ -53,14 +54,42 @@ public:
         _data = pmtf::vector<uint8_t>(pmtvec[1]);
     }
 
-    size_t size();
-    T* data() { return (T*)_data.data(); }
-    pmtf::pmt& operator[](const std::string& key) { return _meta[key]; }
-    T& operator[](size_t n)
+    size_t size_bytes() { return _data.size(); }
+    void resize_bytes(size_t new_size)
     {
-        // operator[] doesn't do bounds checking, use at for that
-        // TODO: implement at
-        return data()[n];
+        if (new_size < _data.size()) {
+            _data = pmtf::vector<uint8_t>(_data.data(), _data.data() + new_size);
+        }
+        else {
+            pmtf::vector<uint8_t> tmp(new_size);
+            std::copy(tmp.begin(), tmp.end(), _data.begin());
+            _data = tmp;
+        }
+    }
+    template <typename T>
+    size_t size()
+    {
+        return _data.size() / sizeof(T);
+    }
+    template <typename T>
+    T* data()
+    {
+        return (T*)_data.data();
+    }
+    uint8_t* raw() { return _data.data(); }
+    pmtf::pmt& operator[](const std::string& key) { return _meta[key]; }
+
+    // template <typename T>
+    // T& operator[](size_t n)
+    // {
+    //     // operator[] doesn't do bounds checking, use at for that
+    //     // TODO: implement at
+    //     return data<T>()[n];
+    // }
+    template <typename T>
+    T& at(size_t n)
+    {
+        return data<T>()[n];
     }
 
     pmtf::pmt get_pmt_buffer() const
