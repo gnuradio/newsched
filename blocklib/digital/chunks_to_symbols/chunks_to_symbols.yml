@@ -1,0 +1,62 @@
+module: digital
+block: chunks_to_symbols
+label: Chunks to Symbols
+blocktype: block
+flags: 
+    - pdu
+
+doc:
+    brief: |- 
+        Map a stream of unpacked symbol indexes to stream of
+        float or complex constellation points in D dimensions (D = 1 by
+        default) 
+    detail: |-
+        \li input: stream of IN_T
+        \li output: stream of OUT_T
+        \li out[n D + k] = symbol_table[in[n] D + k], k=0,1,...,D-1
+        The combination of gr::blocks::packed_to_unpacked_XX followed
+        by gr::digital::chunks_to_symbols_XY handles the general case
+        of mapping from a stream of bytes or shorts into arbitrary
+        float or complex symbols.
+   
+typekeys:
+  - id: IN_T
+    type: class
+    options: 
+        - ru8
+        - ru16
+        - ru32
+  - id: OUT_T
+    type: class
+    options: 
+        - cf32
+        - rf32
+
+parameters:
+-   id: symbol_table
+    label: Symbol Table
+    dtype: OUT_T
+    settable: true
+    container: vector
+-   id: D
+    label: Dimension
+    dtype: size_t
+    settable: false
+    default: 1
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: typekeys/IN_T
+
+-   domain: stream
+    id: out
+    direction: output
+    type: typekeys/OUT_T
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
