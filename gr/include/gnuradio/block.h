@@ -18,6 +18,8 @@
 
 namespace gr {
 
+enum class block_work_mode_t { DEFAULT, PDU };
+
 class pyblock_detail;
 /**
  * @brief The abstract base class for all signal processing blocks in the GR
@@ -45,9 +47,12 @@ protected:
     std::map<std::string, int> d_param_str_map;
     std::map<int, std::string> d_str_param_map;
     message_port_sptr _msg_param_update;
+    message_port_sptr _msg_work;
+    message_port_sptr _msg_work_out;
     message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
     bool d_finished = false;
+    block_work_mode_t _work_mode = block_work_mode_t::DEFAULT;
 
     void notify_scheduler();
     void notify_scheduler_input();
@@ -144,6 +149,14 @@ public:
     virtual void handle_msg_param_update(pmtf::pmt msg);
 
     virtual void handle_msg_system(pmtf::pmt msg);
+
+    // Every block can have a "work" message handler that
+    // will take a pmt, run it through the work method and output
+    // to the work output port
+    virtual void handle_msg_work(pmtf::pmt msg);
+
+    block_work_mode_t work_mode() { return _work_mode; }
+    void set_work_mode(block_work_mode_t work_mode_) { _work_mode = work_mode_; }
 
     static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
     static sptr cast(node_sptr n) { return std::static_pointer_cast<block>(n); }
