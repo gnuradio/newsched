@@ -132,7 +132,7 @@ ofdm_cyclic_prefixer_cpu::work(std::vector<block_work_input_sptr>& work_input,
     if (nout == 0 && output_limited) {
         // based on what we were given as input, we would need
         // at least output_size
-        work_output[0]->n_requested = output_size;
+        // work_output[0]->n_requested = output_size;
         return work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS;
     }
     else if (nin == 0 && input_limited) {

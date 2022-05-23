@@ -16,7 +16,6 @@ digital_deps = []
 
 # Individual block subdirectories
 subdir('ofdm_cyclic_prefixer')
-subdir('crc_append')
 subdir('chunks_to_symbols')
 
 
