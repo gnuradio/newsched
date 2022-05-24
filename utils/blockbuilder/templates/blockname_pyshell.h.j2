@@ -53,7 +53,21 @@ public:
         else
             return block::stop();
     }
+
 {% endif %}
+
+{% for port in ports %}{% if port['domain'] == 'message' and port['direction'] == 'input' -%}
+    virtual void handle_msg_{{port['id']}}(pmtf::pmt msg) override
+    {
+        py::gil_scoped_acquire acquire;
+        if (py::hasattr(this->pb_detail()->handle(), "{{"handle_msg_" + port['id']}}")) {
+            py::object ret = this->pb_detail()->handle().attr("{{"handle_msg_" + port['id']}}")();
+        }
+        else
+            throw std::runtime_error("Message port handler not found");
+
+    } 
+{% endif %}{% endfor%}
 
 };
 
