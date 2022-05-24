@@ -41,7 +41,11 @@ void bind_{{block}}(py::module& m)
         py::arg("impl") = gr::{{module}}::{{block}}::available_impl::{{ implementations[0]['id'] | upper }})
         {% for cb in callbacks -%}
         {% if 'inherited' not in cb or not cb['inherited']%}
+        {% if 'binding' in cb %}
+        .def("{{cb['id']}}", {{cb['binding']}})
+        {% else %}
         .def("{{cb['id']}}", &gr::{{module}}::{{block}}::{{cb['id']}})
+        {% endif -%}
         {% endif -%}
         {% endfor %}
         {% if parameters %}{% for p in parameters -%}
