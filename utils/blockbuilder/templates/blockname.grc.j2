@@ -156,6 +156,6 @@ templates:
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
         {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${impl})
-{% endif -%}
+{% endif %}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
