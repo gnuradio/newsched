@@ -35,8 +35,11 @@ void bind_tag(py::module& m)
         .def("__str__", [](const gr::tag_t& tag) -> std::string {
             std::string ret = fmt::format("{}:\n", tag.offset());
             for (const auto& [key, value] : tag.map()) {
-                ret += "\t[" + key + "]\n";
+                ret += "[" + key + "]\n";
             }
             return ret;
-        });
+        })
+        .def("offset", &::gr::tag_t::offset)
+        .def("set_offset", &::gr::tag_t::set_offset)
+        .def("map", &::gr::tag_t::map);
 }

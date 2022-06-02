@@ -170,7 +170,7 @@ parameters:
     dtype: std::string
     settable: false
     grc:
-      hid: 'all'
+      hide: 'all'
 -   id: nchan
     label: Number of Channels
     dtype: size_t

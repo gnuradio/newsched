@@ -44,6 +44,8 @@ void bind_block_work_io(py::module& m)
         .def_readwrite("buffer", &gr::block_work_input::buffer)
         .def_readwrite("n_consumed", &gr::block_work_input::n_consumed)
 
+        .def("nitems_read", &gr::block_work_input::nitems_read)
         .def("raw_items", &gr::block_work_input::raw_items)
-        .def("consume", &gr::block_work_input::consume);
+        .def("consume", &gr::block_work_input::consume)
+        .def("tags_in_window", &gr::block_work_input::tags_in_window);
 }
