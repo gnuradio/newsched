@@ -17,9 +17,9 @@ endif
 if get_option('enable_gr_filter')
 subdir('filter')
 endif
-if get_option('enable_gr_analog')
-subdir('analog')
-endif
+# if get_option('enable_gr_analog')
+# subdir('analog')
+# endif
 if get_option('enable_gr_streamops')
 subdir('streamops')
 endif
@@ -35,9 +35,9 @@ endif
 if get_option('enable_gr_zeromq')
 subdir('zeromq')
 endif
-if (ENABLE_GR_SOAPY)
-  subdir('soapy')
-endif
+# if (ENABLE_GR_SOAPY)
+#   subdir('soapy')
+# endif
 if get_option('enable_gr_audio')
 subdir('audio')
 endif

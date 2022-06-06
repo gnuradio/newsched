@@ -88,6 +88,8 @@ public:
                 std::find(g->nodes().begin(), g->nodes().end(), e->dst().node()) !=
                     g->nodes().end()) {
 
+                auto a = std::dynamic_pointer_cast<gr::block>(e->src().node());
+                auto b = std::dynamic_pointer_cast<gr::block>(e->dst().node());
 
                 auto src_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->src().node());
                 auto dst_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->dst().node());

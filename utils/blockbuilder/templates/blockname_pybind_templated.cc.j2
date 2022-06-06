@@ -15,11 +15,7 @@ void bind_{{ block }}_template(py::module& m, const char* classname)
     // using block_class = gr::{{ module }}::{{ block }}<{{typestr}}>;
 
     py::class_<gr::{{ module }}::{{ block }}<{{typestr}}>, {{ inherits }}{{',' if inherits}} {% if blocktype != 'block'%} {{ "gr::" if blocktype[:4] != "gr::" }}{{blocktype}},{% endif %}
-    {% if blocktype == 'hier_block' -%}
-     gr::graph, gr::node, 
-    {% else -%}
     gr::block, gr::node,
-    {% endif -%}
     std::shared_ptr<gr::{{ module }}::{{ block }}<{{typestr}}>>> {{block}}_class(m, classname);
 
     py::enum_<typename ::gr::{{ module }}::{{ block }}<{{typestr}}>::available_impl>({{block}}_class, "available_impl")

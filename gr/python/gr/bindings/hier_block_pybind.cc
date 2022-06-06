@@ -20,9 +20,15 @@ namespace py = pybind11;
 
 void bind_hier_block(py::module& m)
 {
-    py::class_<gr::hier_block, gr::graph, gr::node, std::shared_ptr<gr::hier_block>>(m, "hier_block")
+    py::class_<gr::hier_block, gr::block, gr::node, std::shared_ptr<gr::hier_block>>(
+        m, "hier_block")
         .def(py::init<const std::string&>())
         .def("add_port", &gr::hier_block::add_port)
-    ;
+        .def("connect",
+             py::overload_cast<std::shared_ptr<gr::node>,
+                               unsigned int,
+                               std::shared_ptr<gr::node>,
+                               unsigned int>(&gr::hier_block::connect))
 
+        ;
 }

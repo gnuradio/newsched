@@ -6,7 +6,8 @@ qa_srcs = ['qa_default_runtime',
            'qa_single_mapped_buffers',
            'qa_message_ports',
            'qa_tags',
-           'qa_zmq_buffers'
+           'qa_zmq_buffers',
+           'qa_hier_block'
           ]
 deps = [gnuradio_gr_dep,
                 gnuradio_blocklib_blocks_dep,
@@ -29,7 +30,7 @@ endforeach
 test('Basic Python', py3, args : files('qa_basic.py'), env: TEST_ENV)
 test('Block Parameters', py3, args : files('qa_parameters.py'), env: TEST_ENV)
 test('Python Blocks', py3, args : files('qa_python_block.py'), env: TEST_ENV)
-test('Hier Block', py3, args : files('qa_hier_block.py'), env: TEST_ENV)
+# test('Hier Block', py3, args : files('qa_hier_block.py'), env: TEST_ENV)
 
 if cuda_dep.found() and get_option('enable_cuda')
     subdir('cuda')
