@@ -13,10 +13,10 @@ class hwrap(gr.hier_block):
         cp1 = streamops.copy(gr.sizeof_float)
         cp2 = streamops.copy(gr.sizeof_float)
 
-        self.connect((self, 0), (cp1, 0))
-        self.connect((self, 0), (cp2, 0))
-        self.connect((cp1, 0), (self, 0))
-        self.connect((cp2, 0), (self, 1))
+        self.connect(self, 0, cp1, 0)
+        self.connect(self, 0, cp2, 0)
+        self.connect(cp1, 0, self, 0)
+        self.connect(cp2, 0, self, 1)
 
 class test_hier(gr_unittest.TestCase):
 
