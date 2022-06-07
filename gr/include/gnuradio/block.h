@@ -1,16 +1,17 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include <gnuradio/api.h>
 #include <gnuradio/block_work_io.h>
 #include <gnuradio/neighbor_interface.h>
 #include <gnuradio/node.h>
 #include <gnuradio/parameter.h>
+#include <gnuradio/sptr_magic.h>
 
 #include <pmtf/map.hpp>
 #include <pmtf/string.hpp>
@@ -54,7 +55,7 @@ protected:
     void notify_scheduler_output();
     void come_back_later(size_t time_ms);
     std::atomic<bool> d_sleeping = false;
-    
+
 public:
     /**
      * @brief Construct a new block object
@@ -88,8 +89,8 @@ public:
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
-    using work_t = std::function<work_return_code_t(std::vector<block_work_input_sptr>&,
-                                    std::vector<block_work_output_sptr>&)>;
+    using work_t = std::function<work_return_code_t(
+        std::vector<block_work_input_sptr>&, std::vector<block_work_output_sptr>&)>;
     /**
      * @brief Wrapper for work to perform special checks and take care of special
      * cases for certain types of blocks, e.g. sync_block, decim_block
@@ -125,7 +126,8 @@ public:
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
     static void consume_each(size_t num, std::vector<block_work_input_sptr>& work_input);
-    static void produce_each(size_t num, std::vector<block_work_output_sptr>& work_output);
+    static void produce_each(size_t num,
+                             std::vector<block_work_output_sptr>& work_output);
     void set_output_multiple(size_t multiple);
     size_t output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }

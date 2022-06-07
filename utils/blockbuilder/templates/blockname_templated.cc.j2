@@ -27,7 +27,7 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
     {% endfor %}
 
     //case available_impl::BASE:
-    //    return std::make_shared<{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
+    //    return gnuradio::make_block_sptr<{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
     //    break;
         
     default:
