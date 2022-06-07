@@ -48,7 +48,7 @@ namespace {{module}} {
 
 {{block}}::{{block}}(const block_args& args) : {{blocktype}}("{{ block }}", "{{ module }}") {
  {{ macros.ports(ports, parameters) }}
- {% if blocktype != 'hier_block'%}{{ macros.parameter_instantiations(parameters) }}{%endif%}
+ {{ macros.parameter_instantiations(parameters) }}
 }
 
 // Settable Parameters

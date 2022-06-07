@@ -24,6 +24,9 @@ public:
 
 private:
     std::shared_ptr<soapy::source<T>> d_soapy_source_block;
+
+    void on_parameter_change(param_action_sptr action) override;
+
 };
 
 

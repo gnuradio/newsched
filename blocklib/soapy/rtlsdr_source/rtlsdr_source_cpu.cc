@@ -30,6 +30,26 @@ rtlsdr_source_cpu<T>::rtlsdr_source_cpu(const typename rtlsdr_source<T>::block_a
 
     this->connect(d_soapy_source_block, 0, this->base(), 0);
 }
+template <class T>
+void rtlsdr_source_cpu<T>::on_parameter_change(param_action_sptr action) 
+{
+    // This will set the underlying PMT
+    hier_block::on_parameter_change(action);
+
+    // Pass the parameter changes along to the underlying block
+    if (action->id() == rtlsdr_source<T>::id_samp_rate) {
+        auto samp_rate = pmtf::get_as<float>(*this->param_samp_rate);
+        d_soapy_source_block->set_sample_rate(0, samp_rate);
+    }
+    else if (action->id() == rtlsdr_source<T>::id_center_freq) {
+        auto freq = pmtf::get_as<float>(*this->param_center_freq);
+        d_soapy_source_block->set_frequency(0, freq);
+    }
+    else if (action->id() == rtlsdr_source<T>::id_gain) {
+        auto gain = pmtf::get_as<float>(*this->param_gain);
+        d_soapy_source_block->set_gain(0, "TUNER", gain);
+    }
+}
 
 
 } /* namespace soapy */

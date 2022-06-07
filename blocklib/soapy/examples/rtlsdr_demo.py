@@ -7,6 +7,8 @@ from gnuradio import gr, soapy, analog
 
 from gnuradio.pyqtgraph.numpy import *
 
+import threading, time
+
 app = pg.mkQApp('DockArea Example')
 win = QtGui.QMainWindow()
 area = DockArea()
@@ -32,6 +34,18 @@ area.addDock(d1,'top')
 d1.addWidget(snk.widget())
 
 fg.start()
+
+
+def thread_function(src):
+    newgain = 0.0
+    while True:
+        time.sleep(2)
+        src.set_gain(newgain)
+        newgain += 10.0
+
+x = threading.Thread(target=thread_function, args=(src,))
+x.daemon = True
+x.start()
 
 win.show()
 
