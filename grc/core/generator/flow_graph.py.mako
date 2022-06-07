@@ -21,6 +21,7 @@
 # GNU Radio version: ${version}
 ##################################################
 
+
 % if generate_options == 'qt_gui':
 from packaging.version import Version as StrictVersion
 
@@ -42,6 +43,13 @@ if __name__ == '__main__':
 ##${imp.replace("  # grc-generated hier_block", "")}
 ${imp}
 % endfor
+
+% if generate_options == 'pyqtgraph':
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtGui
+from pyqtgraph.dockarea import *
+from gnuradio.pyqtgraph.numpy import *
+% endif
 
 ########################################################
 ##Prepare snippets
@@ -138,6 +146,18 @@ class ${class_name}(gr.flowgraph):
         self.doc = doc
         self.plot_lst = []
         self.widget_lst = []
+% elif generate_options == 'pyqtgraph':
+
+class ${class_name}(gr.flowgraph):
+    def __init__(self):
+        gr.flowgraph.__init__(self, "${title}")
+        self.win = QtGui.QMainWindow()
+        self.area = DockArea()
+        self.win.setCentralWidget(self.area)
+        self.win.resize(1000,500)
+        self.win.setWindowTitle("${title}")
+        self.docks = []
+
 % elif generate_options == 'no_gui':
 
 class ${class_name}(gr.flowgraph):
@@ -368,6 +388,13 @@ def main(flowgraph_cls=${class_name}, options=None):
     % if flow_graph.get_option('realtime_scheduling'):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print("Error: failed to enable real-time scheduling.")
+    % endif
+    % if generate_options == 'pyqtgraph':
+    app = pg.mkQApp('DockArea Example')
+    fg = flowgraph_cls(${ ', '.join(params_eq_list) })
+    fg.start()
+    fg.win.show()
+    app.exec()
     % endif
     % if generate_options == 'qt_gui':
 

@@ -29,8 +29,8 @@ parameters:
     label: Generate Options
     dtype: enum
     default: qt_gui
-    options: [qt_gui, bokeh_gui, no_gui, hb, hb_qt_gui]
-    option_labels: [QT GUI, Bokeh GUI, No GUI, Hier Block, Hier Block (QT GUI)]
+    options: [qt_gui, bokeh_gui, no_gui, hb, hb_qt_gui, pyqtgraph]
+    option_labels: [QT GUI, Bokeh GUI, No GUI, Hier Block, Hier Block (QT GUI), PyQT Graph]
 -   id: gen_linking
     label: Linking
     dtype: enum

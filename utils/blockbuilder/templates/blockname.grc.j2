@@ -137,14 +137,13 @@ outputs:
 {% endif -%}
 {% endfor -%}
 
-{% if grc -%}
 templates:
+{% if grc and 'templates' in grc %}
     imports: |-
 {{grc['templates']['imports'] | indent(width=8,first=True)}}
     make: |- 
 {{grc['templates']['make'] | indent(width=8,first=True)}}
 {% else -%}{# Do the default template #}
-templates:
     imports: from gnuradio import {{module}}
     {%- if type_inst %}
     make: {{module}}.{{block}}{% if typekeys -%}_{{'${type_inst}'}}{%endif%}(
@@ -156,6 +155,9 @@ templates:
             {{'${'}}{{param['id']}}{{'}'}},
         {%- endif -%}
         {%-endfor-%}{% endif %} impl={{module}}.{{block}}{%if type_inst%}_${type_inst}{% elif typekeys -%}_{% for key in typekeys %}{{'${' + key['id'] + '.fcn}'}}{% endfor %}{%endif%}.${impl})
+    {%- if grc and 'addl_make' in grc %}
+        {{grc['addl_make'] | indent(width=8,first=False)}}
+    {%- endif %}
 {% endif %}
 
 file_format: 1 {# TODO - should this increment for GR 4.0 #}
