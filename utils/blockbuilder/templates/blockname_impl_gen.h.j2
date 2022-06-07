@@ -2,6 +2,7 @@
 {{ macros.header() }}
 
 #include <pmtf/base.hpp>
+#include <gnuradio/sptr_magic.h>
 
 namespace gr {
 namespace {{module}} {
@@ -10,12 +11,12 @@ namespace {{module}} {
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::sptr {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::make_{{impl}}(const block_args& args)
 {
-    return std::make_shared<{{block}}_{{impl}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
+    return gnuradio::make_block_sptr<{{block}}_{{impl}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
 }
 {%else-%}
 {{block}}::sptr {{block}}::make_{{impl}}(const block_args& args)
 {
-    return std::make_shared<{{block}}_{{impl}}>(args);
+    return gnuradio::make_block_sptr<{{block}}_{{impl}}>(args);
 }
 {%endif-%}
 

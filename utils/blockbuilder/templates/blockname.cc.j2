@@ -19,7 +19,7 @@ namespace {{module}} {
     {% endfor %}
 
     //case available_impl::BASE:
-    //    return std::make_shared<{{block}}>(args);
+    //    return gnuradio::make_block_sptr<{{block}}>(args);
     //    break;
         
     default:

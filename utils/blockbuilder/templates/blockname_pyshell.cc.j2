@@ -2,6 +2,7 @@
 {{ macros.header() }}
 
 #include "{{block}}_pyshell.h"
+#include <gnuradio/sptr_magic.h>
 
 namespace gr {
 namespace {{module}} {
@@ -10,12 +11,12 @@ namespace {{module}} {
 template <{% for key in typekeys -%}{{key['type']}} {{key['id']}}{{ ", " if not loop.last }}{%endfor%}>
 typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::sptr {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>::make_pyshell(const block_args& args)
 {
-    return std::make_shared<{{block}}_pyshell<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
+    return gnuradio::make_block_sptr<{{block}}_pyshell<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
 }
 {%else-%}
 {{block}}::sptr {{block}}::make_pyshell(const block_args& args)
 {
-    return std::make_shared<{{block}}_pyshell>(args);
+    return gnuradio::make_block_sptr<{{block}}_pyshell>(args);
 }
 {%endif-%}
 
