@@ -102,13 +102,13 @@ void flowgraph::check_connections(const graph_sptr& g)
         for (auto& port : node->output_ports()) {
             if (port->itemsize() == 0) {
                 port->set_itemsize(newsize);
-                port->set_format_descriptor("Zf");
+                port->set_format_descriptor("c8");
             }
         }
         for (auto& port : node->input_ports()) {
             if (port->itemsize() == 0) {
                 port->set_itemsize(newsize);
-                port->set_format_descriptor("Zf");
+                port->set_format_descriptor("c8");
             }
         }
     }
