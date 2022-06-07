@@ -17,12 +17,14 @@ parameters:
       dtype: float
       grc:
           default: "samp_rate"
+      settable: true
     - id: center_freq
       label: "Center Freq (Hz)"
       category: RF Options
       dtype: float
       grc:
           default: "freq"
+      settable: true
     - id: gain
       label: "RF Gain"
       category: RF Options
@@ -30,6 +32,7 @@ parameters:
       grc:
           default: "20"
           hide: ${'all' if agc else 'part'}
+      settable: true
     - id: freq_correction
       label: "Frequency Correction (PPM)"
       category: RF Options
