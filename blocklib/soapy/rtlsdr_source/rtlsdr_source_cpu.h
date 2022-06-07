@@ -1,0 +1,31 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2022 Josh Morman
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
+#pragma once
+
+#include <gnuradio/soapy/rtlsdr_source.h>
+#include <gnuradio/soapy/source.h>
+
+namespace gr {
+namespace soapy {
+
+template <class T>
+class rtlsdr_source_cpu : public rtlsdr_source<T>
+{
+public:
+    rtlsdr_source_cpu(const typename rtlsdr_source<T>::block_args& args);
+
+private:
+    std::shared_ptr<soapy::source<T>> d_soapy_source_block;
+};
+
+
+} // namespace soapy
+} // namespace gr
