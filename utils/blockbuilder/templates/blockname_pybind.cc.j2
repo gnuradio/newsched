@@ -15,7 +15,6 @@ void bind_{{block}}(py::module& m)
 
     py::class_<{{block}}, {{ inherits }}{{',' if inherits}}{% if blocktype != 'block'%} gr::{{blocktype}},{% endif %}
     gr::block, gr::node,
-    {# {% for b in properties|selectattr("id", "equalto", "base_class") %} {{ b['value'] }}, {% endfor -%} #}
     std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}"{{macros.block_docstring(doc,parameters,ports)}});
 
     py::enum_<::gr::{{module}}::{{block}}::available_impl>({{block}}_class, "available_impl")

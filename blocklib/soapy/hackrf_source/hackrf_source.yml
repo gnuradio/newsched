@@ -29,7 +29,8 @@ parameters:
       category: RF Options
       dtype: float
       default: "16"
-      hide: part
+      grc: 
+        hide: part  
       settable: true
     - id: bandwidth
       label: Bandwidth (0=auto)

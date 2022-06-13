@@ -3,6 +3,9 @@ import os
 import yaml
 import argparse
 import shutil
+import json
+import jsonschema
+from jsonschema import validate
 
 def argParse():
     """Parses commandline args."""
@@ -22,6 +25,16 @@ def argParse():
 def is_list(value):
     return isinstance(value, list)
 
+
+def validate_json(d, schema):
+    try:
+        validate(instance=d, schema=schema)
+    except jsonschema.exceptions.ValidationError as err:
+        print(err)
+        return False
+    return True
+
+
 def main():
     args = argParse()
     # env = Environment(loader = FileSystemLoader(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','templates'))
@@ -30,6 +43,9 @@ def main():
 
     blockdir = os.path.dirname(os.path.realpath(args.yaml_file))
     # print("blockdir is " + blockdir)
+
+   
+
 
 
     paths = []
@@ -41,10 +57,17 @@ def main():
     
     blockname = os.path.basename(os.path.dirname(os.path.realpath(args.yaml_file)))
     
-  
+    filedir = os.path.dirname(__file__)
+    with open(os.path.join(filedir, '..','schema', 'gnuradio-block-schema.json'),'r') as f:
+        block_schema = json.load(f)
+    
 
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
+        print(d)
+         # Validate the YAML file
+        if not (validate_json(d, block_schema)):
+            print(f'NOT_VALID: {args.yaml_file}')
 
         enums_path = os.path.join(os.path.dirname(args.yaml_file), '..', 'enums.yml')
         if os.path.exists(enums_path):
@@ -99,23 +122,11 @@ def main():
 
         if args.output_grc:
             template = env.get_template('blockname.grc.j2')
-            idx = 0
-            if 'grc_multiple' in d:
-                # TODO - handle the grc-idx and impl
-                for grc_file in d['grc_multiple']:
-                    filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc[idx]))
-                    rendered = template.render(d, grc=grc_file)
-                    with open(filename, 'w') as file:
-                        print("generating " + filename)
-                        file.write(rendered)
-                    idx += 1
-            else:
-                for grcidx,fn in zip(args.grc_index,args.output_grc):
-                    filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(fn))
-                    rendered = template.render(d)
-                    with open(filename, 'w') as file:
-                        print("generating " + filename)
-                        file.write(rendered)
+            filename = os.path.join(args.build_dir, 'blocklib', d['module'], blockname, os.path.basename(args.output_grc[0]))
+            rendered = template.render(d)
+            with open(filename, 'w') as file:
+                print("generating " + filename)
+                file.write(rendered)
 
 
         # copy the yaml file to the build dir
