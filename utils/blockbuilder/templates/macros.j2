@@ -69,42 +69,29 @@ class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ 
         {% for port in ports %}
         {% set porttype = get_linked_value(port['type']) -%}
         {% if port['domain'] != 'message' -%}
-        {% if 'multiplicity' not in port%}     
-        {% if port['type'] == 'untyped'%}                                  
-        add_port(untyped_port::make(
-            "{{ port['id'] }}", 
-            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{ get_linked_value(port['size'])}}));
-        {% else %}
-        add_port(port<{{porttype}}>::make("{{ port['id'] }}", 
-                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'shape' in port %}, std::vector<size_t>{ {{ get_linked_value(port['shape'])}} } {% endif %}));
-        {% endif %}
-        {% else %}
         {% if port['type'] == 'untyped'%}   
         for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {
         add_port(untyped_port::make(
-            "{{ port['id'] }}" + std::to_string(i), 
+            "{{ port['id'] }}" {{ "+ std::to_string(i)" if get_linked_value(port['multiplicity'])|int() > 1}}, 
             {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}, 
-            {{ get_linked_value(port['size'])}}));
+            {{ get_linked_value(port['size'])}}, {{port['optional']|lower()}}));
         }
         {% else %}
         for (size_t i = 0; i < {{ get_linked_value(port['multiplicity'])}}; i++) {
-        add_port(port<{{porttype}}>::make("{{ port['id'] }}" + std::to_string(i), 
-                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }}
-                            {% if 'shape' in port %}, std::vector<size_t>{ {{ get_linked_value(port['shape'])}} } {% endif %}));
+        add_port(port<{{porttype}}>::make("{{ port['id'] }}" {{ "+ std::to_string(i)" if get_linked_value(port['multiplicity'])|int() > 1}}, 
+                            {{ 'port_direction_t::INPUT' if port['direction'] == "input" else 'port_direction_t::OUTPUT' }},
+                            std::vector<size_t>{ {{ get_linked_value(port['shape'])}} }, {{port['optional']|lower()}}));
         }
         {% endif %}
-        {% endif -%}
         {% else %}
         {% if port['direction'] == 'input' %}
         _msg_{{port['id']}} = message_port::make(
-            "{{port['id']}}", port_direction_t::INPUT);
+            "{{port['id']}}", port_direction_t::INPUT, {{port['optional']|lower()}});
         _msg_{{port['id']}}->register_callback([this](pmtf::pmt msg) { this->handle_msg_{{port['id']}}(msg); });
         add_port(_msg_{{port['id']}});
         {% else %}
         _msg_{{port['id']}} = message_port::make(
-            "{{port['id']}}", port_direction_t::OUTPUT);
+            "{{port['id']}}", port_direction_t::OUTPUT, {{port['optional']|lower()}});
         add_port(_msg_{{port['id']}});
         {% endif %}
         {% endif -%}

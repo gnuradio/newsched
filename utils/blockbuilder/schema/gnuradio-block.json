@@ -190,21 +190,27 @@
                 "default": {
                     "anyOf": [
                         {
-                            "type": "string"
+                            "type": "string",
+                            "default": ""
                         },
                         {
-                            "type": "number"
+                            "type": "number",
+                            "default": 0.0
                         },
                         {
-                            "type": "integer"
+                            "type": "integer",
+                            "default": 0
                         },
                         {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         },
                         {
-                            "type": "array"
+                            "type": "array",
+                            "default": []
                         }
-                    ]
+                    ],
+                    "default": ""
                 },
                 "container": {
                     "type": "string"
