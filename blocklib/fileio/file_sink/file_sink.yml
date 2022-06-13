@@ -2,7 +2,6 @@ module: fileio
 block: file_sink
 label: File Sink
 blocktype: sync_block
-base_class: gr::fileio::file_sink_base
 
 parameters:
 -   id: filename
