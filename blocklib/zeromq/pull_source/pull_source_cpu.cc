@@ -19,7 +19,7 @@ work_return_code_t pull_source_cpu::work(std::vector<block_work_input_sptr>& wor
 
     auto noutput_items = work_output[0]->n_items;
     bool first = true;
-    int done = 0;
+    size_t done = 0;
 
     /* Process as much as we can */
     while (1) {
