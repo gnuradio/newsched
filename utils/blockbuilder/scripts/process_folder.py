@@ -45,6 +45,13 @@ def main():
 
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
+
+        enums_path = os.path.join(os.path.dirname(args.yaml_file), '..', 'enums.yml')
+        if os.path.exists(enums_path):
+            with open(enums_path) as ef:
+                ed = yaml.load(ef, Loader=yaml.FullLoader)
+                d['module_enums'] = ed
+
         # Does this block specify a templated version
         templated = 0
         if ('typekeys' in d and len(d['typekeys']) > 0):

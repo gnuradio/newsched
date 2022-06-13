@@ -17,7 +17,7 @@ typekeys:
 parameters:
 -   id: type
     label: Type
-    dtype: gr::analog::noise_type
+    dtype: gr::analog::noise_t
     settable: true
     is_enum: true # this should be handled better
 -   id: amplitude
