@@ -6,6 +6,7 @@ import shutil
 import json
 import jsonschema
 from jsonschema import validate
+import jsonschema_default
 
 def argParse():
     """Parses commandline args."""
@@ -58,22 +59,31 @@ def main():
     blockname = os.path.basename(os.path.dirname(os.path.realpath(args.yaml_file)))
     
     filedir = os.path.dirname(__file__)
-    with open(os.path.join(filedir, '..','schema', 'gnuradio-block-schema.json'),'r') as f:
+    with open(os.path.join(filedir, '..','schema', 'gnuradio-block.json'),'r') as f:
         block_schema = json.load(f)
     
 
     with open(args.yaml_file) as file:
         d = yaml.load(file, Loader=yaml.FullLoader)
-        print(d)
          # Validate the YAML file
         if not (validate_json(d, block_schema)):
-            print(f'NOT_VALID: {args.yaml_file}')
+            raise Exception(f"{args.yaml_file} does not validate against the schema")
 
         enums_path = os.path.join(os.path.dirname(args.yaml_file), '..', 'enums.yml')
         if os.path.exists(enums_path):
             with open(enums_path) as ef:
                 ed = yaml.load(ef, Loader=yaml.FullLoader)
                 d['module_enums'] = ed
+
+        # Populate the dictionary with defaults from the schema
+        default_obj = jsonschema_default.create_from(block_schema)
+        default_obj.update(d)
+        d = default_obj
+
+        for idx, p in enumerate(d['ports']):
+            default_obj = jsonschema_default.create_from(block_schema['definitions']['Port'])
+            default_obj.update(p)
+            d['ports'][idx] = default_obj
 
         # Does this block specify a templated version
         templated = 0
