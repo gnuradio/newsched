@@ -9,6 +9,7 @@
 {%- elif type in ['const char *', 'const std::string&'] -%}string
 {%- elif type in ['bool'] -%}bool
 {%- elif type in ['gui_hint'] -%}gui_hint
+{%- elif type.startswith('enums/') %}enum
 {%- else -%}{{default}}{%-endif-%}
 {%- endmacro -%}
 {%- macro vec_type_lookup(type, default) -%}
@@ -45,7 +46,7 @@ category: '[GR 4.0]/{{module}}'
 
 parameters:
 {% if typekeys -%} {# We have a templated block, enable type parameter#}
-{% if type_inst -%}
+{% if type_inst -%}{# We are limiting the permutations of type combinations#}
 -   id: type_inst
     label: Type
     dtype: enum
@@ -72,6 +73,10 @@ parameters:
 -   id: {{param['id']}}
     label: {{param['label']}}
     dtype: {{type_lookup(param['dtype'],'raw') if 'container' not in param or param['container'] == 'scalar' else vec_type_lookup(param['dtype'],'raw')}}
+    {%if 'is_enum' in param and param['is_enum'] %}
+    options: [{%for k1,enum_type in module_enums.items() %}{% if param['dtype'].endswith(k1) %}{% for val in enum_type['enumerators']%} {{module}}.{{k1}}.{{val['id']}}{{',' if not loop.last}}{%endfor%}{%endif%}{%endfor%}]
+    option_labels: [{%for k1,enum_type in module_enums.items() %}{% if param['dtype'].endswith(k1) %}{% for val in enum_type['enumerators']%}{{val['label'] if 'label' in val else val['id'] | upper}}{{',' if not loop.last}}{%endfor%}{%endif%}{%endfor%}]
+    {%endif%}
     {%if 'grc' in param and 'default' in param['grc']%}default: {{param['grc']['default']}}{%elif 'default' in param %}default: {{param['default']}}{%endif%}
     {%if 'grc' in param and 'hide' in param['grc']%}hide: {{param['grc']['hide']}}{%endif%}
 {% endif %}{% endfor -%}{% endif %}

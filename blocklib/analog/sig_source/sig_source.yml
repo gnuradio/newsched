@@ -20,19 +20,27 @@ parameters:
     label: Sampling Freq
     dtype: double
     settable: true
+    grc:
+        default: samp_rate
 -   id: waveform
     label: Waveform
-    dtype: gr::analog::waveform_type
+    dtype: enums/waveform_t
     is_enum: true
     settable: true
+    grc:
+        default: analog.waveform.sin
 -   id: frequency
     label: Wave Freq
     dtype: double
     settable: true
+    grc:
+        default: 1000
 -   id: ampl
     label: Amplitude
     dtype: double
     settable: true
+    grc:
+        default: 1.0
 -   id: offset
     label: Offset
     dtype: T

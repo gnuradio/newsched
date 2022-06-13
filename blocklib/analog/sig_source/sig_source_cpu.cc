@@ -37,15 +37,15 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
 
     auto offset = pmtf::get_as<T>(*this->param_offset);
     auto ampl = pmtf::get_as<float>(*this->param_ampl);
-    auto waveform = static_cast<waveform_type>(pmtf::get_as<int>(*this->param_waveform));
+    auto waveform = static_cast<waveform_t>(pmtf::get_as<int>(*this->param_waveform));
 
     switch (waveform) {
-    case waveform_type::constant:
+    case waveform_t::constant:
         t = (T)ampl + offset;
         std::fill_n(optr, noutput_items, t);
         break;
 
-    case waveform_type::sin:
+    case waveform_t::sin:
         d_nco.sin(optr, noutput_items, ampl);
         if (offset == 0)
             break;
@@ -54,7 +54,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
             optr[i] += offset;
         }
         break;
-    case waveform_type::cos:
+    case waveform_t::cos:
         d_nco.cos(optr, noutput_items, ampl);
         if (offset == 0)
             break;
@@ -65,7 +65,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         break;
 
         /* The square wave is high from -PI to 0. */
-    case waveform_type::square:
+    case waveform_t::square:
         t = (T)ampl + offset;
         for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < 0)
@@ -77,7 +77,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         break;
 
         /* The triangle wave rises from -PI to 0 and falls from 0 to PI. */
-    case waveform_type::triangle:
+    case waveform_t::triangle:
         for (size_t i = 0; i < noutput_items; i++) {
             double t = ampl * d_nco.get_phase() / GR_M_PI;
             if (d_nco.get_phase() < 0)
@@ -89,7 +89,7 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         break;
 
         /* The saw tooth wave rises from -PI to PI. */
-    case waveform_type::sawtooth:
+    case waveform_t::sawtooth:
         for (size_t i = 0; i < noutput_items; i++) {
             t = static_cast<T>(ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 2 +
                                offset);
@@ -117,16 +117,16 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
 
     auto offset = pmtf::get_as<gr_complex>(*this->param_offset);
     auto ampl = pmtf::get_as<float>(*this->param_ampl);
-    auto waveform = static_cast<waveform_type>(pmtf::get_as<int>(*this->param_waveform));
+    auto waveform = static_cast<waveform_t>(pmtf::get_as<int>(*this->param_waveform));
 
     switch (waveform) {
-    case waveform_type::constant:
+    case waveform_t::constant:
         t = (gr_complex)ampl + offset;
         std::fill_n(optr, noutput_items, t);
         break;
 
-    case waveform_type::sin:
-    case waveform_type::cos:
+    case waveform_t::sin:
+    case waveform_t::cos:
         d_nco.sincos(optr, noutput_items, ampl);
         if (offset == gr_complex(0, 0))
             break;
@@ -139,7 +139,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
         /* Implements a real square wave high from -PI to 0.
          * The imaginary square wave leads by 90 deg.
          */
-    case waveform_type::square:
+    case waveform_t::square:
         for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2)
                 optr[i] = gr_complex(ampl, 0) + offset;
@@ -157,7 +157,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
          * falling from 0 to PI. The imaginary triangle wave leads by
          * 90 deg.
          */
-    case waveform_type::triangle:
+    case waveform_t::triangle:
         for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
                 optr[i] =
@@ -185,7 +185,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
         /* Implements a real saw tooth wave rising from -PI to PI.
          * The imaginary saw tooth wave leads by 90 deg.
          */
-    case waveform_type::sawtooth:
+    case waveform_t::sawtooth:
         for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
                 optr[i] =

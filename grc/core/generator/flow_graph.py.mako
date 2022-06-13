@@ -391,6 +391,9 @@ def main(flowgraph_cls=${class_name}, options=None):
     % endif
     % if generate_options == 'pyqtgraph':
     app = pg.mkQApp('DockArea Example')
+    % if flow_graph.get_option('pyqtgraph_antialiasing'):
+    pg.setConfigOptions(antialias=True)
+    % endif
     fg = flowgraph_cls(${ ', '.join(params_eq_list) })
     fg.start()
     fg.win.show()

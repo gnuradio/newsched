@@ -126,6 +126,13 @@ parameters:
     dtype: string
     default: '.:'
     hide: part
+-   id: pyqtgraph_antialiasing
+    label: Anti-Aliasing 
+    category: Advanced
+    dtype: enum
+    options: ['', '1']
+    option_labels: ['Off', 'On']
+    hide: ${ ('all' if generate_options != 'pyqtgraph' else 'part') }
 
 asserts:
 - ${ len(placement) == 4 or len(placement) == 2 }

@@ -31,22 +31,7 @@
 class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ inherits }}#}
 {% endmacro %}
 
-{% macro block_args(parameters) -%}
-    struct block_args {
-        {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr'] == true %}
-        {% if param['container'] == 'vector' -%}
-        std::vector<{{ param['dtype'] }}> {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% else %}
-        {{ param['dtype'] }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
-        {% endif %}
-        {% endif %}{% endfor -%}{% endif %}};
-{% endmacro %}
-
-{% macro cotr_statement(block) -%}
-{{ block }}(const block_args& args);
-{% endmacro %}
-
-{% macro get_linked_value(value, ports, parameters, typekeys) -%}
+{% macro get_linked_value(value, ports, parameters, typekeys, enums) -%}
     {% set newvalue = value -%}
     {% if '/' in value | string() -%}
     {% set list1 = value.split('/') -%}
@@ -57,9 +42,28 @@ class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ 
             {% set newvalue = 'args.' + list1[1] -%}
         {% elif category == 'typekeys' -%}
             {% set newvalue = list1[1] -%}
+        {% elif category == 'enums' -%}
+            {% set newvalue = list1[1] -%}
         {% endif -%}
     {% endif -%}
 {{newvalue}}{% endmacro -%}
+
+{% macro block_args(parameters) -%}
+    struct block_args {
+        {% if parameters %} {% for param in parameters -%}{% if 'cotr' not in param or param['cotr'] == true %}
+        {% if param['container'] == 'vector' -%}
+        std::vector<{{ param['dtype'] }}> {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
+        {% else %}
+        {{get_linked_value(param['dtype']) }} {{ param['id'] }}{% if 'default' in param %} = {{param['default']}}{% endif %};
+        {% endif %}
+        {% endif %}{% endfor -%}{% endif %}};
+{% endmacro %}
+
+{% macro cotr_statement(block) -%}
+{{ block }}(const block_args& args);
+{% endmacro %}
+
+
 
 {% macro ports(ports, parameters, typekeys) -%}
         {% for port in ports %}
@@ -136,7 +140,7 @@ class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ 
     virtual  {{cb['return']}} {{cb['id']}} (
     {% if 'args' in cb -%}
     {% for arg in cb['args'] -%}
-    {{arg['dtype']}} {{arg['id']}}{{ ", " if not loop.last }}
+    {{get_linked_value(arg['dtype'])}} {{arg['id']}}{{ ", " if not loop.last }}
     {% endfor -%}
     {% endif -%}
     ) {% if cb['const'] %}const {%endif%} = 0;
@@ -166,10 +170,10 @@ public:
             {% endif -%}
         {% else -%}
             {% if p['settable']%}
-    virtual void set_{{p['id']}}({{p['dtype']}} {{p['id']}}); 
+    virtual void set_{{p['id']}}({{get_linked_value(p['dtype'])}} {{p['id']}}); 
             {% endif -%}
             {% if p['settable'] and not 'gettable' in p or p['gettable'] %}
-    virtual {{p['dtype']}} {{p['id']}}();
+    virtual {{get_linked_value(p['dtype'])}} {{p['id']}}();
             {% endif -%}
         {% endif -%}
     {% endfor -%}
