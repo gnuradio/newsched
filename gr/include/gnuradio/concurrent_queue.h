@@ -43,10 +43,11 @@ private:
 #else
 
 #include <condition_variable>
+#include <chrono>
 #include <deque>
 #include <iostream>
 #include <mutex>
-
+using namespace std::chrono_literals;
 namespace gr {
 
 /**
@@ -61,9 +62,10 @@ public:
     bool push(const T& msg)
     {
         std::unique_lock<std::mutex> l(_mutex);
+        // std::scoped_lock l(_mutex);
         _queue.push_back(msg);
         l.unlock();
-        _cond.notify_all();
+        _cond.notify_one();
 
         return true;
     }
@@ -83,12 +85,24 @@ public:
     }
     bool pop(T& msg)
     {
+#if 1
         std::unique_lock<std::mutex> l(_mutex);
         _cond.wait(l,
                    [this] { return !_queue.empty(); }); // TODO - replace with a waitfor
         msg = _queue.front();
         _queue.pop_front();
         return true;
+#else
+        std::unique_lock<std::mutex> l(_mutex);
+        if (_cond.wait_for(l, 10us, [this] { return !_queue.empty(); })) {
+            msg = _queue.front();
+            _queue.pop_front();
+            return true;
+        }
+        else { // timeout
+            return false;
+        }
+#endif
     }
     void clear()
     {

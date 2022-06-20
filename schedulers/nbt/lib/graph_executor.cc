@@ -20,6 +20,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
     }
 
     for (auto const& b : blocks) { // TODO - order the blocks
+        if (b->is_hier()) {
+            continue;
+        }
 
         std::vector<block_work_input_sptr> work_input;   //(num_input_ports);
         std::vector<block_work_output_sptr> work_output; //(num_output_ports);
@@ -263,8 +266,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                               work_input[input_port_index]->n_consumed);
 
                         p_buf->post_read(work_input[input_port_index]->n_consumed);
-                        p->notify_connected_ports(std::make_shared<scheduler_action>(
-                            scheduler_action_t::NOTIFY_OUTPUT));
+                        p->notify_scheduler_action(scheduler_action_t::NOTIFY_OUTPUT);
 
                         input_port_index++;
                     }
@@ -279,8 +281,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                               work_output[output_port_index]->n_produced);
                         p_buf->post_write(work_output[output_port_index]->n_produced);
 
-                        p->notify_connected_ports(std::make_shared<scheduler_action>(
-                            scheduler_action_t::NOTIFY_INPUT));
+                        p->notify_scheduler_action(scheduler_action_t::NOTIFY_INPUT);
 
                         output_port_index++;
 

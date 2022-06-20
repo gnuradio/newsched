@@ -18,6 +18,7 @@ public:
     hier_block(const std::string& name, const std::string& module = "")
         : block(name), s_module(module)
     {
+        _is_hier = true;
         _graph = std::make_shared<gr::graph>(name);
         // This bit of magic ensures that self() works in the constructors of derived
         // classes.

@@ -17,26 +17,27 @@
 namespace gr {
 namespace streamops {
 namespace load_cu {
-__global__ void load_kernel(const uint8_t* in, uint8_t* out, int N, size_t load = 1)
-{
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < N) {
-        for (int x = 0; x < load; x++) {
-            out[i] = in[i];
+    __global__ void load_kernel(const uint8_t* in, uint8_t* out, int N, size_t load = 1)
+    {
+        int i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i < N) {
+            for (int x = 0; x < load; x++) {
+                out[i] = in[i];
+            }
         }
     }
-}
-
-void exec_kernel(const uint8_t* in,
-                uint8_t* out,
-                int grid_size,
-                int block_size,
-                size_t load,
-                cudaStream_t stream)
-{
-    int N = block_size * grid_size;
-    load_kernel<<<grid_size, block_size, 0, stream>>>(in, out, N, load);
-}
+    
+    void exec_kernel(const uint8_t* in,
+                     uint8_t* out,
+                     int grid_size,
+                     int block_size,
+                     int N,
+                     size_t load,
+                     cudaStream_t stream)
+    {
+        load_kernel<<<grid_size, block_size, 0, stream>>>(in, out, N, load);
+    }
+    
 
 void get_block_and_grid(int* minGrid, int* minBlock)
 {

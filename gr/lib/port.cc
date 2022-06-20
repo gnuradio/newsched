@@ -66,14 +66,23 @@ std::string port_base::format_descriptor()
     }
 }
 
-void port_base::notify_connected_ports(scheduler_message_sptr msg)
+void port_base::notify_msgport_message(pmtf::pmt msg)
 {
     for (auto& p : _connected_ports) {
         if (p) {
-            p->push_message(msg);
+            p->push_message(std::make_shared<msgport_message>(msg, nullptr));
         }
     }
 }
+void port_base::notify_scheduler_action(scheduler_action_t action)
+{
+    for (auto& p : _connected_ports) {
+        if (p) {
+            p->push_message(std::make_shared<scheduler_action>(action));
+        }
+    }
+}
+
 // Inbound messages
 void port_base::push_message(scheduler_message_sptr msg)
 {
@@ -176,7 +185,7 @@ message_port::message_port(const std::string& name,
 void message_port::post(pmtf::pmt msg)
 {
     if (direction() == port_direction_t::OUTPUT)
-        notify_connected_ports(std::make_shared<msgport_message>(msg, nullptr));
+        notify_msgport_message(msg);
     else {
         push_message(std::make_shared<msgport_message>(msg, _callback_fcn));
     }

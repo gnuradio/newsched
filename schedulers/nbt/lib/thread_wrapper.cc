@@ -41,14 +41,18 @@ void thread_wrapper::stop()
 {
     d_thread_stopped = true;
     kill();
-    if (d_thread.joinable()) { d_thread.join(); }
+    if (d_thread.joinable()) {
+        d_thread.join();
+    }
     for (auto& b : d_blocks) {
         b->stop();
     }
 }
 void thread_wrapper::wait()
 {
-    if (d_thread.joinable()) { d_thread.join(); }
+    if (d_thread.joinable()) {
+        d_thread.join();
+    }
     for (auto& b : d_blocks) {
         b->done();
     }
@@ -112,9 +116,8 @@ bool thread_wrapper::handle_work_notification()
     if (d_flushing) {
         if (all_blkd) {
             if (++d_flush_cnt >= 8) {
-                d_debug_logger->debug(
-                             "All blocks in thread {} blocked, pushing flushed",
-                             id());
+                d_debug_logger->debug("All blocks in thread {} blocked, pushing flushed",
+                                      id());
                 d_rtmon->push_message(
                     rt_monitor_message::make(rt_monitor_message_t::FLUSHED, id()));
                 return false;
@@ -239,6 +242,10 @@ void thread_wrapper::thread_body(thread_wrapper* top)
 
                     auto action = std::static_pointer_cast<scheduler_action>(msg);
                     switch (action->action()) {
+                    case scheduler_action_t::SIGNAL_DONE:
+                        top->d_rtmon->push_message(
+                            rt_monitor_message::make(rt_monitor_message_t::DONE));
+                        break;
                     case scheduler_action_t::DONE:
                         // rtmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
@@ -248,33 +255,32 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                         // -- hang in this state until all the blocks in this thread
                         // report
                         //    either BLKD_IN or BLKD_OUT
-                        top->d_debug_logger->debug(
-                                     "rtmon signaled DONE, start flushing");
+                        top->d_debug_logger->info("rtmon signaled DONE, start flushing");
                         top->start_flushing();
                         do_some_work = true;
 
                         break;
                     case scheduler_action_t::EXIT:
-                        top->d_debug_logger->debug(
-                                     "rtmon signaled EXIT, exiting thread");
+                        top->d_debug_logger->info("rtmon signaled EXIT, exiting thread");
                         // rtmon says that we need to be done, wrap it up
                         // each scheduler could handle this in a different way
                         top->stop_blocks();
                         top->d_thread_stopped = true;
                         break;
                     case scheduler_action_t::NOTIFY_OUTPUT:
-                        top->d_debug_logger->debug(
-                                     "got NOTIFY_OUTPUT from {}",
-                                     msg->blkid());
+                        top->d_debug_logger->debug("got NOTIFY_OUTPUT from {}",
+                                                   msg->blkid());
                         do_some_work = true;
                         break;
                     case scheduler_action_t::NOTIFY_INPUT:
-                        top->d_debug_logger->debug("got NOTIFY_INPUT from {}", msg->blkid());
+                        top->d_debug_logger->debug("got NOTIFY_INPUT from {}",
+                                                   msg->blkid());
 
                         do_some_work = true;
                         break;
                     case scheduler_action_t::NOTIFY_ALL: {
-                        top->d_debug_logger->debug("got NOTIFY_ALL from {}", msg->blkid());
+                        top->d_debug_logger->debug("got NOTIFY_ALL from {}",
+                                                   msg->blkid());
                         do_some_work = true;
                         break;
                     }
@@ -284,7 +290,8 @@ void thread_wrapper::thread_body(thread_wrapper* top)
                     break;
                 }
                 case scheduler_message_t::MSGPORT_MESSAGE: {
-
+                    top->d_debug_logger->debug("got MSGPORT_MESSAGE from {}",
+                                               msg->blkid());
                     auto m = std::static_pointer_cast<msgport_message>(msg);
                     m->callback()(m->message());
 

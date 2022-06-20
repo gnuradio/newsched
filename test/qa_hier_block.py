@@ -45,5 +45,8 @@ class test_hier(gr_unittest.TestCase):
         self.assertEqual(input_data, snk1.data())
         self.assertEqual(input_data, snk2.data())
 
+
+    # TODO: Combinations of Message and Stream ports at input and output
+
 if __name__ == "__main__":
     gr_unittest.run(test_hier)

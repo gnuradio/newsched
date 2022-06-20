@@ -42,6 +42,7 @@ private:
     double d_relative_rate = 1.0;
 
 protected:
+    bool _is_hier = false;
     neighbor_interface_sptr p_scheduler = nullptr;
     std::map<std::string, int> d_param_str_map;
     std::map<int, std::string> d_str_param_map;
@@ -149,6 +150,7 @@ public:
 
     static pmtf::pmt deserialize_param_to_pmt(const std::string& param_value);
     static sptr cast(node_sptr n) { return std::static_pointer_cast<block>(n); }
+    bool is_hier() { return _is_hier; }
 };
 
 using block_sptr = block::sptr;

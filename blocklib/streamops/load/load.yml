@@ -7,7 +7,10 @@ parameters:
 -   id: iterations
     label: Iterations (Load)
     dtype: size_t
-    settable: true
+-   id: use_cb
+    label: Use Custom Buffers
+    dtype: bool
+    default: 'true'
 -   id: itemsize
     label: Item Size
     dtype: size_t
