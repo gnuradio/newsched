@@ -25,10 +25,6 @@ typename {{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.la
     {% if vars.update({'pyshell': True}) %} {% endif %}
     {% endif -%}
     {% endfor %}
-
-    //case available_impl::BASE:
-    //    return gnuradio::make_block_sptr<{{block}}<{% for key in typekeys -%}{{key['id']}}{{ ", " if not loop.last }}{%endfor%}>>(args);
-    //    break;
         
     default:
         throw std::invalid_argument(

@@ -17,11 +17,16 @@ void bind_{{block}}(py::module& m)
     gr::block, gr::node,
     std::shared_ptr<{{block}}>> {{block}}_class(m, "{{block}}"{{macros.block_docstring(doc,parameters,ports)}});
 
-    py::enum_<::gr::{{module}}::{{block}}::available_impl>({{block}}_class, "available_impl")
+    py::enum_<::gr::{{ module }}::{{ block }}::available_impl>({{block}}_class, "available_impl")
+    {% set vars = {'pyshell': False} -%}
     {% for impl in implementations -%}
+    {% if 'lang' not in impl or impl['lang'] == 'cpp' -%}
         .value("{{ impl['id'] | lower }}", ::gr::{{module}}::{{block}}::available_impl::{{ impl['id'] | upper }}) 
+    {% elif 'lang' in impl and impl['lang'] == 'python' and not vars.pyshell -%}
+        .value("pyshell", ::gr::{{module}}::{{block}}::available_impl::PYSHELL) 
+    {% if vars.update({'pyshell': True}) %} {% endif %}
+    {% endif -%}
     {% endfor -%}
-        //.value("base", ::gr::{{module}}::{{block}}::available_impl::BASE ) 
         .export_values();
 
     {{block}}_class.def(py::init([]({% if parameters %}{% for param in parameters -%}{% if 'cotr' not in param or param['cotr']%}{{ param['dtype'] if param['container'] != 'vector' else "std::vector<" + param['dtype'] + ">"}} {{ param['id'] }},{%endif%} {%endfor%}{% endif %} typename gr::{{module}}::{{block}}::available_impl impl) {
