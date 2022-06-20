@@ -156,7 +156,11 @@
                 "lang": {
                     "type": "string",
                     "default": "cpp"
-                }
+                },
+                "domain": {
+                    "type": "string",
+                    "default": "cpu"
+                }                
             },
             "required": [
                 "id"
