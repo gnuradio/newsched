@@ -10,11 +10,11 @@
 
 from gnuradio import gr, blocks, streamops, fft
 from gnuradio.kernel.filter import firdes
+from gnuradio.kernel.fft import window
 from gnuradio.schedulers import nbt
 import sys
 import signal
 from argparse import ArgumentParser
-from gnuradio.fft import window
 import time
 from gnuradio import filter
 
@@ -31,14 +31,14 @@ class benchmark_pfb_channelizer(gr.flowgraph):
         attn = args.attenuation
         bufsize = args.buffer_size
                 
-        taps = filter.firdes.low_pass_2(1, nchans, 1 / 2, 1 / 10,  attenuation_dB=attn,window=fft.window.WIN_BLACKMAN_hARRIS)
+        taps = firdes.low_pass_2(1, nchans, 1 / 2, 1 / 10,  attenuation_dB=attn,window=window.WIN_BLACKMAN_hARRIS)
 
         ##################################################
         # Blocks
         ##################################################
-        self.nsrc = blocks.null_source(gr.sizeof_gr_complex*1)
-        self.nsnk = blocks.null_sink(gr.sizeof_gr_complex*1, nports=nchans)
-        self.hd = streamops.head(gr.sizeof_gr_complex*1, int(nsamples))
+        self.nsrc = blocks.null_source()
+        self.nsnk = blocks.null_sink(nports=nchans)
+        self.hd = streamops.head(int(nsamples))
 
         if not args.cuda:
             self.channelizer = filter.pfb_channelizer_cc(

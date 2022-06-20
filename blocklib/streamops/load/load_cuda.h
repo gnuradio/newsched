@@ -29,10 +29,16 @@ public:
 
 protected:
     size_t d_load;
+    bool d_use_cb;
 
     int d_block_size;
     int d_min_grid_size;
     cudaStream_t d_stream;
+
+    uint8_t *d_dev_in;
+    uint8_t *d_dev_out;
+
+    size_t d_max_buffer_size = 65536*8;
 };
 
 } // namespace streamops

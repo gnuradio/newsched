@@ -85,7 +85,8 @@ public:
     void set_buffer_reader(buffer_reader_sptr rdr) { _buffer_reader = rdr; }
     buffer_reader_sptr buffer_reader() { return _buffer_reader; }
 
-    void notify_connected_ports(scheduler_message_sptr msg);
+    void notify_msgport_message(pmtf::pmt msg);
+    void notify_scheduler_action(scheduler_action_t action);
     // Inbound messages
     void push_message(scheduler_message_sptr msg) override;
     void connect(port_interface_sptr other_port);

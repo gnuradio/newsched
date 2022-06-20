@@ -117,7 +117,7 @@ void block::handle_msg_system(pmtf::pmt msg)
     if (str_msg == "done") {
         d_finished = true;
         p_scheduler->push_message(
-            std::make_shared<scheduler_action>(scheduler_action_t::NOTIFY_ALL, id()));
+            std::make_shared<scheduler_action>(scheduler_action_t::SIGNAL_DONE, id()));
     }
 }
 
@@ -139,13 +139,17 @@ void block::request_parameter_change(int param_id, pmtf::pmt new_value, bool blo
             cv.notify_all();
         };
 
-        p_scheduler->push_message(std::make_shared<param_change_action>(
-            id(), param_action::make(param_id, new_value, 0), lam));
-
         if (block) {
+            p_scheduler->push_message(std::make_shared<param_change_action>(
+                id(), param_action::make(param_id, new_value, 0), lam));
+
             // block until confirmation that parameter has been set
             std::unique_lock<std::mutex> lk(m);
             cv.wait(lk, [&ready]() { return ready == true; });
+        }
+        else {
+            p_scheduler->push_message(std::make_shared<param_change_action>(
+                id(), param_action::make(param_id, new_value, 0), nullptr));
         }
     }
     // else go ahead and update parameter value

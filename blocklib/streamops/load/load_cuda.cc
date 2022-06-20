@@ -22,12 +22,18 @@
 namespace gr {
 namespace streamops {
 
-load_cuda::load_cuda(block_args args) : INHERITED_CONSTRUCTORS, d_load(args.iterations)
+load_cuda::load_cuda(block_args args)
+    : INHERITED_CONSTRUCTORS, d_load(args.iterations), d_use_cb(args.use_cb)
 
 {
     load_cu::get_block_and_grid(&d_min_grid_size, &d_block_size);
     d_logger->info("minGrid: {}, blockSize: {}", d_min_grid_size, d_block_size);
     cudaStreamCreate(&d_stream);
+
+    if (!d_use_cb) {
+        checkCudaErrors(cudaMalloc((void**)&d_dev_in, d_max_buffer_size));
+        checkCudaErrors(cudaMalloc((void**)&d_dev_out, d_max_buffer_size));
+    }
 }
 
 work_return_code_t load_cuda::work(std::vector<block_work_input_sptr>& work_input,
@@ -35,16 +41,25 @@ work_return_code_t load_cuda::work(std::vector<block_work_input_sptr>& work_inpu
 {
     auto in = work_input[0]->items<uint8_t>();
     auto out = work_output[0]->items<uint8_t>();
-
     auto noutput_items = work_output[0]->n_items;
     auto itemsize = work_output[0]->buffer->item_size();
     int gridSize = (noutput_items * itemsize + d_block_size - 1) / d_block_size;
-    load_cu::exec_kernel(in, out, gridSize, d_block_size, d_load, d_stream);
-    checkCudaErrors(cudaPeekAtLastError());
+    if (d_use_cb) {
+        load_cu::exec_kernel(in, out, gridSize, d_block_size, noutput_items, d_load, d_stream);
+        checkCudaErrors(cudaPeekAtLastError());
+        cudaStreamSynchronize(d_stream);
+    }
+    else {
+        checkCudaErrors(cudaMemcpyAsync(
+            d_dev_in, in, noutput_items * itemsize, cudaMemcpyHostToDevice, d_stream));
 
+        load_cu::exec_kernel(
+            d_dev_in, d_dev_out, gridSize, d_block_size, noutput_items, d_load, d_stream);
+        checkCudaErrors(cudaPeekAtLastError());
 
-    cudaStreamSynchronize(d_stream);
-
+        cudaMemcpyAsync(
+            out, d_dev_out, noutput_items * itemsize, cudaMemcpyDeviceToHost, d_stream);
+    }
 
     // Tell runtime system how many output items we produced.
     produce_each(noutput_items, work_output);

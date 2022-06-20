@@ -60,17 +60,65 @@ public:
                 auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
                 auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
 
-                if (src_ptr != nullptr) {
+                // auto src_hier_block =
+                //     std::dynamic_pointer_cast<gr::hier_block>(p->src().node());
+                // auto dst_hier_block =
+                //     std::dynamic_pointer_cast<gr::hier_block>(p->dst().node());
+
+                if (src_ptr != nullptr) { //} && !src_hier_block) {
                     tmp.push_back(src_ptr);
                 }
-                if (dst_ptr != nullptr) {
+                if (dst_ptr != nullptr) { //}) && !dst_hier_block) {
                     tmp.push_back(dst_ptr);
                 }
             }
         }
 
         for (auto n : _orphan_nodes) {
-            tmp.push_back(std::static_pointer_cast<block>(n));
+            // auto hier_ptr = std::dynamic_pointer_cast<gr::hier_block>(n);
+            // if (!hier_ptr) {
+                tmp.push_back(std::static_pointer_cast<block>(n));
+            // }
+        }
+
+
+        return unique_vector<block_sptr>(tmp);
+    }
+
+    block_vector_t calc_used_hier_blocks()
+    {
+        block_vector_t tmp;
+
+        // Collect all blocks in the edge list
+        for (auto& p : edges()) {
+            // if both ends of the edge belong to this graph
+            if (std::find(_nodes.begin(), _nodes.end(), p->src().node()) !=
+                    _nodes.end() &&
+                std::find(_nodes.begin(), _nodes.end(), p->dst().node()) !=
+                    _nodes.end()) {
+
+                auto src_ptr = std::dynamic_pointer_cast<block>(p->src().node());
+                auto dst_ptr = std::dynamic_pointer_cast<block>(p->dst().node());
+
+                auto src_hier_block =
+                    std::dynamic_pointer_cast<gr::hier_block>(p->src().node());
+                auto dst_hier_block =
+                    std::dynamic_pointer_cast<gr::hier_block>(p->dst().node());
+
+                if (src_ptr != nullptr && src_hier_block) {
+                    tmp.push_back(src_ptr);
+                }
+                if (dst_ptr != nullptr && dst_hier_block) {
+                    tmp.push_back(dst_ptr);
+                }
+            }
+        }
+
+        for (auto n : _orphan_nodes) {
+            auto hier_ptr = std::dynamic_pointer_cast<gr::hier_block>(n);
+            if (hier_ptr) {
+                tmp.push_back(std::static_pointer_cast<block>(n));
+            }
         }
 
 
@@ -82,6 +130,7 @@ public:
         std::map<std::shared_ptr<gr::hier_block>, bool> hier_block_map;
         auto fg = std::make_shared<flat_graph>();
         for (auto e : g->edges()) {
+            bool message_connection = e->src().port()->type() == port_type_t::MESSAGE;
             // connect only if both sides of the edge are in this graph
             if (std::find(g->nodes().begin(), g->nodes().end(), e->src().node()) !=
                     g->nodes().end() &&
@@ -91,20 +140,25 @@ public:
                 auto a = std::dynamic_pointer_cast<gr::block>(e->src().node());
                 auto b = std::dynamic_pointer_cast<gr::block>(e->dst().node());
 
-                auto src_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->src().node());
-                auto dst_hier_block = std::dynamic_pointer_cast<gr::hier_block>(e->dst().node());
+                auto src_hier_block =
+                    std::dynamic_pointer_cast<gr::hier_block>(e->src().node());
+                auto dst_hier_block =
+                    std::dynamic_pointer_cast<gr::hier_block>(e->dst().node());
 
                 // the dst side of the edge is a hier block
                 if (dst_hier_block) {
 
                     // find the input ports that originate from dst().port()
                     for (auto& hbe : dst_hier_block->input_edges()) {
-                        if (hbe->src().port() == e->dst().port()) {
+                        if (hbe->src().port() == e->dst().port() && !message_connection) {
                             // connect with the original source port
                             fg->connect(e->src(), hbe->dst())
                                 ->set_custom_buffer(e->buf_properties());
-                            
+
                             e->src().port()->disconnect(e->dst().port());
+                            e->dst().port()->disconnect(e->src().port());
+
+                            hbe->dst().port()->disconnect(hbe->src().port());
                         }
                     }
 
@@ -116,7 +170,8 @@ public:
                             if (!(hbe->src().port()->direction() ==
                                       port_direction_t::INPUT ||
                                   hbe->dst().port()->direction() ==
-                                      port_direction_t::OUTPUT)) {
+                                      port_direction_t::OUTPUT) &&
+                                !message_connection) {
                                 // then we have an internal connection that needs to be
                                 // replicated
                                 hbe->src().port()->disconnect(hbe->dst().port());
@@ -129,14 +184,15 @@ public:
                 }
                 if (src_hier_block) {
 
-                    // find the input ports that originate from dst().port()
+                    // find the input ports that originate from src().port()
                     for (auto& hbe : src_hier_block->output_edges()) {
-                        if (hbe->dst().port() == e->src().port()) {
+                        if (hbe->dst().port() == e->src().port() && !message_connection) {
                             // connect with the original source port
                             fg->connect(hbe->src(), e->dst())
                                 ->set_custom_buffer(e->buf_properties());
-                            
+
                             e->dst().port()->disconnect(e->src().port());
+                            e->src().port()->disconnect(e->dst().port());
                             hbe->src().port()->disconnect(hbe->dst().port());
                         }
                     }
@@ -149,19 +205,19 @@ public:
                             if (!(hbe->src().port()->direction() ==
                                       port_direction_t::INPUT ||
                                   hbe->dst().port()->direction() ==
-                                      port_direction_t::OUTPUT)) {
+                                      port_direction_t::OUTPUT) &&
+                                !message_connection) {
                                 // then we have an internal connection that needs to be
                                 // replicated
                                 hbe->src().port()->disconnect(hbe->dst().port());
                                 fg->connect(hbe->src(), hbe->dst())
                                     ->set_custom_buffer(hbe->buf_properties());
-                                    
                             }
                         }
                         hier_block_map[src_hier_block] = true;
                     }
                 }
-                if (!src_hier_block && !dst_hier_block) {
+                if ((!src_hier_block && !dst_hier_block) || message_connection) {
                     fg->connect(e->src(), e->dst())
                         ->set_custom_buffer(e->buf_properties());
                 }
