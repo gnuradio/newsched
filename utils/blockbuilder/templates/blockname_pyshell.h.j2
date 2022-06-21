@@ -61,7 +61,7 @@ public:
     {
         py::gil_scoped_acquire acquire;
         if (py::hasattr(this->pb_detail()->handle(), "{{"handle_msg_" + port['id']}}")) {
-            py::object ret = this->pb_detail()->handle().attr("{{"handle_msg_" + port['id']}}")();
+            py::object ret = this->pb_detail()->handle().attr("{{"handle_msg_" + port['id']}}")(msg);
         }
         else
             throw std::runtime_error("Message port handler not found");
