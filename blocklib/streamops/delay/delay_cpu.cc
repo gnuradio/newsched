@@ -17,6 +17,8 @@ namespace streamops {
 delay_cpu::delay_cpu(const block_args& args) : INHERITED_CONSTRUCTORS
 {
     set_dly(args.dly);
+
+    set_tag_propagation_policy(tag_propagation_policy_t::TPP_DONT);
 }
 
 void delay_cpu::set_dly(size_t d)
@@ -25,7 +27,6 @@ void delay_cpu::set_dly(size_t d)
     // protects from quickly-repeated calls to this function that
     // would end with d_delta=0.
     if (d != dly()) {
-        std::scoped_lock l(d_mutex);
         int old = dly();
         d_delay = d;
         d_delta += dly() - old;
@@ -35,8 +36,6 @@ void delay_cpu::set_dly(size_t d)
 work_return_code_t delay_cpu::work(std::vector<block_work_input_sptr>& work_input,
                                    std::vector<block_work_output_sptr>& work_output)
 {
-    std::scoped_lock l(d_mutex);
-    assert(work_input.size() == work_output.size());
     auto itemsize = work_output[0]->buffer->item_size();
 
     const uint8_t* iptr;
@@ -88,6 +87,21 @@ work_return_code_t delay_cpu::work(std::vector<block_work_input_sptr>& work_inpu
         ret = noutput_items;
         d_delta -= n_padding;
     }
+
+    // Delay the tags - which are not propagated automatically
+    for (size_t i = 0; i < work_input.size(); i++) {
+        auto nr = work_input[i]->nitems_read();
+        auto nw = work_output[i]->nitems_written();
+        auto tags = work_input[i]->tags_in_window(0, noutput_items);
+        for (auto& t : tags)
+        {
+            if (t.offset() + d_delay < nw + ret) {
+                t.set_offset(t.offset() + d_delay);
+                work_output[i]->add_tag(t);
+            }
+        }
+    }
+
 
     consume_each(cons, work_input);
     produce_each(ret, work_output);

@@ -30,7 +30,20 @@ protected:
     size_t d_delay = 0;
     int d_delta = 0;
 
-    std::mutex d_mutex;
+
+    void on_parameter_change(param_action_sptr action) override
+    {
+        // This will set the underlying PMT
+        block::on_parameter_change(action);
+
+        // Do more updating for certain parameters
+        if (action->id() == delay::id_dly)
+        {
+            auto dly =  pmtf::get_as<double>(*this->param_dly);
+            set_dly(dly);
+        }
+    }
+
 };
 
 } // namespace streamops
