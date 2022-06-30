@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gnuradio/buffer.h>
+#include <gnuradio/port.h>
 #include <gnuradio/tag.h>
 #include <algorithm>
 #include <cstdint>
@@ -18,12 +19,17 @@ struct block_work_input {
     buffer_reader_sptr buffer;
     size_t n_consumed =
         0; // output the number of items that were consumed on the work() call
-
-    block_work_input(int n_items_, buffer_reader_sptr p_buf_)
-        : n_items(n_items_), buffer(p_buf_)
+    port_sptr port = nullptr;
+    block_work_input(int n_items_, buffer_reader_sptr p_buf_, port_sptr p=nullptr)
+        : n_items(n_items_), buffer(p_buf_), port(p)
     {
     }
 
+    void reset()
+    {
+        n_items = 0;
+        n_consumed = 0;
+    }
     template <typename T>
     const T* items() const
     {
@@ -71,12 +77,18 @@ struct block_work_output {
     buffer_sptr buffer;
     size_t n_produced =
         0; // output the number of items that were produced on the work() call
+    port_sptr port = nullptr;
 
-    block_work_output(int _n_items, buffer_sptr p_buf_)
-        : n_items(_n_items), buffer(p_buf_)
+    block_work_output(int _n_items, buffer_sptr p_buf_, port_sptr p=nullptr)
+        : n_items(_n_items), buffer(p_buf_), port(p)
     {
     }
 
+    void reset()
+    {
+        n_items = 0;
+        n_produced = 0;
+    }
     template <typename T>
     T* items() const
     {
@@ -103,10 +115,11 @@ struct block_work_output {
 
     static size_t min_n_items(const std::vector<sptr>& work_outputs)
     {
-        auto result = (std::min_element(
-            work_outputs.begin(), work_outputs.end(), [](const sptr& lhs, const sptr& rhs) {
-                return (lhs->n_items < rhs->n_items);
-            }));
+        auto result = (std::min_element(work_outputs.begin(),
+                                        work_outputs.end(),
+                                        [](const sptr& lhs, const sptr& rhs) {
+                                            return (lhs->n_items < rhs->n_items);
+                                        }));
         return (*result)->n_items;
     }
 };
@@ -128,6 +141,46 @@ enum class work_return_code_t {
     WORK_CALLBACK_INITIATED =
         1, /// rather than blocking in the work function, the block will call back to the
            /// parent interface when it is ready to be called again
+};
+
+
+class work_io
+{
+public:
+    friend class block;
+    size_t nin() { return _inputs.size(); }
+    size_t nout() { return _outputs.size(); }
+    block_work_input_sptr& input(size_t idx)
+    {
+        return _inputs[idx];
+    }
+    block_work_input_sptr& input(const std::string&);
+    block_work_output_sptr& output(size_t idx)
+    {
+        return _outputs[idx];
+    }
+    block_work_output_sptr& output(const std::string&);
+    std::vector<block_work_input_sptr>& inputs() { return _inputs; }
+    std::vector<block_work_output_sptr>& outputs() { return _outputs; }
+    // block_work_input_sptr& operator[](size_t);
+    // block_work_input_sptr& operator[](const std::string&);
+
+    void consume_each(size_t n_items) {
+        for (auto& w : inputs()) {
+            w->n_consumed = n_items;
+        }
+    }
+    void produce_each(size_t n_items) {
+        for (auto& w : outputs()) {
+            w->n_produced = n_items;
+        }
+    }
+private:
+    std::vector<block_work_input_sptr> _inputs;
+    std::vector<block_work_output_sptr> _outputs;
+
+    std::map<std::string, block_work_input_sptr> _input_name_map;
+    std::map<std::string, block_work_output_sptr> _output_name_map;
 };
 
 } // namespace gr
