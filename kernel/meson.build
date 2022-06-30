@@ -5,4 +5,6 @@ if (get_option('enable_python'))
     subdir('python/kernel')
 endif
 
-subdir('test')
+if (get_option('enable_testing'))
+    subdir('test')
+endif
