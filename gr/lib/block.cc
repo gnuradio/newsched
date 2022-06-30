@@ -49,6 +49,28 @@ bool block::done()
     return true;
 }
 
+void block::populate_work_io()
+{
+    d_work_io._inputs.clear();
+    d_work_io._outputs.clear();
+    d_work_io._input_name_map.clear();
+    d_work_io._output_name_map.clear();
+    for (auto& p : input_stream_ports()) {
+        d_work_io._inputs.push_back(
+            std::make_shared<block_work_input>(0, p->buffer_reader(), p));
+        d_work_io._input_name_map[p->name()] =
+            d_work_io._inputs[d_work_io._inputs.size() - 1];
+    }
+    for (auto& p : output_stream_ports()) {
+        d_work_io._outputs.push_back(
+            std::make_shared<block_work_output>(0, p->buffer(), p));
+        d_work_io._output_name_map[p->name()] =
+            d_work_io._outputs[d_work_io._outputs.size() - 1];
+    }
+}
+
+work_io& block::get_work_io() { return d_work_io; }
+
 tag_propagation_policy_t block::tag_propagation_policy()
 {
     return d_tag_propagation_policy;

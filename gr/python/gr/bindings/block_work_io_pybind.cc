@@ -48,4 +48,6 @@ void bind_block_work_io(py::module& m)
         .def("raw_items", &gr::block_work_input::raw_items)
         .def("consume", &gr::block_work_input::consume)
         .def("tags_in_window", &gr::block_work_input::tags_in_window);
+
+    py::class_<gr::work_io, std::shared_ptr<gr::work_io>>(m, "work_io");
 }

@@ -32,12 +32,11 @@ python_block::python_block(const py::handle& p, const std::string& name) : block
     d_py_handle = p;
 }
 
-work_return_code_t python_block::work(std::vector<block_work_input_sptr>& work_input,
-                                      std::vector<block_work_output_sptr>& work_output)
+work_return_code_t python_block::work(work_io& wio)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("handle_work")(work_input, work_output);
+    py::object ret = d_py_handle.attr("handle_work")(wio);
 
     return ret.cast<work_return_code_t>();
 }
@@ -75,12 +74,11 @@ python_sync_block::python_sync_block(const py::handle& p, const std::string& nam
 
 
 work_return_code_t
-python_sync_block::work(std::vector<block_work_input_sptr>& work_input,
-                        std::vector<block_work_output_sptr>& work_output)
+python_sync_block::work(work_io& wio)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("work")(work_input, work_output);
+    py::object ret = d_py_handle.attr("work")(wio);
 
     return ret.cast<work_return_code_t>();
 }
