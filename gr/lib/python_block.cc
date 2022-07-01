@@ -78,7 +78,8 @@ python_sync_block::work(work_io& wio)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("work")(wio);
+    auto ww = d_py_handle.attr("work");
+    py::object ret = ww(&wio);
 
     return ret.cast<work_return_code_t>();
 }

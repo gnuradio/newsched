@@ -14,8 +14,6 @@
 namespace py = pybind11;
 
 #include <gnuradio/block_work_io.h>
-// pydoc.h is automatically generated in the build directory
-// #include <block_pydoc.h>
 
 void bind_block_work_io(py::module& m)
 {
@@ -29,7 +27,7 @@ void bind_block_work_io(py::module& m)
         .value("WORK_OK", gr::work_return_code_t::WORK_OK)            //  0
         .export_values();
 
-    py::class_<gr::block_work_output, std::shared_ptr<gr::block_work_output>>(
+    py::class_<gr::block_work_output>(
         m, "block_work_output")
         .def_readwrite("n_items", &gr::block_work_output::n_items)
         .def_readwrite("buffer", &gr::block_work_output::buffer)
@@ -38,7 +36,7 @@ void bind_block_work_io(py::module& m)
         .def("raw_items", &gr::block_work_output::raw_items)
         .def("produce", &gr::block_work_output::produce);
 
-    py::class_<gr::block_work_input, std::shared_ptr<gr::block_work_input>>(
+    py::class_<gr::block_work_input>(
         m, "block_work_input")
         .def_readwrite("n_items", &gr::block_work_input::n_items)
         .def_readwrite("buffer", &gr::block_work_input::buffer)
@@ -49,12 +47,22 @@ void bind_block_work_io(py::module& m)
         .def("consume", &gr::block_work_input::consume)
         .def("tags_in_window", &gr::block_work_input::tags_in_window);
 
-    py::class_<gr::work_io, std::shared_ptr<gr::work_io>>(m, "work_io")
+    py::class_<gr::io_vec_wrap<gr::block_work_output>>(m, "io_vec_wrap_output")
+        .def("__getitem__",
+           [](gr::io_vec_wrap<gr::block_work_output> &obj, size_t idx) { return &obj[idx]; }, py::return_value_policy::reference)
+        ;
+
+    py::class_<gr::io_vec_wrap<gr::block_work_input>>(m, "io_vec_wrap_input")
+        .def("__getitem__",
+           [](gr::io_vec_wrap<gr::block_work_input> &obj, size_t idx) { return &obj[idx]; }, py::return_value_policy::reference)
+        ;
+
+    py::class_<gr::work_io, std::unique_ptr<gr::work_io>>(m, "work_io")
         .def("inputs", &gr::work_io::inputs, py::return_value_policy::reference)
         .def("outputs", &gr::work_io::outputs, py::return_value_policy::reference)
-        .def("consume_each", &gr::work_io::consume_each, py::return_value_policy::reference)
-        .def("produce_each", &gr::work_io::produce_each, py::return_value_policy::reference)
-        .def("min_noutput_items", &gr::work_io::min_noutput_items, py::return_value_policy::reference)
-        .def("min_ninput_items", &gr::work_io::min_ninput_items, py::return_value_policy::reference)
+        .def("consume_each", &gr::work_io::consume_each)
+        .def("produce_each", &gr::work_io::produce_each)
+        .def("min_noutput_items", &gr::work_io::min_noutput_items)
+        .def("min_ninput_items", &gr::work_io::min_ninput_items)
         ;
 }
