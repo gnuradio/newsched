@@ -22,14 +22,14 @@ class add_2_f32_1_f32(gr.sync_block):
         self.add_port(gr.port_f("in2", gr.INPUT, shape))
         self.add_port(gr.port_f("out", gr.OUTPUT, shape))
 
-    def work(self, inputs, outputs):
-        noutput_items = outputs[0].n_items
+    def work(self, wio):
+        noutput_items = wio.outputs()[0].n_items
         
-        outputs[0].produce(noutput_items)
+        wio.outputs()[0].produce(noutput_items)
 
-        inbuf1 = self.get_input_array(inputs, 0)
-        inbuf2 = self.get_input_array(inputs, 1)
-        outbuf1 = self.get_output_array(outputs, 0)
+        inbuf1 = self.get_input_array(wio, 0)
+        inbuf2 = self.get_input_array(wio, 1)
+        outbuf1 = self.get_output_array(wio, 0)
 
         outbuf1[:] = inbuf1 + inbuf2
 
@@ -41,14 +41,14 @@ class add_ff_numpy(math.add_ff):
         math.add_ff.__init__(self, impl = math.add_ff.available_impl.pyshell)
         self.set_pyblock_detail(gr.pyblock_detail(self))
 
-    def work(self, inputs, outputs):
-        noutput_items = outputs[0].n_items
+    def work(self, wio):
+        noutput_items = wio.outputs()[0].n_items
         
-        outputs[0].produce(noutput_items)
+        wio.outputs()[0].produce(noutput_items)
 
-        inbuf1 = gr.get_input_array(self, inputs, 0)
-        inbuf2 = gr.get_input_array(self, inputs, 1)
-        outbuf1 = gr.get_output_array(self, outputs, 0)
+        inbuf1 = gr.get_input_array(self, wio, 0)
+        inbuf2 = gr.get_input_array(self, wio, 1)
+        outbuf1 = gr.get_output_array(self, wio, 0)
 
         outbuf1[:] = inbuf1 + inbuf2
 
