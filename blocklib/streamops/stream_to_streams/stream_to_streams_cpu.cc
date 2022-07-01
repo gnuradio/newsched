@@ -20,29 +20,27 @@ stream_to_streams_cpu::stream_to_streams_cpu(const block_args& args)
 {
 }
 
-work_return_code_t
-stream_to_streams_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t stream_to_streams_cpu::work(work_io& wio)
 {
-    auto in = work_input[0]->items<uint8_t>();
+    auto in = wio.inputs()[0].items<uint8_t>();
 
     uint8_t* in_ptr = const_cast<uint8_t*>(in);
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
-    size_t nstreams = work_output.size();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
+    size_t nstreams = wio.outputs().size();
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
-    auto itemsize = work_output[0]->buffer->item_size();
+    auto itemsize = wio.outputs()[0].buffer->item_size();
 
     for (size_t i = 0; i < total_items; i++) {
         for (size_t j = 0; j < nstreams; j++) {
-            memcpy(work_output[j]->items<uint8_t>() + i * itemsize, in_ptr, itemsize);
+            memcpy(wio.outputs()[j].items<uint8_t>() + i * itemsize, in_ptr, itemsize);
             in_ptr += itemsize;
         }
     }
 
-    produce_each(total_items, work_output);
-    consume_each(total_items * nstreams, work_input);
+    wio.produce_each(total_items);
+    wio.consume_each(total_items * nstreams);
     return work_return_code_t::WORK_OK;
 }
 

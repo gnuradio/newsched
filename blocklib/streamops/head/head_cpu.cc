@@ -19,28 +19,27 @@ head_cpu::head_cpu(const block_args& args) : INHERITED_CONSTRUCTORS, d_nitems(ar
 {
 }
 
-work_return_code_t head_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                  std::vector<block_work_output_sptr>& work_output)
+work_return_code_t head_cpu::work(work_io& wio)
 {
-    auto iptr = work_input[0]->items<uint8_t>();
-    auto optr = work_output[0]->items<uint8_t>();
+    auto iptr = wio.inputs()[0].items<uint8_t>();
+    auto optr = wio.outputs()[0].items<uint8_t>();
 
     if (d_ncopied_items >= d_nitems) {
-        work_output[0]->n_produced = 0;
+        wio.outputs()[0].n_produced = 0;
         return work_return_code_t::WORK_DONE; // Done!
     }
 
-    unsigned n = std::min(d_nitems - d_ncopied_items, (uint64_t)work_output[0]->n_items);
+    unsigned n = std::min(d_nitems - d_ncopied_items, (uint64_t)wio.outputs()[0].n_items);
 
     if (n == 0) {
-        work_output[0]->n_produced = 0;
+        wio.outputs()[0].n_produced = 0;
         return work_return_code_t::WORK_OK;
     }
 
-    memcpy(optr, iptr, n * work_input[0]->buffer->item_size());
+    memcpy(optr, iptr, n * wio.inputs()[0].buffer->item_size());
 
     d_ncopied_items += n;
-    work_output[0]->n_produced = n;
+    wio.outputs()[0].n_produced = n;
 
     if (d_ncopied_items >= d_nitems) {
         return work_return_code_t::WORK_DONE; // Done!

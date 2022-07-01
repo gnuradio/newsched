@@ -38,20 +38,19 @@ bool throttle_cpu::start()
     return block::start();
 }
 
-work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                      std::vector<block_work_output_sptr>& work_output)
+work_return_code_t throttle_cpu::work(work_io& wio)
 {
     if (d_sleeping) {
-        produce_each(0, work_output);
-        consume_each(0, work_input);
+        wio.produce_each(0);
+        wio.consume_each(0);
         return work_return_code_t::WORK_OK;
     }
 
     // copy all samples output[i] <= input[i]
-    auto in = work_input[0]->items<uint8_t>();
-    auto out = work_output[0]->items<uint8_t>();
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto out = wio.outputs()[0].items<uint8_t>();
 
-    auto noutput_items = work_output[0]->n_items;
+    auto noutput_items = wio.outputs()[0].n_items;
 
     d_total_samples += noutput_items;
 
@@ -62,24 +61,25 @@ work_return_code_t throttle_cpu::work(std::vector<block_work_input_sptr>& work_i
         auto limit_duration =
             std::chrono::duration<double>(std::numeric_limits<long>::max());
 
-        this->come_back_later(std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
-                    .count());
+        this->come_back_later(
+            std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
+                .count());
 
         n = 0;
         d_total_samples -= noutput_items;
-        produce_each(0, work_output);
-        consume_each(0, work_input);
+        wio.produce_each(0);
+        wio.consume_each(0);
         return work_return_code_t::WORK_OK;
     }
 
     // TODO: blocks like throttle shouldn't need to do a memcpy, but this would have to be
     // fixed in the buffering model and a special port type
     if (n) {
-        std::memcpy(out, in, n * work_output[0]->buffer->item_size());
+        std::memcpy(out, in, n * wio.outputs()[0].buffer->item_size());
     }
-    work_output[0]->n_produced = n;
+    wio.outputs()[0].n_produced = n;
 
-    d_debug_logger->debug( "Throttle produced {}", n);
+    d_debug_logger->debug("Throttle produced {}", n);
     return work_return_code_t::WORK_OK;
 }
 

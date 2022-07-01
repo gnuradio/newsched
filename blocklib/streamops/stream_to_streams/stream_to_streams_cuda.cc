@@ -23,14 +23,13 @@ stream_to_streams_cuda::stream_to_streams_cuda(const block_args& args)
     cudaStreamCreate(&d_stream);
 }
 
-work_return_code_t
-stream_to_streams_cuda::work(std::vector<block_work_input_sptr>& work_input,
-                             std::vector<block_work_output_sptr>& work_output)
+work_return_code_t stream_to_streams_cuda::work(work_io& wio)
+
 {
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
     size_t nstreams = work_output.size();
-    auto itemsize = work_output[0]->buffer->item_size();
+    auto itemsize = wio.outputs()[0].buffer->item_size();
 
     if (!p_kernel) {
         p_kernel =
@@ -43,13 +42,13 @@ stream_to_streams_cuda::work(std::vector<block_work_input_sptr>& work_input,
 
     d_out_items = block_work_output::all_items(work_output);
 
-    p_kernel->launch_default_occupancy({ work_input[0]->items<uint8_t>() },
+    p_kernel->launch_default_occupancy({ wio.inputs()[0].items<uint8_t>() },
                                        d_out_items,
                                        itemsize * total_items * nstreams);
     cudaStreamSynchronize(d_stream);
 
-    produce_each(total_items, work_output);
-    consume_each(total_items * nstreams, work_input);
+    wio.produce_each(total_items);
+    wio.consume_each(total_items * nstreams);
     return work_return_code_t::WORK_OK;
 }
 

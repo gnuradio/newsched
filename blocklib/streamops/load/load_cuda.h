@@ -23,9 +23,7 @@ class load_cuda : public load
 {
 public:
     load_cuda(block_args args);
-    virtual work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    virtual work_return_code_t work(work_io&) override;
 
 protected:
     size_t d_load;
@@ -35,10 +33,10 @@ protected:
     int d_min_grid_size;
     cudaStream_t d_stream;
 
-    uint8_t *d_dev_in;
-    uint8_t *d_dev_out;
+    uint8_t* d_dev_in;
+    uint8_t* d_dev_out;
 
-    size_t d_max_buffer_size = 65536*8;
+    size_t d_max_buffer_size = 65536 * 8;
 };
 
 } // namespace streamops

@@ -14,10 +14,10 @@ namespace streamops {
 
 nop_cpu::nop_cpu(block_args args) : INHERITED_CONSTRUCTORS {}
 
-work_return_code_t nop_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                 std::vector<block_work_output_sptr>& work_output)
+work_return_code_t nop_cpu::work(work_io& wio)
+
 {
-    produce_each(work_output[0]->n_items, work_output);
+    wio.produce_each(wio.outputs()[0].n_items);
     return work_return_code_t::WORK_OK;
 }
 

@@ -51,15 +51,14 @@ keep_m_in_n_cuda::keep_m_in_n_cuda(block_args args) : INHERITED_CONSTRUCTORS
     set_relative_rate((double)args.m / args.n);
 }
 
-work_return_code_t
-keep_m_in_n_cuda::work(std::vector<block_work_input_sptr>& work_input,
-                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t keep_m_in_n_cuda::work(work_io& wio)
+
 {
-    auto out = work_output[0]->items<uint8_t>();
-    auto in = work_input[0]->items<uint8_t>();
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
-    auto itemsize = work_output[0]->buffer->item_size();
+    auto out = wio.outputs()[0].items<uint8_t>();
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
+    auto itemsize = wio.outputs()[0].buffer->item_size();
     auto m = pmtf::get_as<size_t>(*this->param_m);
     auto n = pmtf::get_as<size_t>(*this->param_n);
     auto offset = pmtf::get_as<size_t>(*this->param_offset);
@@ -68,8 +67,8 @@ keep_m_in_n_cuda::work(std::vector<block_work_input_sptr>& work_input,
     int blks = std::min(noutput_items / m, ninput_items / n);
 
     if (blks == 0) {
-        consume_each(0, work_input);
-        produce_each(0, work_output);
+        wio.consume_each(0);
+        wio.produce_each(0);
         return work_return_code_t::WORK_OK;
     }
 
@@ -85,8 +84,8 @@ keep_m_in_n_cuda::work(std::vector<block_work_input_sptr>& work_input,
                                      blks * m * itemsize,
                                      d_stream));
 
-    consume_each(blks * n, work_input);
-    produce_each(blks * m, work_output);
+    wio.consume_each(blks * n);
+    wio.produce_each(blks * m);
     return work_return_code_t::WORK_OK;
 }
 
