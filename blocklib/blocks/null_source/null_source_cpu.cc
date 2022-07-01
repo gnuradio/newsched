@@ -16,13 +16,13 @@ null_source_cpu::null_source_cpu(block_args args) : INHERITED_CONSTRUCTORS {}
 
 work_return_code_t null_source_cpu::work(work_io& wio)
 {
-    auto itemsize = wio.output(0)->buffer->item_size();
+    auto itemsize = wio.outputs()[0].buffer->item_size();
     void* optr;
-    for (size_t n = 0; n < wio.nout(); n++) {
-        optr = wio.output(n)->items<void>();
-        auto noutput_items = wio.output(n)->n_items;
+    for (size_t n = 0; n < wio.outputs().size(); n++) {
+        optr = wio.outputs()[n].items<void>();
+        auto noutput_items = wio.outputs()[n].n_items;
         memset(optr, 0, noutput_items * itemsize);
-        wio.output(n)->n_produced = noutput_items;
+        wio.outputs()[n].n_produced = noutput_items;
     }
 
     return work_return_code_t::WORK_OK;

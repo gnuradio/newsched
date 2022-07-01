@@ -26,13 +26,13 @@ template <class T>
 work_return_code_t
 vector_sink_cpu<T>::work(work_io& wio)
 {
-    auto iptr = wio.input(0)->items<T>();
-    int noutput_items = wio.input(0)->n_items;
+    auto iptr = wio.inputs()[0].items<T>();
+    int noutput_items = wio.inputs()[0].n_items;
 
     for (unsigned int i = 0; i < noutput_items * d_vlen; i++)
         d_data.push_back(iptr[i]);
 
-    auto tags = wio.input(0)->tags_in_window(0, noutput_items);
+    auto tags = wio.inputs()[0].tags_in_window(0, noutput_items);
     d_tags.insert(d_tags.end(), tags.begin(), tags.end());
 
     wio.consume_each(noutput_items);
