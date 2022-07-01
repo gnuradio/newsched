@@ -49,5 +49,12 @@ void bind_block_work_io(py::module& m)
         .def("consume", &gr::block_work_input::consume)
         .def("tags_in_window", &gr::block_work_input::tags_in_window);
 
-    py::class_<gr::work_io, std::shared_ptr<gr::work_io>>(m, "work_io");
+    py::class_<gr::work_io, std::shared_ptr<gr::work_io>>(m, "work_io")
+        .def("inputs", &gr::work_io::inputs, py::return_value_policy::reference)
+        .def("outputs", &gr::work_io::outputs, py::return_value_policy::reference)
+        .def("consume_each", &gr::work_io::consume_each, py::return_value_policy::reference)
+        .def("produce_each", &gr::work_io::produce_each, py::return_value_policy::reference)
+        .def("min_noutput_items", &gr::work_io::min_noutput_items, py::return_value_policy::reference)
+        .def("min_ninput_items", &gr::work_io::min_ninput_items, py::return_value_policy::reference)
+        ;
 }

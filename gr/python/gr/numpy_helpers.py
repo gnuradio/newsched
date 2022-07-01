@@ -36,19 +36,19 @@ def pointer_to_ndarray(addr, typestr, shape, nitems):
     return numpy.asarray(array_like()).view()
 
 
-def get_input_array(self, work_input, index):
+def get_input_array(self, wio, index):
     ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
     ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
         ctypes.py_object, ctypes.c_char_p]
 
     port = self.get_port(index, gr.STREAM, gr.INPUT)
     return pointer_to_ndarray(
-            ctypes.pythonapi.PyCapsule_GetPointer(work_input[index].raw_items(), None),
+            ctypes.pythonapi.PyCapsule_GetPointer(wio.input(index).raw_items(), None),
             port.format_descriptor(),
             port.shape(),
-            work_input[index].n_items)
+            wio.input(index).n_items)
 
-def get_output_array(self, work_output, index):
+def get_output_array(self, wio, index):
     ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
     ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
         ctypes.py_object, ctypes.c_char_p]
@@ -56,7 +56,7 @@ def get_output_array(self, work_output, index):
     port = self.get_port(index, gr.STREAM, gr.OUTPUT)
 
     return pointer_to_ndarray(
-            ctypes.pythonapi.PyCapsule_GetPointer(work_output[index].raw_items(), None),
+            ctypes.pythonapi.PyCapsule_GetPointer(wio.output(index).raw_items(), None),
             port.format_descriptor(),
             port.shape(),
-            work_output[index].n_items)
+            wio.output(index).n_items)

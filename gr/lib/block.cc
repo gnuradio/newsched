@@ -51,21 +51,12 @@ bool block::done()
 
 void block::populate_work_io()
 {
-    d_work_io._inputs.clear();
-    d_work_io._outputs.clear();
-    d_work_io._input_name_map.clear();
-    d_work_io._output_name_map.clear();
+    d_work_io.clear();
     for (auto& p : input_stream_ports()) {
-        d_work_io._inputs.push_back(
-            std::make_shared<block_work_input>(0, p->buffer_reader(), p));
-        d_work_io._input_name_map[p->name()] =
-            d_work_io._inputs[d_work_io._inputs.size() - 1];
+        d_work_io.add_input(p);
     }
     for (auto& p : output_stream_ports()) {
-        d_work_io._outputs.push_back(
-            std::make_shared<block_work_output>(0, p->buffer(), p));
-        d_work_io._output_name_map[p->name()] =
-            d_work_io._outputs[d_work_io._outputs.size() - 1];
+        d_work_io.add_output(p);
     }
 }
 
