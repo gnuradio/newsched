@@ -33,10 +33,10 @@ source_cpu<gr_complex>::source_cpu(const typename source<gr_complex>::block_args
 }
 
 template <class T>
-work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t source_cpu<T>::work(work_io& wio)
+                                       
 {
-    auto noutput_items = work_output[0]->n_items;
+    auto noutput_items = wio.outputs()[0].n_items;
     /* This limits each work invocation to MTU transfers */
     if (d_mtu > 0) {
         noutput_items = std::min(noutput_items, d_mtu);
@@ -50,7 +50,7 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
     const long timeout_us = 500000; // 0.5 sec
     int nout = 0;
 
-    auto output_items = block_work_output::all_items(work_output);
+    auto output_items = wio.all_output_ptrs();
     for (;;) {
 
         // No command handlers while reading
@@ -86,7 +86,7 @@ work_return_code_t source_cpu<T>::work(std::vector<block_work_input_sptr>& work_
         break;
     };
 
-    produce_each(nout, work_output);
+    wio.produce_each(nout);
     return work_return_code_t::WORK_OK;
 }
 

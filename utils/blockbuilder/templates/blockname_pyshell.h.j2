@@ -21,13 +21,11 @@ public:
 
 {% if blocktype != "hier_block" %}
     work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output)
+    work(work_io& wio) override
     {
         py::gil_scoped_acquire acquire;
 
-        py::object ret = this->pb_detail()->handle().attr("work")(
-            work_input, work_output);
+        py::object ret = this->pb_detail()->handle().attr("work")(&wio);
 
         return ret.cast<work_return_code_t>();
     }

@@ -24,14 +24,13 @@ file_sink_cpu::file_sink_cpu(const block_args& args)
 
 file_sink_cpu::~file_sink_cpu() {}
 
-work_return_code_t file_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t file_sink_cpu::work(work_io& wio)                  
 {
-    auto inbuf = work_input[0]->items<uint8_t>();
-    auto noutput_items = work_input[0]->n_items;
+    auto inbuf = wio.inputs()[0].items<uint8_t>();
+    auto noutput_items = wio.inputs()[0].n_items;
 
     if (d_itemsize == 0) {
-        d_itemsize = work_input[0]->buffer->item_size();
+        d_itemsize = wio.inputs()[0].buffer->item_size();
     }
 
     size_t nwritten = 0;
@@ -39,10 +38,9 @@ work_return_code_t file_sink_cpu::work(std::vector<block_work_input_sptr>& work_
     do_update(); // update d_fp is reqd
 
     if (!d_fp) {
-        work_input[0]->n_consumed = noutput_items; // drop output on the floor
+        wio.inputs()[0].n_consumed = noutput_items; // drop output on the floor
         return work_return_code_t::WORK_OK;
     }
-
 
     while (nwritten < noutput_items) {
         const int count = fwrite(inbuf, d_itemsize, noutput_items - nwritten, d_fp);
@@ -63,7 +61,7 @@ work_return_code_t file_sink_cpu::work(std::vector<block_work_input_sptr>& work_
     if (d_unbuffered)
         fflush(d_fp);
 
-    work_input[0]->n_consumed = nwritten;
+    wio.consume_each(nwritten);
     return work_return_code_t::WORK_OK;
 }
 

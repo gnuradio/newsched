@@ -132,7 +132,7 @@ base_source::base_source(int type,
 
 bool base_source::has_pending() { return d_msg.size() > d_consumed_bytes; }
 
-int base_source::flush_pending(block_work_output_sptr work_output,
+int base_source::flush_pending(block_work_output& work_output,
                                const int out_nitems,
                                const uint64_t out_offset)
 {
@@ -140,10 +140,10 @@ int base_source::flush_pending(block_work_output_sptr work_output,
     int to_copy_items =
         std::min(out_nitems, (int)((d_msg.size() - d_consumed_bytes) / d_vsize));
     int to_copy_bytes = d_vsize * to_copy_items;
-    auto nw = work_output->nitems_written();
+    auto nw = work_output.nitems_written();
 
     /* Copy actual data */
-    memcpy(work_output->items<uint8_t>() + out_offset * d_vsize,
+    memcpy(work_output.items<uint8_t>() + out_offset * d_vsize,
            (uint8_t*)d_msg.data() + d_consumed_bytes,
            to_copy_bytes);
 
@@ -153,7 +153,7 @@ int base_source::flush_pending(block_work_output_sptr work_output,
             (d_tags[i].offset() < (uint64_t)d_consumed_items + to_copy_items)) {
             gr::tag_t nt = d_tags[i];
             nt.set_offset(nt.offset() + nw + out_offset - d_consumed_items);
-            work_output->add_tag(nt);
+            work_output.add_tag(nt);
         }
     }
 

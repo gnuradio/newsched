@@ -28,7 +28,7 @@ work_return_code_t stream_to_streams_cuda::work(work_io& wio)
 {
     auto noutput_items = wio.outputs()[0].n_items;
     auto ninput_items = wio.inputs()[0].n_items;
-    size_t nstreams = work_output.size();
+    size_t nstreams = wio.outputs().size();
     auto itemsize = wio.outputs()[0].buffer->item_size();
 
     if (!p_kernel) {

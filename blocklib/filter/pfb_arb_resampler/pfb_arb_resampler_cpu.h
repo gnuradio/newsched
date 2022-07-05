@@ -23,9 +23,8 @@ public:
     pfb_arb_resampler_cpu(
         const typename pfb_arb_resampler<IN_T, OUT_T, TAP_T>::block_args& args);
 
-    virtual work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t
+    work(work_io&) override;
     virtual size_t group_delay() const override { return d_resamp.group_delay(); }
     virtual size_t phase_offset(float freq, float fs) const override
     {

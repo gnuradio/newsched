@@ -22,9 +22,8 @@ class alsa_sink_cpu : public virtual alsa_sink
 {
 public:
     alsa_sink_cpu(block_args args);
-    virtual work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t
+    work(work_io&) override;
 
 private:
     // TODO: change to std::function
@@ -57,17 +56,17 @@ private:
 protected:
     bool write_buffer(const void* buffer, unsigned nframes, unsigned sizeof_frame);
 
-    work_return_code_t work_s16(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output);
+    work_return_code_t work_s16(work_io& wio)
+                                ;
 
-    work_return_code_t work_s16_1x2(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output);
+    work_return_code_t work_s16_1x2(work_io& wio)
+                                    ;
 
-    work_return_code_t work_s32(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output);
+    work_return_code_t work_s32(work_io& wio)
+                                ;
 
-    work_return_code_t work_s32_1x2(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output);
+    work_return_code_t work_s32_1x2(work_io& wio)
+                                    ;
 };
 
 } // namespace audio

@@ -57,8 +57,8 @@ Each of the parameters that are defined in the `.yml` are available as a member 
 Work functions are conceptually the same as GR3, but syntactically slightly different to keep the block API separated from the scheduler API.
 
 ```c++
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t work(work_io&)
+                                     override;
 ```
 
 First, the work function takes in a vector of pointers to input objects, and a vector of pointers to output objects.
@@ -71,19 +71,19 @@ auto noutput_items = work_output[0].n_items;
 `block_work_input_sptr` contains a pointer to the underlying buffer object - it is not just raw pointers.  But it is easy to get the underlying pointer
 
 ```c++
-    auto in = work_input[0]->items<T>();
-    auto out = work_output[0]->items<T>();
+    auto in = wio.inputs()[0].items<T>();
+    auto out = wio.outputs()[0].items<T>();
 ```
 Where `T` is whatever specific type for a non-templated block
 
 The return value of the work function is a return code instead of the number of output items produce.  Therefore, `produce` and `consume` must be called from within the work function.  This keeps some consistency between sync and general blocks.
 
 ```C++
-produce_each(noutput_items, work_output);
+wio.produce_each(noutput_items);
 ```
 or
 ```C++
-work_output[0]->n_produced = noutput_items;
+wio.outputs()[0].n_produced = noutput_items;
 ```
 and then 
 ```

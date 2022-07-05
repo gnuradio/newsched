@@ -23,11 +23,10 @@ req_source_cpu::req_source_cpu(block_args args)
           ZMQ_REQ, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
 }
-work_return_code_t req_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t req_source_cpu::work(work_io& wio)                   
 {
 
-    auto noutput_items = work_output[0]->n_items;
+    auto noutput_items = wio.outputs()[0].n_items;
     bool first = true;
     size_t done = 0;
 
@@ -36,7 +35,7 @@ work_return_code_t req_source_cpu::work(std::vector<block_work_input_sptr>& work
         if (has_pending()) {
             /* Flush anything pending */
             done += flush_pending(
-                work_output[0], noutput_items - done, done);
+                wio.outputs()[0], noutput_items - done, done);
 
             /* No more space ? */
             if (done == noutput_items)
@@ -70,7 +69,7 @@ work_return_code_t req_source_cpu::work(std::vector<block_work_input_sptr>& work
         }
     }
 
-    work_output[0]->n_produced = done;
+    wio.outputs()[0].n_produced = done;
     return work_return_code_t::WORK_OK;
 }
 

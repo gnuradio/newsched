@@ -20,11 +20,11 @@ rep_sink_cpu::rep_sink_cpu(block_args args)
           ZMQ_REP, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
 }
-work_return_code_t rep_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                      std::vector<block_work_output_sptr>& work_output)
+work_return_code_t rep_sink_cpu::work(work_io& wio)
+                                      
 {
-    auto in = work_input[0]->items<uint8_t>();
-    auto noutput_items = work_input[0]->n_items;
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto noutput_items = wio.inputs()[0].n_items;
     bool first = true;
     int done = 0;
 
@@ -59,14 +59,14 @@ work_return_code_t rep_sink_cpu::work(std::vector<block_work_input_sptr>& work_i
         /* Delegate the actual send */
         done += send_message(in + (done * d_vsize),
                              nitems_send,
-                             work_input[0]->nitems_read() + done,
-                             work_input[0]->tags_in_window(0, noutput_items));
+                             wio.inputs()[0].nitems_read() + done,
+                             wio.inputs()[0].tags_in_window(0, noutput_items));
 
         /* Not the first anymore */
         first = false;
     }
 
-    work_input[0]->n_consumed = done;
+    wio.inputs()[0].n_consumed = done;
     return work_return_code_t::WORK_OK;
 }
 

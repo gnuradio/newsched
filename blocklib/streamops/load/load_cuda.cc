@@ -63,7 +63,7 @@ work_return_code_t load_cuda::work(work_io& wio)
     }
 
     // Tell runtime system how many output items we produced.
-    wio.produce_each(noutput_items, work_output);
+    wio.wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 } // namespace streamops

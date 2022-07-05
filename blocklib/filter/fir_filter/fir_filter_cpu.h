@@ -22,8 +22,8 @@ class fir_filter_cpu : public fir_filter<IN_T, OUT_T, TAP_T>
 public:
     fir_filter_cpu(const typename fir_filter<IN_T, OUT_T, TAP_T>::block_args& args);
     
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t work(work_io&)
+                                     override;
     
     void on_parameter_change(param_action_sptr action) override;
 

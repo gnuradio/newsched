@@ -12,15 +12,15 @@ agc_cpu<T>::agc_cpu(const typename agc<T>::block_args& args)
 }
 
 template <class T>
-work_return_code_t agc_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
+work_return_code_t agc_cpu<T>::work(work_io& wio)
+                                    
 {
-    auto in = work_input[0]->items<T>();
-    auto out = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto in = wio.inputs()[0].items<T>();
+    auto out = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
     kernel::analog::agc<T>::scaleN(out, in, noutput_items);
 
-    work_output[0]->n_produced = noutput_items;
+    wio.outputs()[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 

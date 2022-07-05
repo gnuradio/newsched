@@ -24,15 +24,15 @@ iir_filter_cpu<T_IN, T_OUT, TAP_T>::iir_filter_cpu(
 
 template <class T_IN, class T_OUT, class TAP_T>
 work_return_code_t
-iir_filter_cpu<T_IN, T_OUT, TAP_T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+iir_filter_cpu<T_IN, T_OUT, TAP_T>::work(work_io& wio)
+                                         
 {
-    auto in = work_input[0]->items<T_IN>();
-    auto out = work_output[0]->items<T_OUT>();
-    auto noutput_items = work_output[0]->n_items;
+    auto in = wio.inputs()[0].items<T_IN>();
+    auto out = wio.outputs()[0].items<T_OUT>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     d_iir.filter_n(out, in, noutput_items);
-    this->produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

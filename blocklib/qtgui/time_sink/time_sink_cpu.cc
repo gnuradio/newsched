@@ -321,10 +321,10 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
 
 template <>
 work_return_code_t
-time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
-                           std::vector<block_work_output_sptr>& work_output)
+time_sink_cpu<float>::work(work_io& wio)
+                           
 {
-    auto noutput_items = work_input[0]->n_items; // need to check across all inputs
+    auto noutput_items = wio.inputs()[0].n_items; // need to check across all inputs
 
     unsigned int n = 0, idx = 0;
     const float* in;
@@ -345,13 +345,13 @@ time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
         }
         // Normal or Auto trigger
         else {
-            _test_trigger_norm(nitems, block_work_input::all_items(work_input));
+            _test_trigger_norm(nitems, wio.all_input_ptrs());
         }
     }
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections; n++) {
-        in = work_input[idx]->items<float>();
+        in = wio.inputs()[idx].items<float>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(float));
         // volk_32f_convert_64f(&d_buffers[n][d_index],
@@ -391,17 +391,17 @@ time_sink_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
         _reset();
     }
 
-    this->consume_each(nitems, work_input);
+    wio.consume_each(nitems);
     return work_return_code_t::WORK_OK;
 }
 
 
 template <class T>
 work_return_code_t
-time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                       std::vector<block_work_output_sptr>& work_output)
+time_sink_cpu<T>::work(work_io& wio)
+                       
 {
-    auto noutput_items = work_input[0]->n_items; // need to check across all inputs
+    auto noutput_items = wio.inputs()[0].n_items; // need to check across all inputs
 
     unsigned int n = 0, idx = 0;
     const T* in;
@@ -422,13 +422,13 @@ time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
         // Normal or Auto trigger
         else {
-            _test_trigger_norm(nitems, block_work_input::all_items(work_input));
+            _test_trigger_norm(nitems, wio.all_input_ptrs());
         }
     }
 
     // Copy data into the buffers.
     for (n = 0; n < d_nconnections / 2; n++) {
-        in = work_input[idx]->items<T>();
+        in = wio.inputs()[idx].items<T>();
         // memcpy(&d_Tbuffers[n][d_index], &in[1], nitems * sizeof(float));
         memcpy(&d_Tbuffers[n][d_index], &in[0], nitems * sizeof(T));
         // volk_32f_convert_64f(&d_buffers[n][d_index],
@@ -471,7 +471,7 @@ time_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         _reset();
     }
 
-    this->consume_each(nitems, work_input);
+    wio.consume_each(nitems);
     return work_return_code_t::WORK_OK;
 }
 

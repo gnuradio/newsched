@@ -45,7 +45,7 @@ work_return_code_t
 vector_source_cpu<T>::work(work_io& wio)
 {
 
-    // size_t noutput_ports = work_output.size(); // is 1 for this block
+    // size_t noutput_ports = wio.outputs().size(); // is 1 for this block
     int noutput_items = wio.outputs()[0].n_items;
     auto optr = wio.outputs()[0].items<T>();
 

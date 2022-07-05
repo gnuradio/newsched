@@ -90,7 +90,7 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t work(work_io& bio)
+    virtual work_return_code_t work(work_io& wio)
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
@@ -103,9 +103,9 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t do_work(work_io& bio)
+    virtual work_return_code_t do_work(work_io& wio)
     {
-        return work(bio);
+        return work(wio);
     };
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }

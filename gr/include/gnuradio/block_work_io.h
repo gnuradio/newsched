@@ -46,23 +46,7 @@ struct block_work_input {
         return buffer->tags_in_window(item_start, item_end);
     }
 
-    static std::vector<const void*> all_items(const std::vector<sptr>& work_inputs)
-    {
-        std::vector<const void*> ret(work_inputs.size());
-        for (size_t idx = 0; idx < work_inputs.size(); idx++) {
-            ret[idx] = work_inputs[idx]->buffer->read_ptr();
-        }
 
-        return ret;
-    }
-    static size_t min_n_items(const std::vector<sptr>& work_inputs)
-    {
-        auto result = (std::min_element(
-            work_inputs.begin(), work_inputs.end(), [](const sptr& lhs, const sptr& rhs) {
-                return (lhs->n_items < rhs->n_items);
-            }));
-        return (*result)->n_items;
-    }
 };
 
 using block_work_input_sptr = block_work_input::sptr;
@@ -102,26 +86,6 @@ struct block_work_output {
     void add_tag(tag_t& tag) { buffer->add_tag(tag); }
     void add_tag(uint64_t offset, tag_map map) { buffer->add_tag(offset, map); }
     void add_tag(uint64_t offset, pmtf::map map) { buffer->add_tag(offset, map); }
-
-    static std::vector<void*> all_items(const std::vector<sptr>& work_outputs)
-    {
-        std::vector<void*> ret(work_outputs.size());
-        for (size_t idx = 0; idx < work_outputs.size(); idx++) {
-            ret[idx] = work_outputs[idx]->buffer->write_ptr();
-        }
-
-        return ret;
-    }
-
-    static size_t min_n_items(const std::vector<sptr>& work_outputs)
-    {
-        auto result = (std::min_element(work_outputs.begin(),
-                                        work_outputs.end(),
-                                        [](const sptr& lhs, const sptr& rhs) {
-                                            return (lhs->n_items < rhs->n_items);
-                                        }));
-        return (*result)->n_items;
-    }
 };
 using block_work_output_sptr = block_work_output::sptr;
 
@@ -234,6 +198,25 @@ public:
                 return (lhs.n_items < rhs.n_items);
             }));
         return (*result).n_items;
+    }
+
+    std::vector<const void*> all_input_ptrs()
+    {
+        std::vector<const void*> ret(inputs().size());
+        for (size_t idx = 0; idx < inputs().size(); idx++) {
+            ret[idx] = inputs()[idx].buffer->read_ptr();
+        }
+
+        return ret;
+    }
+    std::vector<void*> all_output_ptrs()
+    {
+        std::vector<void*> ret(outputs().size());
+        for (size_t idx = 0; idx < outputs().size(); idx++) {
+            ret[idx] = outputs()[idx].buffer->write_ptr();
+        }
+
+        return ret;
     }
 
 private:

@@ -246,30 +246,22 @@ bool alsa_sink_cpu::start()
     switch (d_format) {
     case SND_PCM_FORMAT_S16:
         if (special_case) {
-            d_worker = [this](std::vector<block_work_input_sptr>& work_input,
-                              std::vector<block_work_output_sptr>& work_output) {
-                return this->work_s16_1x2(work_input, work_output);
-            };
+            d_worker = [this](work_io& wio) { return this->work_s16_1x2(wio); };
         }
         else {
-            d_worker = [this](std::vector<block_work_input_sptr>& work_input,
-                              std::vector<block_work_output_sptr>& work_output) {
-                return this->work_s16(work_input, work_output);
-            };
+            d_worker = [this](work_io& wio) { return this->work_s16(wio); };
         }
         break;
 
     case SND_PCM_FORMAT_S32:
         if (special_case) {
-            d_worker = [this](std::vector<block_work_input_sptr>& work_input,
-                              std::vector<block_work_output_sptr>& work_output) {
-                return this->work_s32_1x2(work_input, work_output);
+            d_worker = [this](work_io& wio) {
+                return this->work_s32_1x2(wio);
             };
         }
         else {
-            d_worker = [this](std::vector<block_work_input_sptr>& work_input,
-                              std::vector<block_work_output_sptr>& work_output) {
-                return this->work_s32(work_input, work_output);
+            d_worker = [this](work_io& wio) {
+                return this->work_s32(wio);
             };
         }
         break;
@@ -281,31 +273,29 @@ bool alsa_sink_cpu::start()
     return true;
 }
 
-work_return_code_t alsa_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t alsa_sink_cpu::work(work_io& wio)
+
 {
     // assert((noutput_items % d_period_size) == 0);
 
     // this is a call through std::function
-    return d_worker(work_input, work_output);
+    return d_worker(wio);
 }
 
 
 /*
  * Work function that deals with float to S16 conversion
  */
-work_return_code_t
-alsa_sink_cpu::work_s16(std::vector<block_work_input_sptr>& work_input,
-                        std::vector<block_work_output_sptr>& work_output)
+work_return_code_t alsa_sink_cpu::work_s16(work_io& wio)
 {
     typedef int16_t sample_t; // the type of samples we're creating
     static const float scale_factor = std::pow(2.0f, 16 - 1) - 1;
 
-    size_t nchan = work_input.size();
-    auto noutput_items = block_work_input::min_n_items(work_input);
+    size_t nchan = wio.inputs().size();
+    auto noutput_items = wio.min_ninput_items();
     std::vector<const float*> in_ptrs(nchan);
-    for (size_t i = 0; i < work_input.size(); i++) {
-        in_ptrs[i] = work_input[i]->items<float>();
+    for (size_t i = 0; i < wio.inputs().size(); i++) {
+        in_ptrs[i] = wio.inputs()[i].items<float>();
     }
     auto in = in_ptrs.data();
     sample_t* buf = reinterpret_cast<sample_t*>(d_buffer.data());
@@ -333,25 +323,23 @@ alsa_sink_cpu::work_s16(std::vector<block_work_input_sptr>& work_input,
                                                   // we're done.
     }
 
-    consume_each(n, work_input);
+    wio.consume_each(n);
     return work_return_code_t::WORK_OK;
 }
 
 /*
  * Work function that deals with float to S32 conversion
  */
-work_return_code_t
-alsa_sink_cpu::work_s32(std::vector<block_work_input_sptr>& work_input,
-                        std::vector<block_work_output_sptr>& work_output)
+work_return_code_t alsa_sink_cpu::work_s32(work_io& wio)
 {
     typedef int32_t sample_t; // the type of samples we're creating
     static const float scale_factor = std::pow(2.0f, 32 - 1) - 1;
 
-    size_t nchan = work_input.size();
-    auto noutput_items = block_work_input::min_n_items(work_input);
+    size_t nchan = wio.inputs().size();
+    auto noutput_items = wio.min_ninput_items();
     std::vector<const float*> in_ptrs(nchan);
-    for (size_t i = 0; i < work_input.size(); i++) {
-        in_ptrs[i] = work_input[i]->items<float>();
+    for (size_t i = 0; i < wio.inputs().size(); i++) {
+        in_ptrs[i] = wio.inputs()[i].items<float>();
     }
     auto in = in_ptrs.data();
     sample_t* buf = reinterpret_cast<sample_t*>(d_buffer.data());
@@ -379,7 +367,7 @@ alsa_sink_cpu::work_s32(std::vector<block_work_input_sptr>& work_input,
                                                   // we're done.
     }
 
-    consume_each(n, work_input);
+    wio.consume_each(n);
     return work_return_code_t::WORK_OK;
 }
 
@@ -387,19 +375,17 @@ alsa_sink_cpu::work_s32(std::vector<block_work_input_sptr>& work_input,
  * Work function that deals with float to S16 conversion and
  * mono to stereo kludge.
  */
-work_return_code_t
-alsa_sink_cpu::work_s16_1x2(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t alsa_sink_cpu::work_s16_1x2(work_io& wio)
 {
     typedef int16_t sample_t; // the type of samples we're creating
     static const float scale_factor = std::pow(2.0f, 16 - 1) - 1;
 
-    assert(work_input.size() == 1);
+    assert(wio.inputs().size() == 1);
     static const size_t nchan = 2;
-    auto noutput_items = block_work_input::min_n_items(work_input);
+    auto noutput_items = wio.min_ninput_items();
     std::vector<const float*> in_ptrs(nchan);
-    for (size_t i = 0; i < work_input.size(); i++) {
-        in_ptrs[i] = work_input[i]->items<float>();
+    for (size_t i = 0; i < wio.inputs().size(); i++) {
+        in_ptrs[i] = wio.inputs()[i].items<float>();
     }
     auto in = in_ptrs.data();
     sample_t* buf = reinterpret_cast<sample_t*>(d_buffer.data());
@@ -426,7 +412,7 @@ alsa_sink_cpu::work_s16_1x2(std::vector<block_work_input_sptr>& work_input,
                                                   // we're done.
     }
 
-    consume_each(n, work_input);
+    wio.consume_each(n);
     return work_return_code_t::WORK_OK;
 }
 
@@ -434,18 +420,16 @@ alsa_sink_cpu::work_s16_1x2(std::vector<block_work_input_sptr>& work_input,
  * Work function that deals with float to S32 conversion and
  * mono to stereo kludge.
  */
-work_return_code_t
-alsa_sink_cpu::work_s32_1x2(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_code_t alsa_sink_cpu::work_s32_1x2(work_io& wio)
 {
     typedef int32_t sample_t; // the type of samples we're creating
     static const float scale_factor = std::pow(2.0f, 32 - 1) - 1;
 
     static size_t nchan = 2;
-    auto noutput_items = block_work_input::min_n_items(work_input);
+    auto noutput_items = wio.min_ninput_items();
     std::vector<const float*> in_ptrs(nchan);
-    for (size_t i = 0; i < work_input.size(); i++) {
-        in_ptrs[i] = work_input[i]->items<float>();
+    for (size_t i = 0; i < wio.inputs().size(); i++) {
+        in_ptrs[i] = wio.inputs()[i].items<float>();
     }
     auto in = in_ptrs.data();
     sample_t* buf = reinterpret_cast<sample_t*>(d_buffer.data());
@@ -472,7 +456,7 @@ alsa_sink_cpu::work_s32_1x2(std::vector<block_work_input_sptr>& work_input,
                                                   // we're done.
     }
 
-    consume_each(n, work_input);
+    wio.consume_each(n);
     return work_return_code_t::WORK_OK;
 }
 

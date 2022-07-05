@@ -25,8 +25,7 @@ public:
     pfb_channelizer_cpu(const typename pfb_channelizer<T>::block_args& args);
 
     work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work(work_io&) override;
 
     int group_delay();
     void set_taps(const std::vector<float>& taps) override;

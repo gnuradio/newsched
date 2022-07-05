@@ -35,8 +35,7 @@ newblock_cuda<gr_complex>::newblock_cuda(
 
 template <class T>
 work_return_code_t
-newblock_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
-                       std::vector<block_work_output_sptr>& work_output)
+newblock_cuda<T>::work(work_io& wio)
 {
     // Do block specific code here
     return work_return_code_t::WORK_OK;
@@ -44,21 +43,9 @@ newblock_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
 
 template <>
 work_return_code_t
-newblock_cuda<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                                std::vector<block_work_output_sptr>& work_output)
+newblock_cuda<gr_complex>::work(work_io& wio)
 {
-    auto in = work_input[0].items<cuFloatComplex>());
-    auto out = work_output[0].items<cuFloatComplex>());
-
-    auto noutput_items = work_output[0].n_items;
-
-    auto k_cufc = make_cuFloatComplex(real(d_k), imag(d_k));
-
-    newblock_cu::exec_kernel(
-        in, out, k_cufc, (noutput_items * d_vlen) / d_block_size, d_block_size, d_stream);
-
-    work_output[0].n_produced = work_output[0].n_items;
-    work_input[0].n_consumed = work_input[0].n_items;
+    // Do block specific code here
     return work_return_code_t::WORK_OK;
 }
 

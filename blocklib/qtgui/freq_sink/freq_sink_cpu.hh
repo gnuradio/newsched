@@ -18,8 +18,8 @@ public:
     freq_sink_cpu(const typename freq_sink<T>::block_args& args);
     ~freq_sink_cpu();
     
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t work(work_io&)
+                                     override;
     void exec_() override;
     QWidget* qwidget() override;
 

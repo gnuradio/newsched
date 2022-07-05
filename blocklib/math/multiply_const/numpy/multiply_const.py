@@ -15,13 +15,13 @@ class multiply_const_ff(math.multiply_const_ff):
         self.vlen = kwargs['vlen'] if 'vlen' in kwargs else 1
 
 
-    def work(self, inputs, outputs):
-        noutput_items = outputs[0].n_items
-        
-        outputs[0].produce(noutput_items)
+    def work(self, wio):
+        out = wio.outputs()[0]
+        noutput_items = out.n_items
+        out.produce(noutput_items)
 
-        inbuf1 = gr.get_input_array(self, inputs, 0)
-        outbuf1 = gr.get_output_array(self, outputs, 0)
+        inbuf1 = gr.get_input_array(self, wio, 0)
+        outbuf1 = gr.get_output_array(self, wio, 0)
 
         outbuf1[:] = inbuf1 * self.k
 

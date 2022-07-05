@@ -21,8 +21,7 @@ public:
     file_source_cpu(const block_args& args);
     ~file_source_cpu() override;
     work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work(work_io&) override;
 
     /*!
      * \brief seek file to \p seek_point relative to \p whence
