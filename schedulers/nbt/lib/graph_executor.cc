@@ -226,7 +226,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
 
                 int input_port_index = 0;
-                for (auto w : wio.inputs()) {
+                for (auto& w : wio.inputs()) {
                     auto p_buf = w.buffer;
                     if (p_buf) {
                         if (!p_buf->tags().empty()) {
@@ -265,7 +265,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     }
                 }
 
-                for (auto wo : wio.outputs()) {
+                for (auto& wo : wio.outputs()) {
                     auto p_buf = wo.buffer;
                     if (p_buf) {
                         d_debug_logger->debug("post_write {} - {}",
