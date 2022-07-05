@@ -91,14 +91,14 @@ work_return_code_t delay_cpu::work(work_io& wio)
     // Delay the tags - which are not propagated automatically
     for (size_t i = 0; i < wio.inputs().size(); i++) {
         auto& inp = wio.inputs()[i];
-        auto nr = inp.nitems_read();
-        auto nw = inp.nitems_written();
+        auto& out = wio.outputs()[i];
+        auto nw = out.nitems_written();
         auto tags = inp.tags_in_window(0, noutput_items);
         for (auto& t : tags)
         {
             if (t.offset() + d_delay < nw + ret) {
                 t.set_offset(t.offset() + d_delay);
-                wio.outputs()[i].add_tag(t);
+                out.add_tag(t);
             }
         }
     }

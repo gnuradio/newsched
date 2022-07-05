@@ -121,9 +121,8 @@ public:
         if (it != std::end(_names)) {
             return _vec[it - _names.begin()];
         }
-        else {
-            throw std::runtime_error("Named io entry not found");
-        }
+        
+        throw std::runtime_error(fmt::format("Named io entry {} not found", name));
     }
     auto begin() noexcept { return _vec.begin(); }
     auto end() noexcept { return _vec.end(); }
@@ -186,7 +185,7 @@ public:
             [](const block_work_output& lhs, const block_work_output& rhs) {
                 return (lhs.n_items < rhs.n_items);
             }));
-        return (*result).n_items;
+        return result->n_items;
     }
 
     size_t min_ninput_items()
@@ -197,7 +196,7 @@ public:
             [](const block_work_input& lhs, const block_work_input& rhs) {
                 return (lhs.n_items < rhs.n_items);
             }));
-        return (*result).n_items;
+        return result->n_items;
     }
 
     std::vector<const void*> all_input_ptrs()

@@ -148,12 +148,12 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             work_return_code_t ret;
             while (true) {
 
-                if (wio.outputs().size()) {
+                if (!wio.outputs().empty()) {
                     d_debug_logger->debug("do_work (output) for {}, {}",
                                           b->alias(),
                                           wio.outputs()[0].n_items);
                 }
-                else if (wio.inputs().size()) {
+                else if (!wio.inputs().empty()) {
                     d_debug_logger->debug(
                         "do_work (input) for {}, {}", b->alias(), wio.inputs()[0].n_items);
                 }
@@ -178,7 +178,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
-                    if (!wio.inputs().size() && wio.outputs().size()) {
+                    if (wio.inputs().empty() && !wio.outputs().empty()) {
                         size_t max_output = 0;
                         for (auto& w : wio.outputs()) {
                             max_output = std::max(w.n_produced, max_output);
