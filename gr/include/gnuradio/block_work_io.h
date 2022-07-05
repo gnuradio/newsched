@@ -161,12 +161,12 @@ public:
             throw std::runtime_error("Named io entry not found");
         }
     }
-    auto begin() { return _vec.begin(); }
-    auto end() { return _vec.end(); }
-    auto back() { return _vec.back(); }
-    auto size() { return _vec.size(); }
-    auto empty() { return _vec.empty(); }
-    auto clear()
+    auto begin() noexcept { return _vec.begin(); }
+    auto end() noexcept { return _vec.end(); }
+    auto back() noexcept { return _vec.back(); }
+    auto size() const noexcept { return _vec.size(); }
+    auto empty() const noexcept { return _vec.empty(); }
+    auto clear() noexcept 
     {
         _vec.clear();
         _names.clear();
