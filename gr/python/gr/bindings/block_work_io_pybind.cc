@@ -50,11 +50,15 @@ void bind_block_work_io(py::module& m)
     py::class_<gr::io_vec_wrap<gr::block_work_output>>(m, "io_vec_wrap_output")
         .def("__getitem__",
            [](gr::io_vec_wrap<gr::block_work_output> &obj, size_t idx) { return &obj[idx]; }, py::return_value_policy::reference)
+        .def("__getitem__",
+           [](gr::io_vec_wrap<gr::block_work_output> &obj, const std::string& name) { return &obj[name]; }, py::return_value_policy::reference)
         ;
 
     py::class_<gr::io_vec_wrap<gr::block_work_input>>(m, "io_vec_wrap_input")
         .def("__getitem__",
            [](gr::io_vec_wrap<gr::block_work_input> &obj, size_t idx) { return &obj[idx]; }, py::return_value_policy::reference)
+        .def("__getitem__",
+           [](gr::io_vec_wrap<gr::block_work_input> &obj, const std::string& name) { return &obj[name]; }, py::return_value_policy::reference)
         ;
 
     py::class_<gr::work_io, std::unique_ptr<gr::work_io>>(m, "work_io")

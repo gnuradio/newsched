@@ -25,9 +25,7 @@ class add_2_f32_1_f32(gr.sync_block):
     def work(self, wio):
         noutput_items = wio.outputs()[0].n_items
         
-        # wio.outputs()[0].n_produced = 11
         wio.outputs()[0].produce(noutput_items)
-
 
         inbuf1 = self.get_input_array(wio, 0)
         inbuf2 = self.get_input_array(wio, 1)
@@ -37,7 +35,29 @@ class add_2_f32_1_f32(gr.sync_block):
 
         return gr.work_return_t.WORK_OK
 
-# # This test extends the existing add_ff block by adding a custom python implementation
+class add_2_f32_1_f32_named(gr.sync_block):
+    def __init__(self, shape=[1]):
+        gr.sync_block.__init__(
+            self,
+            name="add 2 f32 named")
+
+        self.add_port(gr.port_f("in1", gr.INPUT, shape))
+        self.add_port(gr.port_f("in2", gr.INPUT, shape))
+        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
+
+    def work(self, wio):
+        out = wio.outputs()["out"]
+        
+        inbuf1 = self.get_input_array(wio, "in1")
+        inbuf2 = self.get_input_array(wio, "in2")
+        outbuf1 = self.get_output_array(wio, "out")
+
+        outbuf1[:] = inbuf1 + inbuf2
+
+        out.produce(out.n_items)
+        return gr.work_return_t.WORK_OK
+
+# This test extends the existing add_ff block by adding a custom python implementation
 # class add_ff_numpy(math.add_ff):
 #     def __init__(self, shape=[1]):
 #         math.add_ff.__init__(self, impl = math.add_ff.available_impl.pyshell)
@@ -75,7 +95,6 @@ class test_block_gateway(gr_unittest.TestCase):
 
     def test_add_f32(self):
         tb = gr.flowgraph()
-        rt = gr.runtime()
         src0 = blocks.vector_source_f([1, 3, 5, 7, 9], False)
         src1 = blocks.vector_source_f([0, 2, 4, 6, 8], False)
         adder = add_2_f32_1_f32()
@@ -98,6 +117,19 @@ class test_block_gateway(gr_unittest.TestCase):
         tb.connect(adder, sink)
         tb.run()
         self.assertEqual(sink.data(), 10*[1, 5, 9, 13, 17])
+
+    def test_add_f32_named(self):
+        tb = gr.flowgraph()
+        src0 = blocks.vector_source_f([1, 3, 5, 7, 9], False)
+        src1 = blocks.vector_source_f([0, 2, 4, 6, 8], False)
+        adder = add_2_f32_1_f32_named()
+        sink = blocks.vector_sink_f()
+        tb.connect((src0, 0), (adder, 0))
+        tb.connect((src1, 0), (adder, 1))
+        tb.connect(adder, sink)
+        tb.run()
+        self.assertEqual(sink.data(), [1, 5, 9, 13, 17])
+
 
 
 if __name__ == '__main__':

@@ -147,11 +147,20 @@ class io_vec_wrap
 {
 private:
     std::vector<T> _vec;
-    std::map<std::string, T*> _map;
+    std::vector<std::string> _names;
 
 public:
     T& operator[](size_t idx) { return _vec[idx]; }
-    T& operator[](const std::string& name) { return *_map[name]; }
+    T& operator[](const std::string& name)
+    {
+        auto it = std::find(std::begin(_names), std::end(_names), name);
+        if (it != std::end(_names)) {
+            return _vec[it - _names.begin()];
+        }
+        else {
+            throw std::runtime_error("Named io entry not found");
+        }
+    }
     auto begin() { return _vec.begin(); }
     auto end() { return _vec.end(); }
     auto back() { return _vec.back(); }
@@ -160,12 +169,12 @@ public:
     auto clear()
     {
         _vec.clear();
-        _map.clear();
+        _names.clear();
     }
-    void push_back(const T& element) { _vec.push_back(element); }
-    void add_to_map(size_t index, const std::string& name)
+    void append_item(const T& element, const std::string& name)
     {
-        _map[name] = &(_vec[index]);
+        _vec.push_back(element);
+        _names.push_back(name);
     }
 };
 
@@ -234,14 +243,12 @@ private:
 
     void add_input(port_sptr p)
     {
-        _inputs.push_back(block_work_input(0, p->buffer_reader(), p));
-        _inputs.add_to_map(_inputs.size() - 1, p->name());
+        _inputs.append_item(block_work_input(0, p->buffer_reader(), p), p->name());
     }
 
     void add_output(port_sptr p)
     {
-        _outputs.push_back(block_work_output(0, p->buffer(), p));
-        _outputs.add_to_map(_outputs.size() - 1, p->name());
+        _outputs.append_item(block_work_output(0, p->buffer(), p), p->name());
     }
 };
 

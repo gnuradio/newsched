@@ -20,6 +20,9 @@ void bind_node(py::module& m)
         .def("get_port",
              py::overload_cast<unsigned int, gr::port_type_t, gr::port_direction_t>(
                  &gr::node::get_port))
+        .def("get_port",
+             py::overload_cast<const std::string&>(
+                 &gr::node::get_port))
         .def("get_message_port", &node::get_message_port)
         .def("set_rpc", &node::set_rpc)
         .def("rpc_client", &node::rpc_client)

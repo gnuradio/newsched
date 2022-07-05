@@ -85,7 +85,11 @@ class sync_block(python_sync_block):
         ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
             ctypes.py_object, ctypes.c_char_p]
 
-        port = self.get_port(index, gr.STREAM, gr.INPUT)
+        if type(index) is str:
+            port = self.get_port(index)
+        else:
+            port = self.get_port(index, gr.STREAM, gr.INPUT)
+
         return pointer_to_ndarray(
                 ctypes.pythonapi.PyCapsule_GetPointer(wio.inputs()[index].raw_items(), None),
                 port.format_descriptor(),
@@ -97,7 +101,10 @@ class sync_block(python_sync_block):
         ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
             ctypes.py_object, ctypes.c_char_p]
 
-        port = self.get_port(index, gr.STREAM, gr.OUTPUT)
+        if type(index) is str:
+            port = self.get_port(index)
+        else:
+            port = self.get_port(index, gr.STREAM, gr.OUTPUT)
 
         return pointer_to_ndarray(
                 ctypes.pythonapi.PyCapsule_GetPointer(wio.outputs()[index].raw_items(), None),
