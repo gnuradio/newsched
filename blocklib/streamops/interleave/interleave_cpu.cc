@@ -31,7 +31,7 @@ work_return_code_t interleave_cpu::work(work_io& wio)
 
     // Since itemsize can be set after construction
     if (d_itemsize == 0) {
-        d_itemsize = wio.inputs()[0].buffer->item_size();
+        d_itemsize = wio.inputs()[0].buf().item_size();
         return work_return_code_t::WORK_OK;
     }
 

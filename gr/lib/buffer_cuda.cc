@@ -36,13 +36,13 @@ buffer_cuda::~buffer_cuda()
     cudaFree(_host_buffer);
 }
 
-buffer_sptr buffer_cuda::make(size_t num_items,
+buffer_uptr buffer_cuda::make(size_t num_items,
                               size_t item_size,
                               std::shared_ptr<buffer_properties> buffer_properties)
 {
     auto cbp = std::static_pointer_cast<buffer_cuda_properties>(buffer_properties);
     if (cbp != nullptr) {
-        return buffer_sptr(
+        return buffer_uptr(
             new buffer_cuda(num_items, item_size, cbp->buffer_type(), buffer_properties));
     }
     else {
@@ -150,7 +150,7 @@ void buffer_cuda::post_write(int num_items)
     cudaStreamSynchronize(stream);
 }
 
-std::shared_ptr<buffer_reader>
+buffer_reader_uptr
 buffer_cuda::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
     std::shared_ptr<buffer_cuda_reader> r(

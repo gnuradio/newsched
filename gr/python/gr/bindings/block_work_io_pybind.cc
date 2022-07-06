@@ -30,7 +30,7 @@ void bind_block_work_io(py::module& m)
     py::class_<gr::block_work_output>(
         m, "block_work_output")
         .def_readwrite("n_items", &gr::block_work_output::n_items)
-        .def_readwrite("buffer", &gr::block_work_output::buffer)
+        .def("buffer", &gr::block_work_output::buf)
         .def_readwrite("n_produced", &gr::block_work_output::n_produced)
 
         .def("raw_items", &gr::block_work_output::raw_items)
@@ -39,7 +39,7 @@ void bind_block_work_io(py::module& m)
     py::class_<gr::block_work_input>(
         m, "block_work_input")
         .def_readwrite("n_items", &gr::block_work_input::n_items)
-        .def_readwrite("buffer", &gr::block_work_input::buffer)
+        .def("buffer", &gr::block_work_input::buf)
         .def_readwrite("n_consumed", &gr::block_work_input::n_consumed)
 
         .def("nitems_read", &gr::block_work_input::nitems_read)

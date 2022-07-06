@@ -25,7 +25,7 @@ tags_strobe_cpu::tags_strobe_cpu(block_args args)
 work_return_code_t tags_strobe_cpu::work(work_io& wio)
 {
     auto optr = wio.outputs()[0].raw_items();
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
     auto noutput_items = wio.outputs()[0].n_items;
     memset(optr, 0, noutput_items * itemsize);
 

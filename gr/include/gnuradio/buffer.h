@@ -27,14 +27,14 @@ struct GR_RUNTIME_API buffer_info_t {
 };
 
 class buffer_reader;
-using buffer_reader_sptr = std::shared_ptr<buffer_reader>;
+using buffer_reader_uptr = std::unique_ptr<buffer_reader>;
 
 class buffer;
 class buffer_properties;
-using buffer_factory_function = std::function<std::shared_ptr<buffer>(
+using buffer_factory_function = std::function<std::unique_ptr<buffer>(
     size_t, size_t, std::shared_ptr<buffer_properties>)>;
 
-using buffer_reader_factory_function = std::function<std::shared_ptr<buffer_reader>(
+using buffer_reader_factory_function = std::function<std::unique_ptr<buffer_reader>(
     size_t, std::shared_ptr<buffer_properties>)>;
 
 /**
@@ -118,7 +118,7 @@ protected:
  * @brief Abstract buffer class
  *
  */
-class GR_RUNTIME_API buffer : public std::enable_shared_from_this<buffer>
+class GR_RUNTIME_API buffer
 {
 protected:
     std::string _name;
@@ -223,7 +223,7 @@ public:
     void add_tag(uint64_t offset, tag_map map);
     void add_tag(uint64_t offset, pmtf::map map);
 
-    void propagate_tags(std::shared_ptr<buffer_reader> p_in_buf, int n_consumed);
+    void propagate_tags(buffer_reader * p_in_buf, int n_consumed);
 
     void prune_tags();
 
@@ -260,11 +260,11 @@ public:
      *
      * @param buf_props
      * @param itemsize itemsize in bytes on the destination side
-     * @return std::shared_ptr<buffer_reader>
+     * @return buffer_reader_uptr
      */
-    virtual std::shared_ptr<buffer_reader>
+    virtual buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) = 0;
-    // void drop_reader(std::shared_ptr<buffer_reader>);
+    // void drop_reader(buffer_reader_uptr);
 
     virtual bool output_blocked_callback(bool force = false)
     {
@@ -273,13 +273,13 @@ public:
     }
 };
 
-using buffer_sptr = std::shared_ptr<buffer>;
+using buffer_uptr = std::unique_ptr<buffer>;
 
 
 class GR_RUNTIME_API buffer_reader
 {
 protected:
-    buffer_sptr _buffer; // the buffer that owns this reader
+    buffer* _buffer; // the buffer that owns this reader
     std::shared_ptr<buffer_properties> _buf_properties;
     uint64_t _total_read = 0;
     size_t _itemsize;
@@ -288,7 +288,7 @@ protected:
 
 
 public:
-    buffer_reader(buffer_sptr buffer,
+    buffer_reader(buffer* buffer,
                   std::shared_ptr<buffer_properties> buf_props,
                   size_t itemsize,
                   size_t read_index = 0)

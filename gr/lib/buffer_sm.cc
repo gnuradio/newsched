@@ -4,14 +4,13 @@
 
 namespace gr {
 
-std::shared_ptr<buffer_reader>
+buffer_reader_uptr
 buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
 {
-    std::shared_ptr<buffer_sm_reader> r(
-        new buffer_sm_reader(std::dynamic_pointer_cast<buffer_sm>(shared_from_this()),
+    auto r = std::make_unique<buffer_sm_reader>(this,
                              itemsize,
                              buf_props,
-                             _write_index));
+                             _write_index);
     _readers.push_back(r.get());
     return r;
 }
@@ -30,11 +29,11 @@ buffer_sm::buffer_sm(size_t num_items,
     gr::configure_default_loggers(d_logger, d_debug_logger, _type);
 }
 
-buffer_sptr buffer_sm::make(size_t num_items,
+buffer_uptr buffer_sm::make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties)
 {
-    return buffer_sptr(new buffer_sm(num_items, item_size, buffer_properties));
+    return buffer_uptr(new buffer_sm(num_items, item_size, buffer_properties));
 }
 
 void* buffer_sm::read_ptr(size_t index) { return (void*)&_buffer[index]; }
@@ -233,11 +232,11 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
 }
 
 
-buffer_sm_reader::buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
+buffer_sm_reader::buffer_sm_reader(buffer_sm *bufp,
                                    size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props,
                                    size_t read_index)
-    : buffer_reader(buffer, buf_props, itemsize, read_index), _buffer_sm(buffer)
+    : buffer_reader(bufp, buf_props, itemsize, read_index), _buffer_sm(bufp)
 {
     gr::configure_default_loggers(d_logger, d_debug_logger, "buffer_sm_reader");
 }

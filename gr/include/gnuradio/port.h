@@ -80,10 +80,10 @@ public:
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
     std::string format_descriptor();
     void set_format_descriptor(const std::string& fd) { _format_descriptor = fd; }
-    void set_buffer(buffer_sptr buffer) { _buffer = buffer; }
-    buffer_sptr buffer() { return _buffer; }
-    void set_buffer_reader(buffer_reader_sptr rdr) { _buffer_reader = rdr; }
-    buffer_reader_sptr buffer_reader() { return _buffer_reader; }
+    void set_buffer(buffer_uptr& buffer) { _buffer = std::move(buffer); }
+    buffer* get_buffer() { return _buffer.get(); }
+    void set_buffer_reader(buffer_reader_uptr& rdr) { _buffer_reader = std::move(rdr); }
+    buffer_reader* get_buffer_reader() { return _buffer_reader.get(); }
 
     void notify_msgport_message(pmtf::pmt msg);
     void notify_scheduler_action(scheduler_action_t action);
@@ -109,8 +109,8 @@ protected:
 
     std::vector<port_interface_sptr> _connected_ports;
     neighbor_interface_sptr _parent_intf = nullptr;
-    buffer_sptr _buffer = nullptr;
-    buffer_reader_sptr _buffer_reader = nullptr;
+    buffer_uptr _buffer = nullptr;
+    buffer_reader_uptr _buffer_reader = nullptr;
 
     block* _parent_block = nullptr;
 };

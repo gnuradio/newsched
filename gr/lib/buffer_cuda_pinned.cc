@@ -22,11 +22,11 @@ buffer_cuda_pinned::buffer_cuda_pinned(size_t num_items,
 }
 buffer_cuda_pinned::~buffer_cuda_pinned() { cudaFree(_pinned_buffer); }
 
-buffer_sptr buffer_cuda_pinned::make(size_t num_items,
+buffer_uptr buffer_cuda_pinned::make(size_t num_items,
                                      size_t item_size,
                                      std::shared_ptr<buffer_properties> buffer_properties)
 {
-    return buffer_sptr(new buffer_cuda_pinned(num_items, item_size, buffer_properties));
+    return buffer_uptr(new buffer_cuda_pinned(num_items, item_size, buffer_properties));
 }
 
 void* buffer_cuda_pinned::read_ptr(size_t index) { return (void*)&_pinned_buffer[index]; }
@@ -67,7 +67,7 @@ void buffer_cuda_pinned::post_write(int num_items)
     }
 }
 
-std::shared_ptr<buffer_reader>
+buffer_reader_uptr
 buffer_cuda_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props,
                                size_t itemsize)
 {

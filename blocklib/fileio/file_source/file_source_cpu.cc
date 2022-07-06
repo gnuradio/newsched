@@ -260,7 +260,7 @@ work_return_code_t file_source_cpu::work(work_io& wio)
     uint64_t size = noutput_items;
 
     if (d_itemsize == 0) {
-        d_itemsize = wio.outputs()[0].buffer->item_size();
+        d_itemsize = wio.outputs()[0].buf().item_size();
         open(d_filename, d_repeat, d_offset, d_length_items);
     }
 
@@ -280,8 +280,8 @@ work_return_code_t file_source_cpu::work(work_io& wio)
 
         // Add stream tag whenever the file starts again
         if (d_file_begin && !d_add_begin_tag.empty()) {
-            wio.outputs()[0].buffer->add_tag(
-                wio.outputs()[0].buffer->total_written() + noutput_items - size,
+            wio.outputs()[0].buf().add_tag(
+                wio.outputs()[0].buf().total_written() + noutput_items - size,
                 pmtf::map{ { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
                   { "srcid", _id } });
 

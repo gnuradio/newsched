@@ -26,7 +26,7 @@ public:
     using sptr = std::shared_ptr<buffer_cpu_vmcirc>;
 
 
-    static buffer_sptr make(size_t num_items,
+    static buffer_uptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
@@ -45,18 +45,18 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    std::shared_ptr<buffer_reader>
+    buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
 };
 
 class buffer_cpu_vmcirc_reader : public buffer_reader
 {
 public:
-    buffer_cpu_vmcirc_reader(buffer_sptr buffer,
+    buffer_cpu_vmcirc_reader(buffer* bufp,
                              std::shared_ptr<buffer_properties> buf_props,
                              size_t itemsize,
                              size_t read_index = 0)
-        : buffer_reader(buffer, buf_props, itemsize, read_index)
+        : buffer_reader(bufp, buf_props, itemsize, read_index)
     {
     }
 

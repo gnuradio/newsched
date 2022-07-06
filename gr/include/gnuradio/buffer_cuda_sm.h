@@ -28,7 +28,7 @@ public:
                    std::shared_ptr<buffer_properties> buf_properties);
     ~buffer_cuda_sm();
 
-    static buffer_sptr make(size_t num_items,
+    static buffer_uptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
@@ -38,7 +38,7 @@ public:
 
     virtual void post_write(int num_items);
 
-    virtual std::shared_ptr<buffer_reader>
+    virtual buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 
     static void* cuda_memcpy(void* dest, const void* src, std::size_t count);

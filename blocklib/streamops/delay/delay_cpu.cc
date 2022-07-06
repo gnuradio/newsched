@@ -36,7 +36,7 @@ void delay_cpu::set_dly(size_t d)
 work_return_code_t delay_cpu::work(work_io& wio)
 
 {
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
 
     const uint8_t* iptr;
     uint8_t* optr;

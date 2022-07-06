@@ -54,7 +54,7 @@ work_return_code_t annotator_cpu::work(work_io& wio)
 
     // Work does nothing to the data stream; just copy all inputs to outputs
     // Adds a new tag when the number of items read is a multiple of d_when
-    abs_N = wio.outputs()[0].buffer->total_written();
+    abs_N = wio.outputs()[0].buf().total_written();
 
     for (size_t j = 0; j < noutput_items; j++) {
         // the min() is a hack to make sure this doesn't segfault if
@@ -65,7 +65,7 @@ work_return_code_t annotator_cpu::work(work_io& wio)
             if (abs_N % d_when == 0) {
                 auto value = pmtf::scalar<uint64_t>(d_tag_counter++);
                 // tag_map tm = {{key, value}, {"srcid",srcid}};
-                wio.outputs()[i].buffer->add_tag(
+                wio.outputs()[i].buf().add_tag(
                     abs_N, pmtf::map{ { key, value }, { "srcid", srcid } });
             }
         }

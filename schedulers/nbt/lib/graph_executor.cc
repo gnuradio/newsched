@@ -44,7 +44,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         // for each input port of the block
         bool ready = true;
         for (auto& w : wio.inputs()) {
-            auto p_buf = w.buffer;
+            auto p_buf = w.bufp();
             if (p_buf) {
                 auto max_read = p_buf->max_buffer_read();
                 auto min_read = p_buf->min_buffer_read();
@@ -92,7 +92,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
-            auto p_buf = w.buffer;
+            auto p_buf = w.bufp();
             if (p_buf) {
                 auto max_fill = p_buf->max_buffer_fill();
                 auto min_fill = p_buf->min_buffer_fill();
@@ -227,14 +227,14 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 int input_port_index = 0;
                 for (auto& w : wio.inputs()) {
-                    auto p_buf = w.buffer;
+                    auto p_buf = w.bufp();
                     if (p_buf) {
                         if (!p_buf->tags().empty()) {
                             // Pass the tags according to TPP
                             if (b->tag_propagation_policy() ==
                                 tag_propagation_policy_t::TPP_ALL_TO_ALL) {
                                 for (auto wo : wio.outputs()) {
-                                    auto p_out_buf = wo.buffer;
+                                    auto p_out_buf = wo.bufp();
                                     p_out_buf->propagate_tags(
                                         p_buf, w.n_consumed);
                                 }
@@ -244,7 +244,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                 int output_port_index = 0;
                                 for (auto wo : wio.outputs()) {
                                     if (output_port_index == input_port_index) {
-                                        auto p_out_buf = wo.buffer;
+                                        auto p_out_buf = wo.bufp();
                                         p_out_buf->propagate_tags(
                                             p_buf,
                                             w.n_consumed);
@@ -266,7 +266,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 }
 
                 for (auto& wo : wio.outputs()) {
-                    auto p_buf = wo.buffer;
+                    auto p_buf = wo.bufp();
                     if (p_buf) {
                         d_debug_logger->debug("post_write {} - {}",
                                               b->alias(),

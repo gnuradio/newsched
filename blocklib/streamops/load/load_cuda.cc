@@ -42,7 +42,7 @@ work_return_code_t load_cuda::work(work_io& wio)
     auto in = wio.inputs()[0].items<uint8_t>();
     auto out = wio.outputs()[0].items<uint8_t>();
     auto noutput_items = wio.outputs()[0].n_items;
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
     int gridSize = (noutput_items * itemsize + d_block_size - 1) / d_block_size;
     if (d_use_cb) {
         load_cu::exec_kernel(

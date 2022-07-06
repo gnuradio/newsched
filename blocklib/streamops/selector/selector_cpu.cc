@@ -35,7 +35,7 @@ work_return_code_t selector_cpu::work(work_io& wio)
         std::min(wio.inputs()[input_index].n_items, wio.outputs()[output_index].n_items);
 
     if (d_itemsize == 0) {
-        d_itemsize = wio.outputs()[output_index].buffer->item_size();
+        d_itemsize = wio.outputs()[output_index].buf().item_size();
     }
 
     if (enabled) {

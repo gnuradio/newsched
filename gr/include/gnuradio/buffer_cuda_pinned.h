@@ -22,24 +22,24 @@ public:
                        std::shared_ptr<buffer_properties> buf_properties);
     ~buffer_cuda_pinned();
 
-    static buffer_sptr make(size_t num_items,
+    static buffer_uptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
     void* read_ptr(size_t index);
     void* write_ptr();
     virtual void post_write(int num_items);
 
-    virtual std::shared_ptr<buffer_reader>
+    virtual buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
 };
 class buffer_cuda_pinned_reader : public buffer_reader
 {
 public:
-    buffer_cuda_pinned_reader(buffer_sptr buffer,
+    buffer_cuda_pinned_reader(buffer* bufp,
                               std::shared_ptr<buffer_properties> buf_props,
                               size_t itemsize,
                               size_t read_index)
-        : buffer_reader(buffer, buf_props, itemsize, read_index)
+        : buffer_reader(bufp, buf_props, itemsize, read_index)
     {
     }
 

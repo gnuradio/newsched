@@ -33,7 +33,7 @@ work_return_code_t copy_cuda::work(work_io& wio)
     auto out = wio.outputs()[0].items<uint8_t>();
 
     auto noutput_items = wio.outputs()[0].n_items;
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
     checkCudaErrors(cudaMemcpyAsync(
         out, in, noutput_items * itemsize, cudaMemcpyDeviceToDevice, d_stream));
 

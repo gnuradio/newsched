@@ -30,8 +30,6 @@ void bind_block(py::module& m)
         .def("base", &block::base)
         .def_static("cast", &block::cast)
         .def("set_pyblock_detail", &block::set_pyblock_detail)
-        .def("produce_each", &block::produce_each)
-        .def("consume_each", &block::consume_each)
         .def("request_parameter_query",
              py::overload_cast<int>(&block::request_parameter_query))
         .def("request_parameter_query",

@@ -75,7 +75,7 @@ work_return_code_t throttle_cpu::work(work_io& wio)
     // TODO: blocks like throttle shouldn't need to do a memcpy, but this would have to be
     // fixed in the buffering model and a special port type
     if (n) {
-        std::memcpy(out, in, n * wio.outputs()[0].buffer->item_size());
+        std::memcpy(out, in, n * wio.outputs()[0].buf().item_size());
     }
     wio.outputs()[0].n_produced = n;
 

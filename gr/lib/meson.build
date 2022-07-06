@@ -33,7 +33,6 @@ runtime_sources = [
   'buffer_sm.cc',
   'buffer_management.cc',
   'buffer_cpu_simple.cc',
-  'buffer_sm.cc',
   'realtime.cc',
   'runtime.cc',
   'runtime_monitor.cc',

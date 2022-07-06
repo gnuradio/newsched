@@ -13,13 +13,13 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
 
         if (e->src().port()) {
             // If buffer has not yet been created, e.g. 1:N block connection
-            if (!e->src().port()->buffer()) {
+            if (!e->src().port()->get_buffer()) {
 
                 // If src block is in this domain
                 if (std::find(fg->nodes().begin(), fg->nodes().end(), e->src().node()) !=
                     fg->nodes().end()) {
 
-                    buffer_sptr buf;
+                    buffer_uptr buf;
                     if (e->has_custom_buffer()) {
                         buf = e->buffer_factory()(
                             num_items, e->itemsize(), e->buf_properties());
@@ -27,7 +27,6 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     else {
                         buf = buf_props->factory()(num_items, e->itemsize(), buf_props);
                     }
-                    e->src().port()->set_buffer(buf);
 
                     d_debug_logger->debug(
                         "Edge: {}, Buf: {}, {} bytes, {} items of size {}",
@@ -36,10 +35,14 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         buf->buf_size(),
                         buf->num_items(),
                         buf->item_size());
+
+                    e->src().port()->set_buffer(buf);
+
+
                 }
             }
             else {
-                auto buf = e->src().port()->buffer();
+                auto buf = e->src().port()->get_buffer();
                 d_debug_logger->debug(
                     "Edge: {}, Buf(copy): {}, {} bytes, {} items of size {}",
                     e->identifier(),
@@ -78,9 +81,10 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                     d_debug_logger->debug(
                         "Creating Buffer Reader for Edge: {}, Independently",
                         ed[0]->identifier());
-                    p->set_buffer_reader(ed[0]->buf_properties()->reader_factory()(
-                        ed[0]->dst().port()->itemsize(), ed[0]->buf_properties()));
-                    p->buffer_reader()->set_parent_intf(sched_intf);
+                    auto br = ed[0]->buf_properties()->reader_factory()(
+                        ed[0]->dst().port()->itemsize(), ed[0]->buf_properties());
+                    p->set_buffer_reader(br);
+                    p->get_buffer_reader()->set_parent_intf(sched_intf);
                 }
                 else {
 
@@ -88,8 +92,9 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         "Adding Buffer Reader for Edge: {}, to buffer on Block {}",
                         ed[0]->identifier(),
                         ed[0]->src().identifier());
-                    p->set_buffer_reader(ed[0]->src().port()->buffer()->add_reader(
-                        ed[0]->buf_properties(), ed[0]->dst().port()->itemsize()));
+                    auto br = ed[0]->src().port()->get_buffer()->add_reader(
+                        ed[0]->buf_properties(), ed[0]->dst().port()->itemsize());
+                    p->set_buffer_reader(br);
                 }
             }
         }

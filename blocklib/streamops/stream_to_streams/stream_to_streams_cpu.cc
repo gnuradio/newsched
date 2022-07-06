@@ -30,7 +30,7 @@ work_return_code_t stream_to_streams_cpu::work(work_io& wio)
     size_t nstreams = wio.outputs().size();
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
 
     for (size_t i = 0; i < total_items; i++) {
         for (size_t j = 0; j < nstreams; j++) {
