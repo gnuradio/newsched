@@ -13,11 +13,11 @@ buffer_cpu_simple::buffer_cpu_simple(size_t num_items,
     set_type("buffer_cpu_simple");
 }
 
-buffer_sptr buffer_cpu_simple::make(size_t num_items,
+buffer_uptr buffer_cpu_simple::make(size_t num_items,
                                     size_t item_size,
                                     std::shared_ptr<buffer_properties> buffer_properties)
 {
-    return buffer_sptr(new buffer_cpu_simple(num_items, item_size, buffer_properties));
+    return buffer_uptr(new buffer_cpu_simple(num_items, item_size, buffer_properties));
 }
 
 void* buffer_cpu_simple::read_ptr(size_t index) { return (void*)&_buffer[index]; }
@@ -50,12 +50,12 @@ void buffer_cpu_simple::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader>
+buffer_reader_uptr
 buffer_cpu_simple::add_reader(std::shared_ptr<buffer_properties> buf_props,
                               size_t itemsize)
 {
-    std::shared_ptr<buffer_cpu_simple_reader> r(new buffer_cpu_simple_reader(
-        shared_from_this(), buf_props, itemsize, _write_index));
+    auto r = std::make_unique<buffer_cpu_simple_reader>(
+        this, buf_props, itemsize, _write_index);
     _readers.push_back(r.get());
     return r;
 }

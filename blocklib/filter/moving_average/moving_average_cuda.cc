@@ -55,7 +55,7 @@ moving_average_cuda<T>::work(work_io& wio)
 
     // auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
     auto num_iter = noutput_items;
-    auto tr = wio.inputs()[0].buffer->total_read();
+    auto tr = wio.inputs()[0].buf().total_read();
 
     if (tr == 0) {
         p_kernel_full->launch_default_occupancy({ in }, { out }, num_iter);

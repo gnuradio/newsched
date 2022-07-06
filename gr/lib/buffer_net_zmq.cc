@@ -13,14 +13,14 @@ buffer_net_zmq_properties::make_from_params(const std::string& json_str)
     return make(json_obj["ipaddr"], json_obj["port"]);
 }
 
-buffer_sptr buffer_net_zmq::make(size_t num_items,
+buffer_uptr buffer_net_zmq::make(size_t num_items,
                                  size_t item_size,
                                  std::shared_ptr<buffer_properties> buffer_properties)
 {
 
     auto zbp = std::static_pointer_cast<buffer_net_zmq_properties>(buffer_properties);
     if (zbp != nullptr) {
-        return buffer_sptr(
+        return buffer_uptr(
             new buffer_net_zmq(num_items, item_size, buffer_properties, zbp->port()));
     }
     else {
@@ -53,13 +53,12 @@ buffer_net_zmq::buffer_net_zmq(size_t num_items,
 /****************************************************************************/
 
 
-buffer_reader_sptr
+buffer_reader_uptr
 buffer_net_zmq_reader::make(size_t itemsize, std::shared_ptr<buffer_properties> buf_props)
 {
     auto zbp = std::static_pointer_cast<buffer_net_zmq_properties>(buf_props);
     if (zbp != nullptr) {
-        return buffer_reader_sptr(
-            new buffer_net_zmq_reader(buf_props, itemsize, zbp->ipaddr(), zbp->port()));
+        return std::make_unique<buffer_net_zmq_reader>(buf_props, itemsize, zbp->ipaddr(), zbp->port());
     }
     else {
         throw std::runtime_error(

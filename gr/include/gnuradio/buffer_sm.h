@@ -29,7 +29,7 @@ public:
               size_t item_size,
               std::shared_ptr<buffer_properties> buf_properties);
 
-    static buffer_sptr
+    static buffer_uptr
     make(size_t num_items,
          size_t item_size,
          std::shared_ptr<buffer_properties> buffer_properties = nullptr);
@@ -47,7 +47,7 @@ public:
     size_t space_available() override;
 
     bool write_info(buffer_info_t& info) override;
-    std::shared_ptr<buffer_reader>
+    buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
 
     bool adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t memmove_func);
@@ -60,10 +60,10 @@ private:
     logger_ptr d_debug_logger;
 
 protected:
-    std::shared_ptr<buffer_sm> _buffer_sm;
+    buffer_sm* _buffer_sm;
 
 public:
-    buffer_sm_reader(std::shared_ptr<buffer_sm> buffer,
+    buffer_sm_reader(buffer_sm* buffer,
                      size_t itemsize,
                      std::shared_ptr<buffer_properties> buf_props = nullptr,
                      size_t read_index = 0);

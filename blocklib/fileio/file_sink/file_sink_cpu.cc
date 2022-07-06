@@ -30,7 +30,7 @@ work_return_code_t file_sink_cpu::work(work_io& wio)
     auto noutput_items = wio.inputs()[0].n_items;
 
     if (d_itemsize == 0) {
-        d_itemsize = wio.inputs()[0].buffer->item_size();
+        d_itemsize = wio.inputs()[0].buf().item_size();
     }
 
     size_t nwritten = 0;

@@ -13,18 +13,22 @@ namespace gr {
  * @brief Struct for passing all information needed for input data to block::work
  *
  */
-struct block_work_input {
-    using sptr = std::shared_ptr<block_work_input>;
+class block_work_input {
+
+private:
+    buffer_reader* _buffer;
+public:
     size_t n_items = 0;
-    buffer_reader_sptr buffer;
     size_t n_consumed =
         0; // output the number of items that were consumed on the work() call
     port_sptr port = nullptr;
-    block_work_input(int n_items_, buffer_reader_sptr p_buf_, port_sptr p = nullptr)
-        : n_items(n_items_), buffer(p_buf_), port(p)
+    block_work_input(int n_items_, buffer_reader* p_buf_, port_sptr p = nullptr)
+        : _buffer(p_buf_), n_items(n_items_), port(p)
     {
     }
 
+    buffer_reader& buf() { return *_buffer; }
+    buffer_reader* bufp() { return _buffer; }
     void reset()
     {
         n_items = 0;
@@ -33,41 +37,42 @@ struct block_work_input {
     template <typename T>
     const T* items() const
     {
-        return static_cast<const T*>(buffer->read_ptr());
+        return static_cast<const T*>(_buffer->read_ptr());
     }
-    const void* raw_items() const { return buffer->read_ptr(); }
+    const void* raw_items() const { return _buffer->read_ptr(); }
 
-    uint64_t nitems_read() { return buffer->total_read(); }
+    uint64_t nitems_read() { return _buffer->total_read(); }
 
     void consume(int num) { n_consumed = num; }
 
     std::vector<tag_t> tags_in_window(const uint64_t item_start, const uint64_t item_end)
     {
-        return buffer->tags_in_window(item_start, item_end);
+        return _buffer->tags_in_window(item_start, item_end);
     }
-
-
 };
-
-using block_work_input_sptr = block_work_input::sptr;
 
 /**
  * @brief Struct for passing all information needed for output data from block::work
  *
  */
-struct block_work_output {
-    using sptr = std::shared_ptr<block_work_output>;
+class block_work_output
+{
+private:
+    buffer* _buffer;
+
+public:
     size_t n_items;
-    buffer_sptr buffer;
+
     size_t n_produced =
         0; // output the number of items that were produced on the work() call
     port_sptr port = nullptr;
 
-    block_work_output(int _n_items, buffer_sptr p_buf_, port_sptr p = nullptr)
-        : n_items(_n_items), buffer(p_buf_), port(p)
+    block_work_output(int _n_items, buffer* p_buf_, port_sptr p = nullptr)
+        : _buffer(p_buf_), n_items(_n_items), port(p)
     {
     }
-
+    buffer& buf() { return *_buffer; }
+    buffer* bufp() { return _buffer; }
     void reset()
     {
         n_items = 0;
@@ -76,18 +81,17 @@ struct block_work_output {
     template <typename T>
     T* items() const
     {
-        return static_cast<T*>(buffer->write_ptr());
+        return static_cast<T*>(_buffer->write_ptr());
     }
-    void* raw_items() const { return buffer->write_ptr(); }
+    void* raw_items() const { return _buffer->write_ptr(); }
 
-    uint64_t nitems_written() { return buffer->total_written(); }
+    uint64_t nitems_written() { return _buffer->total_written(); }
     void produce(int num) { n_produced = num; }
 
-    void add_tag(tag_t& tag) { buffer->add_tag(tag); }
-    void add_tag(uint64_t offset, tag_map map) { buffer->add_tag(offset, map); }
-    void add_tag(uint64_t offset, pmtf::map map) { buffer->add_tag(offset, map); }
+    void add_tag(tag_t& tag) { _buffer->add_tag(tag); }
+    void add_tag(uint64_t offset, tag_map map) { _buffer->add_tag(offset, map); }
+    void add_tag(uint64_t offset, pmtf::map map) { _buffer->add_tag(offset, map); }
 };
-using block_work_output_sptr = block_work_output::sptr;
 
 /**
  * @brief Enum for return codes from calls to block::work
@@ -121,7 +125,7 @@ public:
         if (it != std::end(_names)) {
             return _vec[it - _names.begin()];
         }
-        
+
         throw std::runtime_error(fmt::format("Named io entry {} not found", name));
     }
     auto begin() noexcept { return _vec.begin(); }
@@ -129,7 +133,7 @@ public:
     auto back() noexcept { return _vec.back(); }
     auto size() const noexcept { return _vec.size(); }
     auto empty() const noexcept { return _vec.empty(); }
-    auto clear() noexcept 
+    auto clear() noexcept
     {
         _vec.clear();
         _names.clear();
@@ -203,7 +207,7 @@ public:
     {
         std::vector<const void*> ret(inputs().size());
         for (size_t idx = 0; idx < inputs().size(); idx++) {
-            ret[idx] = inputs()[idx].buffer->read_ptr();
+            ret[idx] = inputs()[idx].buf().read_ptr();
         }
 
         return ret;
@@ -212,7 +216,7 @@ public:
     {
         std::vector<void*> ret(outputs().size());
         for (size_t idx = 0; idx < outputs().size(); idx++) {
-            ret[idx] = outputs()[idx].buffer->write_ptr();
+            ret[idx] = outputs()[idx].buf().write_ptr();
         }
 
         return ret;
@@ -225,12 +229,12 @@ private:
 
     void add_input(port_sptr p)
     {
-        _inputs.append_item(block_work_input(0, p->buffer_reader(), p), p->name());
+        _inputs.append_item(block_work_input(0, p->get_buffer_reader(), p), p->name());
     }
 
     void add_output(port_sptr p)
     {
-        _outputs.append_item(block_work_output(0, p->buffer(), p), p->name());
+        _outputs.append_item(block_work_output(0, p->get_buffer(), p), p->name());
     }
 };
 

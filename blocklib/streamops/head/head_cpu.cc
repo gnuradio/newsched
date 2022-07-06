@@ -36,7 +36,7 @@ work_return_code_t head_cpu::work(work_io& wio)
         return work_return_code_t::WORK_OK;
     }
 
-    memcpy(optr, iptr, n * wio.inputs()[0].buffer->item_size());
+    memcpy(optr, iptr, n * wio.inputs()[0].buf().item_size());
 
     d_ncopied_items += n;
     wio.outputs()[0].n_produced = n;

@@ -11,7 +11,7 @@ namespace gr {
 
 std::mutex s_vm_mutex;
 
-buffer_sptr buffer_cpu_vmcirc::make(size_t num_items,
+buffer_uptr buffer_cpu_vmcirc::make(size_t num_items,
                                     size_t item_size,
                                     std::shared_ptr<buffer_properties> buffer_properties)
 {
@@ -20,11 +20,10 @@ buffer_sptr buffer_cpu_vmcirc::make(size_t num_items,
         switch (bp->buffer_type()) {
         case buffer_cpu_vmcirc_type::AUTO:
         case buffer_cpu_vmcirc_type::SYSV_SHM:
-            return buffer_sptr(
-                new buffer_cpu_vmcirc_sysv_shm(num_items, item_size, buffer_properties));
+            return std::make_unique<buffer_cpu_vmcirc_sysv_shm>(num_items, item_size, buffer_properties);
         case buffer_cpu_vmcirc_type::MMAP_SHM:
-            return buffer_sptr(new buffer_cpu_vmcirc_mmap_shm_open(
-                num_items, item_size, buffer_properties));
+            return std::make_unique<buffer_cpu_vmcirc_mmap_shm_open>(
+                num_items, item_size, buffer_properties);
         default:
             throw std::runtime_error("Invalid vmcircbuf buffer_type");
         }
@@ -93,12 +92,12 @@ void buffer_cpu_vmcirc::post_write(int num_items)
     _total_written += num_items;
 }
 
-std::shared_ptr<buffer_reader>
+buffer_reader_uptr
 buffer_cpu_vmcirc::add_reader(std::shared_ptr<buffer_properties> buf_props,
                               size_t itemsize)
 {
-    std::shared_ptr<buffer_cpu_vmcirc_reader> r(new buffer_cpu_vmcirc_reader(
-        shared_from_this(), buf_props, itemsize, _write_index));
+    auto r = std::make_unique<buffer_cpu_vmcirc_reader>(
+        this, buf_props, itemsize, _write_index);
     _readers.push_back(r.get());
     return r;
 }

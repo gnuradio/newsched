@@ -31,7 +31,7 @@ public:
                    std::shared_ptr<buffer_properties> buffer_properties,
                    int port);
     ~buffer_net_zmq() override{};
-    static buffer_sptr make(size_t num_items,
+    static buffer_uptr make(size_t num_items,
                             size_t item_size,
                             std::shared_ptr<buffer_properties> buffer_properties);
 
@@ -48,7 +48,7 @@ public:
         d_debug_logger->debug("send returned code {}", *res);
     }
 
-    std::shared_ptr<buffer_reader>
+    buffer_reader_uptr
     add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override
     {
         // do nothing because readers will be added on zmq connect
@@ -66,15 +66,15 @@ private:
     size_t _msg_size = 0;
 
     // Circular buffer for zmq to write into
-    gr::buffer_sptr _circbuf;
-    gr::buffer_reader_sptr _circbuf_rdr;
+    gr::buffer_uptr _circbuf;
+    gr::buffer_reader_uptr _circbuf_rdr;
 
     logger_ptr d_logger;
     logger_ptr d_debug_logger;
 
 public:
     bool _recv_done = false;
-    static buffer_reader_sptr make(size_t itemsize,
+    static buffer_reader_uptr make(size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props);
     buffer_net_zmq_reader(std::shared_ptr<buffer_properties> buf_props,
                           size_t itemsize,

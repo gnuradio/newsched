@@ -29,7 +29,7 @@ work_return_code_t deinterleave_cpu::work(work_io& wio)
 
 {
     auto blocksize = pmtf::get_as<size_t>(*this->param_blocksize);
-    auto itemsize = wio.inputs()[0].buffer->item_size();
+    auto itemsize = wio.inputs()[0].buf().item_size();
 
     // Since itemsize can be set after construction
     if (d_size_bytes == 0) {

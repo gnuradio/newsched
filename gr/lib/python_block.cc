@@ -14,9 +14,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-
-#include <gnuradio/buffer_cpu_vmcirc.h>
-
 namespace gr {
 
 /**************************************************************************

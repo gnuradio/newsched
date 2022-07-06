@@ -58,7 +58,7 @@ work_return_code_t keep_m_in_n_cuda::work(work_io& wio)
     auto in = wio.inputs()[0].items<uint8_t>();
     auto noutput_items = wio.outputs()[0].n_items;
     auto ninput_items = wio.inputs()[0].n_items;
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
     auto m = pmtf::get_as<size_t>(*this->param_m);
     auto n = pmtf::get_as<size_t>(*this->param_n);
     auto offset = pmtf::get_as<size_t>(*this->param_offset);

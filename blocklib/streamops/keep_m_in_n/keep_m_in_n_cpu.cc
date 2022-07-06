@@ -52,7 +52,7 @@ work_return_code_t keep_m_in_n_cpu::work(work_io& wio)
     auto ninput_items = wio.inputs()[0].n_items;
 
     // Grab our parameters
-    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto itemsize = wio.outputs()[0].buf().item_size();
     auto m = pmtf::get_as<size_t>(*this->param_m);
     auto n = pmtf::get_as<size_t>(*this->param_n);
     auto offset = pmtf::get_as<size_t>(*this->param_offset);

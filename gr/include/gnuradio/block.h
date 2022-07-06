@@ -128,9 +128,6 @@ public:
     };
     virtual void on_parameter_change(param_action_sptr action);
     virtual void on_parameter_query(param_action_sptr action);
-    static void consume_each(size_t num, std::vector<block_work_input_sptr>& work_input);
-    static void produce_each(size_t num,
-                             std::vector<block_work_output_sptr>& work_output);
     void set_output_multiple(size_t multiple);
     size_t output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }

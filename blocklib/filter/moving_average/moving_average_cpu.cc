@@ -57,7 +57,7 @@ moving_average_cpu<T>::work(work_io& wio)
         std::min((wio.inputs()[0].n_items - d_length), wio.outputs()[0].n_items);
 
     auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
-    auto tr = wio.inputs()[0].buffer->total_read();
+    auto tr = wio.inputs()[0].buf().total_read();
 
     if (tr == 0) { // for the first no history case
         for (size_t i = 0; i < num_iter; i++) {
