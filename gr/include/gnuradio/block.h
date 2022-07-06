@@ -57,6 +57,8 @@ protected:
     void come_back_later(size_t time_ms);
     std::atomic<bool> d_sleeping = false;
 
+    work_io d_work_io;
+
 public:
     /**
      * @brief Construct a new block object
@@ -68,6 +70,9 @@ public:
     virtual bool start();
     virtual bool stop();
     virtual bool done();
+
+    void populate_work_io();
+    work_io& get_work_io();
 
     bool finished() { return d_finished; }
 
@@ -85,13 +90,11 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output)
+    virtual work_return_code_t work(work_io& wio)
     {
         throw std::runtime_error("work function has been called but not implemented");
     }
-    using work_t = std::function<work_return_code_t(
-        std::vector<block_work_input_sptr>&, std::vector<block_work_output_sptr>&)>;
+    using work_t = std::function<work_return_code_t(work_io&)>;
     /**
      * @brief Wrapper for work to perform special checks and take care of special
      * cases for certain types of blocks, e.g. sync_block, decim_block
@@ -100,10 +103,9 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
+    virtual work_return_code_t do_work(work_io& wio)
     {
-        return work(work_input, work_output);
+        return work(wio);
     };
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }

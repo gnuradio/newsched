@@ -33,11 +33,11 @@ noise_source_cpu<gr_complex>::noise_source_cpu(const typename noise_source<gr_co
 }
 
 template <class T>
-work_return_code_t noise_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t noise_source_cpu<T>::work(work_io& wio)
+                                         
 {
-    auto out = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto out = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     auto type = pmtf::get_as<int>(*this->param_type);
     auto ampl = pmtf::get_as<float>(*this->param_amplitude);
@@ -70,7 +70,7 @@ work_return_code_t noise_source_cpu<T>::work(std::vector<block_work_input_sptr>&
         throw std::runtime_error("invalid type");
     }
 
-    this->produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

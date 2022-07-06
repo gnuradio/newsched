@@ -25,12 +25,11 @@ deinterleave_cpu::deinterleave_cpu(block_args args) : INHERITED_CONSTRUCTORS
     set_relative_rate(1.0 / args.nstreams);
 }
 
-work_return_code_t
-deinterleave_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t deinterleave_cpu::work(work_io& wio)
+
 {
     auto blocksize = pmtf::get_as<size_t>(*this->param_blocksize);
-    auto itemsize = work_input[0]->buffer->item_size();
+    auto itemsize = wio.inputs()[0].buffer->item_size();
 
     // Since itemsize can be set after construction
     if (d_size_bytes == 0) {
@@ -41,8 +40,8 @@ deinterleave_cpu::work(std::vector<block_work_input_sptr>& work_input,
 
     // Forecasting
     auto nstreams = pmtf::get_as<size_t>(*this->param_nstreams);
-    auto noutput_items = block_work_output::min_n_items(work_output);
-    auto ninput_items = work_input[0]->n_items;
+    auto noutput_items = wio.min_noutput_items();
+    auto ninput_items = wio.inputs()[0].n_items;
     auto min_output = blocksize * (ninput_items / (blocksize * nstreams));
     if (min_output < 1) {
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
@@ -50,16 +49,16 @@ deinterleave_cpu::work(std::vector<block_work_input_sptr>& work_input,
     noutput_items = std::min(noutput_items, min_output);
     ninput_items = noutput_items * nstreams;
 
-    auto in = work_input[0]->items<uint8_t>();
+    auto in = wio.inputs()[0].items<uint8_t>();
     int count = 0, totalcount = noutput_items * nstreams;
     unsigned int skip = 0;
     unsigned int acc = 0;
     while (count < totalcount) {
-        auto out = work_output[d_current_output]->items<uint8_t>();
+        auto out = wio.outputs()[d_current_output].items<uint8_t>();
         memcpy(out + skip * d_size_bytes, in, d_size_bytes);
         in += d_size_bytes;
         // produce(d_current_output, blocksize);
-        work_output[d_current_output]->n_produced += blocksize;
+        wio.outputs()[d_current_output].n_produced += blocksize;
         d_current_output = (d_current_output + 1) % nstreams;
 
         // accumulate times through the loop; increment skip after a
@@ -75,7 +74,7 @@ deinterleave_cpu::work(std::vector<block_work_input_sptr>& work_input,
         // Keep track of our loop counter
         count += blocksize;
     }
-    consume_each(totalcount, work_input);
+    wio.consume_each(totalcount);
     return work_return_code_t::WORK_OK;
 }
 

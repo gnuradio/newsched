@@ -26,8 +26,7 @@ void bind_block(py::module& m)
     py::class_<block, gr::node, std::shared_ptr<block>>(m, "block")
         .def("work",
              &block::work,
-             py::arg("work_input_items"),
-             py::arg("work_output_items"))
+             py::arg("work_io"))
         .def("base", &block::base)
         .def_static("cast", &block::cast)
         .def("set_pyblock_detail", &block::set_pyblock_detail)

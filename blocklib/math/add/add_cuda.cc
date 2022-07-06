@@ -22,11 +22,11 @@ add_cuda<T>::add_cuda(const typename add<T>::block_args& args)
 }
 
 template <class T>
-work_return_code_t add_cuda<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                     std::vector<block_work_output_sptr>& work_output)
+work_return_code_t add_cuda<T>::work(work_io& wio)
+                                     
 {
-    auto out = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto out = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
     int noi = d_vlen * noutput_items;
 
     size_t idx = 0;
@@ -36,8 +36,8 @@ work_return_code_t add_cuda<T>::work(std::vector<block_work_input_sptr>& work_in
 
     p_add_kernel->launch_default_occupancy(d_in_items, { out }, noi);
 
-    this->produce_each(noutput_items, work_output);
-    this->consume_each(noutput_items, work_input);
+    wio.produce_each(noutput_items);
+    wio.consume_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

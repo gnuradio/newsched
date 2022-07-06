@@ -10,8 +10,8 @@ push_sink_cpu::push_sink_cpu(block_args args)
           ZMQ_PUSH, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
 }
-work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                       std::vector<block_work_output_sptr>& work_output)
+work_return_code_t push_sink_cpu::work(work_io& wio)
+                                       
 {
     // Poll with a timeout (FIXME: scheduler can't wait for us)
     zmq::pollitem_t itemsout[] = { { static_cast<void*>(d_socket), 0, ZMQ_POLLOUT, 0 } };
@@ -19,10 +19,10 @@ work_return_code_t push_sink_cpu::work(std::vector<block_work_input_sptr>& work_
 
     // If we can send something, do it
     if (itemsout[0].revents & ZMQ_POLLOUT) {
-        work_input[0]->n_consumed = send_message(work_input[0]->raw_items(),
-                                                 work_input[0]->n_items,
-                                                 work_input[0]->nitems_read(),
-                                                 work_input[0]->tags_in_window(0, work_input[0]->n_items) );
+        wio.inputs()[0].n_consumed = send_message(wio.inputs()[0].raw_items(),
+                                                 wio.inputs()[0].n_items,
+                                                 wio.inputs()[0].nitems_read(),
+                                                 wio.inputs()[0].tags_in_window(0, wio.inputs()[0].n_items) );
     }
 
     return work_return_code_t::WORK_OK;

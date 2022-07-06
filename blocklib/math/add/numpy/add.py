@@ -6,14 +6,14 @@ class add_ff(math.add_ff):
         math.add_ff.__init__(self, *args, **kwargs, impl = math.add_ff.available_impl.pyshell)
         self.set_pyblock_detail(gr.pyblock_detail(self))
     
-    def work(self, inputs, outputs):
-        noutput_items = outputs[0].n_items
-        
-        outputs[0].produce(noutput_items)
+    def work(self, wio):
+        out = wio.outputs()[0]
+        noutput_items = out.n_items
+        out.produce(noutput_items)
 
-        inbuf1 = gr.get_input_array(self, inputs, 0)
-        inbuf2 = gr.get_input_array(self, inputs, 1)
-        outbuf1 = gr.get_output_array(self, outputs, 0)
+        inbuf1 = gr.get_input_array(self, wio, 0)
+        inbuf2 = gr.get_input_array(self, wio, 1)
+        outbuf1 = gr.get_output_array(self, wio, 0)
 
         outbuf1[:] = inbuf1 + inbuf2
 

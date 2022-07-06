@@ -43,16 +43,16 @@ keep_m_in_n_cpu::keep_m_in_n_cpu(block_args args) : INHERITED_CONSTRUCTORS
     set_relative_rate((double)args.m / args.n);
 }
 
-work_return_code_t keep_m_in_n_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t keep_m_in_n_cpu::work(work_io& wio)
+
 {
-    auto out = work_output[0]->items<uint8_t>();
-    auto in = work_input[0]->items<uint8_t>();
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
+    auto out = wio.outputs()[0].items<uint8_t>();
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
 
     // Grab our parameters
-    auto itemsize = work_output[0]->buffer->item_size();
+    auto itemsize = wio.outputs()[0].buffer->item_size();
     auto m = pmtf::get_as<size_t>(*this->param_m);
     auto n = pmtf::get_as<size_t>(*this->param_n);
     auto offset = pmtf::get_as<size_t>(*this->param_offset);
@@ -75,8 +75,8 @@ work_return_code_t keep_m_in_n_cpu::work(std::vector<block_work_input_sptr>& wor
         }
     }
 
-    consume_each(blks * n, work_input);
-    produce_each(blks * m, work_output);
+    wio.consume_each(blks * n);
+    wio.produce_each(blks * m);
     return work_return_code_t::WORK_OK;
 }
 

@@ -26,11 +26,11 @@ sig_source_cpu<T>::sig_source_cpu(const typename sig_source<T>::block_args& args
 }
 
 template <typename T>
-work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t sig_source_cpu<T>::work(work_io& wio)
+                                         
 {
-    auto optr = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto optr = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     T t;
     std::scoped_lock l(d_mutex);
@@ -101,16 +101,16 @@ work_return_code_t sig_source_cpu<T>::work(std::vector<block_work_input_sptr>& w
         throw std::runtime_error("analog::sig_source: invalid waveform");
     }
 
-    this->produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 
 template <>
-work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t sig_source_cpu<gr_complex>::work(work_io& wio)
+                                         
 {
-    auto optr = work_output[0]->items<gr_complex>();
-    auto noutput_items = work_output[0]->n_items;
+    auto optr = wio.outputs()[0].items<gr_complex>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     gr_complex t;
     std::scoped_lock l(d_mutex);
@@ -206,7 +206,7 @@ work_return_code_t sig_source_cpu<gr_complex>::work(std::vector<block_work_input
         throw std::runtime_error("analog::sig_source: invalid waveform");
     }
 
-    this->produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

@@ -23,9 +23,8 @@ class multiply_const_cuda : public multiply_const<T>
 public:
     multiply_const_cuda(const typename multiply_const<T>::block_args& args);
 
-    virtual work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t
+    work(work_io&) override;
 
 protected:
     T d_k;

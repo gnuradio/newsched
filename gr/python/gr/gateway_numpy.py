@@ -80,27 +80,34 @@ class sync_block(python_sync_block):
     def stop(self):
         return True
 
-    def get_input_array(self, work_input, index):
+    def get_input_array(self, wio, index):
         ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
         ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
             ctypes.py_object, ctypes.c_char_p]
 
-        port = self.get_port(index, gr.STREAM, gr.INPUT)
+        if type(index) is str:
+            port = self.get_port(index)
+        else:
+            port = self.get_port(index, gr.STREAM, gr.INPUT)
+
         return pointer_to_ndarray(
-                ctypes.pythonapi.PyCapsule_GetPointer(work_input[index].raw_items(), None),
+                ctypes.pythonapi.PyCapsule_GetPointer(wio.inputs()[index].raw_items(), None),
                 port.format_descriptor(),
                 port.shape(),
-                work_input[index].n_items)
+                wio.inputs()[index].n_items)
 
-    def get_output_array(self, work_output, index):
+    def get_output_array(self, wio, index):
         ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
         ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
             ctypes.py_object, ctypes.c_char_p]
 
-        port = self.get_port(index, gr.STREAM, gr.OUTPUT)
+        if type(index) is str:
+            port = self.get_port(index)
+        else:
+            port = self.get_port(index, gr.STREAM, gr.OUTPUT)
 
         return pointer_to_ndarray(
-                ctypes.pythonapi.PyCapsule_GetPointer(work_output[index].raw_items(), None),
+                ctypes.pythonapi.PyCapsule_GetPointer(wio.outputs()[index].raw_items(), None),
                 port.format_descriptor(),
                 port.shape(),
-                work_output[index].n_items)
+                wio.outputs()[index].n_items)

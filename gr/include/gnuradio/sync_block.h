@@ -43,16 +43,15 @@ public:
      * @param work_output
      * @return work_return_code_t
      */
-    work_return_code_t do_work(std::vector<block_work_input_sptr>& work_input,
-                               std::vector<block_work_output_sptr>& work_output) override
+    work_return_code_t do_work(work_io& wio) override
     {
         // Check all inputs and outputs have the same number of items
         auto min_num_items = std::numeric_limits<size_t>::max();
-        for (auto& w : work_input) {
-            min_num_items = std::min(min_num_items, w->n_items);
+        for (auto& w : wio.inputs()) {
+            min_num_items = std::min(min_num_items, w.n_items);
         }
-        for (auto& w : work_output) {
-            min_num_items = std::min(min_num_items, w->n_items);
+        for (auto& w : wio.outputs()) {
+            min_num_items = std::min(min_num_items, w.n_items);
         }
 
         if (output_multiple_set()) {
@@ -60,20 +59,20 @@ public:
         }
 
         // all inputs and outputs need to be fixed to the absolute min
-        for (auto& w : work_input) {
-            w->n_items = min_num_items;
+        for (auto& w : wio.inputs()) {
+            w.n_items = min_num_items;
         }
-        for (auto& w : work_output) {
-            w->n_items = min_num_items;
+        for (auto& w : wio.outputs()) {
+            w.n_items = min_num_items;
         }
 
-        for (auto& w : work_output) {
-            if (w->n_items < output_multiple()) {
+        for (auto& w : wio.outputs()) {
+            if (w.n_items < output_multiple()) {
                 return work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS;
             }
         }
 
-        work_return_code_t ret = work(work_input, work_output);
+        work_return_code_t ret = work(wio);
 
         // For a sync block the n_produced must be the same on every
         // output port
@@ -82,13 +81,13 @@ public:
         size_t n_produced = 0;
         bool allsame = true;
         bool output_ports = false;
-        for (auto& w : work_output) {
+        for (auto& w : wio.outputs()) {
             if (firsttime) {
                 output_ports = true;
-                n_produced = w->n_produced;
+                n_produced = w.n_produced;
                 firsttime = false;
             }
-            if (n_produced != w->n_produced) {
+            if (n_produced != w.n_produced) {
                 allsame = false;
                 break;
             }
@@ -100,8 +99,8 @@ public:
 
         // by definition of a sync block the n_consumed must be equal to n_produced
         // also, a sync block must consume all of its items
-        for (auto& w : work_input) {
-            w->n_consumed = output_ports ? n_produced : w->n_items;
+        for (auto& w : wio.inputs()) {
+            w.n_consumed = output_ports ? n_produced : w.n_items;
         }
 
         return ret;

@@ -22,18 +22,18 @@ complex_to_mag_squared_cpu::complex_to_mag_squared_cpu(const block_args& args)
 }
 
 work_return_code_t
-complex_to_mag_squared_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                 std::vector<block_work_output_sptr>& work_output)
+complex_to_mag_squared_cpu::work(work_io& wio)
+                                 
 {
-    auto noutput_items = work_output[0]->n_items;
+    auto noutput_items = wio.outputs()[0].n_items;
     int noi = noutput_items * d_vlen;
 
-    auto iptr = work_input[0]->items<gr_complex>();
-    auto optr = work_output[0]->items<float>();
+    auto iptr = wio.inputs()[0].items<gr_complex>();
+    auto optr = wio.outputs()[0].items<float>();
 
     volk_32fc_magnitude_squared_32f(optr, iptr, noi);
 
-    produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

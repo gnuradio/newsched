@@ -40,57 +40,57 @@ multiply_cpu<gr_complex>::multiply_cpu(
 
 template <>
 work_return_code_t
-multiply_cpu<float>::work(std::vector<block_work_input_sptr>& work_input,
-                          std::vector<block_work_output_sptr>& work_output)
+multiply_cpu<float>::work(work_io& wio)
+                          
 {
-    auto out = work_output[0]->items<float>();
-    auto noutput_items = work_output[0]->n_items;
+    auto out = wio.outputs()[0].items<float>();
+    auto noutput_items = wio.outputs()[0].n_items;
     int noi = d_vlen * noutput_items;
 
-    memcpy(out, work_input[0]->items<float>(), noi * sizeof(float));
+    memcpy(out, wio.inputs()[0].items<float>(), noi * sizeof(float));
     for (size_t i = 1; i < d_num_inputs; i++) {
-        volk_32f_x2_multiply_32f(out, out, work_input[i]->items<float>(), noi);
+        volk_32f_x2_multiply_32f(out, out, wio.inputs()[i].items<float>(), noi);
     }
 
-    work_output[0]->n_produced = work_output[0]->n_items;
+    wio.outputs()[0].n_produced = wio.outputs()[0].n_items;
     return work_return_code_t::WORK_OK;
 }
 
 template <>
 work_return_code_t
-multiply_cpu<gr_complex>::work(std::vector<block_work_input_sptr>& work_input,
-                               std::vector<block_work_output_sptr>& work_output)
+multiply_cpu<gr_complex>::work(work_io& wio)
+                               
 {
-    auto out = work_output[0]->items<gr_complex>();
-    auto noutput_items = work_output[0]->n_items;
+    auto out = wio.outputs()[0].items<gr_complex>();
+    auto noutput_items = wio.outputs()[0].n_items;
     int noi = d_vlen * noutput_items;
 
-    memcpy(out, work_input[0]->items<gr_complex>(), noi * sizeof(gr_complex));
+    memcpy(out, wio.inputs()[0].items<gr_complex>(), noi * sizeof(gr_complex));
     for (size_t i = 1; i < d_num_inputs; i++) {
-        volk_32fc_x2_multiply_32fc(out, out, work_input[i]->items<gr_complex>(), noi);
+        volk_32fc_x2_multiply_32fc(out, out, wio.inputs()[i].items<gr_complex>(), noi);
     }
 
-    work_output[0]->n_produced = work_output[0]->n_items;
+    wio.outputs()[0].n_produced = wio.outputs()[0].n_items;
     return work_return_code_t::WORK_OK;
 }
 
 template <class T>
-work_return_code_t multiply_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t multiply_cpu<T>::work(work_io& wio)
+                                         
 {
-    auto optr = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto optr = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     for (size_t i = 0; i < noutput_items * d_vlen; i++) {
-        T acc = (work_input[0]->items<T>())[i];
+        T acc = (wio.inputs()[0].items<T>())[i];
         for (size_t j = 1; j < d_num_inputs; j++) {
-            acc *= (work_input[j]->items<T>())[i];
+            acc *= (wio.inputs()[j].items<T>())[i];
         }
         *optr++ = static_cast<T>(acc);
     }
 
-    work_output[0]->n_produced = work_output[0]->n_items;
-    work_input[0]->n_consumed = work_input[0]->n_items;
+    wio.outputs()[0].n_produced = wio.outputs()[0].n_items;
+    wio.inputs()[0].n_consumed = wio.inputs()[0].n_items;
     return work_return_code_t::WORK_OK;
 }
 

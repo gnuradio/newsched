@@ -49,6 +49,19 @@ bool block::done()
     return true;
 }
 
+void block::populate_work_io()
+{
+    d_work_io.clear();
+    for (auto& p : input_stream_ports()) {
+        d_work_io.add_input(p);
+    }
+    for (auto& p : output_stream_ports()) {
+        d_work_io.add_output(p);
+    }
+}
+
+work_io& block::get_work_io() { return d_work_io; }
+
 tag_propagation_policy_t block::tag_propagation_policy()
 {
     return d_tag_propagation_policy;

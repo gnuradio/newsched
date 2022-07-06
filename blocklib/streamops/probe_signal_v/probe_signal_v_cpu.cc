@@ -16,21 +16,22 @@ namespace gr {
 namespace streamops {
 
 template <class T>
-probe_signal_v_cpu<T>::probe_signal_v_cpu(const typename probe_signal_v<T>::block_args& args)
+probe_signal_v_cpu<T>::probe_signal_v_cpu(
+    const typename probe_signal_v<T>::block_args& args)
     : INHERITED_CONSTRUCTORS(T), d_vlen(args.vlen), d_level(args.vlen)
 {
 }
 
 template <class T>
-work_return_code_t probe_signal_v_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t probe_signal_v_cpu<T>::work(work_io& wio)
+
 {
-    auto in = work_input[0]->items<T>();
-    auto ninput_items = work_input[0]->n_items;
+    auto in = wio.inputs()[0].items<T>();
+    auto ninput_items = wio.inputs()[0].n_items;
 
     memcpy(d_level.data(), &in[(ninput_items - 1) * d_vlen], d_vlen * sizeof(T));
 
-    this->consume_each(ninput_items, work_input);
+    wio.consume_each(ninput_items);
     return work_return_code_t::WORK_OK;
 }
 

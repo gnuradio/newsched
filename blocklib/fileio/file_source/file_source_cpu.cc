@@ -252,15 +252,15 @@ void file_source_cpu::do_update()
 
 void file_source_cpu::set_begin_tag(const std::string& val) { d_add_begin_tag = val; }
 
-work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t file_source_cpu::work(work_io& wio)
+                                         
 {
-    auto out = work_output[0]->items<uint8_t>();
-    auto noutput_items = work_output[0]->n_items;
+    auto out = wio.outputs()[0].items<uint8_t>();
+    auto noutput_items = wio.outputs()[0].n_items;
     uint64_t size = noutput_items;
 
     if (d_itemsize == 0) {
-        d_itemsize = work_output[0]->buffer->item_size();
+        d_itemsize = wio.outputs()[0].buffer->item_size();
         open(d_filename, d_repeat, d_offset, d_length_items);
     }
 
@@ -272,7 +272,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
 
     // No items remaining - all done
     if (d_items_remaining == 0) {
-        work_output[0]->n_produced = 0;
+        wio.outputs()[0].n_produced = 0;
         return work_return_code_t::WORK_DONE;
     }
 
@@ -280,8 +280,8 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
 
         // Add stream tag whenever the file starts again
         if (d_file_begin && !d_add_begin_tag.empty()) {
-            work_output[0]->buffer->add_tag(
-                work_output[0]->buffer->total_written() + noutput_items - size,
+            wio.outputs()[0].buffer->add_tag(
+                wio.outputs()[0].buffer->total_written() + noutput_items - size,
                 pmtf::map{ { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
                   { "srcid", _id } });
 
@@ -327,7 +327,7 @@ work_return_code_t file_source_cpu::work(std::vector<block_work_input_sptr>& wor
         }
     }
 
-    work_output[0]->n_produced = (noutput_items - size);
+    wio.produce_each(noutput_items - size);
     return work_return_code_t::WORK_OK;
 }
 

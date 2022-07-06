@@ -32,12 +32,12 @@ moving_average_cpu<T>::moving_average_cpu(
 
 template <class T>
 work_return_code_t
-moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+moving_average_cpu<T>::work(work_io& wio)
+                            
 {
-    if (work_input[0]->n_items < d_length) {
-        work_output[0]->n_produced = 0;
-        work_input[0]->n_consumed = 0;
+    if (wio.inputs()[0].n_items < d_length) {
+        wio.outputs()[0].n_produced = 0;
+        wio.inputs()[0].n_consumed = 0;
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
@@ -45,19 +45,19 @@ moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         d_length = d_new_length;
         d_scale = d_new_scale;
         d_updated = false;
-        work_output[0]->n_produced = 0;
-        work_input[0]->n_consumed = 0;
+        wio.outputs()[0].n_produced = 0;
+        wio.inputs()[0].n_consumed = 0;
         return work_return_code_t::WORK_OK;
     }
 
-    auto in = work_input[0]->items<T>();
-    auto out = work_output[0]->items<T>();
+    auto in = wio.inputs()[0].items<T>();
+    auto out = wio.outputs()[0].items<T>();
 
     size_t noutput_items =
-        std::min((work_input[0]->n_items - d_length), work_output[0]->n_items);
+        std::min((wio.inputs()[0].n_items - d_length), wio.outputs()[0].n_items);
 
     auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
-    auto tr = work_input[0]->buffer->total_read();
+    auto tr = wio.inputs()[0].buffer->total_read();
 
     if (tr == 0) { // for the first no history case
         for (size_t i = 0; i < num_iter; i++) {
@@ -82,8 +82,8 @@ moving_average_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
     }
 
     // don't consume the last d_length-1 samples
-    work_output[0]->n_produced = num_iter;
-    work_input[0]->n_consumed = tr == 0 ? num_iter - (d_length - 1) : num_iter;
+    wio.outputs()[0].n_produced = num_iter;
+    wio.inputs()[0].n_consumed = tr == 0 ? num_iter - (d_length - 1) : num_iter;
     return work_return_code_t::WORK_OK;
 } // namespace filter
 

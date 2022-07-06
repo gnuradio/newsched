@@ -25,9 +25,7 @@ public:
     void set_sample_rate(double rate);
 
     bool start() override;
-    work_return_code_t
-    work(std::vector<block_work_input_sptr>& work_input,
-         std::vector<block_work_output_sptr>& work_output) override;
+    work_return_code_t work(work_io&) override;
 
 protected:
     double d_samps_per_sec;
@@ -37,7 +35,6 @@ protected:
     uint64_t d_total_samples;
     double d_sample_rate;
     std::chrono::duration<double> d_sample_period;
-
 };
 
 } // namespace streamops

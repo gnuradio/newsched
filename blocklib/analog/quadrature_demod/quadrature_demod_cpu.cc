@@ -24,13 +24,13 @@ quadrature_demod_cpu::quadrature_demod_cpu(block_args args) : INHERITED_CONSTRUC
 }
 
 work_return_code_t
-quadrature_demod_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                           std::vector<block_work_output_sptr>& work_output)
+quadrature_demod_cpu::work(work_io& wio)
+                           
 {
-    auto in = work_input[0]->items<gr_complex>();
-    auto out = work_output[0]->items<float>();
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
+    auto in = wio.inputs()[0].items<gr_complex>();
+    auto out = wio.outputs()[0].items<float>();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
 
     // because of the history requirement, input needs to be 1 more than what we produce
     auto to_produce = std::min(ninput_items - (d_history - 1), noutput_items);
@@ -42,8 +42,8 @@ quadrature_demod_cpu::work(std::vector<block_work_input_sptr>& work_input,
         out[i] = gain * gr::kernel::math::fast_atan2f(imag(tmp[i]), real(tmp[i]));
     }
 
-    produce_each(to_produce, work_output);
-    consume_each(to_produce, work_input);
+    wio.produce_each(to_produce);
+    wio.consume_each(to_produce);
     return work_return_code_t::WORK_OK;
 }
 

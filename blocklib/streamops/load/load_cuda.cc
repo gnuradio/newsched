@@ -36,16 +36,17 @@ load_cuda::load_cuda(block_args args)
     }
 }
 
-work_return_code_t load_cuda::work(std::vector<block_work_input_sptr>& work_input,
-                                   std::vector<block_work_output_sptr>& work_output)
+work_return_code_t load_cuda::work(work_io& wio)
+
 {
-    auto in = work_input[0]->items<uint8_t>();
-    auto out = work_output[0]->items<uint8_t>();
-    auto noutput_items = work_output[0]->n_items;
-    auto itemsize = work_output[0]->buffer->item_size();
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto out = wio.outputs()[0].items<uint8_t>();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto itemsize = wio.outputs()[0].buffer->item_size();
     int gridSize = (noutput_items * itemsize + d_block_size - 1) / d_block_size;
     if (d_use_cb) {
-        load_cu::exec_kernel(in, out, gridSize, d_block_size, noutput_items, d_load, d_stream);
+        load_cu::exec_kernel(
+            in, out, gridSize, d_block_size, noutput_items, d_load, d_stream);
         checkCudaErrors(cudaPeekAtLastError());
         cudaStreamSynchronize(d_stream);
     }
@@ -62,7 +63,7 @@ work_return_code_t load_cuda::work(std::vector<block_work_input_sptr>& work_inpu
     }
 
     // Tell runtime system how many output items we produced.
-    produce_each(noutput_items, work_output);
+    wio.wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 } // namespace streamops

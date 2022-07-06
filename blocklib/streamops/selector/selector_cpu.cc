@@ -23,36 +23,37 @@ selector_cpu::selector_cpu(block_args args)
     set_tag_propagation_policy(gr::tag_propagation_policy_t::TPP_CUSTOM);
 }
 
-work_return_code_t selector_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                      std::vector<block_work_output_sptr>& work_output)
+work_return_code_t selector_cpu::work(work_io& wio)
+
 {
     auto input_index = pmtf::get_as<size_t>(*this->param_input_index);
     auto output_index = pmtf::get_as<size_t>(*this->param_output_index);
     auto enabled = pmtf::get_as<bool>(*this->param_enabled);
-    auto in = work_input[input_index]->items<uint8_t>();
-    auto out = work_output[output_index]->items<uint8_t>();
-    auto noutput_items = std::min(work_input[input_index]->n_items, work_output[output_index]->n_items);
+    auto in = wio.inputs()[input_index].items<uint8_t>();
+    auto out = wio.outputs()[output_index].items<uint8_t>();
+    auto noutput_items =
+        std::min(wio.inputs()[input_index].n_items, wio.outputs()[output_index].n_items);
 
     if (d_itemsize == 0) {
-        d_itemsize = work_output[output_index]->buffer->item_size();
+        d_itemsize = wio.outputs()[output_index].buffer->item_size();
     }
 
     if (enabled) {
-        auto nread = work_input[input_index]->nitems_read();
-        auto nwritten = work_output[output_index]->nitems_written();
+        auto nread = wio.inputs()[input_index].nitems_read();
+        auto nwritten = wio.outputs()[output_index].nitems_written();
 
-        auto tags = work_input[input_index]->tags_in_window(nread, nread + noutput_items);
+        auto tags = wio.inputs()[input_index].tags_in_window(nread, nread + noutput_items);
 
         for (auto tag : tags) {
             tag.set_offset(tag.offset() - (nread - nwritten));
-            work_output[output_index]->add_tag(tag);
+            wio.outputs()[output_index].add_tag(tag);
         }
 
         std::copy(in, in + noutput_items * d_itemsize, out);
-        work_output[output_index]->n_produced = noutput_items;
+        wio.outputs()[output_index].n_produced = noutput_items;
     }
 
-    consume_each(noutput_items, work_input);
+    wio.consume_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

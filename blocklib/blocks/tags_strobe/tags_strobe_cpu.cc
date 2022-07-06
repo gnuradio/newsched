@@ -22,23 +22,22 @@ tags_strobe_cpu::tags_strobe_cpu(block_args args)
 {
 }
 
-work_return_code_t tags_strobe_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                        std::vector<block_work_output_sptr>& work_output)
+work_return_code_t tags_strobe_cpu::work(work_io& wio)
 {
-    auto optr = work_output[0]->raw_items();
-    auto itemsize = work_output[0]->buffer->item_size();
-    auto noutput_items = work_output[0]->n_items;
+    auto optr = wio.outputs()[0].raw_items();
+    auto itemsize = wio.outputs()[0].buffer->item_size();
+    auto noutput_items = wio.outputs()[0].n_items;
     memset(optr, 0, noutput_items * itemsize);
 
     uint64_t nitems =
-        static_cast<uint64_t>(noutput_items) + work_output[0]->nitems_written();
+        static_cast<uint64_t>(noutput_items) + wio.outputs()[0].nitems_written();
     while ((nitems - d_offset) > d_nsamps) {
         d_offset += d_nsamps;
         d_tag.set_offset(d_offset);
-        work_output[0]->add_tag(d_tag);
+        wio.outputs()[0].add_tag(d_tag);
     }
 
-    produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

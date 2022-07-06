@@ -78,7 +78,7 @@ protected:
     int d_consumed_items;
 
     bool has_pending();
-    int flush_pending(block_work_output_sptr work_output,
+    int flush_pending(block_work_output& work_output,
                       const int out_nitems,
                       const uint64_t out_offset);
     bool load_message(bool wait);

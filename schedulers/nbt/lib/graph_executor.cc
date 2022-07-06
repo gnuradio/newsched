@@ -24,8 +24,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             continue;
         }
 
-        std::vector<block_work_input_sptr> work_input;   //(num_input_ports);
-        std::vector<block_work_output_sptr> work_output; //(num_output_ports);
+        work_io& wio = b->get_work_io();
+        wio.reset();
 
         // If a block is a message port only block, it will raise the finished() flag
         // to indicate that the rest of the flowgraph should clean up
@@ -35,10 +35,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             continue;
         }
 
-        auto input_stream_ports = b->input_stream_ports();
-        auto output_stream_ports = b->output_stream_ports();
-
-        if (input_stream_ports.empty() && output_stream_ports.empty()) {
+        if (wio.inputs().empty() && wio.outputs().empty()) {
             // There is no streaming work to do for this block
             per_block_status[b->id()] = executor_iteration_status::MSG_ONLY;
             continue;
@@ -46,8 +43,8 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
         // for each input port of the block
         bool ready = true;
-        for (auto p : input_stream_ports) {
-            auto p_buf = p->buffer_reader();
+        for (auto& w : wio.inputs()) {
+            auto p_buf = w.buffer;
             if (p_buf) {
                 auto max_read = p_buf->max_buffer_read();
                 auto min_read = p_buf->min_buffer_read();
@@ -77,8 +74,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
 
                 auto tags = p_buf->get_tags(read_info.n_items);
-                work_input.push_back(
-                    std::make_shared<block_work_input>(read_info.n_items, p_buf));
+                w.n_items = read_info.n_items;
             }
         }
 
@@ -88,7 +84,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         }
 
         // for each output port of the block
-        for (auto p : output_stream_ports) {
+        for (auto& w : wio.outputs()) {
 
             // When a block has multiple output buffers, it adds the restriction
             // that the work call can only produce the minimum available across
@@ -96,7 +92,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
             size_t max_output_buffer = std::numeric_limits<int>::max();
 
-            auto p_buf = p->buffer();
+            auto p_buf = w.buffer;
             if (p_buf) {
                 auto max_fill = p_buf->max_buffer_fill();
                 auto min_fill = p_buf->min_buffer_fill();
@@ -139,8 +135,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                 std::vector<tag_t> tags; // needs to be associated with edge buffers
 
-                work_output.push_back(
-                    std::make_shared<block_work_output>(max_output_buffer, p_buf));
+                w.n_items = max_output_buffer;
             }
         }
 
@@ -153,21 +148,21 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
             work_return_code_t ret;
             while (true) {
 
-                if (!work_output.empty()) {
+                if (!wio.outputs().empty()) {
                     d_debug_logger->debug("do_work (output) for {}, {}",
                                           b->alias(),
-                                          work_output[0]->n_items);
+                                          wio.outputs()[0].n_items);
                 }
-                else if (!work_input.empty()) {
+                else if (!wio.inputs().empty()) {
                     d_debug_logger->debug(
-                        "do_work (input) for {}, {}", b->alias(), work_input[0]->n_items);
+                        "do_work (input) for {}, {}", b->alias(), wio.inputs()[0].n_items);
                 }
                 else {
                     d_debug_logger->debug("do_work for {}", b->alias());
                 }
 
 
-                ret = b->do_work(work_input, work_output);
+                ret = b->do_work(wio);
                 d_debug_logger->debug("do_work returned {}", ret);
                 // ret = work_return_code_t::WORK_OK;
 
@@ -183,10 +178,10 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                         "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
-                    if (work_input.empty() && !work_output.empty()) {
+                    if (wio.inputs().empty() && !wio.outputs().empty()) {
                         size_t max_output = 0;
-                        for (auto& w : work_output) {
-                            max_output = std::max(w->n_produced, max_output);
+                        for (auto& w : wio.outputs()) {
+                            max_output = std::max(w.n_produced, max_output);
                         }
                         if (max_output <= 0) {
                             per_block_status[b->id()] =
@@ -200,13 +195,14 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     break;
                 }
                 else if (ret == work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS) {
+                    // FIXME: Do for all the outputs
                     if (b->output_multiple_set()) {
-                        work_output[0]->n_items -= b->output_multiple();
+                        wio.outputs()[0].n_items -= b->output_multiple();
                     }
                     else {
-                        work_output[0]->n_items >>= 1;
+                        wio.outputs()[0].n_items >>= 1;
                     }
-                    if (work_output[0]->n_items < b->output_multiple()) // min block size
+                    if (wio.outputs()[0].n_items < b->output_multiple()) // min block size
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
                         d_debug_logger->debug(
@@ -230,31 +226,28 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
 
                 int input_port_index = 0;
-                for (auto p : b->input_stream_ports()) {
-                    auto p_buf = p->buffer_reader();
+                for (auto& w : wio.inputs()) {
+                    auto p_buf = w.buffer;
                     if (p_buf) {
                         if (!p_buf->tags().empty()) {
                             // Pass the tags according to TPP
                             if (b->tag_propagation_policy() ==
                                 tag_propagation_policy_t::TPP_ALL_TO_ALL) {
-                                int output_port_index = 0;
-                                for (auto op : b->output_stream_ports()) {
-                                    auto p_out_buf = op->buffer();
+                                for (auto wo : wio.outputs()) {
+                                    auto p_out_buf = wo.buffer;
                                     p_out_buf->propagate_tags(
-                                        p_buf, work_input[input_port_index]->n_consumed);
-
-                                    output_port_index++;
+                                        p_buf, w.n_consumed);
                                 }
                             }
                             else if (b->tag_propagation_policy() ==
                                      tag_propagation_policy_t::TPP_ONE_TO_ONE) {
                                 int output_port_index = 0;
-                                for (auto op : b->output_stream_ports()) {
+                                for (auto wo : wio.outputs()) {
                                     if (output_port_index == input_port_index) {
-                                        auto p_out_buf = op->buffer();
+                                        auto p_out_buf = wo.buffer;
                                         p_out_buf->propagate_tags(
                                             p_buf,
-                                            work_input[input_port_index]->n_consumed);
+                                            w.n_consumed);
                                     }
                                     output_port_index++;
                                 }
@@ -263,28 +256,23 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
                         d_debug_logger->debug("post_read {} - {}",
                                               b->alias(),
-                                              work_input[input_port_index]->n_consumed);
+                                              w.n_consumed);
 
-                        p_buf->post_read(work_input[input_port_index]->n_consumed);
-                        p->notify_scheduler_action(scheduler_action_t::NOTIFY_OUTPUT);
+                        p_buf->post_read(w.n_consumed);
+                        w.port->notify_scheduler_action(scheduler_action_t::NOTIFY_OUTPUT);
 
                         input_port_index++;
                     }
                 }
 
-                int output_port_index = 0;
-                for (auto p : b->output_stream_ports()) {
-                    auto p_buf = p->buffer();
+                for (auto& wo : wio.outputs()) {
+                    auto p_buf = wo.buffer;
                     if (p_buf) {
                         d_debug_logger->debug("post_write {} - {}",
                                               b->alias(),
-                                              work_output[output_port_index]->n_produced);
-                        p_buf->post_write(work_output[output_port_index]->n_produced);
-
-                        p->notify_scheduler_action(scheduler_action_t::NOTIFY_INPUT);
-
-                        output_port_index++;
-
+                                              wo.n_produced);
+                        p_buf->post_write(wo.n_produced);
+                        wo.port->notify_scheduler_action(scheduler_action_t::NOTIFY_INPUT);
                         p_buf->prune_tags();
                     }
                 }

@@ -90,15 +90,15 @@ void pfb_channelizer_cpu<T>::set_taps(const std::vector<float>& taps)
 
 template <class T>
 work_return_code_t
-pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                             std::vector<block_work_output_sptr>& work_output)
+pfb_channelizer_cpu<T>::work(work_io& wio)
+                             
 {
     // std::scoped_lock guard(d_mutex);
 
-    auto in = work_input[0]->items<T>();
-    auto out = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
-    auto ninput_items = work_input[0]->n_items;
+    auto in = wio.inputs()[0].items<T>();
+    auto out = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
+    auto ninput_items = wio.inputs()[0].n_items;
 
     if ((size_t)ninput_items < d_history * d_nchans) { // if we can produce 1 output item
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
@@ -121,7 +121,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
     }
 
-    size_t noutputs = work_output.size();
+    size_t noutputs = wio.outputs().size();
     noutput_items = total_items - d_history + 1;
 
     // The following algorithm looks more complex in order to handle
@@ -143,7 +143,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         i = (i + d_rate_ratio) % d_nfilts;
         last = i;
         while (i >= 0) {
-            // in = work_input[j]->items<gr_complex>();
+            // in = wio.inputs()[j].items<gr_complex>();
             in = d_deinterleaved[j].data();
             d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n]);
             j++;
@@ -152,7 +152,7 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
         i = d_nfilts - 1;
         while (i > last) {
-            // in = work_input[j]->items<gr_complex>();
+            // in = wio.inputs()[j].items<gr_complex>();
             in = d_deinterleaved[j].data();
             d_fft.get_inbuf()[d_idxlut[j]] = d_fir_filters[i].filter(&in[n - 1]);
             j++;
@@ -166,14 +166,14 @@ pfb_channelizer_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
         // Send to output channels
         for (unsigned int nn = 0; nn < noutputs; nn++) {
-            out = work_output[nn]->items<gr_complex>();
+            out = wio.outputs()[nn].items<gr_complex>();
             out[oo] = d_fft.get_outbuf()[d_channel_map[nn]];
         }
         oo++;
     }
-    this->consume_each(toconsume * d_nchans, work_input);
+    wio.consume_each(toconsume * d_nchans);
     // this->produce_each(noutput_items - (d_history / d_nchans - 1), work_output);
-    this->produce_each(noutput_items, work_output);
+    wio.produce_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 

@@ -41,12 +41,11 @@ void fir_filter_cpu<IN_T, OUT_T, TAP_T>::on_parameter_change(param_action_sptr a
 
 template <class IN_T, class OUT_T, class TAP_T>
 work_return_code_t
-fir_filter_cpu<IN_T, OUT_T, TAP_T>::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+fir_filter_cpu<IN_T, OUT_T, TAP_T>::work(work_io& wio)                         
 {
     // Do forecasting
-    size_t ninput = work_input[0]->n_items;
-    size_t noutput = work_output[0]->n_items;
+    size_t ninput = wio.inputs()[0].n_items;
+    size_t noutput = wio.outputs()[0].n_items;
 
     auto decim = pmtf::get_as<size_t>(*this->param_decimation);
 
@@ -66,8 +65,8 @@ fir_filter_cpu<IN_T, OUT_T, TAP_T>::work(std::vector<block_work_input_sptr>& wor
     }
 
 
-    auto in = work_input[0]->items<IN_T>();
-    auto out = work_output[0]->items<OUT_T>();
+    auto in = wio.inputs()[0].items<IN_T>();
+    auto out = wio.outputs()[0].items<OUT_T>();
 
     if (decim == 1) {
         d_fir.filterN(out, in, noutput_items);
@@ -76,9 +75,9 @@ fir_filter_cpu<IN_T, OUT_T, TAP_T>::work(std::vector<block_work_input_sptr>& wor
         d_fir.filterNdec(out, in, noutput_items, decim);
     }
 
-    //this->consume_each(noutput_items * decim + d_hist_change, work_input);
-    this->consume_each(noutput_items * decim, work_input);
-    this->produce_each(noutput_items, work_output);
+    //wio.consume_each(noutput_items * decim + d_hist_change);
+    wio.consume_each(noutput_items * decim);
+    wio.produce_each(noutput_items);
 
     if (d_hist_updated) {
         d_hist_change = 0;

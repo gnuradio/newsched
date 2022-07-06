@@ -42,13 +42,12 @@ vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_a
 
 template <class T>
 work_return_code_t
-vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                           std::vector<block_work_output_sptr>& work_output)
+vector_source_cpu<T>::work(work_io& wio)
 {
 
-    // size_t noutput_ports = work_output.size(); // is 1 for this block
-    int noutput_items = work_output[0]->n_items;
-    auto optr = work_output[0]->items<T>();
+    // size_t noutput_ports = wio.outputs().size(); // is 1 for this block
+    int noutput_items = wio.outputs()[0].n_items;
+    auto optr = wio.outputs()[0].items<T>();
 
     if (d_repeat) {
         unsigned int size = d_data.size();
@@ -63,7 +62,7 @@ vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
                 memcpy((void*)optr, (const void*)&d_data[0], size * sizeof(T));
                 optr += size;
                 for (unsigned t = 0; t < d_tags.size(); t++) {
-                    work_output[0]->add_tag(work_output[0]->nitems_written() + i +
+                    wio.outputs()[0].add_tag(wio.outputs()[0].nitems_written() + i +
                                                 d_tags[t].offset(),
                                             d_tags[t].map());
                 }
@@ -80,12 +79,12 @@ vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
         d_offset = offset;
 
-        work_output[0]->n_produced = noutput_items;
+        wio.outputs()[0].n_produced = noutput_items;
         return work_return_code_t::WORK_OK;
     }
     else {
         if (d_offset >= d_data.size()) {
-            work_output[0]->n_produced = 0;
+            wio.outputs()[0].n_produced = 0;
             return work_return_code_t::WORK_DONE; // Done!
         }
 
@@ -95,12 +94,12 @@ vector_source_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
         for (unsigned t = 0; t < d_tags.size(); t++) {
             if ((d_tags[t].offset() >= d_offset) && (d_tags[t].offset() < d_offset + n)) {
-                work_output[0]->add_tag(d_tags[t]);
+                wio.outputs()[0].add_tag(d_tags[t]);
             }
         }
         d_offset += n;
 
-        work_output[0]->n_produced = n / d_vlen;
+        wio.outputs()[0].n_produced = n / d_vlen;
         return work_return_code_t::WORK_OK;
     }
 }

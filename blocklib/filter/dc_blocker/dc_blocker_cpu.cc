@@ -41,13 +41,13 @@ int dc_blocker_cpu<T>::group_delay()
 
 template <class T>
 work_return_code_t
-dc_blocker_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                        std::vector<block_work_output_sptr>& work_output)
+dc_blocker_cpu<T>::work(work_io& wio)
+                        
 {
 
-    auto in = work_input[0]->items<T>();
-    auto out = work_output[0]->items<T>();
-    auto noutput_items = work_output[0]->n_items;
+    auto in = wio.inputs()[0].items<T>();
+    auto out = wio.outputs()[0].items<T>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     if (d_long_form) {
         T y1, y2, y3, y4, d;
@@ -73,7 +73,7 @@ dc_blocker_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
     }
 
-    work_output[0]->n_produced = noutput_items;
+    wio.outputs()[0].n_produced = noutput_items;
     return work_return_code_t::WORK_OK;
 }
 

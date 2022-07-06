@@ -14,16 +14,13 @@ namespace blocks {
 
 null_source_cpu::null_source_cpu(block_args args) : INHERITED_CONSTRUCTORS {}
 
-work_return_code_t null_source_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                                         std::vector<block_work_output_sptr>& work_output)
+work_return_code_t null_source_cpu::work(work_io& wio)
 {
-    void* optr;
-    auto itemsize = work_output[0]->buffer->item_size();
-    for (size_t n = 0; n < work_output.size(); n++) {
-        optr = work_output[n]->items<void>();
-        auto noutput_items = work_output[n]->n_items;
-        memset(optr, 0, noutput_items * itemsize);
-        work_output[n]->n_produced = noutput_items;
+    auto itemsize = wio.outputs()[0].buffer->item_size();
+    for (auto& out : wio.outputs()) {
+        auto noutput_items = out.n_items;
+        memset(out.raw_items(), 0, noutput_items * itemsize);
+        out.n_produced = noutput_items;
     }
 
     return work_return_code_t::WORK_OK;

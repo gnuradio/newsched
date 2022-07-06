@@ -58,18 +58,18 @@ freq_sink_cpu<T>::~freq_sink_cpu<T>()
 
 template <class T>
 work_return_code_t
-freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
-                       std::vector<block_work_output_sptr>& work_output)
+freq_sink_cpu<T>::work(work_io& wio)
+                       
 {
-    auto in = work_input[0]->items<T>();
-    auto noutput_items = work_input[0]->n_items;
+    auto in = wio.inputs()[0].items<T>();
+    auto noutput_items = wio.inputs()[0].n_items;
 
     // Update the FFT size from the application
     bool updated = false;
     updated |= fftresize();
     updated |= windowreset();
     if (updated) {
-        this->consume_each(0, work_input);
+        wio.consume_each(0);
         return work_return_code_t::WORK_OK;
     }
 
@@ -87,7 +87,7 @@ freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
                 if (d_triggered) {
                     // If not enough from tag position, early exit
                     if ((size_t)(d_index + d_fftsize) >= noutput_items) {
-                        this->consume_each(d_index, work_input);
+                        wio.consume_each(d_index);
                         return work_return_code_t::WORK_OK;
                     }
                 }
@@ -95,7 +95,7 @@ freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
 
             // Perform FFT and shift operations into d_magbufs
             for (int n = 0; n < d_nconnections; n++) {
-                in = work_input[n]->items<T>();
+                in = wio.inputs()[n].items<T>();
                 memcpy(
                     d_residbufs[n].data(), &in[d_index], sizeof(gr_complex) * d_fftsize);
 
@@ -123,7 +123,7 @@ freq_sink_cpu<T>::work(std::vector<block_work_input_sptr>& work_input,
         }
     }
 
-    this->consume_each(noutput_items, work_input);
+    wio.consume_each(noutput_items);
     return work_return_code_t::WORK_OK;
 }
 
