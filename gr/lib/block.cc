@@ -16,15 +16,15 @@ block::block(const std::string& name, const std::string& module)
       d_tag_propagation_policy(tag_propagation_policy_t::TPP_ALL_TO_ALL)
 {
     // {# add message handler port for parameter updates#}
-    _msg_param_update = message_port::make("param_update", port_direction_t::INPUT);
-    _msg_param_update->register_callback(
+    auto msg_param_update = message_port::make("param_update", port_direction_t::INPUT);
+    msg_param_update->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_param_update(msg); });
-    add_port(_msg_param_update);
+    add_port(std::move(msg_param_update));
 
-    _msg_system = message_port::make("system", port_direction_t::INPUT);
-    _msg_system->register_callback(
+    auto msg_system = message_port::make("system", port_direction_t::INPUT);
+    msg_system->register_callback(
         [this](pmtf::pmt msg) { this->handle_msg_system(msg); });
-    add_port(_msg_system);
+    add_port(std::move(msg_system));
 }
 
 void block::set_pyblock_detail(std::shared_ptr<pyblock_detail> p)

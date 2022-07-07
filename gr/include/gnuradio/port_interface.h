@@ -11,6 +11,6 @@ public:
     virtual ~port_interface() = default;
 };
 
-using port_interface_sptr = std::shared_ptr<port_interface>;
+using port_interface_ptr = port_interface*;
 
 } // namespace gr

@@ -47,8 +47,6 @@ public:
 
     bool start(void) override;
     bool stop(void) override;
-
-    void add_port(port_sptr p) { node::add_port(p); }
 };
 
 class GR_RUNTIME_API python_sync_block : virtual public gr::sync_block
@@ -69,8 +67,6 @@ public:
 
     bool start(void) override;
     bool stop(void) override;
-
-    void add_port(port_sptr p) { node::add_port(p); }
 };
 
 } /* namespace gr */

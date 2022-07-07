@@ -13,10 +13,12 @@ namespace gr {
  * @brief Struct for passing all information needed for input data to block::work
  *
  */
-class block_work_input {
+class block_work_input
+{
 
 private:
     buffer_reader* _buffer;
+
 public:
     size_t n_items = 0;
     size_t n_consumed =
@@ -65,10 +67,10 @@ public:
 
     size_t n_produced =
         0; // output the number of items that were produced on the work() call
-    port_sptr port = nullptr;
-
+    port_ptr port = nullptr;
     block_work_output(int _n_items, buffer* p_buf_, port_sptr p = nullptr)
         : _buffer(p_buf_), n_items(_n_items), port(p)
+
     {
     }
     buffer& buf() { return *_buffer; }
@@ -227,12 +229,12 @@ private:
     io_vec_wrap<block_work_input> _inputs;
     io_vec_wrap<block_work_output> _outputs;
 
-    void add_input(port_sptr p)
+    void add_input(port_ptr p)
     {
         _inputs.append_item(block_work_input(0, p->get_buffer_reader(), p), p->name());
     }
 
-    void add_output(port_sptr p)
+    void add_output(port_ptr p)
     {
         _outputs.append_item(block_work_output(0, p->get_buffer(), p), p->name());
     }

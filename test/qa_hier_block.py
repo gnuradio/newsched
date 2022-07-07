@@ -6,9 +6,9 @@ class hwrap(gr.hier_block):
     def __init__(self):
         gr.hier_block.__init__(self, 'hwrap')
 
-        self.add_port(gr.port_f("hin", gr.INPUT))
-        self.add_port(gr.port_f("hout1", gr.OUTPUT))
-        self.add_port(gr.port_f("hout2", gr.OUTPUT))
+        self.add_port_f("hin", gr.INPUT)
+        self.add_port_f("hout1", gr.OUTPUT)
+        self.add_port_f("hout2", gr.OUTPUT)
 
         cp1 = streamops.copy(gr.sizeof_float)
         cp2 = streamops.copy(gr.sizeof_float)

@@ -28,7 +28,7 @@ void bind_edge(py::module& m)
 
     py::class_<edge, std::shared_ptr<edge>>(m, "edge")
         .def(py::init(
-            [](gr::node_sptr a, gr::port_sptr b, gr::node_sptr c, gr::port_sptr d) {
+            [](gr::node_sptr a, gr::port_ptr b, gr::node_sptr c, gr::port_ptr d) {
                 return ::gr::edge::make(a, b, c, d);
             }))
         .def("set_custom_buffer", &edge::set_custom_buffer)

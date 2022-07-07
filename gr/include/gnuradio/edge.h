@@ -32,20 +32,20 @@ public:
  * @brief Endpoint between ports associated with nodes
  *
  */
-class GR_RUNTIME_API node_endpoint : public endpoint<node_sptr, port_sptr>
+class GR_RUNTIME_API node_endpoint : public endpoint<node_sptr, port_ptr>
 {
 private:
     node_sptr d_node;
-    port_sptr d_port;
+    port_ptr d_port;
 
 public:
     node_endpoint();
-    node_endpoint(node_sptr node, port_sptr port);
+    node_endpoint(node_sptr node, port_ptr port);
     node_endpoint(const node_endpoint& n);
 
     ~node_endpoint() override{};
     node_sptr node() const;
-    port_sptr port() const;
+    port_ptr port() const;
     std::string identifier() const;
 };
 
@@ -81,12 +81,12 @@ public:
         return std::make_shared<edge>(src, dst);
     }
     static sptr
-    make(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port)
+    make(node_sptr src_blk, port_ptr src_port, node_sptr dst_blk, port_ptr dst_port)
     {
         return std::make_shared<edge>(src_blk, src_port, dst_blk, dst_port);
     }
     edge(const node_endpoint& src, const node_endpoint& dst);
-    edge(node_sptr src_blk, port_sptr src_port, node_sptr dst_blk, port_sptr dst_port);
+    edge(node_sptr src_blk, port_ptr src_port, node_sptr dst_blk, port_ptr dst_port);
     virtual ~edge(){};
     node_endpoint src() const;
     node_endpoint dst() const;

@@ -31,7 +31,7 @@ port_vector_t flat_graph::calc_used_ports(block_sptr block, bool check_inputs)
             tmp.push_back(p->src().port());
     }
 
-    return unique_vector<port_sptr>(tmp);
+    return unique_vector<port_ptr>(tmp);
 }
 
 edge_vector_t flat_graph::calc_connections(block_sptr block, bool check_inputs)
@@ -52,7 +52,7 @@ edge_vector_t flat_graph::calc_connections(block_sptr block, bool check_inputs)
     return result; // assumes no duplicates
 }
 
-block_vector_t flat_graph::calc_downstream_blocks(block_sptr block, port_sptr port)
+block_vector_t flat_graph::calc_downstream_blocks(block_sptr block, port_ptr port)
 {
     block_vector_t tmp;
 

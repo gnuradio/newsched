@@ -23,7 +23,6 @@ void bind_hier_block(py::module& m)
     py::class_<gr::hier_block, gr::block, gr::node, std::shared_ptr<gr::hier_block>>(
         m, "hier_block")
         .def(py::init<const std::string&>())
-        .def("add_port", &gr::hier_block::add_port)
         .def("connect",
              py::overload_cast<std::shared_ptr<gr::node>,
                                unsigned int,

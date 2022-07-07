@@ -85,15 +85,15 @@ class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ 
         {% endif %}
         {% else %}
         {% if port['direction'] == 'input' %}
-        _msg_{{port['id']}} = message_port::make(
+        auto msg_{{port['id']}} = message_port::make(
             "{{port['id']}}", port_direction_t::INPUT, {{port['optional']|lower()}});
-        _msg_{{port['id']}}->register_callback([this](pmtf::pmt msg) { this->handle_msg_{{port['id']}}(msg); });
-        add_port(_msg_{{port['id']}});
+        msg_{{port['id']}}->register_callback([this](pmtf::pmt msg) { this->handle_msg_{{port['id']}}(msg); });
         {% else %}
-        _msg_{{port['id']}} = message_port::make(
+        auto msg_{{port['id']}} = message_port::make(
             "{{port['id']}}", port_direction_t::OUTPUT, {{port['optional']|lower()}});
-        add_port(_msg_{{port['id']}});
         {% endif %}
+        add_port(std::move(msg_{{port['id']}}));
+        d_msg_{{port['id']}} = this->get_message_port("{{port['id']}}");
         {% endif -%}
         {% endfor %}
 {% endmacro %}
@@ -137,7 +137,7 @@ class {{ block }} : virtual public {{blocktype}}{#{{',' if inherits != ''}}  {{ 
 
 {% macro message_ports(ports) -%}
     {% for port in ports %}{% if port['domain'] == 'message' -%}
-        message_port_sptr _msg_{{port['id']}};
+        message_port_ptr d_msg_{{port['id']}};
     {% endif %}{% endfor %}
     {% for port in ports %}{% if port['domain'] == 'message' and port['direction'] == 'input' -%}
     virtual void handle_msg_{{port['id']}}(pmtf::pmt msg) {} //= 0;

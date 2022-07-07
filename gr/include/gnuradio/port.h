@@ -31,13 +31,12 @@ class block;
  * Holds the necessary information to describe the port to the runtime
  *
  */
-class GR_RUNTIME_API port_base : public port_interface,
-                                 public std::enable_shared_from_this<port_base>
+class GR_RUNTIME_API port_base : public port_interface
 {
 
 public:
-    using sptr = std::shared_ptr<port_base>;
-    static sptr make(const std::string& name,
+    using uptr = std::unique_ptr<port_base>;
+    static uptr make(const std::string& name,
                      const port_direction_t direction,
                      const param_type_t data_type = param_type_t::CFLOAT,
                      const port_type_t port_type = port_type_t::STREAM,
@@ -73,9 +72,8 @@ public:
     size_t itemsize() { return _itemsize; }
     void set_itemsize(size_t itemsize) { _itemsize = itemsize; }
     std::vector<size_t> shape() { return _shape; }
-    sptr base() { return shared_from_this(); }
     bool optional() { return _optional; }
-    auto& connected_ports() { return _connected_ports; }
+    std::vector<port_interface_ptr>& connected_ports() { return _connected_ports; }
 
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
     std::string format_descriptor();
@@ -89,8 +87,8 @@ public:
     void notify_scheduler_action(scheduler_action_t action);
     // Inbound messages
     void push_message(scheduler_message_sptr msg) override;
-    void connect(port_interface_sptr other_port);
-    void disconnect(port_interface_sptr other_port);
+    void connect(port_interface_ptr other_port);
+    void disconnect(port_interface_ptr other_port);
 
 protected:
     std::string _name;
@@ -107,7 +105,7 @@ protected:
     size_t _itemsize; // data size across all shape
     std::string _format_descriptor = "";
 
-    std::vector<port_interface_sptr> _connected_ports;
+    std::vector<port_interface_ptr> _connected_ports;
     neighbor_interface_sptr _parent_intf = nullptr;
     buffer_uptr _buffer = nullptr;
     buffer_reader_uptr _buffer_reader = nullptr;
@@ -115,8 +113,9 @@ protected:
     block* _parent_block = nullptr;
 };
 
-using port_sptr = port_base::sptr;
-using port_vector_t = std::vector<port_sptr>;
+using port_ptr = port_base*;
+using port_uptr = std::unique_ptr<port_base>;
+using port_vector_t = std::vector<port_ptr>;
 
 
 /**
@@ -131,7 +130,8 @@ template <class T>
 class GR_RUNTIME_API port : public port_base
 {
 public:
-    static std::shared_ptr<port<T>> make(const std::string& name,
+    using uptr = std::unique_ptr<port<T>>;
+    static uptr make(const std::string& name,
                                          const port_direction_t direction,
                                          const std::vector<size_t>& shape = { 1 },
                                          const bool optional = false,
@@ -154,7 +154,8 @@ public:
 class GR_RUNTIME_API untyped_port : public port_base
 {
 public:
-    static std::shared_ptr<untyped_port> make(const std::string& name,
+    using uptr = std::unique_ptr<untyped_port>;
+    static uptr make(const std::string& name,
                                               const port_direction_t direction,
                                               const size_t itemsize,
                                               const bool optional = false,
@@ -180,8 +181,8 @@ private: //
     message_port_callback_fcn _callback_fcn;
 
 public:
-    using sptr = std::shared_ptr<message_port>;
-    static sptr make(const std::string& name,
+    using uptr = std::unique_ptr<message_port>;
+    static uptr make(const std::string& name,
                      const port_direction_t direction,
                      const bool optional = true,
                      const int multiplicity = 1);
@@ -196,6 +197,8 @@ public:
     void post(pmtf::pmt msg);
     void push_message(scheduler_message_sptr msg) override;
 };
-using message_port_sptr = message_port::sptr;
+
+using message_port_uptr = std::unique_ptr<message_port>;
+using message_port_ptr = message_port*;
 
 } // namespace gr

@@ -10,8 +10,8 @@ namespace gr {
 class message_port_proxy_upstream : public port_interface
 {
 public:
-    using sptr = std::shared_ptr<message_port_proxy_upstream>;
-    static sptr make() { return std::make_shared<message_port_proxy_upstream>(); }
+    using uptr = std::unique_ptr<message_port_proxy_upstream>;
+    static uptr make() { return std::make_unique<message_port_proxy_upstream>(); }
     message_port_proxy_upstream() : _context(1), _socket(_context, zmq::socket_type::push)
     {
         _socket.set(zmq::sockopt::sndhwm, 1);
@@ -53,10 +53,10 @@ private:
 class message_port_proxy_downstream : public port_interface
 {
 public:
-    using sptr = std::shared_ptr<message_port_proxy_downstream>;
-    static sptr make(int port)
+    using uptr = std::unique_ptr<message_port_proxy_downstream>;
+    static uptr make(int port)
     {
-        return std::make_shared<message_port_proxy_downstream>(port);
+        return std::make_unique<message_port_proxy_downstream>(port);
     }
     message_port_proxy_downstream(int port)
         : _context(1), _socket(_context, zmq::socket_type::pull), _port(port)
@@ -112,7 +112,7 @@ public:
         });
         t.detach();
     }
-    void set_gr_port(port_interface_sptr p) { _grport = p; };
+    void set_gr_port(port_interface_ptr p) { _grport = p; };
     void push_message(scheduler_message_sptr msg) override
     {
         throw std::runtime_error(
@@ -120,7 +120,7 @@ public:
     }
 
 private:
-    port_interface_sptr _grport = nullptr;
+    port_interface_ptr _grport = nullptr;
 
     zmq::context_t _context;
     zmq::socket_t _socket;

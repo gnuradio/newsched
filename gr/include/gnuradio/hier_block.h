@@ -27,7 +27,6 @@ public:
     virtual ~hier_block() { gnuradio::detail::sptr_magic::cancel_initial_sptr(this); }
     node_sptr self() { return shared_from_this(); }
     // add_port becomes public only for hier_block
-    void add_port(port_sptr p) { block::add_port(p); }
     edge_sptr connect(const node_endpoint& src, const node_endpoint& dst)
     {
         if (src.node().get() == this) { // connecting to self input ports
@@ -60,14 +59,14 @@ public:
             dst_direction = port_direction_t::OUTPUT;
         }
 
-        port_sptr src_port =
+        port_ptr src_port =
             (src_node == nullptr)
                 ? nullptr
                 : src_node->get_port(src_port_index,
                                      port_type_t::STREAM,
                                      src_direction); // for hier block it is reversed
 
-        port_sptr dst_port =
+        port_ptr dst_port =
             (dst_node == nullptr)
                 ? nullptr
                 : dst_node->get_port(dst_port_index, port_type_t::STREAM, dst_direction);

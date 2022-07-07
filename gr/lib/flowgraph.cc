@@ -8,12 +8,12 @@ namespace gr {
 
 flowgraph::flowgraph(const std::string& name) { set_alias(name); }
 
-size_t get_port_itemsize(port_sptr port)
+size_t get_port_itemsize(port_ptr port)
 {
     size_t size = 0;
     if (!port->connected_ports().empty()) {
         auto cp = port->connected_ports()[0];
-        auto p = std::dynamic_pointer_cast<port_base>(cp);
+        auto p = dynamic_cast<port_ptr>(cp);
         // use data_size since this includes vector sizing
         if (p)
             size = p->itemsize();
@@ -21,12 +21,12 @@ size_t get_port_itemsize(port_sptr port)
     return size;
 }
 
-std::string get_port_format_descriptor(port_sptr port)
+std::string get_port_format_descriptor(port_ptr port)
 {
     std::string fd = "";
     if (!port->connected_ports().empty()) {
         auto cp = port->connected_ports()[0];
-        auto p = std::dynamic_pointer_cast<port_base>(cp);
+        auto p = dynamic_cast<port_ptr>(cp);
         if (p)
             fd = p->format_descriptor();
     }

@@ -16,7 +16,7 @@ private:
     block_sptr d_block;
 
 public:
-    block_endpoint(block_sptr block, port_sptr port)
+    block_endpoint(block_sptr block, port_ptr port)
         : node_endpoint(block, port), d_block(block)
     {
     }
@@ -233,7 +233,7 @@ public:
         return fg;
     }
 
-    block_vector_t calc_downstream_blocks(block_sptr block, port_sptr port);
+    block_vector_t calc_downstream_blocks(block_sptr block, port_ptr port);
 
 protected:
     block_vector_t d_blocks;

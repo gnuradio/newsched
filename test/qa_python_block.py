@@ -18,9 +18,9 @@ class add_2_f32_1_f32(gr.sync_block):
             self,
             name="add 2 f32")
 
-        self.add_port(gr.port_f("in1", gr.INPUT, shape))
-        self.add_port(gr.port_f("in2", gr.INPUT, shape))
-        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
+        self.add_port_f("in1", gr.INPUT, shape)
+        self.add_port_f("in2", gr.INPUT, shape)
+        self.add_port_f("out", gr.OUTPUT, shape)
 
     def work(self, wio):
         noutput_items = wio.outputs()[0].n_items
@@ -41,9 +41,9 @@ class add_2_f32_1_f32_named(gr.sync_block):
             self,
             name="add 2 f32 named")
 
-        self.add_port(gr.port_f("in1", gr.INPUT, shape))
-        self.add_port(gr.port_f("in2", gr.INPUT, shape))
-        self.add_port(gr.port_f("out", gr.OUTPUT, shape))
+        self.add_port_f("in1", gr.INPUT, shape)
+        self.add_port_f("in2", gr.INPUT, shape)
+        self.add_port_f("out", gr.OUTPUT, shape)
 
     def work(self, wio):
         out = wio.outputs()["out"]
