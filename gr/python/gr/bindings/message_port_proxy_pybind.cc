@@ -25,14 +25,14 @@ void bind_message_port_proxy(py::module& m)
 
     py::class_<gr::message_port_proxy_upstream,
                gr::port_interface,
-               std::shared_ptr<gr::message_port_proxy_upstream>>(
+               std::unique_ptr<gr::message_port_proxy_upstream>>(
         m, "message_port_proxy_upstream")
         .def(py::init(&gr::message_port_proxy_upstream::make))
         .def("connect", &gr::message_port_proxy_upstream::connect);
 
     py::class_<gr::message_port_proxy_downstream,
                gr::port_interface,
-               std::shared_ptr<gr::message_port_proxy_downstream>>(
+               std::unique_ptr<gr::message_port_proxy_downstream>>(
         m, "message_port_proxy_downstream")
         .def(py::init(&gr::message_port_proxy_downstream::make))
         .def("port", &gr::message_port_proxy_downstream::port)

@@ -64,7 +64,7 @@ public:
 
     // }
     node_vector_t calc_used_nodes();
-    edge_vector_t find_edge(port_sptr port);
+    edge_vector_t find_edge(port_ptr port);
 };
 
 using graph_sptr = std::shared_ptr<graph>;

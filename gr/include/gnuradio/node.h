@@ -32,36 +32,16 @@ protected:
     std::string d_name;
     std::string d_alias;
     nodeid_t d_id; // Unique number given to block from runtime
-    std::vector<port_sptr> d_all_ports;
-    std::vector<port_sptr> d_input_ports;
-    std::vector<port_sptr> d_output_ports;
+    std::vector<port_uptr> d_ports;
+    std::vector<port_ptr> d_all_ports;
+    std::vector<port_ptr> d_input_ports;
+    std::vector<port_ptr> d_output_ports;
 
     gr::logger_ptr d_logger;
     gr::logger_ptr d_debug_logger;
 
     std::string d_rpc_name = "";
     rpc_client_interface_sptr d_rpc_client = nullptr;
-
-    void add_port(port_sptr p)
-    {
-        d_all_ports.push_back(p);
-        if (p->direction() == port_direction_t::INPUT) {
-            if (p->type() == port_type_t::STREAM)
-                p->set_index(input_stream_ports().size());
-            // TODO: do message ports have an index??
-
-            d_input_ports.push_back(p);
-        }
-        else if (p->direction() == port_direction_t::OUTPUT) {
-            if (p->type() == port_type_t::STREAM)
-                p->set_index(output_stream_ports().size());
-
-            d_output_ports.push_back(p);
-        }
-    }
-    void remove_port(const std::string& name){}; /// since ports are only added in
-                                                 /// constructor, is this necessary
-
 
 public:
     node() : d_name("") {}
@@ -74,21 +54,47 @@ public:
     virtual ~node() {}
     using sptr = std::shared_ptr<node>;
 
-    std::vector<port_sptr>& all_ports() { return d_all_ports; }
-    std::vector<port_sptr>& input_ports() { return d_input_ports; }
-    std::vector<port_sptr>& output_ports() { return d_output_ports; }
-    std::vector<port_sptr> input_stream_ports()
+    void add_port(port_uptr&& p)
     {
-        std::vector<port_sptr> result;
+        d_ports.push_back(std::move(p));
+        auto ptr = d_ports.back().get();
+        d_all_ports.push_back(ptr);
+        if (ptr->direction() == port_direction_t::INPUT) {
+            if (ptr->type() == port_type_t::STREAM)
+                ptr->set_index(input_stream_ports().size());
+            // TODO: do message ports have an index??
+
+            d_input_ports.push_back(ptr);
+        }
+        else if (ptr->direction() == port_direction_t::OUTPUT) {
+            if (ptr->type() == port_type_t::STREAM)
+                ptr->set_index(output_stream_ports().size());
+
+            d_output_ports.push_back(ptr);
+        }
+    }
+
+    void add_port(message_port_uptr&& p)
+    {
+        port_uptr p2(static_cast<port_ptr>(p.release()));
+        add_port(std::move(p2));
+    }
+
+    std::vector<port_ptr>& all_ports() { return d_all_ports; }
+    std::vector<port_ptr>& input_ports() { return d_input_ports; }
+    std::vector<port_ptr>& output_ports() { return d_output_ports; }
+    std::vector<port_ptr> input_stream_ports()
+    {
+        std::vector<port_ptr> result;
         for (auto& p : d_input_ports)
             if (p->type() == port_type_t::STREAM)
                 result.push_back(p);
 
         return result;
     }
-    std::vector<port_sptr> output_stream_ports()
+    std::vector<port_ptr> output_stream_ports()
     {
-        std::vector<port_sptr> result;
+        std::vector<port_ptr> result;
         for (auto& p : d_output_ports)
             if (p->type() == port_type_t::STREAM)
                 result.push_back(p);
@@ -96,32 +102,12 @@ public:
         return result;
     }
 
-
-    std::vector<message_port_sptr> input_message_ports()
+    message_port_ptr input_message_port(const std::string& port_name)
     {
-        std::vector<message_port_sptr> result;
-        for (auto& p : d_input_ports)
-            if (p->type() == port_type_t::MESSAGE)
-                result.push_back(std::static_pointer_cast<message_port>(p));
-
-        return result;
-    }
-    std::vector<message_port_sptr> output_message_ports()
-    {
-        std::vector<message_port_sptr> result;
-        for (auto& p : d_output_ports)
-            if (p->type() == port_type_t::MESSAGE)
-                result.push_back(std::static_pointer_cast<message_port>(p));
-
-        return result;
-    }
-
-    message_port_sptr input_message_port(const std::string& port_name)
-    {
-        message_port_sptr result = nullptr;
+        message_port_ptr result = nullptr;
         for (auto& p : d_input_ports)
             if (p->type() == port_type_t::MESSAGE && p->name() == port_name)
-                result = std::static_pointer_cast<message_port>(p);
+                result = static_cast<message_port*>(p);
 
         return result;
     }
@@ -143,10 +129,10 @@ public:
 
     void set_id(uint32_t id) { d_id = id; }
 
-    port_sptr get_port(const std::string& name)
+    port_ptr get_port(const std::string& name)
     {
-        auto pred = [name](port_sptr p) { return (p->name() == name); };
-        std::vector<port_sptr>::iterator it =
+        auto pred = [name](port_ptr p) { return (p->name() == name); };
+        std::vector<port_ptr>::iterator it =
             std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);
 
         if (it != std::end(d_all_ports)) {
@@ -158,25 +144,25 @@ public:
         }
     }
 
-    message_port_sptr get_message_port(const std::string& name)
+    message_port_ptr get_message_port(const std::string& name)
     {
         auto p = get_port(name);
 
         // could be null if the requested port is not a message port
-        return std::dynamic_pointer_cast<message_port>(p);
+        return dynamic_cast<message_port*>(p);
     }
 
-    message_port_sptr get_first_message_port(port_direction_t direction)
+    message_port_ptr get_first_message_port(port_direction_t direction)
     {
-        auto pred = [direction](port_sptr p) {
+        auto pred = [direction](port_ptr p) {
             return (p->type() == port_type_t::MESSAGE && p->direction() == direction);
         };
 
-        std::vector<port_sptr>::iterator it =
+        std::vector<port_ptr>::iterator it =
             std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);
 
         if (it != std::end(d_all_ports)) {
-            return std::dynamic_pointer_cast<message_port>(*it);
+            return dynamic_cast<message_port*>(*it);
         }
         else {
             // port was not found
@@ -184,13 +170,13 @@ public:
         }
     }
 
-    port_sptr get_port(unsigned int index, port_type_t type, port_direction_t direction)
+    port_ptr get_port(unsigned int index, port_type_t type, port_direction_t direction)
     {
-        auto pred = [index, type, direction](port_sptr p) {
+        auto pred = [index, type, direction](port_ptr p) {
             return (p->type() == type && p->direction() == direction &&
                     p->index() == (int)index);
         };
-        std::vector<port_sptr>::iterator it =
+        std::vector<port_ptr>::iterator it =
             std::find_if(std::begin(d_all_ports), std::end(d_all_ports), pred);
 
         if (it != std::end(d_all_ports)) {

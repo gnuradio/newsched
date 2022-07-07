@@ -46,8 +46,6 @@ protected:
     neighbor_interface_sptr p_scheduler = nullptr;
     std::map<std::string, int> d_param_str_map;
     std::map<int, std::string> d_str_param_map;
-    message_port_sptr _msg_param_update;
-    message_port_sptr _msg_system;
     std::shared_ptr<pyblock_detail> d_pyblock_detail;
     bool d_finished = false;
 

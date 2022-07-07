@@ -53,9 +53,9 @@ edge_sptr graph::connect(const node_endpoint& src, const node_endpoint& dst)
 
     // Give the underlying port objects information about the connected ports
     if (src.port())
-        src.port()->connect(dst.port());
+        src.port()->connect(static_cast<port_interface_ptr>(dst.port()));
     if (dst.port())
-        dst.port()->connect(src.port());
+        dst.port()->connect(static_cast<port_interface_ptr>(src.port()));
 
     return newedge;
 }
@@ -65,7 +65,7 @@ edge_sptr graph::connect(node_sptr src_node,
                          node_sptr dst_node,
                          unsigned int dst_port_index)
 {
-    port_sptr src_port = (src_node == nullptr)
+    port_ptr src_port = (src_node == nullptr)
                              ? nullptr
                              : src_node->get_port(src_port_index,
                                                   port_type_t::STREAM,
@@ -73,7 +73,7 @@ edge_sptr graph::connect(node_sptr src_node,
     // if (src_port == nullptr)
     //     throw std::invalid_argument("Source Port not found");
 
-    port_sptr dst_port = (dst_node == nullptr)
+    port_ptr dst_port = (dst_node == nullptr)
                              ? nullptr
                              : dst_node->get_port(dst_port_index,
                                                   port_type_t::STREAM,
@@ -89,12 +89,12 @@ edge_sptr graph::connect(node_sptr src_node,
                          node_sptr dst_node,
                          const std::string& dst_port_name)
 {
-    port_sptr src_port =
+    port_ptr src_port =
         (src_node == nullptr) ? nullptr : src_node->get_port(src_port_name);
     // if (src_port == nullptr)
     // throw std::invalid_argument("Source Port not found");
 
-    port_sptr dst_port =
+    port_ptr dst_port =
         (dst_node == nullptr) ? nullptr : dst_node->get_port(dst_port_name);
     // if (dst_port == nullptr)
     // throw std::invalid_argument("Destination port not found");
@@ -192,7 +192,7 @@ node_vector_t graph::all_nodes()
     return unique_vector<node_sptr>(tmp);
 }
 
-edge_vector_t graph::find_edge(port_sptr port)
+edge_vector_t graph::find_edge(port_ptr port)
 {
     edge_vector_t ret;
     for (auto& e : edges()) {

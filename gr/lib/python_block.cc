@@ -33,7 +33,7 @@ work_return_code_t python_block::work(work_io& wio)
 {
     py::gil_scoped_acquire acquire;
 
-    py::object ret = d_py_handle.attr("handle_work")(wio);
+    py::object ret = d_py_handle.attr("handle_work")(&wio);
 
     return ret.cast<work_return_code_t>();
 }

@@ -25,8 +25,7 @@ void bind_python_block(py::module& m)
         m, "python_block")
 
         .def(py::init(&python_block::make), py::arg("p"), py::arg("name"))
-
-        .def("add_port", &python_block::add_port);
+        ;
 
     using python_sync_block = gr::python_sync_block;
     py::class_<python_sync_block,
@@ -35,9 +34,7 @@ void bind_python_block(py::module& m)
                std::shared_ptr<python_sync_block>>(m, "python_sync_block")
 
         .def(py::init(&python_sync_block::make), py::arg("p"), py::arg("name"))
-
-        .def("add_port", &python_sync_block::add_port);
-
+        ;
 
     py::enum_<gr::py_block_t>(m, "py_block_t")
         .value("PY_BLOCK_GENERAL", gr::PY_BLOCK_GENERAL)
