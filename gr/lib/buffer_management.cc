@@ -36,7 +36,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         buf->num_items(),
                         buf->item_size());
 
-                    e->src().port()->set_buffer(buf);
+                    e->src().port()->set_buffer(std::move(buf));
 
 
                 }
@@ -83,7 +83,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         ed[0]->identifier());
                     auto br = ed[0]->buf_properties()->reader_factory()(
                         ed[0]->dst().port()->itemsize(), ed[0]->buf_properties());
-                    p->set_buffer_reader(br);
+                    p->set_buffer_reader(std::move(br));
                     p->get_buffer_reader()->set_parent_intf(sched_intf);
                 }
                 else {
@@ -94,7 +94,7 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         ed[0]->src().identifier());
                     auto br = ed[0]->src().port()->get_buffer()->add_reader(
                         ed[0]->buf_properties(), ed[0]->dst().port()->itemsize());
-                    p->set_buffer_reader(br);
+                    p->set_buffer_reader(std::move(br));
                 }
             }
         }
