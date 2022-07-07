@@ -80,9 +80,9 @@ public:
     void set_parent_intf(neighbor_interface_sptr intf) { _parent_intf = intf; }
     std::string format_descriptor();
     void set_format_descriptor(const std::string& fd) { _format_descriptor = fd; }
-    void set_buffer(buffer_uptr& buffer) { _buffer = std::move(buffer); }
+    void set_buffer(buffer_uptr&& buffer) { _buffer = std::move(buffer); }
     buffer* get_buffer() { return _buffer.get(); }
-    void set_buffer_reader(buffer_reader_uptr& rdr) { _buffer_reader = std::move(rdr); }
+    void set_buffer_reader(buffer_reader_uptr&& rdr) { _buffer_reader = std::move(rdr); }
     buffer_reader* get_buffer_reader() { return _buffer_reader.get(); }
 
     void notify_msgport_message(pmtf::pmt msg);
