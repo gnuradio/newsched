@@ -23,8 +23,8 @@ public:
     size_t n_items = 0;
     size_t n_consumed =
         0; // output the number of items that were consumed on the work() call
-    port_sptr port = nullptr;
-    block_work_input(int n_items_, buffer_reader* p_buf_, port_sptr p = nullptr)
+    port_ptr port = nullptr;
+    block_work_input(int n_items_, buffer_reader* p_buf_, port_ptr p = nullptr)
         : _buffer(p_buf_), n_items(n_items_), port(p)
     {
     }
@@ -68,7 +68,7 @@ public:
     size_t n_produced =
         0; // output the number of items that were produced on the work() call
     port_ptr port = nullptr;
-    block_work_output(int _n_items, buffer* p_buf_, port_sptr p = nullptr)
+    block_work_output(int _n_items, buffer* p_buf_, port_ptr p = nullptr)
         : _buffer(p_buf_), n_items(_n_items), port(p)
 
     {
