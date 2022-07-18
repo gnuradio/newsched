@@ -153,7 +153,8 @@ void buffer_cuda::post_write(int num_items)
 buffer_reader_uptr buffer_cuda::add_reader(std::shared_ptr<buffer_properties> buf_props,
                                            size_t itemsize)
 {
-    auto r = std::make_unique<buffer_cuda_reader>(this, buf_props, itemsize, _write_index);
+    auto r =
+        std::make_unique<buffer_cuda_reader>(this, buf_props, itemsize, _write_index);
     _readers.push_back(r.get());
     return r;
 }
