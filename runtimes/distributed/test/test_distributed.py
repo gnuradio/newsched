@@ -1,7 +1,6 @@
 import os
 from gnuradio.runtimes import distributed 
-from gnuradio import blocks, math, gr
-from gnuradio.schedulers import nbt
+from gnuradio import blocks, math, gr, streamops
 
 # An example of distributing a flowgraph across remote nodes
 # These nodes could be containerized and/or live on remote hosts
