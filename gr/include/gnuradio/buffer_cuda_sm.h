@@ -64,10 +64,10 @@ private:
     // logger_ptr d_logger;
     // logger_ptr d_debug_logger;
 
-    std::shared_ptr<buffer_cuda_sm> _buffer_cuda_sm;
+    buffer_cuda_sm* _buffer_cuda_sm;
 
 public:
-    buffer_cuda_sm_reader(std::shared_ptr<buffer_cuda_sm> buffer,
+    buffer_cuda_sm_reader(buffer_cuda_sm* buffer,
                           std::shared_ptr<buffer_properties> buf_props,
                           size_t itemsize,
                           size_t read_index)

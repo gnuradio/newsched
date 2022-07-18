@@ -29,8 +29,8 @@ work_return_code_t add_cuda<T>::work(work_io& wio)
     int noi = d_vlen * noutput_items;
 
     size_t idx = 0;
-    for (auto& wi : work_input) {
-        d_in_items[idx++] = wi->items<T>();
+    for (auto& wi : wio.inputs()) {
+        d_in_items[idx++] = wi.items<T>();
     }
 
     p_add_kernel->launch_default_occupancy(d_in_items, { out }, noi);
