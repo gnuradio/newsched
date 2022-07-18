@@ -37,4 +37,33 @@ std::string nodeid_generator::get_unique_string_()
     return rand_str;
 }
 
+nodeid_generator& nodeid_generator::get_instance()
+{
+    srand(static_cast<unsigned int>(time(0)));
+    static nodeid_generator instance;
+    return instance;
+}
+
+uint32_t nodeid_generator::get_id() { return get_instance().get_id_(); }
+std::string nodeid_generator::get_unique_string()
+{
+    return get_instance().get_unique_string_();
+}
+
+uint32_t nodeid_generator::get_id_()
+{
+    auto next_id = _last_id + 1;
+
+    // verify that it is not in the used_ids;
+    while (std::find(_used_ids.begin(), _used_ids.end(), next_id) != _used_ids.end()) {
+        next_id++;
+    }
+
+    _last_id = next_id;
+    _used_ids.push_back(next_id);
+
+    return next_id;
+}
+
+
 } // namespace gr

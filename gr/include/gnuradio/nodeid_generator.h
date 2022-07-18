@@ -20,12 +20,7 @@ namespace gr {
 class nodeid_generator
 {
 public:
-    static nodeid_generator& get_instance()
-    {
-        srand(static_cast<unsigned int>(time(0)));
-        static nodeid_generator instance;
-        return instance;
-    }
+    static nodeid_generator& get_instance();
 
     /**
      * @brief Get the next global id
@@ -43,22 +38,7 @@ private:
     uint32_t _last_id = 0;
     nodeid_generator() {}
 
-    uint32_t get_id_()
-    {
-        auto next_id = _last_id + 1;
-
-        // verify that it is not in the used_ids;
-        while (std::find(_used_ids.begin(), _used_ids.end(), next_id) !=
-               _used_ids.end()) {
-            next_id++;
-        }
-
-        _last_id = next_id;
-        _used_ids.push_back(next_id);
-
-        return next_id;
-    }
-
+    uint32_t get_id_();
     std::string get_unique_string_();
 
 public:
