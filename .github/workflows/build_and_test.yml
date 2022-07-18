@@ -5,8 +5,19 @@ on:
   pull_request:
     branches: [main]
 jobs:
+  check-formatting:
+    name: Check C++ Formatting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: gnuradio/clang-format-lint-action@v0.5-4
+      with:
+        source: '.'
+        exclude: './subprojects'
+        extensions: 'h,hpp,cpp,cc,cc.in'
   linux-docker:
   # All of these shall depend on the formatting check (needs: check-formatting)
+    needs: [check-formatting]
     runs-on: ubuntu-20.04
     # The GH default is 360 minutes (it's also the max as of Feb-2021). However
     # we should fail sooner. The only reason to exceed this time is if a test
@@ -30,12 +41,6 @@ jobs:
           - distro: 'Fedora 34'
             containerid: 'mormj/newsched-ci-docker:fedora-34'
             cxxflags: ''
-          # - distro: 'CentOS 8.3'
-          #   containerid: 'gnuradio/ci:centos-8.3-3.9'
-          #   cxxflags: -Werror
-          # - distro: 'Debian 10'
-          #   containerid: 'gnuradio/ci-debian-10-3.9:1.0'
-          #   cxxflags: -Werror
     name: ${{ matrix.distro }}
     container:
       image: ${{ matrix.containerid }}
