@@ -1,7 +1,6 @@
 #include <gnuradio/block_group_properties.h>
-// #include <gnuradio/buffer_cpu_vmcirc.h>
-#include <gnuradio/buffer_cpu_simple.h>
-#include <gnuradio/domain.h>
+#include <gnuradio/buffer_cpu_vmcirc.h>
+// #include <gnuradio/buffer_cpu_simple.h>
 #include <gnuradio/graph_utils.h>
 #include <gnuradio/scheduler.h>
 
@@ -27,8 +26,8 @@ public:
                   const unsigned int fixed_buf_size = 32768)
         : scheduler(name), s_fixed_buf_size(fixed_buf_size)
     {
-        _default_buf_properties = buffer_cpu_simple_properties::make();
-        // buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO);
+        _default_buf_properties =
+            buffer_cpu_vmcirc_properties::make(buffer_cpu_vmcirc_type::AUTO);
     }
     ~scheduler_nbt() override{};
 

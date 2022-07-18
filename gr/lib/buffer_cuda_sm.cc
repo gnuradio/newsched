@@ -71,9 +71,6 @@ void buffer_cuda_sm::post_write(int num_items)
     size_t wi1 = _write_index;
 
     // num_items were written to the buffer
-    // copy the data to the second half of the buffer
-
-    size_t num_bytes_1 = std::min(_buf_size - wi1, bytes_written);
 
     if (_type == buffer_cuda_sm_type::H2D) {
         cudaMemcpyAsync(&_device_buffer[wi1],
