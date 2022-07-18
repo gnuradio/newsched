@@ -188,10 +188,9 @@ void time_sink_cpu<T>::_gui_update_trigger()
         // We restrict the delay to be within the window of time being
         // plotted.
         if ((delay < 0) || (delay >= d_size)) {
-            this->d_logger->warn(
-                        "Trigger delay ({}) outside of display range (0:{}).",
-                        (delay / d_samp_rate),
-                        ((d_size - 1) / d_samp_rate));
+            this->d_logger->warn("Trigger delay ({}) outside of display range (0:{}).",
+                                 (delay / d_samp_rate),
+                                 ((d_size - 1) / d_samp_rate));
             delay = std::max(0, std::min(d_size - 1, delay));
             delayf = delay / d_samp_rate;
         }
@@ -320,9 +319,8 @@ void time_sink_cpu<T>::_test_trigger_norm(int nitems, gr_vector_const_void_star 
 
 
 template <>
-work_return_code_t
-time_sink_cpu<float>::work(work_io& wio)
-                           
+work_return_code_t time_sink_cpu<float>::work(work_io& wio)
+
 {
     auto noutput_items = wio.inputs()[0].n_items; // need to check across all inputs
 
@@ -334,8 +332,9 @@ time_sink_cpu<float>::work(work_io& wio)
 
     std::scoped_lock lock(d_setlock);
 
-    int nfill = d_end - d_index;                 // how much room left in buffers
-    int nitems = std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
+    int nfill = d_end - d_index; // how much room left in buffers
+    int nitems =
+        std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
 
     // If auto, normal, or tag trigger, look for the trigger
     if ((d_trigger_mode != TRIG_MODE_FREE) && !d_triggered) {
@@ -397,9 +396,8 @@ time_sink_cpu<float>::work(work_io& wio)
 
 
 template <class T>
-work_return_code_t
-time_sink_cpu<T>::work(work_io& wio)
-                       
+work_return_code_t time_sink_cpu<T>::work(work_io& wio)
+
 {
     auto noutput_items = wio.inputs()[0].n_items; // need to check across all inputs
 
@@ -411,8 +409,9 @@ time_sink_cpu<T>::work(work_io& wio)
 
     std::scoped_lock lock(d_setlock);
 
-    int nfill = d_end - d_index;                 // how much room left in buffers
-    int nitems = std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
+    int nfill = d_end - d_index; // how much room left in buffers
+    int nitems =
+        std::min(noutput_items, (size_t)nfill); // num items we can put in buffers
 
     // If auto, normal, or tag trigger, look for the trigger
     if ((d_trigger_mode != TRIG_MODE_FREE) && !d_triggered) {
@@ -603,11 +602,10 @@ void time_sink_cpu<T>::set_nsamps(const int newsize)
 
         // If delay was set beyond the new boundary, pull it back.
         if (d_trigger_delay >= d_size) {
-            this->d_logger->warn(
-                        "Trigger delay ({}) outside of display range "
-                        "(0:{}). Moving to 50%% point.",
-                        (d_trigger_delay / d_samp_rate),
-                        ((d_size - 1) / d_samp_rate));
+            this->d_logger->warn("Trigger delay ({}) outside of display range "
+                                 "(0:{}). Moving to 50%% point.",
+                                 (d_trigger_delay / d_samp_rate),
+                                 ((d_size - 1) / d_samp_rate));
             d_trigger_delay = d_size - 1;
             d_main_gui->setTriggerDelay(d_trigger_delay / d_samp_rate);
         }

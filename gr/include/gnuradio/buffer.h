@@ -223,7 +223,7 @@ public:
     void add_tag(uint64_t offset, tag_map map);
     void add_tag(uint64_t offset, pmtf::map map);
 
-    void propagate_tags(buffer_reader * p_in_buf, int n_consumed);
+    void propagate_tags(buffer_reader* p_in_buf, int n_consumed);
 
     void prune_tags();
 
@@ -262,8 +262,8 @@ public:
      * @param itemsize itemsize in bytes on the destination side
      * @return buffer_reader_uptr
      */
-    virtual buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) = 0;
+    virtual buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                          size_t itemsize) = 0;
     // void drop_reader(buffer_reader_uptr);
 
     virtual bool output_blocked_callback(bool force = false)

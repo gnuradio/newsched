@@ -29,8 +29,8 @@ struct graph_utils {
                      std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>
     partition(graph_sptr input_graph, std::vector<std::vector<node_sptr>> nodes);
 
-    static void connect_crossings(std::pair<std::vector<graph_sptr>,
-                     std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>&);
-
+    static void connect_crossings(
+        std::pair<std::vector<graph_sptr>,
+                  std::vector<std::tuple<edge_sptr, graph_sptr, graph_sptr>>>&);
 };
 } // namespace gr

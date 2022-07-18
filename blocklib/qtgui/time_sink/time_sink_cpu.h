@@ -16,8 +16,7 @@ class time_sink_cpu : public time_sink<T>
 public:
     time_sink_cpu(const typename time_sink<T>::block_args& args);
 
-    work_return_code_t
-    work(work_io&) override;
+    work_return_code_t work(work_io&) override;
 
     void exec_() override { d_qApplication->exec(); };
     QWidget* qwidget() override { return d_main_gui; };

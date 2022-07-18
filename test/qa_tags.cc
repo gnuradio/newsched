@@ -4,8 +4,6 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/streamops/annotator.h>
-#include <gnuradio/streamops/head.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/blocks/null_source.h>
 #include <gnuradio/blocks/vector_sink.h>
@@ -14,6 +12,8 @@
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <gnuradio/streamops/annotator.h>
+#include <gnuradio/streamops/head.h>
 
 using namespace gr;
 

@@ -34,7 +34,6 @@ source_cpu<gr_complex>::source_cpu(const typename source<gr_complex>::block_args
 
 template <class T>
 work_return_code_t source_cpu<T>::work(work_io& wio)
-                                       
 {
     auto noutput_items = wio.outputs()[0].n_items;
     /* This limits each work invocation to MTU transfers */
@@ -42,7 +41,7 @@ work_return_code_t source_cpu<T>::work(work_io& wio)
         noutput_items = std::min(noutput_items, d_mtu);
     }
     else {
-        noutput_items = std::min(noutput_items, size_t{1024});
+        noutput_items = std::min(noutput_items, size_t{ 1024 });
     }
 
     long long int time_ns = 0;

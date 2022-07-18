@@ -77,7 +77,7 @@ public:
         for (auto n : _orphan_nodes) {
             // auto hier_ptr = std::dynamic_pointer_cast<gr::hier_block>(n);
             // if (!hier_ptr) {
-                tmp.push_back(std::static_pointer_cast<block>(n));
+            tmp.push_back(std::static_pointer_cast<block>(n));
             // }
         }
 

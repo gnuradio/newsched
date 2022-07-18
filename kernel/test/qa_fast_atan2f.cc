@@ -8,8 +8,8 @@
  *
  */
 
-#include <gtest/gtest.h>
 #include <gnuradio/kernel/math/math.h>
+#include <gtest/gtest.h>
 #include <cmath>
 #include <limits>
 

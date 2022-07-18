@@ -38,8 +38,8 @@ public:
 
     virtual void post_write(int num_items);
 
-    virtual buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
+    virtual buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                          size_t itemsize);
 
     static void* cuda_memcpy(void* dest, const void* src, std::size_t count);
     static void* cuda_memmove(void* dest, const void* src, std::size_t count);

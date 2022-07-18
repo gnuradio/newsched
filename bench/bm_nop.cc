@@ -2,8 +2,6 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/streamops/nop.h>
-#include <gnuradio/streamops/nop_head.h>
 #include <gnuradio/blocks/nop_source.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/buffer_cpu_simple.h>
@@ -12,6 +10,8 @@
 #include <gnuradio/realtime.h>
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <gnuradio/streamops/nop.h>
+#include <gnuradio/streamops/nop_head.h>
 
 #include <iostream>
 

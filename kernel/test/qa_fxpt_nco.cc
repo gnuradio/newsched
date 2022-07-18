@@ -10,8 +10,8 @@
 
 #include <gnuradio/kernel/math/fxpt_nco.h>
 #include <gnuradio/kernel/math/nco.h>
-#include <unistd.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
 #include <cmath>
 
 using namespace gr::kernel::math;

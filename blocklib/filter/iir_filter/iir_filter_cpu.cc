@@ -23,9 +23,7 @@ iir_filter_cpu<T_IN, T_OUT, TAP_T>::iir_filter_cpu(
 }
 
 template <class T_IN, class T_OUT, class TAP_T>
-work_return_code_t
-iir_filter_cpu<T_IN, T_OUT, TAP_T>::work(work_io& wio)
-                                         
+work_return_code_t iir_filter_cpu<T_IN, T_OUT, TAP_T>::work(work_io& wio)
 {
     auto in = wio.inputs()[0].items<T_IN>();
     auto out = wio.outputs()[0].items<T_OUT>();

@@ -4,13 +4,10 @@
 
 namespace gr {
 
-buffer_reader_uptr
-buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+buffer_reader_uptr buffer_sm::add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                         size_t itemsize)
 {
-    auto r = std::make_unique<buffer_sm_reader>(this,
-                             itemsize,
-                             buf_props,
-                             _write_index);
+    auto r = std::make_unique<buffer_sm_reader>(this, itemsize, buf_props, _write_index);
     _readers.push_back(r.get());
     return r;
 }
@@ -232,7 +229,7 @@ bool buffer_sm::adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t mem
 }
 
 
-buffer_sm_reader::buffer_sm_reader(buffer_sm *bufp,
+buffer_sm_reader::buffer_sm_reader(buffer_sm* bufp,
                                    size_t itemsize,
                                    std::shared_ptr<buffer_properties> buf_props,
                                    size_t read_index)

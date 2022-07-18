@@ -120,7 +120,7 @@ runtime_monitor::runtime_monitor(std::vector<std::shared_ptr<scheduler>>& sched_
                         for (auto s : d_runtime_proxies) {
                             if (s->upstream()) {
                                 d_debug_logger->debug(
-                                             "Telling Downstream Proxies to Exit()");
+                                    "Telling Downstream Proxies to Exit()");
                                 s->push_message(
                                     rt_monitor_message::make(rt_monitor_message_t::KILL));
                             }

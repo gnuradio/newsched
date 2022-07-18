@@ -48,7 +48,9 @@ bool pull_msg_source_cpu::start()
 bool pull_msg_source_cpu::stop()
 {
     d_finished = true;
-    if (d_thread.joinable()) {d_thread.join();}
+    if (d_thread.joinable()) {
+        d_thread.join();
+    }
     return block::stop();
 }
 
@@ -79,11 +81,11 @@ void pull_msg_source_cpu::readloop()
             try {
                 auto m = pmtf::pmt::deserialize(sb);
                 d_msg_out->post(m);
-            } catch (...){ // Take out PMT specific exception for now
+            } catch (...) { // Take out PMT specific exception for now
                 d_logger->error(std::string("Invalid PMT message: "));
             }
-
-        } else {
+        }
+        else {
             std::this_thread::sleep_for(100us);
         }
     }

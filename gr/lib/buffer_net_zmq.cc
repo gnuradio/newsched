@@ -58,7 +58,8 @@ buffer_net_zmq_reader::make(size_t itemsize, std::shared_ptr<buffer_properties> 
 {
     auto zbp = std::static_pointer_cast<buffer_net_zmq_properties>(buf_props);
     if (zbp != nullptr) {
-        return std::make_unique<buffer_net_zmq_reader>(buf_props, itemsize, zbp->ipaddr(), zbp->port());
+        return std::make_unique<buffer_net_zmq_reader>(
+            buf_props, itemsize, zbp->ipaddr(), zbp->port());
     }
     else {
         throw std::runtime_error(
@@ -139,9 +140,8 @@ buffer_net_zmq_reader::buffer_net_zmq_reader(std::shared_ptr<buffer_properties> 
                 d_debug_logger->debug("going into recv");
                 auto r = _socket.recv(_msg, zmq::recv_flags::none);
                 if (r) {
-                    d_debug_logger->debug(
-                                 "received msg with size {} items",
-                                 _msg.size() / wi.item_size);
+                    d_debug_logger->debug("received msg with size {} items",
+                                          _msg.size() / wi.item_size);
                     _msg_idx = 0;
                 }
             }

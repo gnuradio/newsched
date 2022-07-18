@@ -45,12 +45,12 @@ void bind_window(py::module& m)
         .value("WIN_NUTTALL", gr::kernel::fft::window::WIN_NUTTALL)                   // 8
         .value("WIN_BLACKMAN_NUTTALL", gr::kernel::fft::window::WIN_BLACKMAN_NUTTALL) // 8
         .value("WIN_NUTTALL_CFD", gr::kernel::fft::window::WIN_NUTTALL_CFD)           // 9
-        .value("WIN_WELCH", gr::kernel::fft::window::WIN_WELCH)                       // 10
-        .value("WIN_PARZEN", gr::kernel::fft::window::WIN_PARZEN)                     // 11
-        .value("WIN_EXPONENTIAL", gr::kernel::fft::window::WIN_EXPONENTIAL)           // 12
-        .value("WIN_RIEMANN", gr::kernel::fft::window::WIN_RIEMANN)                   // 13
-        .value("WIN_GAUSSIAN", gr::kernel::fft::window::WIN_GAUSSIAN)                 // 14
-        .value("WIN_TUKEY", gr::kernel::fft::window::WIN_TUKEY)                       // 15
+        .value("WIN_WELCH", gr::kernel::fft::window::WIN_WELCH)             // 10
+        .value("WIN_PARZEN", gr::kernel::fft::window::WIN_PARZEN)           // 11
+        .value("WIN_EXPONENTIAL", gr::kernel::fft::window::WIN_EXPONENTIAL) // 12
+        .value("WIN_RIEMANN", gr::kernel::fft::window::WIN_RIEMANN)         // 13
+        .value("WIN_GAUSSIAN", gr::kernel::fft::window::WIN_GAUSSIAN)       // 14
+        .value("WIN_TUKEY", gr::kernel::fft::window::WIN_TUKEY)             // 15
         .export_values();
 
     py::implicitly_convertible<int, gr::kernel::fft::window::win_type>();

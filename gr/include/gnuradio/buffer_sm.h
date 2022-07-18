@@ -47,8 +47,8 @@ public:
     size_t space_available() override;
 
     bool write_info(buffer_info_t& info) override;
-    buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
+    buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                  size_t itemsize) override;
 
     bool adjust_buffer_data(memcpy_func_t memcpy_func, memmove_func_t memmove_func);
 };

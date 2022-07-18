@@ -253,7 +253,6 @@ void file_source_cpu::do_update()
 void file_source_cpu::set_begin_tag(const std::string& val) { d_add_begin_tag = val; }
 
 work_return_code_t file_source_cpu::work(work_io& wio)
-                                         
 {
     auto out = wio.outputs()[0].items<uint8_t>();
     auto noutput_items = wio.outputs()[0].n_items;
@@ -283,7 +282,7 @@ work_return_code_t file_source_cpu::work(work_io& wio)
             wio.outputs()[0].buf().add_tag(
                 wio.outputs()[0].buf().total_written() + noutput_items - size,
                 pmtf::map{ { d_add_begin_tag, pmtf::scalar<int64_t>(d_repeat_cnt) },
-                  { "srcid", _id } });
+                           { "srcid", _id } });
 
             d_file_begin = false;
         }

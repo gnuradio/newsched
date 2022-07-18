@@ -19,8 +19,7 @@ namespace gr {
 namespace kernel {
 namespace filter {
 
-polyphase_filterbank::polyphase_filterbank(size_t nfilts,
-                                           const std::vector<float>& taps)
+polyphase_filterbank::polyphase_filterbank(size_t nfilts, const std::vector<float>& taps)
     : d_nfilts(nfilts), d_fft(nfilts)
 {
     d_fir_filters.reserve(d_nfilts);
@@ -81,6 +80,6 @@ void polyphase_filterbank::print_taps()
 
 std::vector<std::vector<float>> polyphase_filterbank::taps() const { return d_taps; }
 
-} /* namespace kernel */
-} /* namespace filter */
+} // namespace filter
+} // namespace kernel
 } /* namespace gr */

@@ -39,9 +39,7 @@ divide_cpu<gr_complex>::divide_cpu(const typename divide<gr_complex>::block_args
 
 
 template <>
-work_return_code_t
-divide_cpu<float>::work(work_io& wio)
-                        
+work_return_code_t divide_cpu<float>::work(work_io& wio)
 {
     auto optr = wio.outputs()[0].items<float>();
     auto noutput_items = wio.outputs()[0].n_items;
@@ -58,9 +56,8 @@ divide_cpu<float>::work(work_io& wio)
 }
 
 template <>
-work_return_code_t
-divide_cpu<gr_complex>::work(work_io& wio)
-                             
+work_return_code_t divide_cpu<gr_complex>::work(work_io& wio)
+
 {
     auto optr = wio.outputs()[0].items<gr_complex>();
     auto noutput_items = wio.outputs()[0].n_items;
@@ -80,7 +77,7 @@ divide_cpu<gr_complex>::work(work_io& wio)
 
 template <class T>
 work_return_code_t divide_cpu<T>::work(work_io& wio)
-                                       
+
 {
     auto optr = wio.outputs()[0].items<T>();
     auto noutput_items = wio.outputs()[0].n_items;

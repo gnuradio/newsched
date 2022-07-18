@@ -41,7 +41,8 @@ void bind_constellation(py::module& m)
         .value("AMPLITUDE_NORMALIZATION", constellation::AMPLITUDE_NORMALIZATION)
         .export_values();
 
-    py::implicitly_convertible<int, gr::kernel::digital::constellation::normalization_t>();
+    py::implicitly_convertible<int,
+                               gr::kernel::digital::constellation::normalization_t>();
 
     constellation_class
         .def("map_to_points",
@@ -144,7 +145,7 @@ void bind_constellation(py::module& m)
         .def("base", &constellation::base, D(constellation, base))
 
 
-     //    .def("as_pmt", &constellation::as_pmt, D(constellation, as_pmt))
+        //    .def("as_pmt", &constellation::as_pmt, D(constellation, as_pmt))
 
 
         .def("gen_soft_dec_lut",

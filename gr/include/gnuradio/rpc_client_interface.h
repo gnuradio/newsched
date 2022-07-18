@@ -16,7 +16,7 @@ namespace gr {
  */
 class pyblock_detail;
 
-class rpc_client_interface 
+class rpc_client_interface
 {
 public:
     rpc_client_interface() {}
@@ -26,7 +26,7 @@ public:
                               const std::string& payload);
 
     virtual std::string block_parameter_query(const std::string& block_name,
-                                            const std::string& parameter);
+                                              const std::string& parameter);
 
     virtual void block_parameter_change(const std::string& block_name,
                                         const std::string& parameter,

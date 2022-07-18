@@ -255,14 +255,10 @@ bool alsa_sink_cpu::start()
 
     case SND_PCM_FORMAT_S32:
         if (special_case) {
-            d_worker = [this](work_io& wio) {
-                return this->work_s32_1x2(wio);
-            };
+            d_worker = [this](work_io& wio) { return this->work_s32_1x2(wio); };
         }
         else {
-            d_worker = [this](work_io& wio) {
-                return this->work_s32(wio);
-            };
+            d_worker = [this](work_io& wio) { return this->work_s32(wio); };
         }
         break;
 

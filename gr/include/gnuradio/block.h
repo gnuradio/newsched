@@ -101,10 +101,7 @@ public:
      * @param work_output Vector of block_work_output structs
      * @return work_return_code_t
      */
-    virtual work_return_code_t do_work(work_io& wio)
-    {
-        return work(wio);
-    };
+    virtual work_return_code_t do_work(work_io& wio) { return work(wio); };
 
     void set_parent_intf(neighbor_interface_sptr sched) { p_scheduler = sched; }
     parameter_config d_parameters;

@@ -31,8 +31,7 @@ void bind_port(py::module& m)
         .def("name", &gr::port_base::name)
         .def("connect", &gr::port_base::connect)
         .def("itemsize", &gr::port_base::itemsize)
-        .def("type", &gr::port_base::type)
-        ;
+        .def("type", &gr::port_base::type);
 
     py::class_<port_f, port_base, std::unique_ptr<port_f>>(m, "port_f");
     py::class_<port_c, port_base, std::unique_ptr<port_c>>(m, "port_c");

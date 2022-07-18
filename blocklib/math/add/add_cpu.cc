@@ -48,7 +48,6 @@ add_cpu<T>::add_cpu(const typename add<T>::block_args& args)
 
 template <class T>
 work_return_code_t add_cpu<T>::work(work_io& wio)
-                                    
 {
     auto out = wio.outputs()[0].items<T>();
     auto noutput_items = wio.outputs()[0].n_items;

@@ -11,6 +11,8 @@
 #pragma once
 
 
+#include <gnuradio/constants.h>
+#include <gnuradio/sys_paths.h>
 #include <yaml-cpp/yaml.h>
 #include <cstdio>  //P_tmpdir (maybe)
 #include <cstdlib> //getenv
@@ -18,8 +20,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <gnuradio/constants.h>
-#include <gnuradio/sys_paths.h>
 
 namespace fs = std::filesystem;
 
@@ -34,14 +34,14 @@ public:
                                         const std::string& option,
                                         const std::string& default_val);
     static const double get_double(const std::string& section,
-                                        const std::string& option,
-                                        const double default_val);
+                                   const std::string& option,
+                                   const double default_val);
     static const long get_long(const std::string& section,
-                                        const std::string& option,
-                                        const long default_val);
+                               const std::string& option,
+                               const long default_val);
     static const bool get_bool(const std::string& section,
-                                        const std::string& option,
-                                        const bool default_val);
+                               const std::string& option,
+                               const bool default_val);
     static const char* appdata_path();
 
 private:
@@ -51,7 +51,6 @@ private:
     void _read_files(const std::vector<std::string>& filenames);
     static const char* tmp_path();
     std::vector<std::string> _sys_prefs_filenames();
-
 };
 
 } // namespace gr

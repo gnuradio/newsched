@@ -35,5 +35,4 @@ PYBIND11_MODULE(kernel_digital_python, m)
     // (otherwise we will see segmentation faults)
     init_numpy();
     bind_constellation(m);
-
 }

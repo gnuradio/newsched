@@ -21,9 +21,8 @@ class noise_source_cpu : public noise_source<T>
 {
 public:
     noise_source_cpu(const typename noise_source<T>::block_args& args);
-    
-    work_return_code_t work(work_io&)
-                                     override;
+
+    work_return_code_t work(work_io&) override;
 
 private:
     kernel::math::random d_rng;

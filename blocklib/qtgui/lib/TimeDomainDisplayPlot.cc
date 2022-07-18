@@ -238,8 +238,9 @@ void TimeDomainDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
 
                         double sample_offset = double(offset) / d_sample_rate;
 
-                        std::stringstream s; 
-                        // s << (*t).key << ": " << (*t).value; //FIXME: displaying new tag format on QT plots
+                        std::stringstream s;
+                        // s << (*t).key << ": " << (*t).value; //FIXME: displaying new
+                        // tag format on QT plots
 
                         // Select the right input stream to put the tag on. If real,
                         // just use i; if it's a complex stream, find the max of the

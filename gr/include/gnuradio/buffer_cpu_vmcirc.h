@@ -45,8 +45,8 @@ public:
 
     // virtual void copy_items(std::shared_ptr<buffer> from, int nitems);
 
-    buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override;
+    buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                  size_t itemsize) override;
 };
 
 class buffer_cpu_vmcirc_reader : public buffer_reader

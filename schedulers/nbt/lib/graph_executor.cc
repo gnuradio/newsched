@@ -154,8 +154,9 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                           wio.outputs()[0].n_items);
                 }
                 else if (!wio.inputs().empty()) {
-                    d_debug_logger->debug(
-                        "do_work (input) for {}, {}", b->alias(), wio.inputs()[0].n_items);
+                    d_debug_logger->debug("do_work (input) for {}, {}",
+                                          b->alias(),
+                                          wio.inputs()[0].n_items);
                 }
                 else {
                     d_debug_logger->debug("do_work for {}", b->alias());
@@ -235,8 +236,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                 tag_propagation_policy_t::TPP_ALL_TO_ALL) {
                                 for (auto wo : wio.outputs()) {
                                     auto p_out_buf = wo.bufp();
-                                    p_out_buf->propagate_tags(
-                                        p_buf, w.n_consumed);
+                                    p_out_buf->propagate_tags(p_buf, w.n_consumed);
                                 }
                             }
                             else if (b->tag_propagation_policy() ==
@@ -245,21 +245,19 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                                 for (auto wo : wio.outputs()) {
                                     if (output_port_index == input_port_index) {
                                         auto p_out_buf = wo.bufp();
-                                        p_out_buf->propagate_tags(
-                                            p_buf,
-                                            w.n_consumed);
+                                        p_out_buf->propagate_tags(p_buf, w.n_consumed);
                                     }
                                     output_port_index++;
                                 }
                             }
                         }
 
-                        d_debug_logger->debug("post_read {} - {}",
-                                              b->alias(),
-                                              w.n_consumed);
+                        d_debug_logger->debug(
+                            "post_read {} - {}", b->alias(), w.n_consumed);
 
                         p_buf->post_read(w.n_consumed);
-                        w.port->notify_scheduler_action(scheduler_action_t::NOTIFY_OUTPUT);
+                        w.port->notify_scheduler_action(
+                            scheduler_action_t::NOTIFY_OUTPUT);
 
                         input_port_index++;
                     }
@@ -268,11 +266,11 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 for (auto& wo : wio.outputs()) {
                     auto p_buf = wo.bufp();
                     if (p_buf) {
-                        d_debug_logger->debug("post_write {} - {}",
-                                              b->alias(),
-                                              wo.n_produced);
+                        d_debug_logger->debug(
+                            "post_write {} - {}", b->alias(), wo.n_produced);
                         p_buf->post_write(wo.n_produced);
-                        wo.port->notify_scheduler_action(scheduler_action_t::NOTIFY_INPUT);
+                        wo.port->notify_scheduler_action(
+                            scheduler_action_t::NOTIFY_INPUT);
                         p_buf->prune_tags();
                     }
                 }

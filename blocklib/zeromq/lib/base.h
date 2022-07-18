@@ -12,9 +12,9 @@
 #pragma once
 
 #include "zmq_common_impl.h"
+#include <gnuradio/block_work_io.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/tag.h>
-#include <gnuradio/block_work_io.h>
 
 namespace gr {
 namespace zeromq {
@@ -29,6 +29,7 @@ public:
          const std::string& key = "");
 
     void set_vsize(size_t vsize) { d_vsize = vsize; }
+
 protected:
     std::string last_endpoint() const;
     zmq::context_t d_context;

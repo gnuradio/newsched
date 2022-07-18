@@ -26,10 +26,7 @@ public:
     {
     }
 
-    tag_t(uint64_t offset, pmtf::pmt map)
-        : _offset(offset), _map(map)
-    {
-    }
+    tag_t(uint64_t offset, pmtf::pmt map) : _offset(offset), _map(map) {}
 
     bool operator==(const tag_t& rhs) const;
     bool operator!=(const tag_t& rhs) const;

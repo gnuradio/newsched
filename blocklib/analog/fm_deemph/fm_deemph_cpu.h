@@ -22,7 +22,6 @@ public:
     fm_deemph_cpu(block_args args);
 
 private:
-
     filter::iir_filter_ffd::sptr deemph;
 };
 

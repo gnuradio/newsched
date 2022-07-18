@@ -14,8 +14,8 @@
 
 #include <gnuradio/kernel/math/fxpt.h>
 #include <gnuradio/kernel/math/math.h>
-#include <unistd.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
 #include <cmath>
 
 static const float SIN_COS_TOLERANCE = 1e-5;
@@ -26,8 +26,7 @@ TEST(Fxpt, t0)
 {
     EXPECT_TRUE(std::abs(GR_M_PI / 2 - fxpt::fixed_to_float(0x40000000)) <=
                 SIN_COS_TOLERANCE);
-    EXPECT_TRUE(std::abs(0.0 - fxpt::fixed_to_float(0x00000000)) <=
-                SIN_COS_TOLERANCE);
+    EXPECT_TRUE(std::abs(0.0 - fxpt::fixed_to_float(0x00000000)) <= SIN_COS_TOLERANCE);
     EXPECT_TRUE(std::abs(-GR_M_PI - fxpt::fixed_to_float(0x80000000)) <=
                 SIN_COS_TOLERANCE);
 

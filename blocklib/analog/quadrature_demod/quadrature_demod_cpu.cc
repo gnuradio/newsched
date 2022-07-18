@@ -23,9 +23,7 @@ quadrature_demod_cpu::quadrature_demod_cpu(block_args args) : INHERITED_CONSTRUC
     // FIXME: do volk alignment
 }
 
-work_return_code_t
-quadrature_demod_cpu::work(work_io& wio)
-                           
+work_return_code_t quadrature_demod_cpu::work(work_io& wio)
 {
     auto in = wio.inputs()[0].items<gr_complex>();
     auto out = wio.outputs()[0].items<float>();

@@ -23,7 +23,7 @@ public:
     buffer_manager(const unsigned int default_buffer_size_in_bytes)
         : s_fixed_buf_size(default_buffer_size_in_bytes)
     {
-        gr::configure_default_loggers(d_logger, d_debug_logger, _name); 
+        gr::configure_default_loggers(d_logger, d_debug_logger, _name);
     }
     ~buffer_manager() {}
 

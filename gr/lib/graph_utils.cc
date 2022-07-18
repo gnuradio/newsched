@@ -138,7 +138,6 @@ void graph_utils::connect_crossings(
 
         src_block_graph->add_edge(c);
         dst_block_graph->add_edge(c);
-
     }
 }
 

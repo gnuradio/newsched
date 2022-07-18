@@ -37,5 +37,4 @@ PYBIND11_MODULE(kernel_filter_python, m)
 
     init_numpy();
     bind_firdes(m);
-
 }

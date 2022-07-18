@@ -9,9 +9,9 @@
  */
 
 #include "zmq_common_impl.h"
+#include <gnuradio/tag.h>
 #include <cstring>
 #include <sstream>
-#include <gnuradio/tag.h>
 
 #define GR_HEADER_MAGIC 0x5FF0
 #define GR_HEADER_VERSION 0x02

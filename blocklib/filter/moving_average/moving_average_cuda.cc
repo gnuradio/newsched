@@ -37,9 +37,7 @@ moving_average_cuda<T>::moving_average_cuda(
 }
 
 template <class T>
-work_return_code_t
-moving_average_cuda<T>::work(work_io& wio)
-                             
+work_return_code_t moving_average_cuda<T>::work(work_io& wio)
 {
     if (wio.inputs()[0].n_items < d_length) {
         wio.outputs()[0].n_produced = 0;
@@ -50,8 +48,7 @@ moving_average_cuda<T>::work(work_io& wio)
     auto in = wio.inputs()[0].items<T>();
     auto out = wio.outputs()[0].items<T>();
 
-    size_t noutput_items =
-        std::min((wio.inputs()[0].n_items), wio.outputs()[0].n_items);
+    size_t noutput_items = std::min((wio.inputs()[0].n_items), wio.outputs()[0].n_items);
 
     // auto num_iter = (noutput_items > d_max_iter) ? d_max_iter : noutput_items;
     auto num_iter = noutput_items;

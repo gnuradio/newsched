@@ -22,7 +22,6 @@ conjugate_cpu::conjugate_cpu(const block_args& args) : INHERITED_CONSTRUCTORS
 }
 
 work_return_code_t conjugate_cpu::work(work_io& wio)
-                                       
 {
     auto noutput_items = wio.outputs()[0].n_items;
 

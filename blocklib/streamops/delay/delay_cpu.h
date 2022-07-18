@@ -35,13 +35,11 @@ protected:
         block::on_parameter_change(action);
 
         // Do more updating for certain parameters
-        if (action->id() == delay::id_dly)
-        {
-            auto dly =  pmtf::get_as<double>(*this->param_dly);
+        if (action->id() == delay::id_dly) {
+            auto dly = pmtf::get_as<double>(*this->param_dly);
             set_dly(dly);
         }
     }
-
 };
 
 } // namespace streamops

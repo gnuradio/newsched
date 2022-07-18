@@ -36,8 +36,7 @@ void scheduler_nbt::initialize(flat_graph_sptr fg, runtime_monitor_sptr fgmon)
     //  By default, one Thread Per Block
 
     auto blocks = fg->calc_used_blocks();
-    for (auto& b : blocks)
-    {
+    for (auto& b : blocks) {
         b->populate_work_io();
     }
 

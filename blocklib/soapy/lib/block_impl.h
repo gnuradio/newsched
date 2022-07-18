@@ -197,10 +197,9 @@ public:
     std::string read_setting(const std::string& key) const override;
     arginfo_list_t get_setting_info(size_t channel) const override;
     void write_setting(size_t channel,
-                               const std::string& key,
-                               const std::string& value) override;
-    std::string read_setting(size_t channel,
-                                     const std::string& key) const override;
+                       const std::string& key,
+                       const std::string& value) override;
+    std::string read_setting(size_t channel, const std::string& key) const override;
 
     std::vector<std::string> list_gpio_banks() const override;
     void write_gpio(const std::string& bank, unsigned value) override;

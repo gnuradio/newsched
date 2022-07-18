@@ -21,7 +21,6 @@ rep_sink_cpu::rep_sink_cpu(block_args args)
 {
 }
 work_return_code_t rep_sink_cpu::work(work_io& wio)
-                                      
 {
     auto in = wio.inputs()[0].items<uint8_t>();
     auto noutput_items = wio.inputs()[0].n_items;

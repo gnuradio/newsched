@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gnuradio/kernel/fft/fftw_fft.h>
-#include <gnuradio/qtgui/freq_sink.h>
-#include <gnuradio/kernel/fft/window.h>
 #include <gnuradio/kernel/fft/fft_shift.h>
+#include <gnuradio/kernel/fft/fftw_fft.h>
+#include <gnuradio/kernel/fft/window.h>
+#include <gnuradio/qtgui/freq_sink.h>
 
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/qtgui/freqdisplayform.h>
@@ -18,8 +18,7 @@ public:
     freq_sink_cpu(const typename freq_sink<T>::block_args& args);
     ~freq_sink_cpu() override;
 
-    work_return_code_t
-    work(work_io&) override;
+    work_return_code_t work(work_io&) override;
     void exec_() override;
     QWidget* qwidget() override;
 

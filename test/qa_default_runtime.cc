@@ -4,7 +4,6 @@
 #include <iostream>
 #include <thread>
 
-#include <gnuradio/streamops/copy.h>
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/buffer_cpu_vmcirc.h>
@@ -12,6 +11,7 @@
 #include <gnuradio/math/multiply_const.h>
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <gnuradio/streamops/copy.h>
 
 using namespace gr;
 

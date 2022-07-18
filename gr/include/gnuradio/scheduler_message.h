@@ -4,7 +4,14 @@
 
 namespace gr {
 
-enum class scheduler_action_t { SIGNAL_DONE, DONE, NOTIFY_OUTPUT, NOTIFY_INPUT, NOTIFY_ALL, EXIT };
+enum class scheduler_action_t {
+    SIGNAL_DONE,
+    DONE,
+    NOTIFY_OUTPUT,
+    NOTIFY_INPUT,
+    NOTIFY_ALL,
+    EXIT
+};
 
 enum class scheduler_message_t {
     SCHEDULER_ACTION,

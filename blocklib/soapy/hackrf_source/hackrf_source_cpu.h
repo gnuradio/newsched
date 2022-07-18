@@ -20,7 +20,7 @@ template <class T>
 class hackrf_source_cpu : public hackrf_source<T>
 {
 public:
-    hackrf_source_cpu(const typename hackrf_source<T>::block_args& args);   
+    hackrf_source_cpu(const typename hackrf_source<T>::block_args& args);
 
 private:
     std::shared_ptr<soapy::source<T>> d_soapy_source_block;

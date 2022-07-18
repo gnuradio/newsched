@@ -904,7 +904,10 @@ public slots:
     void getHamming() { emit whichTrigger(gr::kernel::fft::window::WIN_HAMMING); }
     void getHann() { emit whichTrigger(gr::kernel::fft::window::WIN_HANN); }
     void getBlackman() { emit whichTrigger(gr::kernel::fft::window::WIN_BLACKMAN); }
-    void getBlackmanharris() { emit whichTrigger(gr::kernel::fft::window::WIN_BLACKMAN_hARRIS); }
+    void getBlackmanharris()
+    {
+        emit whichTrigger(gr::kernel::fft::window::WIN_BLACKMAN_hARRIS);
+    }
     void getRectangular() { emit whichTrigger(gr::kernel::fft::window::WIN_RECTANGULAR); }
     void getKaiser() { emit whichTrigger(gr::kernel::fft::window::WIN_KAISER); }
     void getFlattop() { emit whichTrigger(gr::kernel::fft::window::WIN_FLATTOP); }

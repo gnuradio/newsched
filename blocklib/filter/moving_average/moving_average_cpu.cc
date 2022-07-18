@@ -31,9 +31,7 @@ moving_average_cpu<T>::moving_average_cpu(
 }
 
 template <class T>
-work_return_code_t
-moving_average_cpu<T>::work(work_io& wio)
-                            
+work_return_code_t moving_average_cpu<T>::work(work_io& wio)
 {
     if (wio.inputs()[0].n_items < d_length) {
         wio.outputs()[0].n_produced = 0;

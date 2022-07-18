@@ -37,8 +37,6 @@ void buffer_manager::initialize_buffers(flat_graph_sptr fg,
                         buf->item_size());
 
                     e->src().port()->set_buffer(std::move(buf));
-
-
                 }
             }
             else {

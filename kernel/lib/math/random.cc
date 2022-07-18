@@ -56,7 +56,8 @@ void random::reseed(uint64_t seed)
         auto now = std::chrono::system_clock::now().time_since_epoch();
         auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
         d_rng.seed(ns);
-    } else {
+    }
+    else {
         d_rng.seed(d_seed);
     }
 }
@@ -90,7 +91,8 @@ float random::gasdev()
     if (d_gauss_stored) { // just return the stored value if available
         d_gauss_stored = false;
         return d_gauss_value;
-    } else { // generate a pair of gaussian distributed numbers
+    }
+    else { // generate a pair of gaussian distributed numbers
         float x, y, s;
         do {
             x = 2.0 * ran1() - 1.0;
@@ -125,10 +127,13 @@ float random::impulse(float factor = 5)
         return z;
 }
 
-gr_complex kernel::math::random::rayleigh_complex() { return gr_complex(gasdev(), gasdev()); }
+gr_complex kernel::math::random::rayleigh_complex()
+{
+    return gr_complex(gasdev(), gasdev());
+}
 
 float random::rayleigh() { return sqrtf(-2.0 * logf(ran1())); }
 
-}
-}
+} // namespace math
+} // namespace kernel
 } /* namespace gr */

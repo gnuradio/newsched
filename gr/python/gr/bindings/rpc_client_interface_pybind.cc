@@ -13,17 +13,15 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include <gnuradio/rpc_client_interface.h>
 #include <gnuradio/pyblock_detail.h>
+#include <gnuradio/rpc_client_interface.h>
 
 namespace py = pybind11;
 
 void bind_rpc_client_interface(py::module& m)
 {
-    py::class_<gr::rpc_client_interface,
-               std::shared_ptr<gr::rpc_client_interface>>(
+    py::class_<gr::rpc_client_interface, std::shared_ptr<gr::rpc_client_interface>>(
         m, "rpc_client_interface")
         .def(py::init<>())
-        .def("set_pyblock_detail", &gr::rpc_client_interface::set_pyblock_detail)
-        ;
+        .def("set_pyblock_detail", &gr::rpc_client_interface::set_pyblock_detail);
 }

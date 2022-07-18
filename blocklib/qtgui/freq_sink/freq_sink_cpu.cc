@@ -57,9 +57,7 @@ freq_sink_cpu<T>::~freq_sink_cpu<T>()
 }
 
 template <class T>
-work_return_code_t
-freq_sink_cpu<T>::work(work_io& wio)
-                       
+work_return_code_t freq_sink_cpu<T>::work(work_io& wio)
 {
     auto in = wio.inputs()[0].items<T>();
     auto noutput_items = wio.inputs()[0].n_items;
@@ -508,7 +506,8 @@ void freq_sink_cpu<T>::buildwindow()
 {
     d_window.clear();
     if (d_wintype != kernel::fft::window::WIN_NONE) {
-        d_window = kernel::fft::window::build(d_wintype, d_fftsize, 6.76, d_window_normalize);
+        d_window =
+            kernel::fft::window::build(d_wintype, d_fftsize, 6.76, d_window_normalize);
     }
 }
 

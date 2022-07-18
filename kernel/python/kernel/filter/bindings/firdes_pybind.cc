@@ -178,7 +178,8 @@ void bind_firdes(py::module& m)
         .def_static("hilbert",
                     &firdes::hilbert,
                     py::arg("ntaps") = 19,
-                    py::arg("windowtype") = ::gr::kernel::fft::window::win_type::WIN_RECTANGULAR,
+                    py::arg("windowtype") =
+                        ::gr::kernel::fft::window::win_type::WIN_RECTANGULAR,
                     py::arg("param") = 6.7599999999999998)
 
 

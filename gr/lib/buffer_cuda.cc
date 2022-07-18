@@ -150,8 +150,8 @@ void buffer_cuda::post_write(int num_items)
     cudaStreamSynchronize(stream);
 }
 
-buffer_reader_uptr
-buffer_cuda::add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize)
+buffer_reader_uptr buffer_cuda::add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                           size_t itemsize)
 {
     std::shared_ptr<buffer_cuda_reader> r(
         new buffer_cuda_reader(shared_from_this(), buf_props, itemsize, _write_index));

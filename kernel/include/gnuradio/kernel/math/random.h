@@ -10,16 +10,16 @@
 
 #pragma once
 
-#include <gnuradio/kernel/api.h>
 #include <gnuradio/gr_complex.h>
+#include <gnuradio/kernel/api.h>
 #include <gnuradio/kernel/math/xoroshiro128p.h>
 
 #include <limits>
 #include <random>
 
 namespace gr {
-    namespace kernel {
-        namespace math {
+namespace kernel {
+namespace math {
 
 /*!
  * \brief wrapper for XOROSHIRO128+ PRNG for use in std::distributions
@@ -135,6 +135,6 @@ public:
     gr_complex rayleigh_complex();
 };
 
-} /* namespace gr */
-}
-}
+} // namespace math
+} // namespace kernel
+} // namespace gr

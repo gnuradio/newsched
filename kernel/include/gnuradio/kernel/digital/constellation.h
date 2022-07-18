@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include <gnuradio/gr_complex.h>
 #include <gnuradio/kernel/api.h>
 #include <gnuradio/kernel/digital/metric_type.h>
-#include <gnuradio/gr_complex.h>
 #include <memory>
 #include <vector>
 

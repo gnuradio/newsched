@@ -20,7 +20,10 @@ namespace kernel {
 namespace filter {
 
 gr_complexd operator*(double x, gr_complex y) { return x * static_cast<gr_complexd>(y); }
-gr_complexd operator*(gr_complexd x, gr_complex y) { return x * static_cast<gr_complexd>(y); }
+gr_complexd operator*(gr_complexd x, gr_complex y)
+{
+    return x * static_cast<gr_complexd>(y);
+}
 
 /*!
  * \brief Base class template for Infinite Impulse Response filter (IIR)

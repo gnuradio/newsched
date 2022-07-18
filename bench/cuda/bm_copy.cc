@@ -122,8 +122,7 @@ int main(int argc, char* argv[])
     }
     else {
         auto e = fg->connect(head, 0, copy_blks[0], 0);
-        if (use_cb)
-        {
+        if (use_cb) {
             e->set_custom_buffer(CUDA_BUFFER_PINNED_ARGS->set_buffer_size(buffer_size));
         }
         for (int i = 0; i < nblocks - 1; i++) {

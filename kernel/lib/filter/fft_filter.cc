@@ -97,11 +97,10 @@ fft_filter<gr_complex, gr_complex>::fft_filter(int decimation,
 }
 
 
-
 template <>
 int fft_filter<gr_complex, gr_complex>::filter(int nitems,
-                                           const gr_complex* input,
-                                           gr_complex* output)
+                                               const gr_complex* input,
+                                               gr_complex* output)
 {
     int dec_ctr = 0;
     int j = 0;
@@ -223,12 +222,10 @@ fft_filter<gr_complex, float>::fft_filter(int decimation,
 }
 
 
-
-
 template <>
 int fft_filter<gr_complex, float>::filter(int nitems,
-                                      const gr_complex* input,
-                                      gr_complex* output)
+                                          const gr_complex* input,
+                                          gr_complex* output)
 {
     int dec_ctr = 0;
     int j = 0;
@@ -425,4 +422,3 @@ template class fft_filter<gr_complex, float>;
 } // namespace filter
 } // namespace kernel
 } /* namespace gr */
-
