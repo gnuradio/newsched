@@ -181,25 +181,6 @@ class Session:
         self.blocks[kwargs['block_name']].request_parameter_change(kwargs['parameter_name'], newvalue, False)
         return {}
 
-    def block_create_message_port_proxy(self, block_name, port_name, payload):
-        upstream = payload['upstream']
-        proxy_name = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))
-        mp = self.blocks[block_name].get_message_port(port_name)
-        port = payload['port']
-
-        if (upstream):
-            proxy = gr.message_port_proxy_upstream()
-            proxy.connect(payload['ipaddr'], payload['port'])
-            mp.connect(proxy)
-        else:
-            proxy = gr.message_port_proxy_downstream(payload['port'])
-            port = proxy.port()
-            proxy.set_gr_port(mp)
-
-        if block_name not in self.proxies:
-            self.proxies[block_name] = {}
-        self.proxies[block_name][port_name] = proxy
-        return {"status": 0, "port": port, "proxy_name": proxy_name}
 
     def edge_set_custom_buffer(self, edge_name, payload):
         print(payload)
@@ -313,14 +294,6 @@ def create_app():
     # @app.post("/proxy/{proxy_name}/connect")
     # async def connect_runtime_proxy(proxy_name: str, payload: dict = Body(...)):
     #     return session.connect_runtime_proxy(proxy_name, payload)
-
-    # @app.post("/block/{block_name}/message_port/{port_name}/proxy/create")
-    # async def create_message_port_proxy(block_name: str, port_name: str, payload: dict = Body(...)):
-    #     return session.create_message_port_proxy(block_name, port_name, payload)
-
-    # @app.post("/block/{block_name}/message_port/{port_name}/proxy/start_rx")
-    # async def create_message_port_proxy(block_name: str, port_name: str):
-    #     return session.start_downstream_message_port_rx(block_name, port_name)
 
     return app
 
