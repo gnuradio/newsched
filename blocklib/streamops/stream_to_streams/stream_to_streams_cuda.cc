@@ -40,7 +40,7 @@ work_return_code_t stream_to_streams_cuda::work(work_io& wio)
 
     auto total_items = std::min(ninput_items / nstreams, (size_t)noutput_items);
 
-    d_out_items = block_work_output::all_items(work_output);
+    d_out_items = wio.all_output_ptrs();
 
     p_kernel->launch_default_occupancy({ wio.inputs()[0].items<uint8_t>() },
                                        d_out_items,

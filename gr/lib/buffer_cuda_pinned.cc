@@ -71,8 +71,8 @@ buffer_reader_uptr
 buffer_cuda_pinned::add_reader(std::shared_ptr<buffer_properties> buf_props,
                                size_t itemsize)
 {
-    std::shared_ptr<buffer_cuda_pinned_reader> r(new buffer_cuda_pinned_reader(
-        shared_from_this(), buf_props, itemsize, _write_index));
+    auto r = std::make_unique<buffer_cuda_pinned_reader>(
+        this, buf_props, itemsize, _write_index);
     _readers.push_back(r.get());
     return r;
 }
