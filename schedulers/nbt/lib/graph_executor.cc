@@ -31,7 +31,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
         // to indicate that the rest of the flowgraph should clean up
         if (b->finished()) {
             per_block_status[b->id()] = executor_iteration_status::DONE;
-            d_debug_logger->debug("pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+            d_debug_logger->debug("pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
             continue;
         }
 
@@ -164,19 +164,19 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
 
 
                 ret = b->do_work(wio);
-                d_debug_logger->debug("do_work returned {}", ret);
+                d_debug_logger->debug("do_work returned {}", (int)ret);
                 // ret = work_return_code_t::WORK_OK;
 
                 if (ret == work_return_code_t::WORK_DONE) {
                     per_block_status[b->id()] = executor_iteration_status::DONE;
                     d_debug_logger->debug(
-                        "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                        "pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
                     break;
                 }
                 else if (ret == work_return_code_t::WORK_OK) {
                     per_block_status[b->id()] = executor_iteration_status::READY;
                     d_debug_logger->debug(
-                        "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                        "pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
 
                     // If a source block, and no outputs were produced, mark as BLKD_IN
                     if (wio.inputs().empty() && !wio.outputs().empty()) {
@@ -188,7 +188,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                             per_block_status[b->id()] =
                                 executor_iteration_status::BLKD_IN;
                             d_debug_logger->debug(
-                                "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                                "pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
                         }
                     }
 
@@ -207,7 +207,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                     {
                         per_block_status[b->id()] = executor_iteration_status::BLKD_IN;
                         d_debug_logger->debug(
-                            "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                            "pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
                         // call the input blocked callback
                         break;
                     }
@@ -215,7 +215,7 @@ graph_executor::run_one_iteration(std::vector<block_sptr> blocks)
                 else if (ret == work_return_code_t::WORK_INSUFFICIENT_OUTPUT_ITEMS) {
                     per_block_status[b->id()] = executor_iteration_status::BLKD_OUT;
                     d_debug_logger->debug(
-                        "pbs[{}]: {}", b->id(), per_block_status[b->id()]);
+                        "pbs[{}]: {}", b->id(), (int)per_block_status[b->id()]);
                     // call the output blocked callback
                     break;
                 }
