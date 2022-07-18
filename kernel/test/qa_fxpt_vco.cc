@@ -8,10 +8,10 @@
  *
  */
 
-#include <gnuradio/kernel/math/vco.h>
 #include <gnuradio/kernel/math/fxpt_vco.h>
-#include <unistd.h>
+#include <gnuradio/kernel/math/vco.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
 #include <cmath>
 
 using namespace grk::math;

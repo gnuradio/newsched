@@ -20,7 +20,7 @@ class newblock_cpu : public newblock<T>
 {
 public:
     newblock_cpu(const typename newblock<T>::block_args& args);
-    
+
     work_return_code_t work(work_io&) override;
 
 private:

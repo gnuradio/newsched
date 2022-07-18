@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <gnuradio/kernel/api.h>
 #include <gnuradio/gr_complex.h>
+#include <gnuradio/kernel/api.h>
 #include <gnuradio/kernel/math/fxpt.h>
 #include <cstdint>
 
@@ -36,16 +36,10 @@ public:
     // radians
     void set_phase(float angle) { d_phase = fxpt::float_to_fixed(angle); }
 
-    void adjust_phase(float delta_phase)
-    {
-        d_phase += fxpt::float_to_fixed(delta_phase);
-    }
+    void adjust_phase(float delta_phase) { d_phase += fxpt::float_to_fixed(delta_phase); }
 
     // angle_rate is in radians / step
-    void set_freq(float angle_rate)
-    {
-        d_phase_inc = fxpt::float_to_fixed(angle_rate);
-    }
+    void set_freq(float angle_rate) { d_phase_inc = fxpt::float_to_fixed(angle_rate); }
 
     // angle_rate is a delta in radians / step
     void adjust_freq(float delta_angle_rate)
@@ -74,8 +68,7 @@ public:
     void sincos(gr_complex* output, int noutput_items, double ampl = 1.0)
     {
         for (int i = 0; i < noutput_items; i++) {
-            output[i] =
-                gr_complex(fxpt::cos(d_phase) * ampl, fxpt::sin(d_phase) * ampl);
+            output[i] = gr_complex(fxpt::cos(d_phase) * ampl, fxpt::sin(d_phase) * ampl);
             step();
         }
     }

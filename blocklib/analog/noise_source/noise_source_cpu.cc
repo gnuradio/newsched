@@ -17,24 +17,23 @@ namespace analog {
 
 template <class T>
 noise_source_cpu<T>::noise_source_cpu(const typename noise_source<T>::block_args& args)
-    : INHERITED_CONSTRUCTORS(T),
-      d_rng(args.seed)
+    : INHERITED_CONSTRUCTORS(T), d_rng(args.seed)
 {
 }
 
 template <>
-noise_source_cpu<gr_complex>::noise_source_cpu(const typename noise_source<gr_complex>::block_args& args)
-    : INHERITED_CONSTRUCTORS(gr_complex),
-      d_rng(args.seed)
+noise_source_cpu<gr_complex>::noise_source_cpu(
+    const typename noise_source<gr_complex>::block_args& args)
+    : INHERITED_CONSTRUCTORS(gr_complex), d_rng(args.seed)
 {
-    // param_amplitude gets set in the INHERITED_CONSTRUCTORS from the noise_source autogen class
-    // but for complex, needs the 1/sqrt(2) factor
+    // param_amplitude gets set in the INHERITED_CONSTRUCTORS from the noise_source
+    // autogen class but for complex, needs the 1/sqrt(2) factor
     *param_amplitude = args.amplitude / sqrtf(2.0f);
 }
 
 template <class T>
 work_return_code_t noise_source_cpu<T>::work(work_io& wio)
-                                         
+
 {
     auto out = wio.outputs()[0].items<T>();
     auto noutput_items = wio.outputs()[0].n_items;

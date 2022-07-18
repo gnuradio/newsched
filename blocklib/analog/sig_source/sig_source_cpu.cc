@@ -11,8 +11,8 @@
 #include "sig_source_cpu.h"
 #include "sig_source_cpu_gen.h"
 
-#include <algorithm>
 #include <gnuradio/kernel/math/math.h>
+#include <algorithm>
 
 namespace gr {
 namespace analog {
@@ -27,7 +27,6 @@ sig_source_cpu<T>::sig_source_cpu(const typename sig_source<T>::block_args& args
 
 template <typename T>
 work_return_code_t sig_source_cpu<T>::work(work_io& wio)
-                                         
 {
     auto optr = wio.outputs()[0].items<T>();
     auto noutput_items = wio.outputs()[0].n_items;
@@ -107,7 +106,7 @@ work_return_code_t sig_source_cpu<T>::work(work_io& wio)
 
 template <>
 work_return_code_t sig_source_cpu<gr_complex>::work(work_io& wio)
-                                         
+
 {
     auto optr = wio.outputs()[0].items<gr_complex>();
     auto noutput_items = wio.outputs()[0].n_items;
@@ -160,23 +159,25 @@ work_return_code_t sig_source_cpu<gr_complex>::work(work_io& wio)
     case waveform_t::triangle:
         for (size_t i = 0; i < noutput_items; i++) {
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
-                optr[i] =
-                    gr_complex(ampl * d_nco.get_phase() / GR_M_PI + ampl,
-                               -1 * ampl * d_nco.get_phase() / GR_M_PI - ampl / 2) +
-                    offset;
-            } else if (d_nco.get_phase() < 0) {
+                optr[i] = gr_complex(ampl * d_nco.get_phase() / GR_M_PI + ampl,
+                                     -1 * ampl * d_nco.get_phase() / GR_M_PI - ampl / 2) +
+                          offset;
+            }
+            else if (d_nco.get_phase() < 0) {
                 optr[i] = gr_complex(ampl * d_nco.get_phase() / GR_M_PI + ampl,
                                      ampl * d_nco.get_phase() / GR_M_PI + ampl / 2) +
                           offset;
-            } else if (d_nco.get_phase() < GR_M_PI / 2) {
+            }
+            else if (d_nco.get_phase() < GR_M_PI / 2) {
                 optr[i] = gr_complex(-1 * ampl * d_nco.get_phase() / GR_M_PI + ampl,
                                      ampl * d_nco.get_phase() / GR_M_PI + ampl / 2) +
                           offset;
-            } else {
-                optr[i] = gr_complex(-1 * ampl * d_nco.get_phase() / GR_M_PI + ampl,
-                                     -1 * ampl * d_nco.get_phase() / GR_M_PI +
-                                         3 * ampl / 2) +
-                          offset;
+            }
+            else {
+                optr[i] =
+                    gr_complex(-1 * ampl * d_nco.get_phase() / GR_M_PI + ampl,
+                               -1 * ampl * d_nco.get_phase() / GR_M_PI + 3 * ampl / 2) +
+                    offset;
             }
             d_nco.step();
         }
@@ -190,10 +191,10 @@ work_return_code_t sig_source_cpu<gr_complex>::work(work_io& wio)
             if (d_nco.get_phase() < -1 * GR_M_PI / 2) {
                 optr[i] =
                     gr_complex(ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 2,
-                               ampl * d_nco.get_phase() / (2 * GR_M_PI) +
-                                   5 * ampl / 4) +
+                               ampl * d_nco.get_phase() / (2 * GR_M_PI) + 5 * ampl / 4) +
                     offset;
-            } else {
+            }
+            else {
                 optr[i] =
                     gr_complex(ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 2,
                                ampl * d_nco.get_phase() / (2 * GR_M_PI) + ampl / 4) +
@@ -212,4 +213,3 @@ work_return_code_t sig_source_cpu<gr_complex>::work(work_io& wio)
 
 } /* namespace analog */
 } /* namespace gr */
-

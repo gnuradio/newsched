@@ -31,7 +31,7 @@ rtlsdr_source_cpu<T>::rtlsdr_source_cpu(const typename rtlsdr_source<T>::block_a
     this->connect(d_soapy_source_block, 0, this->base(), 0);
 }
 template <class T>
-void rtlsdr_source_cpu<T>::on_parameter_change(param_action_sptr action) 
+void rtlsdr_source_cpu<T>::on_parameter_change(param_action_sptr action)
 {
     // This will set the underlying PMT
     hier_block::on_parameter_change(action);

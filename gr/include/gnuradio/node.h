@@ -45,9 +45,11 @@ protected:
 
 public:
     node() : d_name("") {}
-    node(const std::string& name) : d_name(name), d_alias(name),
-      d_logger(std::make_shared<gr::logger>(name)),
-      d_debug_logger(std::make_shared<logger_ptr::element_type>(name + " (debug)"))
+    node(const std::string& name)
+        : d_name(name),
+          d_alias(name),
+          d_logger(std::make_shared<gr::logger>(name)),
+          d_debug_logger(std::make_shared<logger_ptr::element_type>(name + " (debug)"))
     {
         d_id = nodeid_generator::get_id();
     }

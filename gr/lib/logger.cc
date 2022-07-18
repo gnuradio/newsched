@@ -27,10 +27,10 @@
 
 namespace gr {
 logging::logging()
-    : _default_level(spdlog::level::from_str(
-          prefs::get_string("LOG", "log_level", "off"))),
-      _debug_level(spdlog::level::from_str(
-          prefs::get_string("LOG", "debug_level", "off"))),
+    : _default_level(
+          spdlog::level::from_str(prefs::get_string("LOG", "log_level", "off"))),
+      _debug_level(
+          spdlog::level::from_str(prefs::get_string("LOG", "debug_level", "off"))),
       _default_backend(std::make_shared<spdlog::sinks::dist_sink_mt>()),
       _debug_backend(std::make_shared<spdlog::sinks::dist_sink_mt>())
 {
@@ -47,7 +47,8 @@ logging::logging()
     if (default_file == "stderr") {
         auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_st>();
         _default_backend->add_sink(console_sink);
-    } else if ((!default_file.empty()) && default_file != "stdout") {
+    }
+    else if ((!default_file.empty()) && default_file != "stdout") {
         auto file_sink =
             std::make_shared<spdlog::sinks::basic_file_sink_st>(default_file, true);
         _default_backend->add_sink(file_sink);
@@ -114,11 +115,13 @@ void logger::set_level(const std::string& level)
     if (parsed_level == spdlog::level::off) {
         if (level == "notice") {
             parsed_level = spdlog::level::info;
-        } else if (level == "warn") {
+        }
+        else if (level == "warn") {
             // older versions of spdlog don't convert this themselves
             parsed_level = spdlog::level::warn;
-        } else if (level == "crit" || level == "alert" || level == "fatal" ||
-                   level == "emerg") {
+        }
+        else if (level == "crit" || level == "alert" || level == "fatal" ||
+                 level == "emerg") {
             parsed_level = spdlog::level::critical;
         }
     }

@@ -29,17 +29,16 @@ namespace gr {
 
 /**
  * @brief File lock class
- * 
+ *
  * Stripped down version of boost::interprocess::file_lock
- * 
+ *
  */
 class file_lock
 {
-using file_handle_t = int;
+    using file_handle_t = int;
+
 public:
-    file_lock() noexcept
-        :  m_file_hnd(file_handle_t(-1))
-    {}
+    file_lock() noexcept : m_file_hnd(file_handle_t(-1)) {}
     file_lock(const std::string& filename)
     {
         m_file_hnd = ::open(filename.c_str(), O_RDWR);
@@ -62,7 +61,7 @@ public:
         }
     }
 
-    
+
     bool acquire_file_lock(file_handle_t hnd)
     {
         struct ::flock lock;

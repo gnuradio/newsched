@@ -89,9 +89,7 @@ void pfb_channelizer_cpu<T>::set_taps(const std::vector<float>& taps)
 
 
 template <class T>
-work_return_code_t
-pfb_channelizer_cpu<T>::work(work_io& wio)
-                             
+work_return_code_t pfb_channelizer_cpu<T>::work(work_io& wio)
 {
     // std::scoped_lock guard(d_mutex);
 
@@ -110,7 +108,8 @@ pfb_channelizer_cpu<T>::work(work_io& wio)
     }
 
     // includes history
-    auto total_items = std::min(ninput_items / d_nchans, noutput_items + (d_history / d_nchans) );
+    auto total_items =
+        std::min(ninput_items / d_nchans, noutput_items + (d_history / d_nchans));
 
     for (size_t j = 0; j < d_nchans; j++) {
         if (d_deinterleaved[j].size() < total_items) {

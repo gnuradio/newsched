@@ -23,9 +23,7 @@ multiply_const_cpu<T>::multiply_const_cpu(
 }
 
 template <>
-work_return_code_t
-multiply_const_cpu<float>::work(work_io& wio)
-                                
+work_return_code_t multiply_const_cpu<float>::work(work_io& wio)
 {
     auto k = pmtf::get_as<float>(*this->param_k);
 
@@ -40,9 +38,7 @@ multiply_const_cpu<float>::work(work_io& wio)
 }
 
 template <>
-work_return_code_t
-multiply_const_cpu<gr_complex>::work(work_io& wio)
-                                     
+work_return_code_t multiply_const_cpu<gr_complex>::work(work_io& wio)
 {
     auto k = pmtf::get_as<gr_complex>(*this->param_k);
 
@@ -57,9 +53,7 @@ multiply_const_cpu<gr_complex>::work(work_io& wio)
 }
 
 template <class T>
-work_return_code_t
-multiply_const_cpu<T>::work(work_io& wio)
-                            
+work_return_code_t multiply_const_cpu<T>::work(work_io& wio)
 {
     auto k = pmtf::get_as<T>(*this->param_k);
 

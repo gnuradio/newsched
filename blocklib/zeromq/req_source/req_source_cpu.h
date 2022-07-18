@@ -20,8 +20,7 @@ class req_source_cpu : public virtual req_source, public virtual base_source
 {
 public:
     req_source_cpu(block_args args);
-    work_return_code_t
-    work(work_io&) override;
+    work_return_code_t work(work_io&) override;
 
     // Since vsize can be set as 0, then inferred on flowgraph init, set it during start()
     bool start() override
@@ -32,7 +31,6 @@ public:
 
 private:
     bool d_req_pending = false;
-    
 };
 
 } // namespace zeromq

@@ -33,7 +33,7 @@ hackrf_source_cpu<T>::hackrf_source_cpu(const typename hackrf_source<T>::block_a
 
 
 template <class T>
-void hackrf_source_cpu<T>::on_parameter_change(param_action_sptr action) 
+void hackrf_source_cpu<T>::on_parameter_change(param_action_sptr action)
 {
     // This will set the underlying PMT
     hier_block::on_parameter_change(action);

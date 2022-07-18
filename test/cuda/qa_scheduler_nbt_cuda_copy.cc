@@ -7,13 +7,13 @@
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 // #include <gnuradio/cuda/copy.h>
-#include <gnuradio/streamops/copy.h>
 #include <gnuradio/buffer_cuda.h>
 #include <gnuradio/buffer_cuda_pinned.h>
 #include <gnuradio/buffer_cuda_sm.h>
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/runtime.h>
 #include <gnuradio/schedulers/nbt/scheduler_nbt.h>
+#include <gnuradio/streamops/copy.h>
 
 using namespace gr;
 

@@ -19,14 +19,8 @@ class message_debug_cpu : public virtual message_debug
 {
 public:
     message_debug_cpu(block_args args);
-    size_t num_messages() override
-    {
-        return d_messages.size();
-    }
-    pmtf::pmt get_message(size_t i) override
-    {
-        return d_messages[i];
-    }
+    size_t num_messages() override { return d_messages.size(); }
+    pmtf::pmt get_message(size_t i) override { return d_messages[i]; }
 
 private:
     std::vector<pmtf::pmt> d_messages;

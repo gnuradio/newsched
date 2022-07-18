@@ -49,7 +49,9 @@ work_return_code_t interleave_cpu::work(work_io& wio)
 
     for (unsigned int i = 0; i < noutput_blocks; i++) {
         for (auto& in : wio.inputs()) {
-            memcpy(out, in.items<uint8_t>() + d_itemsize * d_blocksize * i, d_itemsize * d_blocksize);
+            memcpy(out,
+                   in.items<uint8_t>() + d_itemsize * d_blocksize * i,
+                   d_itemsize * d_blocksize);
             out += d_itemsize * d_blocksize;
         }
     }

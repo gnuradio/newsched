@@ -12,8 +12,8 @@
 
 #include <gnuradio/analog/sig_source.h>
 #include <gnuradio/kernel/math/fxpt_nco.h>
-#include <mutex>
 #include <gnuradio/kernel/math/math.h>
+#include <mutex>
 
 namespace gr {
 namespace analog {
@@ -23,9 +23,8 @@ class sig_source_cpu : public sig_source<T>
 {
 public:
     sig_source_cpu(const typename sig_source<T>::block_args& args);
-    
-    work_return_code_t work(work_io&)
-                                     override;
+
+    work_return_code_t work(work_io&) override;
 
 
     void on_parameter_change(param_action_sptr action) override
@@ -34,14 +33,12 @@ public:
         block::on_parameter_change(action);
 
         // Do more updating for certain parameters
-        if (action->id() == sig_source<T>::id_phase)
-        {
-            auto phase =  pmtf::get_as<double>(*this->param_phase);
+        if (action->id() == sig_source<T>::id_phase) {
+            auto phase = pmtf::get_as<double>(*this->param_phase);
             d_nco.set_phase(phase);
         }
-        else if (action->id() == sig_source<T>::id_frequency)
-        {
-            auto freq =  pmtf::get_as<double>(*this->param_frequency);
+        else if (action->id() == sig_source<T>::id_frequency) {
+            auto freq = pmtf::get_as<double>(*this->param_frequency);
             auto samp_freq = pmtf::get_as<double>(*this->param_sampling_freq);
             d_nco.set_freq(2 * GR_M_PI * freq / samp_freq);
         }

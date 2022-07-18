@@ -142,9 +142,8 @@ rt_status_t enable_realtime_scheduling(rt_sched_param p)
         else {
             gr::logger_ptr logger, debug_logger;
             gr::configure_default_loggers(logger, debug_logger, "realtime");
-            logger->error(
-                         "sched_setscheduler: failed to set real time priority: {}",
-                         strerror(result));
+            logger->error("sched_setscheduler: failed to set real time priority: {}",
+                          strerror(result));
             return RT_OTHER_ERROR;
         }
     }

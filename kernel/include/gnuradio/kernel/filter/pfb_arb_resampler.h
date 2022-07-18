@@ -90,12 +90,12 @@ private:
     std::vector<std::vector<TAP_T>> d_dtaps;
     size_t d_int_rate;        // the number of filters (interpolation rate)
     size_t d_dec_rate;        // the stride through the filters (decimation rate)
-    float d_flt_rate;               // residual rate for the linear interpolation
-    float d_acc;                    // accumulator; holds fractional part of sample
+    float d_flt_rate;         // residual rate for the linear interpolation
+    float d_acc;              // accumulator; holds fractional part of sample
     size_t d_last_filter;     // stores filter for re-entry
     size_t d_taps_per_filter; // num taps for each arm of the filterbank
-    int d_delay;                    // filter's group delay
-    float d_est_phase_change;       // est. of phase change of a sine wave through filt.
+    int d_delay;              // filter's group delay
+    float d_est_phase_change; // est. of phase change of a sine wave through filt.
 
     /*!
      * Takes in the taps and convolves them with [-1,0,1], which
@@ -130,9 +130,7 @@ public:
      * filter bank. This is directly related to quantization noise introduced during the
      * resampling. Defaults to 32 filters.
      */
-    pfb_arb_resampler(float rate,
-                      const std::vector<TAP_T>& taps,
-                      size_t filter_size);
+    pfb_arb_resampler(float rate, const std::vector<TAP_T>& taps, size_t filter_size);
 
     // Don't allow copy.
     pfb_arb_resampler(const pfb_arb_resampler&) = delete;

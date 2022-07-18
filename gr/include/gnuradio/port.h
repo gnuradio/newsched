@@ -96,7 +96,7 @@ protected:
     port_direction_t _direction;
     param_type_t _data_type;
     port_type_t _port_type;
-    int _index = -1;           // how does this get set??
+    int _index = -1;            // how does this get set??
     std::vector<size_t> _shape; // allow for matrices to be sent naturally across ports
     // empty shape refers to a scalar, shape=[n] same as vlen=n
     bool _optional;
@@ -132,10 +132,10 @@ class GR_RUNTIME_API port : public port_base
 public:
     using uptr = std::unique_ptr<port<T>>;
     static uptr make(const std::string& name,
-                                         const port_direction_t direction,
-                                         const std::vector<size_t>& shape = { 1 },
-                                         const bool optional = false,
-                                         const int multiplicity = 1);
+                     const port_direction_t direction,
+                     const std::vector<size_t>& shape = { 1 },
+                     const bool optional = false,
+                     const int multiplicity = 1);
     port(const std::string& name,
          const port_direction_t direction,
          const std::vector<size_t>& shape = { 1 },
@@ -156,10 +156,10 @@ class GR_RUNTIME_API untyped_port : public port_base
 public:
     using uptr = std::unique_ptr<untyped_port>;
     static uptr make(const std::string& name,
-                                              const port_direction_t direction,
-                                              const size_t itemsize,
-                                              const bool optional = false,
-                                              const int multiplicity = 1);
+                     const port_direction_t direction,
+                     const size_t itemsize,
+                     const bool optional = false,
+                     const int multiplicity = 1);
     untyped_port(const std::string& name,
                  const port_direction_t direction,
                  const size_t itemsize,

@@ -4,9 +4,9 @@
 #include <gnuradio/concurrent_queue.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/runtime_proxy.h>
+#include <map>
 #include <thread>
 #include <vector>
-#include <map>
 
 namespace gr {
 

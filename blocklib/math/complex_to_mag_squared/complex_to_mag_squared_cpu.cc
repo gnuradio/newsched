@@ -21,9 +21,7 @@ complex_to_mag_squared_cpu::complex_to_mag_squared_cpu(const block_args& args)
     // set_output_multiple(std::max(1, alignment_multiple));
 }
 
-work_return_code_t
-complex_to_mag_squared_cpu::work(work_io& wio)
-                                 
+work_return_code_t complex_to_mag_squared_cpu::work(work_io& wio)
 {
     auto noutput_items = wio.outputs()[0].n_items;
     int noi = noutput_items * d_vlen;

@@ -609,9 +609,7 @@ void block_impl::set_gain(size_t channel, double gain)
 
     if (!value_in_range(rGain, gain)) {
         d_debug_logger->error(
-                     "Gain out of range: {} <= gain <= {}",
-                     rGain.minimum(),
-                     rGain.maximum());
+            "Gain out of range: {} <= gain <= {}", rGain.minimum(), rGain.maximum());
         return;
     }
 
@@ -632,11 +630,10 @@ void block_impl::set_gain(size_t channel, const std::string& name, double gain)
     /* Validate gain value */
     range_t rGain = d_device->getGainRange(d_direction, channel, name);
     if (!value_in_range(rGain, gain)) {
-        d_debug_logger->error(
-                     "Gain {} out of range: {} <= gain <= {}",
-                     name,
-                     rGain.minimum(),
-                     rGain.maximum());
+        d_debug_logger->error("Gain {} out of range: {} <= gain <= {}",
+                              name,
+                              rGain.minimum(),
+                              rGain.maximum());
     }
 
     d_device->setGain(d_direction, channel, name, gain);
@@ -1578,8 +1575,8 @@ std::string block_impl::read_uart(const std::string& which, long timeout_us) con
 
 //     if (!pmt::dict_has_key(val, CMD_ADDR_KEY) || !pmt::dict_has_key(val, CMD_DATA_KEY))
 //     {
-//         GR_LOG_ERROR(d_debug_logger, "soapy: I2C must contain keys \"addr\", \"data\"");
-//         return;
+//         GR_LOG_ERROR(d_debug_logger, "soapy: I2C must contain keys \"addr\",
+//         \"data\""); return;
 //     }
 
 //     const auto addr = pmt::to_long(pmt::dict_ref(val, CMD_ADDR_KEY, PMT_ZERO));

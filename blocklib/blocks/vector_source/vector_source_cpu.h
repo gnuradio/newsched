@@ -33,8 +33,6 @@ protected:
     size_t d_vlen;
     bool d_settags = false;
     std::vector<tag_t> d_tags;
-
-    
 };
 
 

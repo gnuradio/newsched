@@ -85,9 +85,7 @@ void fft_cuda<float, false>::fft_and_shift(const float* in, gr_complex* out, int
 }
 
 template <class T, bool forward>
-work_return_code_t
-fft_cuda<T, forward>::work(work_io& wio)
-                           
+work_return_code_t fft_cuda<T, forward>::work(work_io& wio)
 {
 
     auto in = wio.inputs()[0].items<T>();

@@ -17,7 +17,6 @@ pub_sink_cpu::pub_sink_cpu(block_args args)
 }
 
 work_return_code_t pub_sink_cpu::work(work_io& wio)
-                                      
 {
     auto noutput_items = wio.inputs()[0].n_items;
     auto nread = wio.inputs()[0].nitems_read();

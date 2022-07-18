@@ -42,7 +42,8 @@ work_return_code_t selector_cpu::work(work_io& wio)
         auto nread = wio.inputs()[input_index].nitems_read();
         auto nwritten = wio.outputs()[output_index].nitems_written();
 
-        auto tags = wio.inputs()[input_index].tags_in_window(nread, nread + noutput_items);
+        auto tags =
+            wio.inputs()[input_index].tags_in_window(nread, nread + noutput_items);
 
         for (auto tag : tags) {
             tag.set_offset(tag.offset() - (nread - nwritten));

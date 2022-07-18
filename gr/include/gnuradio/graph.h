@@ -34,7 +34,10 @@ public:
     graph() : node() {}
     graph(const std::string& name) : node(name) {}
     ~graph() override {}
-    std::shared_ptr<graph> base() { return std::dynamic_pointer_cast<graph>(shared_from_this()); }
+    std::shared_ptr<graph> base()
+    {
+        return std::dynamic_pointer_cast<graph>(shared_from_this());
+    }
     edge_vector_t& edges() { return _edges; }
     edge_vector_t& stream_edges() { return _stream_edges; }
     node_vector_t& orphan_nodes() { return _orphan_nodes; }
@@ -42,9 +45,9 @@ public:
     node_vector_t all_nodes();
     virtual edge_sptr connect(const node_endpoint& src, const node_endpoint& dst);
     virtual edge_sptr connect(node_sptr src_node,
-                      unsigned int src_port_index,
-                      node_sptr dst_node,
-                      unsigned int dst_port_index);
+                              unsigned int src_port_index,
+                              node_sptr dst_node,
+                              unsigned int dst_port_index);
     edge_sptr connect(node_sptr src_node, node_sptr dst_node);
     edge_sptr connect(std::pair<node_sptr, unsigned int>,
                       std::pair<node_sptr, unsigned int>);

@@ -29,19 +29,19 @@ pfb_arb_resampler_cpu<IN_T, OUT_T, TAP_T>::pfb_arb_resampler_cpu(
 }
 
 template <class IN_T, class OUT_T, class TAP_T>
-work_return_code_t pfb_arb_resampler_cpu<IN_T, OUT_T, TAP_T>::work(
-    work_io& wio)
-    
+work_return_code_t pfb_arb_resampler_cpu<IN_T, OUT_T, TAP_T>::work(work_io& wio)
 {
     auto noutput_items = wio.outputs()[0].n_items;
 
     // forecasting - calculate the min input to produce output_multiple output item(s)
     size_t min_ninput;
     if (this->relative_rate() > 1) {
-        min_ninput = ceil(this->output_multiple() * this->relative_rate()) + d_history - 1;
+        min_ninput =
+            ceil(this->output_multiple() * this->relative_rate()) + d_history - 1;
     }
     else {
-        min_ninput = ceil(this->output_multiple() / this->relative_rate()) + d_history - 1;
+        min_ninput =
+            ceil(this->output_multiple() / this->relative_rate()) + d_history - 1;
     }
 
     auto ninput_items = wio.inputs()[0].n_items;
@@ -49,8 +49,9 @@ work_return_code_t pfb_arb_resampler_cpu<IN_T, OUT_T, TAP_T>::work(
         return work_return_code_t::WORK_INSUFFICIENT_INPUT_ITEMS;
     }
 
-    size_t nitems = std::min<size_t>(ninput_items - d_history + 1,
-                                     floorf((float)noutput_items / this->relative_rate()));
+    size_t nitems =
+        std::min<size_t>(ninput_items - d_history + 1,
+                         floorf((float)noutput_items / this->relative_rate()));
 
     auto in = wio.inputs()[0].items<IN_T>();
     auto out = wio.outputs()[0].items<OUT_T>();

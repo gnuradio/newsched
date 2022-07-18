@@ -23,7 +23,8 @@ req_source_cpu::req_source_cpu(block_args args)
           ZMQ_REQ, args.itemsize, args.address, args.timeout, args.pass_tags, args.hwm)
 {
 }
-work_return_code_t req_source_cpu::work(work_io& wio)                   
+
+work_return_code_t req_source_cpu::work(work_io& wio)
 {
 
     auto noutput_items = wio.outputs()[0].n_items;
@@ -34,8 +35,7 @@ work_return_code_t req_source_cpu::work(work_io& wio)
     while (1) {
         if (has_pending()) {
             /* Flush anything pending */
-            done += flush_pending(
-                wio.outputs()[0], noutput_items - done, done);
+            done += flush_pending(wio.outputs()[0], noutput_items - done, done);
 
             /* No more space ? */
             if (done == noutput_items)

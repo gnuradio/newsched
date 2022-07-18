@@ -23,7 +23,6 @@ sub_source_cpu::sub_source_cpu(block_args args)
 }
 
 work_return_code_t sub_source_cpu::work(work_io& wio)
-                                        
 {
     auto noutput_items = wio.outputs()[0].n_items;
     bool first = true;
@@ -33,8 +32,7 @@ work_return_code_t sub_source_cpu::work(work_io& wio)
     while (1) {
         if (has_pending()) {
             /* Flush anything pending */
-            done += flush_pending(
-                wio.outputs()[0], noutput_items - done, done);
+            done += flush_pending(wio.outputs()[0], noutput_items - done, done);
 
             /* No more space ? */
             if (done == noutput_items)

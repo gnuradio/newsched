@@ -66,18 +66,18 @@ edge_sptr graph::connect(node_sptr src_node,
                          unsigned int dst_port_index)
 {
     port_ptr src_port = (src_node == nullptr)
-                             ? nullptr
-                             : src_node->get_port(src_port_index,
-                                                  port_type_t::STREAM,
-                                                  port_direction_t::OUTPUT);
+                            ? nullptr
+                            : src_node->get_port(src_port_index,
+                                                 port_type_t::STREAM,
+                                                 port_direction_t::OUTPUT);
     // if (src_port == nullptr)
     //     throw std::invalid_argument("Source Port not found");
 
     port_ptr dst_port = (dst_node == nullptr)
-                             ? nullptr
-                             : dst_node->get_port(dst_port_index,
-                                                  port_type_t::STREAM,
-                                                  port_direction_t::INPUT);
+                            ? nullptr
+                            : dst_node->get_port(dst_port_index,
+                                                 port_type_t::STREAM,
+                                                 port_direction_t::INPUT);
     // if (dst_port == nullptr)
     //     throw std::invalid_argument("Destination port not found");
 

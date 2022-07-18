@@ -23,10 +23,7 @@ void message_debug_cpu::handle_msg_print(pmtf::pmt msg)
     std::cout << "PMT printing not yet implemented" << std::endl;
 }
 
-void message_debug_cpu::handle_msg_store(pmtf::pmt msg)
-{
-    d_messages.push_back(msg);
-}
+void message_debug_cpu::handle_msg_store(pmtf::pmt msg) { d_messages.push_back(msg); }
 
 } // namespace blocks
 } // namespace gr

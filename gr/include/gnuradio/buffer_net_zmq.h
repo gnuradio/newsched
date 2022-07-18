@@ -48,8 +48,8 @@ public:
         d_debug_logger->debug("send returned code {}", *res);
     }
 
-    buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize) override
+    buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                  size_t itemsize) override
     {
         // do nothing because readers will be added on zmq connect
         return nullptr;

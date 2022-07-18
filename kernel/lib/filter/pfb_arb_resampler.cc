@@ -14,9 +14,9 @@
 #include <gnuradio/logger.h>
 #include <cmath>
 #include <cstdio>
-#include <stdexcept>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <stdexcept>
 
 namespace gr {
 namespace kernel {

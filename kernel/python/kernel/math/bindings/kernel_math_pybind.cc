@@ -35,5 +35,4 @@ PYBIND11_MODULE(kernel_math_python, m)
     // (otherwise we will see segmentation faults)
     init_numpy();
     bind_random(m);
-
 }

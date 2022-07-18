@@ -21,8 +21,8 @@ public:
         add_port(gr::port<float>::make("hout1", gr::port_direction_t::OUTPUT));
         add_port(gr::port<float>::make("hout2", gr::port_direction_t::OUTPUT));
 
-        auto cp1 = gr::streamops::copy::make({sizeof(float)});
-        auto cp2 = gr::streamops::copy::make({sizeof(float)});
+        auto cp1 = gr::streamops::copy::make({ sizeof(float) });
+        auto cp2 = gr::streamops::copy::make({ sizeof(float) });
 
         this->connect(base(), 0, cp1, 0);
         this->connect(base(), 0, cp2, 0);

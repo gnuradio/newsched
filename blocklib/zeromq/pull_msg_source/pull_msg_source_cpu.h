@@ -29,6 +29,7 @@ public:
     {
         return d_socket.get(zmq::sockopt::last_endpoint);
     }
+
 private:
     bool d_finished;
     int d_timeout; // microseconds, -1 is blocking

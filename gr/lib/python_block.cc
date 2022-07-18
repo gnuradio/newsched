@@ -70,8 +70,7 @@ python_sync_block::python_sync_block(const py::handle& p, const std::string& nam
 }
 
 
-work_return_code_t
-python_sync_block::work(work_io& wio)
+work_return_code_t python_sync_block::work(work_io& wio)
 {
     py::gil_scoped_acquire acquire;
 

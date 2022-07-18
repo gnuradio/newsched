@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <gnuradio/kernel/api.h>
 #include <gnuradio/gr_complex.h>
+#include <gnuradio/kernel/api.h>
 #include <stdexcept>
 
 namespace gr {
@@ -171,6 +171,6 @@ void single_pole_iir<gr_complex, i_type, double>::filterN(gr_complex output[],
         output[i] = filter(input[i]);
 }
 
+} // namespace filter
 } // namespace kernel
-} /* namespace filter */
 } /* namespace gr */

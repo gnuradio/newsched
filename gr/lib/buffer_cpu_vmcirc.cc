@@ -20,7 +20,8 @@ buffer_uptr buffer_cpu_vmcirc::make(size_t num_items,
         switch (bp->buffer_type()) {
         case buffer_cpu_vmcirc_type::AUTO:
         case buffer_cpu_vmcirc_type::SYSV_SHM:
-            return std::make_unique<buffer_cpu_vmcirc_sysv_shm>(num_items, item_size, buffer_properties);
+            return std::make_unique<buffer_cpu_vmcirc_sysv_shm>(
+                num_items, item_size, buffer_properties);
         case buffer_cpu_vmcirc_type::MMAP_SHM:
             return std::make_unique<buffer_cpu_vmcirc_mmap_shm_open>(
                 num_items, item_size, buffer_properties);

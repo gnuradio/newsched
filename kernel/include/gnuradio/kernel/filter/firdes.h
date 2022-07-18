@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include <gnuradio/gr_complex.h>
 #include <gnuradio/kernel/api.h>
 #include <gnuradio/kernel/fft/window.h>
-#include <gnuradio/gr_complex.h>
 #include <cmath>
 #include <vector>
 

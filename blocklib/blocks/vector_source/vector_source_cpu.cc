@@ -41,8 +41,7 @@ vector_source_cpu<T>::vector_source_cpu(const typename vector_source<T>::block_a
 
 
 template <class T>
-work_return_code_t
-vector_source_cpu<T>::work(work_io& wio)
+work_return_code_t vector_source_cpu<T>::work(work_io& wio)
 {
 
     // size_t noutput_ports = wio.outputs().size(); // is 1 for this block
@@ -63,8 +62,8 @@ vector_source_cpu<T>::work(work_io& wio)
                 optr += size;
                 for (unsigned t = 0; t < d_tags.size(); t++) {
                     wio.outputs()[0].add_tag(wio.outputs()[0].nitems_written() + i +
-                                                d_tags[t].offset(),
-                                            d_tags[t].map());
+                                                 d_tags[t].offset(),
+                                             d_tags[t].map());
                 }
             }
         }

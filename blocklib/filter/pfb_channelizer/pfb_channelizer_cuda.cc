@@ -50,9 +50,7 @@ pfb_channelizer_cuda<T>::pfb_channelizer_cuda(
 }
 
 template <class T>
-work_return_code_t
-pfb_channelizer_cuda<T>::work(work_io& wio)
-                              
+work_return_code_t pfb_channelizer_cuda<T>::work(work_io& wio)
 {
     // std::scoped_lock guard(d_mutex);
 

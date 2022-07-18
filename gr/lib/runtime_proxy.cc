@@ -17,7 +17,10 @@ runtime_proxy::runtime_proxy(int svr_port, bool upstream)
       _client_socket(_context, zmq::socket_type::push)
 
 {
-    gr::configure_default_loggers(d_logger, d_debug_logger, fmt::format("runtime_proxy_{}", upstream ? "upstream" : "downstream") );
+    gr::configure_default_loggers(
+        d_logger,
+        d_debug_logger,
+        fmt::format("runtime_proxy_{}", upstream ? "upstream" : "downstream"));
     _server_socket.set(zmq::sockopt::sndhwm, 1);
     _server_socket.set(zmq::sockopt::rcvhwm, 1);
     _client_socket.set(zmq::sockopt::sndhwm, 1);

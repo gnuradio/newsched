@@ -29,8 +29,8 @@ public:
     void* write_ptr();
     virtual void post_write(int num_items);
 
-    virtual buffer_reader_uptr
-    add_reader(std::shared_ptr<buffer_properties> buf_props, size_t itemsize);
+    virtual buffer_reader_uptr add_reader(std::shared_ptr<buffer_properties> buf_props,
+                                          size_t itemsize);
 };
 class buffer_cuda_pinned_reader : public buffer_reader
 {

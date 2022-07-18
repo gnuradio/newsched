@@ -2,12 +2,12 @@
 
 namespace gr {
 port_base::uptr port_base::make(const std::string& name,
-                          const port_direction_t direction,
-                          const param_type_t data_type,
-                          const port_type_t port_type,
-                          const std::vector<size_t>& shape,
-                          const bool optional,
-                          const int multiplicity)
+                                const port_direction_t direction,
+                                const param_type_t data_type,
+                                const port_type_t port_type,
+                                const std::vector<size_t>& shape,
+                                const bool optional,
+                                const int multiplicity)
 {
     return std::make_unique<port_base>(
         name, direction, data_type, port_type, shape, optional, multiplicity);
@@ -95,7 +95,7 @@ void port_base::push_message(scheduler_message_sptr msg)
         // of the remote node will get called here
         // in which case, it really needs to signal to the remote
         // flowgraph -- how to do that???
-        //FIXME - make a logging message or exception
+        // FIXME - make a logging message or exception
         std::cout << "port has no parent interface" << std::endl;
         // throw std::runtime_error("port has no parent interface");
     }
@@ -148,12 +148,13 @@ port<T>::port(const std::string& name,
 }
 
 untyped_port::uptr untyped_port::make(const std::string& name,
-                                                 const port_direction_t direction,
-                                                 const size_t itemsize,
-                                                 const bool optional,
-                                                 const int multiplicity)
+                                      const port_direction_t direction,
+                                      const size_t itemsize,
+                                      const bool optional,
+                                      const int multiplicity)
 {
-    return std::make_unique<untyped_port>(name, direction, itemsize, optional, multiplicity);
+    return std::make_unique<untyped_port>(
+        name, direction, itemsize, optional, multiplicity);
 }
 untyped_port::untyped_port(const std::string& name,
                            const port_direction_t direction,
@@ -165,9 +166,9 @@ untyped_port::untyped_port(const std::string& name,
 }
 
 message_port::uptr message_port::make(const std::string& name,
-                                                 const port_direction_t direction,
-                                                 const bool optional,
-                                                 const int multiplicity)
+                                      const port_direction_t direction,
+                                      const bool optional,
+                                      const int multiplicity)
 {
     return std::make_unique<message_port>(name, direction, optional, multiplicity);
 }
