@@ -1,7 +1,6 @@
 #include <gnuradio/graph_utils.h>
 
 #include <gnuradio/block.h>
-#include <gnuradio/domain.h>
 
 namespace gr {
 

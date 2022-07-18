@@ -1,6 +1,5 @@
 #pragma once
 
-#include <gnuradio/domain.h>
 #include <gnuradio/graph.h>
 #include <gnuradio/scheduler.h>
 
