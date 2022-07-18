@@ -3,6 +3,47 @@ All notable changes to newsched will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.5.0] - [2022.07.18]
+
+This release brings a significant change to the block API and some structural changes regarding shared_ptr usage throughout.  
+
+Also, this should be the last release of newsched, as development is moving to the `dev-4.0` branch of the gnuradio repository
+
+### Project-wide
+- `work()` signature changed to pass reference to `work_io` type which wraps input and output structs
+- `port` becomes a unique pointer owned by the block
+- `buffer` becomes unique pointer owned by the `port` object (output port)
+
+### Blocks
+- Tag strobe block
+- Delay block propagate tags
+
+### Modtool
+- Only process block directory if `yml` file exists
+
+### CI
+- Ubuntu 22 worker
+- Enforce clang formatting
+
+
+## [0.4.0] - [2022.06.23]
+
+- Fixes a critical bug in grc bindings that was squishing the file_format tag onto the previous line leaving us with no usable blocks
+- Removes some transitive boost includes brought in with logger.h
+- Add custom bindings to templated blocks
+- Restructures some of the utility scripts
+- Hier Blocks - some major structural changes
+- Python blocks - use correct format descriptors
+- Soapy - rtlsdr and hackrf as hier blocks
+- Grc: integration with pyqtgraph as flowgraph plotting option
+- Blockbuilder: validation with jsonschema
+- Updated templates for pyshell to handle callback methods
+- Grc: Auto-populate the enums
+- Scheduler/NBT: Don't process null input/output bufs
+- Support for optional ports
+- Hier blocks with Message Ports
+- Updated benchmarking flowgraphs and load block
+
 ## [0.3.0] - [2022.04.29]
 
 ### New Dependencies
