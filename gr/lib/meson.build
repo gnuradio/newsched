@@ -58,7 +58,8 @@ runtime_sources = [
   'rpc_client_interface.cc',
   'sptr_magic.cc',
   'hier_block.cc',
-  'prefs.cc'
+  'prefs.cc',
+  'tag.cc'
 ]
 
 if USE_CUDA

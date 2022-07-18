@@ -31,37 +31,16 @@ public:
     {
     }
 
-    bool operator==(const tag_t& rhs) const
-    {
-        return (rhs.offset() == offset() && rhs.map() == map());
-    }
-    bool operator!=(const tag_t& rhs) const
-    {
-        return (rhs.offset() != offset() && rhs.map() != map());
-    }
+    bool operator==(const tag_t& rhs) const;
+    bool operator!=(const tag_t& rhs) const;
 
     void set_offset(uint64_t offset) { _offset = offset; }
     pmtf::pmt operator[](const std::string& key) const { return _map.at(key); }
     uint64_t offset() const { return _offset; }
     pmtf::map map() const { return _map; }
 
-    size_t serialize(std::streambuf& sb) const
-    {
-        size_t ret = 0;
-        std::ostream ss(&sb);
-        ss.write((const char*)&_offset, sizeof(uint64_t));
-        ret += sizeof(uint64_t);
-        ret += pmtf::pmt(_map).serialize(sb);
-
-        return ret;
-    }
-
-    static tag_t deserialize(std::streambuf& sb)
-    {
-        uint64_t tmp_offset;
-        sb.sgetn((char*)&(tmp_offset), sizeof(uint64_t));
-        return tag_t(tmp_offset, pmtf::pmt::deserialize(sb));
-    }
+    size_t serialize(std::streambuf& sb) const;
+    static tag_t deserialize(std::streambuf& sb);
 
 private:
     uint64_t _offset = 0;
