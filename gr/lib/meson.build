@@ -57,7 +57,8 @@ runtime_sources = [
   'buffer_net_zmq.cc',
   'rpc_client_interface.cc',
   'sptr_magic.cc',
-  'hier_block.cc'
+  'hier_block.cc',
+  'prefs.cc'
 ]
 
 if USE_CUDA
