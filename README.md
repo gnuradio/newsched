@@ -1,3 +1,7 @@
+**newsched has been migrated to the `dev-4.0` branch of [gnuradio](https://github.com/gnuradio/gnuradio/tree/dev-4.0)**
+
+**THIS REPO IS ARCHIVED and new development taking place as GNU Radio 4.0**
+
 # newsched – the final frontier #
 
 ![Make Test](https://img.shields.io/github/workflow/status/gnuradio/newsched/build%20and%20run%20tests?style=for-the-badge)
