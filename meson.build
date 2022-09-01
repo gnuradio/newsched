@@ -45,22 +45,28 @@ qt5_mod = import('qt5', required: false)
 qt5widgets_dep = dependency('qt5', modules : 'Widgets', required: false)
 qwt_dep = dependency('Qwt', method: 'cmake', cmake_module_path: join_paths(meson.source_root(), 'cmake','Modules'), required: false )
 
-# pmtf_dep = dependency('pmtf', version : '>=0.0.2')
-libpmtf = subproject('pmt')
-pmtf_dep = libpmtf.get_variable('pmtf_dep')
+# Use internal PMT by default – we expect some movement here still
+# But: offer option to look for external PMT lib; this should make package
+# Maintainers a bit happier
+if (get_option('external_pmt'))
+  # pmtf_dep = dependency('pmtf', version : '>=0.0.2')
+  pmtf_dep = dependency('pmtf', fallback : [ 'pmt' , 'pmtf_dep' ])
+else
+  libpmtf = subproject('pmt')
+  pmtf_dep = libpmtf.get_variable('pmtf_dep')
+endif
 
-libCLI11 = subproject('CLI11')
-CLI11_dep = libCLI11.get_variable('CLI11_dep')
-
-libjson = subproject('json')
-json_dep = libjson.get_variable('nlohmann_json_dep')
-
-libcpphttp = subproject('cpp-httplib')
-cpphttp_dep = libcpphttp.get_variable('cpp_httplib_dep')
-
+# Dependencies that can be used from system or subprojects
+## CLI11 : C++ command line parser
+CLI11_dep = dependency('CLI11', fallback : [ 'CLI11' , 'CLI11_dep' ])
+## NLohmann JSON: C++ JSON library
+json_dep = dependency('nlohmann_json', fallback : [ 'json', 'nlohmann_json_dep'])
+## cpp-httplib: C++11 single-file header-only cross platform HTTP/HTTPS library
+cpp_httplib_dep = dependency('httplib', fallback : [ 'cpp-httplib', 'cpp_httplib_dep' ])
+## cppzmq: C++ bindings for the ZeroMQ C library
 cmake = import('cmake')
-libcppzmq = cmake.subproject('cppzmq')
-cppzmq_dep = libcppzmq.dependency('cppzmq')
+cppzmq_dep = dependency('cppzmq', fallback : [ 'cppzmq' , 'cppzmq_dep' ] )
+
 
 if USE_CUDA
   libcusp = subproject('cusp')
